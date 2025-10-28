@@ -133,10 +133,10 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <Header />
 
-      <section className="flex items-center space-x-6 font-medium text-xs leading-3">
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Memorial Order</h1>
@@ -150,14 +150,14 @@ export default function CheckoutPage() {
             <Card className="h-fit lg:col-span-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-accent" />
                   Order Summary
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <Package className="h-4 w-4 text-blue-600" />
+                    <Package className="h-4 w-4 text-accent" />
                     <span>Premium Packaging Included</span>
                   </div>
                   <div className="relative aspect-square rounded-lg overflow-hidden bg-muted max-w-[350px] mx-auto">
@@ -199,28 +199,21 @@ export default function CheckoutPage() {
 
                 <Separator />
 
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Memorial QR Package</span>
-                  <span className="font-bold">$2.00</span>
-                </div>
-
-                <Separator />
-
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Custom QR Memorial Plaque</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Digital Memorial Website</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Lifetime Hosting Included</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Free Shipping</span>
                   </div>
                 </div>
@@ -232,8 +225,8 @@ export default function CheckoutPage() {
                   <span>$2.00</span>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-green-50 p-3 rounded-lg">
-                  <Shield className="h-4 w-4 text-green-600" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg">
+                  <Shield className="h-4 w-4 text-accent" />
                   <span>30-day money-back guarantee</span>
                 </div>
               </CardContent>
