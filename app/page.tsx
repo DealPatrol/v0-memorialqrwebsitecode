@@ -19,15 +19,21 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto">
             {/* Hero Content */}
             <div className="mb-8 space-y-6">
-              <Badge className="mb-4 bg-white/20 text-white border-white/30 backdrop-blur-sm">
+              <Badge className="mb-4 bg-white/20 border-white/30 backdrop-blur-sm" style={{ color: "white" }}>
                 ✨ Trusted by 10,000+ Families
               </Badge>
 
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 text-shadow-lg leading-tight">
+              <h1
+                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+                style={{ color: "white", textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
+              >
                 Honor Their Memory with a <span className="gradient-text">Digital Memorial</span>
               </h1>
 
-              <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto text-shadow-lg leading-relaxed">
+              <p
+                className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed"
+                style={{ color: "rgba(255,255,255,0.95)", textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
+              >
                 Create a beautiful QR code memorial plaque that connects visitors to photos, videos, and stories of your
                 loved one's life.
               </p>
@@ -43,7 +49,11 @@ export default function HomePage() {
               <Button
                 asChild
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8 py-6 btn-hover-lift shadow-lg"
+                className="text-lg px-8 py-6 shadow-lg"
+                style={{
+                  background: "linear-gradient(to right, #9333ea, #3b82f6)",
+                  color: "white",
+                }}
               >
                 <Link href="/pricing">
                   Create Memorial Now
@@ -55,7 +65,12 @@ export default function HomePage() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-6 bg-transparent"
+                className="text-lg px-8 py-6 bg-transparent"
+                style={{
+                  borderColor: "rgba(255,255,255,0.3)",
+                  color: "white",
+                  backgroundColor: "transparent",
+                }}
               >
                 <Link href="/browse-memorials">
                   <Play className="mr-2 w-5 h-5" />
@@ -66,17 +81,23 @@ export default function HomePage() {
 
             {/* Trust Indicators */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              <div className="flex items-center justify-center gap-2 text-white/90">
-                <Shield className="w-5 h-5 text-green-400" />
-                <span className="text-sm font-medium drop-shadow-md">30-Day Guarantee</span>
+              <div className="flex items-center justify-center gap-2" style={{ color: "rgba(255,255,255,0.9)" }}>
+                <Shield className="w-5 h-5" style={{ color: "#4ade80" }} />
+                <span className="text-sm font-medium" style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.6)" }}>
+                  30-Day Guarantee
+                </span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-white/90">
-                <Clock className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-medium drop-shadow-md">Lifetime Access</span>
+              <div className="flex items-center justify-center gap-2" style={{ color: "rgba(255,255,255,0.9)" }}>
+                <Clock className="w-5 h-5" style={{ color: "#60a5fa" }} />
+                <span className="text-sm font-medium" style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.6)" }}>
+                  Lifetime Access
+                </span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-white/90">
-                <Users className="w-5 h-5 text-purple-400" />
-                <span className="text-sm font-medium drop-shadow-md">24/7 Support</span>
+              <div className="flex items-center justify-center gap-2" style={{ color: "rgba(255,255,255,0.9)" }}>
+                <Users className="w-5 h-5" style={{ color: "#a78bfa" }} />
+                <span className="text-sm font-medium" style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.6)" }}>
+                  24/7 Support
+                </span>
               </div>
             </div>
           </div>
@@ -91,7 +112,7 @@ export default function HomePage() {
       {/* Video Section */}
       <section className="py-24 bg-gradient-to-br from-purple-50 to-blue-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="video-container rounded-lg overflow-hidden shadow-2xl border-2 border-purple-200 mx-auto">
+          <div className="video-container rounded-xl overflow-hidden shadow-2xl border-2 border-purple-200 mx-auto">
             <iframe
               src="https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=0&mute=0&controls=1&rel=0"
               title="Memorial QR Video"
@@ -104,7 +125,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">How It Works</h2>
@@ -114,7 +135,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-6">
               <div className="w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
                 <QrCode className="w-10 h-10 text-white" />
               </div>
@@ -124,7 +145,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-6">
               <div className="w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
                 <Smartphone className="w-10 h-10 text-white" />
               </div>
@@ -134,7 +155,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-6">
               <div className="w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
                 <Heart className="w-10 h-10 text-white" />
               </div>
@@ -158,9 +179,11 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all hover:border-purple-300 bg-white">
               <CardContent className="p-8 space-y-4">
-                <Globe className="w-12 h-12 text-purple-600" />
+                <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Globe className="w-8 h-8 text-white" />
+                </div>
                 <h3 className="text-xl font-semibold text-foreground">Unlimited Photos & Videos</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Upload unlimited photos and videos to create a comprehensive memorial.
@@ -168,9 +191,11 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all hover:border-purple-300 bg-white">
               <CardContent className="p-8 space-y-4">
-                <Lock className="w-12 h-12 text-purple-600" />
+                <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Lock className="w-8 h-8 text-white" />
+                </div>
                 <h3 className="text-xl font-semibold text-foreground">Privacy Controls</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Control who can view and contribute to your loved one's memorial page.
@@ -178,9 +203,11 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all hover:border-purple-300 bg-white">
               <CardContent className="p-8 space-y-4">
-                <Users className="w-12 h-12 text-purple-600" />
+                <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
                 <h3 className="text-xl font-semibold text-foreground">Family Collaboration</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Invite family members to contribute photos, videos, and memories.
@@ -188,9 +215,11 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all hover:border-purple-300 bg-white">
               <CardContent className="p-8 space-y-4">
-                <QrCode className="w-12 h-12 text-purple-600" />
+                <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <QrCode className="w-8 h-8 text-white" />
+                </div>
                 <h3 className="text-xl font-semibold text-foreground">Custom QR Codes</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Beautiful, customizable QR codes that match your memorial design.
@@ -198,9 +227,11 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all hover:border-purple-300 bg-white">
               <CardContent className="p-8 space-y-4">
-                <Shield className="w-12 h-12 text-purple-600" />
+                <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Shield className="w-8 h-8 text-white" />
+                </div>
                 <h3 className="text-xl font-semibold text-foreground">Lifetime Hosting</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Your memorial page will be hosted forever, ensuring lasting access.
@@ -208,9 +239,11 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all hover:border-purple-300 bg-white">
               <CardContent className="p-8 space-y-4">
-                <Heart className="w-12 h-12 text-purple-600" />
+                <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Heart className="w-8 h-8 text-white" />
+                </div>
                 <h3 className="text-xl font-semibold text-foreground">Guest Book</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Allow visitors to leave messages and share their own memories.
@@ -222,7 +255,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">What Families Say</h2>
@@ -232,11 +265,11 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="border-purple-200 shadow-lg">
+            <Card className="border-2 border-purple-200 shadow-lg bg-white">
               <CardContent className="p-8 space-y-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-5 h-5" style={{ fill: "#facc15", color: "#facc15" }} />
                   ))}
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
@@ -250,11 +283,11 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 shadow-lg">
+            <Card className="border-2 border-purple-200 shadow-lg bg-white">
               <CardContent className="p-8 space-y-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-5 h-5" style={{ fill: "#facc15", color: "#facc15" }} />
                   ))}
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
@@ -268,11 +301,11 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 shadow-lg">
+            <Card className="border-2 border-purple-200 shadow-lg bg-white">
               <CardContent className="p-8 space-y-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-5 h-5" style={{ fill: "#facc15", color: "#facc15" }} />
                   ))}
                 </div>
                 <p className="text-muted-foreground leading-relaxed">

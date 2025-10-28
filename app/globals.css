@@ -146,17 +146,7 @@
   min-height: 100vh;
 }
 
-.memorial-bg::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
-  z-index: -1;
-}
-
+/* Dark overlay on top of background image for text readability */
 .memorial-bg::before {
   content: "";
   position: absolute;
@@ -164,13 +154,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 0;
 }
 
 .memorial-bg > * {
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 @media (max-width: 768px) {
