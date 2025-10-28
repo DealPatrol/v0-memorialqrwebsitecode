@@ -1,0 +1,5 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {}
+}
+Use CSS to add spacing between list items (<li>) in your navigation menu and ensure the text isn't set to white-space: nowrap;.
