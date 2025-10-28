@@ -49,11 +49,7 @@ export default function HomePage() {
               <Button
                 asChild
                 size="lg"
-                className="text-lg px-8 py-6 shadow-lg"
-                style={{
-                  background: "linear-gradient(to right, #9333ea, #3b82f6)",
-                  color: "white",
-                }}
+                className="text-lg px-8 py-6 shadow-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 border-0"
               >
                 <Link href="/pricing">
                   Create Memorial Now
@@ -65,12 +61,7 @@ export default function HomePage() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 py-6 bg-transparent"
-                style={{
-                  borderColor: "rgba(255,255,255,0.3)",
-                  color: "white",
-                  backgroundColor: "transparent",
-                }}
+                className="text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
               >
                 <Link href="/browse-memorials">
                   <Play className="mr-2 w-5 h-5" />
