@@ -133,7 +133,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
+    <div className="min-h-screen bg-gradient-to-br from-accent/20 to-secondary/30">
       <Header />
 
       <section className="py-12 px-4 sm:px-6 lg:px-8">
@@ -150,24 +150,38 @@ export default function CheckoutPage() {
             <Card className="h-fit lg:col-span-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
+                  <CheckCircle className="h-5 w-5 text-chart-2" />
                   Order Summary
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <Package className="h-4 w-4 text-accent" />
+                    <Package className="h-4 w-4 text-primary" />
                     <span>Premium Packaging Included</span>
                   </div>
-                  <div className="relative aspect-square rounded-lg overflow-hidden bg-muted max-w-[350px] mx-auto">
-                    <Image
-                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/box1-ddkM8m6r7XISkEEH5qA6RU6DblzyIK.jpg"
-                      alt="Custom Memorial Keepsake Box"
-                      fill
-                      className="object-cover"
-                    />
+                  <div className="space-y-3">
+                    <div className="relative aspect-square rounded-lg overflow-hidden bg-muted max-w-[350px] mx-auto">
+                      <Image
+                        src="/keepsake-box-1.jpeg"
+                        alt="Custom Memorial Keepsake Box with QR Plaque"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+                        <Image src="/keepsake-box-1.jpeg" alt="Keepsake box view 1" fill className="object-cover" />
+                      </div>
+                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+                        <Image src="/keepsake-box-2.jpeg" alt="Keepsake box view 2" fill className="object-cover" />
+                      </div>
+                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+                        <Image src="/keepsake-box-3.jpeg" alt="Keepsake box view 3" fill className="object-cover" />
+                      </div>
+                    </div>
                   </div>
+                  {/* End of change */}
                   <p className="text-xs text-muted-foreground text-center">
                     Your plaque will arrive beautifully packaged in a custom memorial box
                   </p>
@@ -201,19 +215,19 @@ export default function CheckoutPage() {
 
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <CheckCircle className="h-4 w-4 text-chart-2" />
                     <span>Custom QR Memorial Plaque</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <CheckCircle className="h-4 w-4 text-chart-2" />
                     <span>Digital Memorial Website</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <CheckCircle className="h-4 w-4 text-chart-2" />
                     <span>Lifetime Hosting Included</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <CheckCircle className="h-4 w-4 text-chart-2" />
                     <span>Free Shipping</span>
                   </div>
                 </div>
@@ -225,8 +239,8 @@ export default function CheckoutPage() {
                   <span>$2.00</span>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg">
-                  <Shield className="h-4 w-4 text-accent" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-chart-2/10 p-3 rounded-lg">
+                  <Shield className="h-4 w-4 text-chart-2" />
                   <span>30-day money-back guarantee</span>
                 </div>
               </CardContent>

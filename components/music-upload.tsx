@@ -95,8 +95,8 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       console.log("[v0] Music uploaded successfully:", data.music)
 
       toast({
-        title: "Music uploaded",
-        description: "Your music has been added to the memorial",
+        title: "Audio clip uploaded",
+        description: "Your audio clip has been added to the memorial",
       })
 
       setFile(null)
@@ -108,7 +108,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       console.error("[v0] Upload error:", error)
       toast({
         title: "Upload failed",
-        description: error instanceof Error ? error.message : "Failed to upload music",
+        description: error instanceof Error ? error.message : "Failed to upload audio clip",
         variant: "destructive",
       })
     } finally {
@@ -132,23 +132,23 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       </div>
 
       <div>
-        <Label htmlFor="music-title">Song Title *</Label>
+        <Label htmlFor="music-title">Title *</Label>
         <Input
           id="music-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter song title..."
+          placeholder="Enter title..."
           disabled={uploading}
         />
       </div>
 
       <div>
-        <Label htmlFor="music-artist">Artist (Optional)</Label>
+        <Label htmlFor="music-artist">Speaker/Source (Optional)</Label>
         <Input
           id="music-artist"
           value={artist}
           onChange={(e) => setArtist(e.target.value)}
-          placeholder="Enter artist name..."
+          placeholder="Enter speaker or source..."
           disabled={uploading}
         />
       </div>
@@ -173,7 +173,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
         ) : (
           <>
             <Upload className="mr-2 h-4 w-4" />
-            Upload Music
+            Upload Audio Clip
           </>
         )}
       </Button>

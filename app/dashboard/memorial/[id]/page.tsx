@@ -73,7 +73,7 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
             <TabsTrigger value="photos">Photos ({photos?.length || 0})</TabsTrigger>
             <TabsTrigger value="videos">Videos ({videos?.length || 0})</TabsTrigger>
             <TabsTrigger value="stories">Stories ({stories?.length || 0})</TabsTrigger>
-            <TabsTrigger value="music">Music ({music?.length || 0})</TabsTrigger>
+            <TabsTrigger value="music">Audio Clips ({music?.length || 0})</TabsTrigger>
           </TabsList>
           <TabsContent value="messages">
             <MessagesTab messages={messages || []} memorialId={id} />
