@@ -118,7 +118,7 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Music className="h-4 w-4 text-muted-foreground" />
-                      <span>{memorial.counts.music} audio clips</span>
+                      <span>{memorial.counts.music} songs</span>
                     </div>
                   </div>
                   <div className="flex gap-2">

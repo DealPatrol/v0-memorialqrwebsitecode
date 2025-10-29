@@ -23,13 +23,11 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      console.log("[v0] Checking session for password reset")
       const supabase = createClient()
       const {
         data: { session },
       } = await supabase.auth.getSession()
 
-      console.log("[v0] Session:", session ? "valid" : "invalid")
       if (session) {
         setIsValidSession(true)
       } else {
@@ -43,8 +41,6 @@ export default function ResetPasswordPage() {
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-
-    console.log("[v0] Attempting password reset")
 
     if (password !== confirmPassword) {
       setError("Passwords do not match")
@@ -60,17 +56,12 @@ export default function ResetPasswordPage() {
     setIsLoading(true)
 
     try {
-      console.log("[v0] Updating user password")
       const { error } = await supabase.auth.updateUser({
         password: password,
       })
 
-      if (error) {
-        console.error("[v0] Password update error:", error)
-        throw error
-      }
+      if (error) throw error
 
-      console.log("[v0] Password updated successfully")
       setIsSuccess(true)
 
       // Redirect to login after 3 seconds
@@ -78,7 +69,6 @@ export default function ResetPasswordPage() {
         router.push("/auth/login")
       }, 3000)
     } catch (error: unknown) {
-      console.error("[v0] Password reset failed:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
       setIsLoading(false)
