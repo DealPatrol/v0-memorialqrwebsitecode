@@ -3,6 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Updated to use oklch color format and @theme inline as required by Tailwind v4 */
 
 :root {
   --background: oklch(1 0 0);
@@ -235,42 +236,4 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-/* Adding critical navigation styles as fallback */
-/* Ensure navigation items have proper spacing even if Tailwind fails to load */
-header nav a {
-  display: inline-block;
-  margin-right: 1.5rem;
-  padding: 0.5rem 0;
-  text-decoration: none;
-  color: inherit;
-  white-space: normal;
-}
-
-header nav a:last-child {
-  margin-right: 0;
-}
-
-/* Ensure mobile menu items are properly spaced */
-nav a {
-  display: block;
-  padding: 0.75rem 0;
-}
-
-/* Force proper text wrapping */
-* {
-  white-space: normal !important;
-}
-
-/* Ensure buttons have proper spacing */
-button,
-.button,
-a[role="button"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  margin: 0 0.25rem;
-  white-space: nowrap;
 }

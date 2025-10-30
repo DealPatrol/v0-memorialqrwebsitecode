@@ -162,7 +162,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="relative aspect-square rounded-lg overflow-hidden bg-muted max-w-[350px] mx-auto">
                     <Image
-                      src="/images/design-mode/box1(1).jpg"
+                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/box1-ddkM8m6r7XISkEEH5qA6RU6DblzyIK.jpg"
                       alt="Custom Memorial Keepsake Box"
                       fill
                       className="object-cover"
