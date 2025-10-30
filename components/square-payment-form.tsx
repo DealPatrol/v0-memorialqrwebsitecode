@@ -9,35 +9,24 @@ import { Loader2 } from "lucide-react"
 
 interface SquarePaymentFormProps {
   amount: number
-  orderId: string
+  orderId?: string
   onSuccess?: (paymentId: string) => void
   onError?: (error: string) => void
-  onBeforePayment?: () => boolean
-  disabled?: boolean
 }
 
 export function SquarePaymentForm({
   amount,
-  orderId,
+  orderId = `order_${Date.now()}`,
   onSuccess,
   onError,
-  onBeforePayment,
-  disabled,
 }: SquarePaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const { toast } = useToast()
 
   const handlePayment = async (token: any) => {
-    if (onBeforePayment && !onBeforePayment()) {
-      return
-    }
-
     setIsProcessing(true)
 
     try {
-      console.log("[v0] Starting payment with token:", token)
-      console.log("[v0] Payment details:", { amount, orderId })
-
       const response = await fetch("/api/square/create-payment", {
         method: "POST",
         headers: {
@@ -50,20 +39,14 @@ export function SquarePaymentForm({
         }),
       })
 
-      console.log("[v0] Response status:", response.status)
-      console.log("[v0] Response headers:", Object.fromEntries(response.headers.entries()))
-
       const contentType = response.headers.get("content-type")
-      console.log("[v0] Content-Type:", contentType)
-
       if (!contentType || !contentType.includes("application/json")) {
         const text = await response.text()
-        console.log("[v0] Non-JSON response body:", text)
-        throw new Error("Server returned an invalid response. Please try again.")
+        console.error("Non-JSON response received:", text)
+        throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}`)
       }
 
       const data = await response.json()
-      console.log("[v0] Response data:", data)
 
       if (data.success) {
         toast({
@@ -75,13 +58,14 @@ export function SquarePaymentForm({
         throw new Error(data.error || "Payment failed")
       }
     } catch (error: any) {
-      console.error("[v0] Payment error:", error)
+      console.error("Payment error:", error)
       toast({
         title: "Payment Failed",
         description: error.message || "There was an error processing your payment.",
         variant: "destructive",
       })
       onError?.(error.message)
+    } finally {
       setIsProcessing(false)
     }
   }
@@ -115,8 +99,8 @@ export function SquarePaymentForm({
           cardTokenizeResponseReceived={handlePayment}
         >
           <CreditCard />
-          <Button type="submit" className="w-full mt-4" disabled={isProcessing || disabled}>
-            {isProcessing || disabled ? (
+          <Button type="submit" className="w-full mt-4" disabled={isProcessing}>
+            {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...
