@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
 import { User, Calendar, Upload, FileText, Users, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { createClient } from "@/utils/supabase-client"
+import { createClient } from "@/lib/supabase/client"
 
 const steps = [
   { id: 1, title: "Basic Information", icon: User },

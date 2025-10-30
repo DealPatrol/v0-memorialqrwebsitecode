@@ -9,11 +9,35 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import { CheckCircle, Shield, Package } from "lucide-react"
 import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { PlaqueColorSelector } from "@/components/plaque-color-selector"
+
+const PRODUCTS = {
+  plaque: {
+    id: "qr_plaque",
+    name: "Memorial QR Plaque",
+    price: 2.0,
+    included: true,
+  },
+  keychain: {
+    id: "wooden_keychain",
+    name: "Wooden QR Keychain",
+    description: "Circular wooden keychain with engraved QR code",
+    price: 15.0,
+    image: "/wooden-keychain.png",
+  },
+  card: {
+    id: "aluminum_card",
+    name: "Aluminum Memorial Card",
+    description: "Card-style aluminum memorial with photo and QR code",
+    price: 25.0,
+    image: "/aluminum-card.jpg",
+  },
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -30,10 +54,19 @@ export default function CheckoutPage() {
     state: "",
     zipCode: "",
     plaqueColor: "black",
-    boxPersonalization: "", // Added box personalization field
+    boxPersonalization: "",
+    includeKeychain: false,
+    includeCard: false,
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const calculateTotal = () => {
+    let total = PRODUCTS.plaque.price
+    if (formData.includeKeychain) total += PRODUCTS.keychain.price
+    if (formData.includeCard) total += PRODUCTS.card.price
+    return total
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -53,6 +86,13 @@ export default function CheckoutPage() {
     setFormData({
       ...formData,
       plaqueColor: color,
+    })
+  }
+
+  const handleProductChange = (productKey: "includeKeychain" | "includeCard", checked: boolean) => {
+    setFormData({
+      ...formData,
+      [productKey]: checked,
     })
   }
 
@@ -93,6 +133,10 @@ export default function CheckoutPage() {
     setIsSubmitting(true)
 
     try {
+      const products = [PRODUCTS.plaque.name]
+      if (formData.includeKeychain) products.push(PRODUCTS.keychain.name)
+      if (formData.includeCard) products.push(PRODUCTS.card.name)
+
       const orderData = {
         customerEmail: formData.email,
         customerName: `${formData.firstName} ${formData.lastName}`,
@@ -105,11 +149,16 @@ export default function CheckoutPage() {
           zip: formData.zipCode,
         },
         paymentId,
-        amountCents: 200,
-        productType: "qr_plaque",
-        productName: "Memorial QR Package",
+        amountCents: Math.round(calculateTotal() * 100),
+        productType: "memorial_package",
+        productName: products.join(", "),
         plaqueColor: formData.plaqueColor,
         boxPersonalization: formData.boxPersonalization,
+        products: {
+          plaque: true,
+          keychain: formData.includeKeychain,
+          card: formData.includeCard,
+        },
       }
 
       sessionStorage.setItem("pendingOrder", JSON.stringify(orderData))
@@ -133,7 +182,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent/20 to-secondary/30">
+    <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <Header />
 
       <section className="py-12 px-4 sm:px-6 lg:px-8">
@@ -150,38 +199,24 @@ export default function CheckoutPage() {
             <Card className="h-fit lg:col-span-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-chart-2" />
+                  <CheckCircle className="h-5 w-5 text-accent" />
                   Order Summary
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <Package className="h-4 w-4 text-primary" />
+                    <Package className="h-4 w-4 text-accent" />
                     <span>Premium Packaging Included</span>
                   </div>
-                  <div className="space-y-3">
-                    <div className="relative aspect-square rounded-lg overflow-hidden bg-muted max-w-[350px] mx-auto">
-                      <Image
-                        src="/keepsake-box-1.jpeg"
-                        alt="Custom Memorial Keepsake Box with QR Plaque"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                        <Image src="/keepsake-box-1.jpeg" alt="Keepsake box view 1" fill className="object-cover" />
-                      </div>
-                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                        <Image src="/keepsake-box-2.jpeg" alt="Keepsake box view 2" fill className="object-cover" />
-                      </div>
-                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                        <Image src="/keepsake-box-3.jpeg" alt="Keepsake box view 3" fill className="object-cover" />
-                      </div>
-                    </div>
+                  <div className="relative aspect-square rounded-lg overflow-hidden bg-muted max-w-[350px] mx-auto">
+                    <Image
+                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/box1-ddkM8m6r7XISkEEH5qA6RU6DblzyIK.jpg"
+                      alt="Custom Memorial Keepsake Box"
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                  {/* End of change */}
                   <p className="text-xs text-muted-foreground text-center">
                     Your plaque will arrive beautifully packaged in a custom memorial box
                   </p>
@@ -213,34 +248,117 @@ export default function CheckoutPage() {
 
                 <Separator />
 
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-sm">Add Additional Products</h3>
+
+                  {/* Wooden Keychain Option */}
+                  <div className="flex items-start gap-3 p-3 border rounded-lg hover:border-accent transition-colors">
+                    <Checkbox
+                      id="keychain"
+                      checked={formData.includeKeychain}
+                      onCheckedChange={(checked) => handleProductChange("includeKeychain", checked as boolean)}
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Label htmlFor="keychain" className="font-medium cursor-pointer">
+                          {PRODUCTS.keychain.name}
+                        </Label>
+                        <span className="text-sm font-semibold text-accent">
+                          +${PRODUCTS.keychain.price.toFixed(2)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{PRODUCTS.keychain.description}</p>
+                      {formData.includeKeychain && (
+                        <div className="mt-2 relative h-24 w-24 rounded overflow-hidden border">
+                          <Image
+                            src={PRODUCTS.keychain.image || "/placeholder.svg"}
+                            alt={PRODUCTS.keychain.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Aluminum Card Option */}
+                  <div className="flex items-start gap-3 p-3 border rounded-lg hover:border-accent transition-colors">
+                    <Checkbox
+                      id="card"
+                      checked={formData.includeCard}
+                      onCheckedChange={(checked) => handleProductChange("includeCard", checked as boolean)}
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Label htmlFor="card" className="font-medium cursor-pointer">
+                          {PRODUCTS.card.name}
+                        </Label>
+                        <span className="text-sm font-semibold text-accent">+${PRODUCTS.card.price.toFixed(2)}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{PRODUCTS.card.description}</p>
+                      {formData.includeCard && (
+                        <div className="mt-2 relative h-24 w-32 rounded overflow-hidden border">
+                          <Image
+                            src={PRODUCTS.card.image || "/placeholder.svg"}
+                            alt={PRODUCTS.card.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Custom QR Memorial Plaque</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Digital Memorial Website</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Lifetime Hosting Included</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
+                    <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Free Shipping</span>
                   </div>
                 </div>
 
                 <Separator />
 
-                <div className="flex justify-between items-center text-lg font-bold">
-                  <span>Total</span>
-                  <span>$2.00</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Memorial Plaque</span>
+                    <span>${PRODUCTS.plaque.price.toFixed(2)}</span>
+                  </div>
+                  {formData.includeKeychain && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Wooden Keychain</span>
+                      <span>${PRODUCTS.keychain.price.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {formData.includeCard && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Aluminum Card</span>
+                      <span>${PRODUCTS.card.price.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <Separator />
+                  <div className="flex justify-between items-center text-lg font-bold">
+                    <span>Total</span>
+                    <span>${calculateTotal().toFixed(2)}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-chart-2/10 p-3 rounded-lg">
-                  <Shield className="h-4 w-4 text-chart-2" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg">
+                  <Shield className="h-4 w-4 text-accent" />
                   <span>30-day money-back guarantee</span>
                 </div>
               </CardContent>
@@ -372,7 +490,7 @@ export default function CheckoutPage() {
               </Card>
 
               <SquarePaymentForm
-                amount={2.0}
+                amount={calculateTotal()}
                 orderId={`order_${Date.now()}`}
                 onSuccess={handlePaymentSuccess}
                 onError={(error) => {

@@ -12,7 +12,7 @@ function generateReferralCode(length = 8): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerClient()
+    const supabase = createServerClient()
 
     const {
       data: { user },

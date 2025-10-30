@@ -48,32 +48,22 @@ export default function SignUpPage() {
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       })
 
       console.log("[v0] Sign up response:", { signUpData, signUpError })
 
       if (signUpError) {
         console.error("[v0] Sign up error:", signUpError)
-        if (signUpError.message.includes("already registered") || signUpError.message.includes("already exists")) {
-          setError("This email is already registered. Please sign in instead.")
-          setIsLoading(false)
-          setTimeout(() => {
-            router.push(`/auth/login${redirect ? `?redirect=${redirect}` : ""}`)
-          }, 2000)
-          return
-        }
         throw signUpError
       }
 
       if (signUpData?.user && !signUpData.session) {
         console.log("[v0] Email confirmation required")
-        setError(
-          "Email confirmation is enabled. Please contact support or try signing in if you already have an account.",
-        )
+        setError("Please check your email to confirm your account before signing in.")
         setIsLoading(false)
-        setTimeout(() => {
-          router.push(`/auth/login${redirect ? `?redirect=${redirect}` : ""}`)
-        }, 3000)
         return
       }
 

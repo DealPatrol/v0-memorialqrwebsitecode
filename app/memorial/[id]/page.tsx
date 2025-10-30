@@ -458,8 +458,8 @@ export default function MemorialPage() {
           const data = await response.json()
           setMusic(data.music || [])
           toast({
-            title: "Audio clip added",
-            description: "Your audio clip has been added to the memorial",
+            title: "Music added",
+            description: "Your music has been added to the memorial",
           })
         }
       } catch (error) {
@@ -935,30 +935,30 @@ export default function MemorialPage() {
                 </CardContent>
               </Card>
 
-              {/* Audio Clips Card */}
+              {/* Music Card */}
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <MusicIcon className="w-5 h-5 text-rose-600" />
-                      <CardTitle className="text-lg">Audio Clips</CardTitle>
+                      <CardTitle className="text-lg">Music</CardTitle>
                     </div>
                     <span className="text-2xl font-bold text-rose-600">{music.length}</span>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-slate-600 mb-3">Share voicemails & audio memories</p>
+                  <p className="text-sm text-slate-600 mb-3">Share memorial music</p>
                   <Dialog open={musicUploadDialogOpen} onOpenChange={setMusicUploadDialogOpen}>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="outline" className="w-full bg-transparent">
                         <Upload className="mr-2 h-4 w-4" />
-                        Add Audio Clip
+                        Add Music
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Upload Audio Clip</DialogTitle>
-                        <DialogDescription>Share a voicemail, recording, or audio memory</DialogDescription>
+                        <DialogTitle>Upload Music</DialogTitle>
+                        <DialogDescription>Share a meaningful song or audio memory</DialogDescription>
                       </DialogHeader>
                       <MusicUpload memorialId={memorialId} onUploadComplete={handleMusicUploadComplete} />
                     </DialogContent>
@@ -1167,7 +1167,7 @@ export default function MemorialPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <MusicIcon className="w-5 h-5" />
-                        Voicemails & Audio Clips
+                        Memorial Music
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -1252,7 +1252,7 @@ export default function MemorialPage() {
                       onClick={() => setMusicUploadDialogOpen(true)}
                     >
                       <MusicIcon className="w-4 h-4 mr-2" />
-                      Add Audio Clip
+                      Add Music
                     </Button>
                     <Button
                       variant="outline"

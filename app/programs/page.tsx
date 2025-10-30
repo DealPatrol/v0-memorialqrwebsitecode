@@ -31,7 +31,7 @@ export default function Programs() {
   const features = [
     { icon: Heart, title: "Beautiful Memorial Page", description: "Personalized tribute with photos and memories" },
     { icon: Users, title: "Family Tree Display", description: "Visual representation of family connections" },
-    { icon: Music, title: "Audio Memories", description: "Add voicemails, recordings, and audio clips" },
+    { icon: Music, title: "Memorial Music", description: "Add meaningful songs and audio memories" },
     { icon: ImageIcon, title: "Photo Gallery", description: "Unlimited photo uploads and organization" },
     { icon: MessageCircle, title: "Guest Messages", description: "Allow visitors to leave condolences and memories" },
     { icon: Share2, title: "Easy Sharing", description: "Share memorial link with family and friends" },
