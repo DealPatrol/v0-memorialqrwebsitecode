@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
 import { User, Calendar, Upload, FileText, Users, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { createClient } from "@/utils/supabase-client"
 
 const steps = [
   { id: 1, title: "Basic Information", icon: User },
@@ -30,6 +31,49 @@ export default function CreateMemorialPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [orderId, setOrderId] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [orderData, setOrderData] = useState<any>(null)
+  const [user, setUser] = useState<any>(null)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        router.push("/auth/sign-up?redirect=create-memorial")
+        return
+      }
+
+      setUser(user)
+      setIsCheckingAuth(false)
+    }
+
+    checkAuth()
+
+    const pendingOrderData = sessionStorage.getItem("pendingOrder")
+
+    if (!pendingOrderData) {
+      toast({
+        title: "Access Denied",
+        description: "Please complete your purchase first to create your memorial.",
+        variant: "destructive",
+      })
+      router.push("/checkout")
+      return
+    }
+
+    try {
+      const parsedOrderData = JSON.parse(pendingOrderData)
+      setOrderData(parsedOrderData)
+      setOrderId(`PENDING-${Date.now()}`)
+    } catch (error) {
+      console.error("[v0] Error parsing order data:", error)
+      router.push("/checkout")
+    }
+  }, [router, toast])
 
   const [formData, setFormData] = useState({
     // Step 1: Basic Information
@@ -59,22 +103,6 @@ export default function CreateMemorialPage() {
     parents: "",
     siblings: "",
   })
-
-  useEffect(() => {
-    const order = searchParams.get("order")
-
-    if (!order) {
-      toast({
-        title: "Access Denied",
-        description: "Please complete your purchase first to create your memorial.",
-        variant: "destructive",
-      })
-      router.push("/products")
-      return
-    }
-
-    setOrderId(order)
-  }, [searchParams, router, toast])
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -109,25 +137,101 @@ export default function CreateMemorialPage() {
   const handleSubmit = async () => {
     setIsSubmitting(true)
 
-    // Simulate memorial creation
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    try {
+      console.log("[v0] Starting memorial creation with data:", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        dateOfBirth: formData.dateOfBirth,
+        dateOfDeath: formData.dateOfDeath,
+        location: formData.location,
+        biography: formData.biography,
+        userId: user?.id,
+      })
 
-    const memorialId = `MEM-${Date.now()}`
+      const memorialResponse = await fetch("/api/memorials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          dateOfBirth: formData.dateOfBirth,
+          dateOfDeath: formData.dateOfDeath,
+          location: formData.location,
+          biography: formData.biography,
+          customerEmail: orderData.customerEmail,
+          customerName: orderData.customerName,
+          userId: user?.id,
+        }),
+      })
 
-    toast({
-      title: "Memorial Created Successfully!",
-      description: `Your memorial has been created with ID: ${memorialId}`,
-    })
+      if (!memorialResponse.ok) {
+        const errorData = await memorialResponse.json()
+        console.error("[v0] Memorial creation failed:", errorData)
+        throw new Error(errorData.error || "Failed to create memorial")
+      }
 
-    setIsSubmitting(false)
+      const { memorial } = await memorialResponse.json()
+      console.log("[v0] Memorial created successfully:", memorial.id)
 
-    // Redirect to success page
-    router.push(`/memorial-success?id=${memorialId}&order=${orderId}`)
+      console.log("[v0] Creating order with data:", {
+        ...orderData,
+        memorialId: memorial.id,
+      })
+
+      const orderResponse = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...orderData,
+          memorialId: memorial.id,
+        }),
+      })
+
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json()
+        console.error("[v0] Order creation failed:", errorData)
+        throw new Error(errorData.error || "Failed to create order")
+      }
+
+      const { order } = await orderResponse.json()
+      console.log("[v0] Order created successfully:", order.order_number)
+
+      sessionStorage.removeItem("pendingOrder")
+
+      toast({
+        title: "Memorial Created Successfully!",
+        description: `Your order ${order.order_number} has been confirmed.`,
+      })
+
+      router.push(`/order-confirmation?orderNumber=${order.order_number}`)
+    } catch (error: any) {
+      console.error("[v0] Error creating memorial:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create memorial. Please contact support.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const progress = (currentStep / steps.length) * 100
 
-  if (!orderId) {
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
+        <Card className="max-w-md mx-auto text-center">
+          <CardContent className="p-8">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4" />
+            <p className="text-gray-600">Preparing your memorial creation...</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!orderData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
         <Card className="max-w-md mx-auto text-center">
@@ -138,7 +242,7 @@ export default function CreateMemorialPage() {
               Please purchase a memorial product first to access the memorial creation form.
             </p>
             <Button asChild className="bg-purple-600 hover:bg-purple-700">
-              <Link href="/products">Browse Products</Link>
+              <Link href="/checkout">Go to Checkout</Link>
             </Button>
           </CardContent>
         </Card>
@@ -155,8 +259,8 @@ export default function CreateMemorialPage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 text-green-700">
             <CheckCircle className="w-5 h-5" />
-            <span className="font-semibold">Order Confirmed!</span>
-            <span>Order #{orderId} • Now create your digital memorial</span>
+            <span className="font-semibold">Payment Confirmed!</span>
+            <span>Now create your digital memorial</span>
           </div>
         </div>
       </div>

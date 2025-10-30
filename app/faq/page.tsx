@@ -146,13 +146,13 @@ const faqCategories = [
 
 export default function FAQPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <Header />
 
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-orange-50 to-orange-100">
-        <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-6 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-lg">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <Badge className="mb-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
             <HelpCircle className="w-4 h-4 mr-2" />
             Get Answers
           </Badge>
@@ -164,105 +164,107 @@ export default function FAQPage() {
             find what you're looking for? Our support team is here to help 24/7.
           </p>
 
-          <Button asChild size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
+          <Button
+            asChild
+            size="lg"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          >
             <Link href="/contact">Contact Support</Link>
           </Button>
         </div>
       </section>
 
       {/* FAQ Categories */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            {faqCategories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b-2 border-orange-200">
-                  {category.title}
-                </h2>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-4xl mx-auto">
+          {faqCategories.map((category, categoryIndex) => (
+            <div key={categoryIndex} className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b-2 border-purple-200">
+                {category.title}
+              </h2>
 
-                <Accordion type="single" collapsible className="space-y-4">
-                  {category.faqs.map((faq, faqIndex) => (
-                    <AccordionItem
-                      key={faqIndex}
-                      value={`${categoryIndex}-${faqIndex}`}
-                      className="border border-gray-200 rounded-lg px-6"
-                    >
-                      <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600">
-                        {faq.question}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-gray-700 leading-relaxed pt-2 pb-4">
-                        {faq.answer}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
-            ))}
-          </div>
+              <Accordion type="single" collapsible className="space-y-4">
+                {category.faqs.map((faq, faqIndex) => (
+                  <AccordionItem
+                    key={faqIndex}
+                    value={`${categoryIndex}-${faqIndex}`}
+                    className="border-2 border-purple-100 rounded-lg px-6 hover:border-purple-300 transition-colors"
+                  >
+                    <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-purple-600">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-700 leading-relaxed pt-2 pb-4">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Still Need Help Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Still Need Help?</h2>
-            <p className="text-xl text-gray-600 mb-12">
-              Our friendly support team is available 24/7 to help you create the perfect memorial for your loved one.
-            </p>
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Still Need Help?</h2>
+          <p className="text-xl text-gray-600 mb-12">
+            Our friendly support team is available 24/7 to help you create the perfect memorial for your loved one.
+          </p>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors">
-                <CardContent className="p-8 text-center">
-                  <Phone className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Phone Support</h3>
-                  <p className="text-gray-600 mb-4">Speak with a real person who can help you through the process.</p>
-                  <Button asChild className="bg-orange-600 hover:bg-orange-700">
-                    <Link href="tel:1-800-MEMORIAL">Call 1-800-MEMORIAL</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="border-2 border-purple-200 hover:border-purple-400 transition-colors shadow-lg">
+              <CardContent className="p-8 text-center">
+                <Phone className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Phone Support</h3>
+                <p className="text-gray-600 mb-4">Speak with a real person who can help you through the process.</p>
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                >
+                  <Link href="tel:1-800-MEMORIAL">Call 1-800-MEMORIAL</Link>
+                </Button>
+              </CardContent>
+            </Card>
 
-              <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors">
-                <CardContent className="p-8 text-center">
-                  <Mail className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h3>
-                  <p className="text-gray-600 mb-4">Send us your questions and we'll respond within 2 hours.</p>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
-                  >
-                    <Link href="mailto:support@memorialqr.com">Email Us</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+            <Card className="border-2 border-purple-200 hover:border-purple-400 transition-colors shadow-lg">
+              <CardContent className="p-8 text-center">
+                <Mail className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h3>
+                <p className="text-gray-600 mb-4">Send us your questions and we'll respond within 2 hours.</p>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent"
+                >
+                  <Link href="mailto:support@memorialqr.com">Email Us</Link>
+                </Button>
+              </CardContent>
+            </Card>
 
-              <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors">
-                <CardContent className="p-8 text-center">
-                  <MessageCircle className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Live Chat</h3>
-                  <p className="text-gray-600 mb-4">Get instant answers to your questions with our live chat.</p>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="lg"
-                    className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
-                  >
-                    <Link href="/contact">Start Chat</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            <Card className="border-2 border-purple-200 hover:border-purple-400 transition-colors shadow-lg">
+              <CardContent className="p-8 text-center">
+                <MessageCircle className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Live Chat</h3>
+                <p className="text-gray-600 mb-4">Get instant answers to your questions with our live chat.</p>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent"
+                >
+                  <Link href="/contact">Start Chat</Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Ready to Create Their Memorial?</h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Start honoring your loved one today with a beautiful digital memorial that will preserve their memory
             forever.
           </p>
@@ -271,96 +273,22 @@ export default function FAQPage() {
             <Button
               asChild
               size="lg"
-              className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
-              <Link href="/create-profile">Create Memorial - $119.99</Link>
+              <Link href="/pricing">Create Memorial Now</Link>
             </Button>
 
             <Button
               asChild
               variant="outline"
               size="lg"
-              className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
+              className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent"
             >
               <Link href="/browse-memorials">View Sample Memorials</Link>
             </Button>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link href="/how-it-works" className="hover:text-white">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-white">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/browse-memorials" className="hover:text-white">
-                    Sample Memorials
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link href="/help" className="hover:text-white">
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-white">
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/faq" className="hover:text-white">
-                    FAQ
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link href="/privacy-policy" className="hover:text-white">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms-of-service" className="hover:text-white">
-                    Terms of Service
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

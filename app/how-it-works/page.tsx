@@ -7,18 +7,22 @@ import { QrCode, Upload, Smartphone, Heart, CheckCircle, ArrowRight, Users, Glob
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-blue-600 py-20">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <Badge className="mb-4 bg-white/20 text-white border-white/30">Simple Process</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">How Memorial QR Works</h1>
-          <p className="text-xl text-white/90 mb-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <Badge className="mb-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white">Simple Process</Badge>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">How Memorial QR Works</h1>
+          <p className="text-xl text-gray-600 mb-8">
             Create a lasting digital memorial in just three simple steps. No technical knowledge required.
           </p>
-          <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+          <Button
+            asChild
+            size="lg"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          >
             <Link href="/pricing">
               Get Started Now
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -28,8 +32,8 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Steps Section */}
-      <section className="py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
           <div className="space-y-20">
             {/* Step 1 */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -64,7 +68,7 @@ export default function HowItWorksPage() {
                 </ul>
               </div>
               <div className="lg:order-first">
-                <Card className="p-8 bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
+                <Card className="p-8 bg-white border-2 border-purple-200 shadow-xl">
                   <CardContent className="p-0">
                     <div className="text-center">
                       <Upload className="w-16 h-16 text-purple-600 mx-auto mb-4" />
@@ -81,10 +85,10 @@ export default function HowItWorksPage() {
             {/* Step 2 */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <Card className="p-8 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+                <Card className="p-8 bg-white border-2 border-purple-200 shadow-xl">
                   <CardContent className="p-0">
                     <div className="text-center">
-                      <QrCode className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+                      <QrCode className="w-16 h-16 text-purple-600 mx-auto mb-4" />
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">Custom QR Code</h3>
                       <p className="text-gray-600">Get a beautiful, customizable QR code that links to your memorial</p>
                     </div>
@@ -93,7 +97,7 @@ export default function HowItWorksPage() {
               </div>
               <div>
                 <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                     2
                   </div>
                   <h2 className="text-3xl font-bold text-gray-900">Get Your QR Code</h2>
@@ -157,10 +161,10 @@ export default function HowItWorksPage() {
                 </ul>
               </div>
               <div className="lg:order-first">
-                <Card className="p-8 bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
+                <Card className="p-8 bg-white border-2 border-purple-200 shadow-xl">
                   <CardContent className="p-0">
                     <div className="text-center">
-                      <Smartphone className="w-16 h-16 text-green-600 mx-auto mb-4" />
+                      <Smartphone className="w-16 h-16 text-purple-600 mx-auto mb-4" />
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">Easy Access</h3>
                       <p className="text-gray-600">Anyone can scan and view the memorial instantly on their phone</p>
                     </div>
@@ -173,8 +177,8 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Powerful Features Included</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -183,7 +187,7 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center p-6">
+            <Card className="text-center p-6 border-2 border-purple-100 hover:border-purple-300 transition-colors">
               <CardContent className="p-0">
                 <Globe className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Unlimited Content</h3>
@@ -191,7 +195,7 @@ export default function HowItWorksPage() {
               </CardContent>
             </Card>
 
-            <Card className="text-center p-6">
+            <Card className="text-center p-6 border-2 border-purple-100 hover:border-purple-300 transition-colors">
               <CardContent className="p-0">
                 <Users className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Family Collaboration</h3>
@@ -199,7 +203,7 @@ export default function HowItWorksPage() {
               </CardContent>
             </Card>
 
-            <Card className="text-center p-6">
+            <Card className="text-center p-6 border-2 border-purple-100 hover:border-purple-300 transition-colors">
               <CardContent className="p-0">
                 <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Lifetime Hosting</h3>
@@ -207,7 +211,7 @@ export default function HowItWorksPage() {
               </CardContent>
             </Card>
 
-            <Card className="text-center p-6">
+            <Card className="text-center p-6 border-2 border-purple-100 hover:border-purple-300 transition-colors">
               <CardContent className="p-0">
                 <Heart className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Guest Messages</h3>
@@ -219,15 +223,19 @@ export default function HowItWorksPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Create a Memorial?</h2>
-          <p className="text-xl text-white/90 mb-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Ready to Create a Memorial?</h2>
+          <p className="text-xl text-gray-600 mb-8">
             Start honoring your loved one today with a beautiful digital memorial that lasts forever.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+            <Button
+              asChild
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
               <Link href="/pricing">
                 Get Started Now
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -238,92 +246,13 @@ export default function HowItWorksPage() {
               asChild
               variant="outline"
               size="lg"
-              className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+              className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent"
             >
               <Link href="/browse-memorials">View Examples</Link>
             </Button>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <QrCode className="w-5 h-5 text-white" />
-                </div>
-                <span className="memorial-logo text-xl font-bold">Memorial QR</span>
-              </div>
-              <p className="text-gray-400">Creating lasting digital memorials to honor and remember your loved ones.</p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/how-it-works" className="hover:text-white">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-white">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/browse-memorials" className="hover:text-white">
-                    Examples
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/our-story" className="hover:text-white">
-                    Our Story
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-white">
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/faq" className="hover:text-white">
-                    FAQ
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/privacy-policy" className="hover:text-white">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms-of-service" className="hover:text-white">
-                    Terms of Service
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
