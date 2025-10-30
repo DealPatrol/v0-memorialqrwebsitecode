@@ -12,32 +12,18 @@ interface SquarePaymentFormProps {
   orderId: string
   onSuccess?: (paymentId: string) => void
   onError?: (error: string) => void
-  onBeforePayment?: () => boolean
-  disabled?: boolean
 }
 
-export function SquarePaymentForm({
-  amount,
-  orderId,
-  onSuccess,
-  onError,
-  onBeforePayment,
-  disabled,
-}: SquarePaymentFormProps) {
+export function SquarePaymentForm({ amount, orderId, onSuccess, onError }: SquarePaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const { toast } = useToast()
 
   const handlePayment = async (token: any) => {
-    if (onBeforePayment && !onBeforePayment()) {
-      return
-    }
-
+    console.log("[v0] Payment token received")
     setIsProcessing(true)
 
     try {
-      console.log("[v0] Starting payment with token:", token)
-      console.log("[v0] Payment details:", { amount, orderId })
-
+      console.log("[v0] Sending payment request to API")
       const response = await fetch("/api/square/create-payment", {
         method: "POST",
         headers: {
@@ -54,16 +40,14 @@ export function SquarePaymentForm({
       console.log("[v0] Response headers:", Object.fromEntries(response.headers.entries()))
 
       const contentType = response.headers.get("content-type")
-      console.log("[v0] Content-Type:", contentType)
-
       if (!contentType || !contentType.includes("application/json")) {
         const text = await response.text()
-        console.log("[v0] Non-JSON response body:", text)
-        throw new Error("Server returned an invalid response. Please try again.")
+        console.error("[v0] Non-JSON response received:", text)
+        throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}`)
       }
 
       const data = await response.json()
-      console.log("[v0] Response data:", data)
+      console.log("[v0] Payment response:", { success: data.success, error: data.error })
 
       if (data.success) {
         toast({
@@ -82,6 +66,7 @@ export function SquarePaymentForm({
         variant: "destructive",
       })
       onError?.(error.message)
+    } finally {
       setIsProcessing(false)
     }
   }
@@ -115,8 +100,8 @@ export function SquarePaymentForm({
           cardTokenizeResponseReceived={handlePayment}
         >
           <CreditCard />
-          <Button type="submit" className="w-full mt-4" disabled={isProcessing || disabled}>
-            {isProcessing || disabled ? (
+          <Button type="submit" className="w-full mt-4" disabled={isProcessing}>
+            {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...

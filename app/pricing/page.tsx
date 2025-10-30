@@ -25,7 +25,7 @@ export default function PricingPage() {
           <Card className="max-w-md mx-auto border-2 border-purple-200 shadow-xl">
             <CardHeader className="text-center pb-2">
               <div className="flex justify-center items-baseline mb-4">
-                <span className="text-5xl font-bold text-gray-900">$2</span>
+                <span className="text-5xl font-bold text-gray-900">$149</span>
                 <span className="text-xl text-gray-500 line-through ml-2">$199</span>
               </div>
               <CardTitle className="text-2xl">Complete Memorial Package</CardTitle>
@@ -73,7 +73,7 @@ export default function PricingPage() {
                 size="lg"
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg py-3"
               >
-                <Link href="/checkout">Create Memorial Now - $2</Link>
+                <Link href="/checkout">Create Memorial Now - $149</Link>
               </Button>
 
               <p className="text-sm text-gray-500 mt-4 text-center">
