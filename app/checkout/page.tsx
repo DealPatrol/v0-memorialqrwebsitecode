@@ -5,19 +5,68 @@ import Image from "next/image"
 import { useState } from "react"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, Shield, Package } from "lucide-react"
-import { SquarePaymentForm } from "@/components/square-payment-form"
+import { CheckCircle, Package, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useToast } from "@/hooks/use-toast"
-import { PlaqueColorSelector } from "@/components/plaque-color-selector"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Button } from "@/components/ui/button"
+
+const PRODUCTS = {
+  memorial: {
+    id: "online_memorial",
+    name: "Online Memorial",
+    oneTimePrice: 129.99,
+    monthlyPrice: 49.99,
+    monthlyFee: 4.99,
+  },
+  plaques: {
+    silver: {
+      id: "silver_plaque",
+      name: "Silver Memorial Plaque",
+      description: "Premium silver finish with engraved QR code",
+      image: "/plaque-silver.jpg",
+    },
+    gold: {
+      id: "gold_plaque",
+      name: "Gold Memorial Plaque",
+      description: "Elegant gold finish with engraved QR code",
+      image: "/plaque-gold.jpg",
+    },
+    black: {
+      id: "black_plaque",
+      name: "Black Memorial Plaque",
+      description: "Classic black finish with engraved QR code",
+      image: "/plaque-black.jpg",
+    },
+  },
+  addons: {
+    woodenQR: {
+      id: "wooden_qr",
+      name: "Wooden QR Code",
+      description: "Natural wood finish with laser-engraved QR code",
+      price: 29.97,
+      image: "/wooden-keychain.png",
+    },
+    picturePlaque: {
+      id: "picture_plaque",
+      name: "Picture Plaque",
+      description: "Custom photo plaque with memorial details",
+      price: 39.98,
+      image: "/aluminum-card.jpg",
+    },
+    stoneQR: {
+      id: "stone_qr",
+      name: "Stone QR Code",
+      description: "Durable stone memorial with engraved QR code",
+      price: 56.99,
+      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/e4de3d0a-3087-4815-924d-3bcb93c7a20d.jpg",
+    },
+  },
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -29,8 +78,9 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     zipCode: "",
-    plaqueColor: "black",
-    boxPersonalization: "", // Added box personalization field
+    paymentPlan: "onetime" as "onetime" | "monthly",
+    plaqueType: "black" as "silver" | "gold" | "black",
+    boxPersonalization: "",
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -49,343 +99,223 @@ export default function CheckoutPage() {
     })
   }
 
-  const handleColorChange = (color: string) => {
-    setFormData({
-      ...formData,
-      plaqueColor: color,
-    })
-  }
-
-  const validateForm = () => {
-    if (
-      !formData.firstName ||
-      !formData.lastName ||
-      !formData.email ||
-      !formData.address ||
-      !formData.city ||
-      !formData.state ||
-      !formData.zipCode
-    ) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields before proceeding with payment.",
-        variant: "destructive",
-      })
-      return false
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      })
-      return false
-    }
-
-    return true
-  }
-
-  const handlePaymentSuccess = async (paymentId: string) => {
-    if (isSubmitting) return
-
-    setIsSubmitting(true)
-
-    try {
-      const orderData = {
-        customerEmail: formData.email,
-        customerName: `${formData.firstName} ${formData.lastName}`,
-        customerPhone: formData.phone,
-        shippingAddress: {
-          line1: formData.address,
-          line2: formData.address2,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zipCode,
-        },
-        paymentId,
-        amountCents: 200,
-        productType: "qr_plaque",
-        productName: "Memorial QR Package",
-        plaqueColor: formData.plaqueColor,
-        boxPersonalization: formData.boxPersonalization,
-      }
-
-      sessionStorage.setItem("pendingOrder", JSON.stringify(orderData))
-
-      toast({
-        title: "Payment Successful!",
-        description: "Now let's create your account and memorial profile.",
-      })
-
-      router.push("/auth/sign-up?redirect=create-memorial")
-    } catch (error: any) {
-      console.error("[v0] Error processing payment:", error)
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please contact support.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
+  const handleNext = () => {
+    sessionStorage.setItem("checkoutStep1", JSON.stringify(formData))
+    router.push("/checkout/details")
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent/20 to-secondary/30">
+    <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <Header />
 
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Memorial Order</h1>
-            <p className="text-lg text-muted-foreground">
-              You're just one step away from creating a beautiful memorial
-            </p>
-          </div>
+      {/* Luxury Box Section */}
+      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-accent/20 via-accent/10 to-accent/20">
+        <div className="max-w-4xl mx-auto">
+          <Card className="overflow-hidden border-2 border-accent/30 shadow-xl">
+            <CardContent className="p-0">
+              <div className="grid md:grid-cols-2 gap-0">
+                <div className="relative h-64 md:h-full min-h-[300px]">
+                  <Image
+                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/box1-ddkM8m6r7XISkEEH5qA6RU6DblzyIK.jpg"
+                    alt="Luxury Memorial Presentation Box"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-6">
+                    <p className="text-white text-lg font-semibold drop-shadow-lg">
+                      Receive your own special, custom design
+                    </p>
+                  </div>
+                </div>
+                <div className="p-8 flex flex-col justify-center bg-gradient-to-br from-background to-accent/5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Package className="h-8 w-8 text-accent" />
+                    <h2 className="text-2xl font-bold text-foreground">Luxury Presentation Box</h2>
+                  </div>
+                  <p className="text-lg text-muted-foreground mb-4">
+                    Every order arrives in an elegant presentation box, adding a priceless touch to your memorial.
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                      <span className="font-medium">Premium quality packaging</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                      <span className="font-medium">Personalization available</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                      <span className="font-medium">Included with every order at no extra cost</span>
+                    </div>
+                  </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Order Summary */}
-            <Card className="h-fit lg:col-span-1">
+                  <div className="mt-6 pt-6 border-t space-y-2">
+                    <Label htmlFor="boxPersonalization" className="text-sm font-semibold">
+                      Personalize Your Box
+                    </Label>
+                    <Textarea
+                      id="boxPersonalization"
+                      name="boxPersonalization"
+                      placeholder="In Memory of John Doe..."
+                      value={formData.boxPersonalization}
+                      onChange={(e) => setFormData({ ...formData, boxPersonalization: e.target.value })}
+                      maxLength={150}
+                      rows={3}
+                      className="resize-none"
+                    />
+                    <p className="text-xs text-muted-foreground">{formData.boxPersonalization.length}/150 characters</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Main Selection Section */}
+      <section className="py-6 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="space-y-6">
+            {/* Plan Selection */}
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-chart-2" />
-                  Order Summary
-                </CardTitle>
+                <CardTitle>Choose Your Plan</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Package className="h-4 w-4 text-primary" />
-                    <span>Premium Packaging Included</span>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="relative aspect-square rounded-lg overflow-hidden bg-muted max-w-[350px] mx-auto">
-                      <Image
-                        src="/keepsake-box-1.jpeg"
-                        alt="Custom Memorial Keepsake Box with QR Plaque"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                        <Image src="/keepsake-box-1.jpeg" alt="Keepsake box view 1" fill className="object-cover" />
-                      </div>
-                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                        <Image src="/keepsake-box-2.jpeg" alt="Keepsake box view 2" fill className="object-cover" />
-                      </div>
-                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                        <Image src="/keepsake-box-3.jpeg" alt="Keepsake box view 3" fill className="object-cover" />
-                      </div>
+                <RadioGroup
+                  value={formData.paymentPlan}
+                  onValueChange={(value) => setFormData({ ...formData, paymentPlan: value as "onetime" | "monthly" })}
+                >
+                  <div
+                    className="flex items-start space-x-3 p-6 border-2 rounded-lg cursor-pointer hover:border-accent/50 transition-all"
+                    onClick={() => setFormData({ ...formData, paymentPlan: "onetime" })}
+                  >
+                    <RadioGroupItem value="onetime" id="onetime" className="mt-1" />
+                    <div className="flex-1">
+                      <Label htmlFor="onetime" className="font-semibold text-lg cursor-pointer block">
+                        One-Time Payment
+                      </Label>
+                      <p className="text-sm text-muted-foreground mb-2">Lifetime hosting included</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                        ${PRODUCTS.memorial.oneTimePrice}
+                      </p>
                     </div>
                   </div>
-                  {/* End of change */}
-                  <p className="text-xs text-muted-foreground text-center">
-                    Your plaque will arrive beautifully packaged in a custom memorial box
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="boxPersonalization" className="text-sm font-semibold">
-                    Personalize Your Box
-                  </Label>
-                  <Textarea
-                    id="boxPersonalization"
-                    name="boxPersonalization"
-                    placeholder="In Memory of..."
-                    value={formData.boxPersonalization}
-                    onChange={handleTextareaChange}
-                    maxLength={150}
-                    rows={3}
-                    className="resize-none"
-                  />
-                  <p className="text-xs text-muted-foreground">{formData.boxPersonalization.length}/150 characters</p>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-sm">Customize Your Memorial Plaque</h3>
-                  <PlaqueColorSelector selectedColor={formData.plaqueColor} onColorChange={handleColorChange} />
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
-                    <span>Custom QR Memorial Plaque</span>
+                  <div
+                    className={`flex items-start space-x-3 p-6 border-2 rounded-lg cursor-pointer transition-all ${
+                      formData.paymentPlan === "monthly"
+                        ? "border-accent bg-accent/5 shadow-lg"
+                        : "hover:border-accent/50"
+                    }`}
+                    onClick={() => setFormData({ ...formData, paymentPlan: "monthly" })}
+                  >
+                    <RadioGroupItem value="monthly" id="monthly" className="mt-1" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Label htmlFor="monthly" className="font-semibold text-lg cursor-pointer">
+                          Monthly Payment Plan
+                        </Label>
+                        <span className="text-xs bg-accent text-accent-foreground px-2 py-1 rounded-full font-semibold">
+                          POPULAR
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Lower upfront cost with ongoing website hosting & maintenance
+                      </p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                        ${PRODUCTS.memorial.monthlyPrice}{" "}
+                        <span className="text-base font-normal text-muted-foreground">today</span>
+                      </p>
+                      <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                        <p className="text-sm font-semibold text-foreground">
+                          Then ${PRODUCTS.memorial.monthlyFee}/month for:
+                        </p>
+                        <div className="space-y-1.5 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                            <span>Website hosting & maintenance</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                            <span>Automatic updates & security</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                            <span>24/7 uptime monitoring</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                            <span>Unlimited photo & video storage</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
-                    <span>Digital Memorial Website</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
-                    <span>Lifetime Hosting Included</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
-                    <span>Free Shipping</span>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="flex justify-between items-center text-lg font-bold">
-                  <span>Total</span>
-                  <span>$2.00</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-chart-2/10 p-3 rounded-lg">
-                  <Shield className="h-4 w-4 text-chart-2" />
-                  <span>30-day money-back guarantee</span>
-                </div>
+                </RadioGroup>
               </CardContent>
             </Card>
 
-            {/* Customer Information */}
-            <div className="space-y-6 lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Customer Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name *</Label>
-                      <Input
-                        id="firstName"
-                        name="firstName"
-                        placeholder="John"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name *</Label>
-                      <Input
-                        id="lastName"
-                        name="lastName"
-                        placeholder="Doe"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="john@example.com"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="(555) 123-4567"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Shipping Address</h3>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Street Address *</Label>
-                      <Input
-                        id="address"
-                        name="address"
-                        placeholder="123 Main Street"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="address2">Apartment, Suite, etc.</Label>
-                      <Input
-                        id="address2"
-                        name="address2"
-                        placeholder="Apt 4B"
-                        value={formData.address2}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="city">City *</Label>
-                        <Input
-                          id="city"
-                          name="city"
-                          placeholder="New York"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          required
+            {/* Plaque Color Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Choose Your Plaque Color</CardTitle>
+                <p className="text-sm text-muted-foreground">Included with your memorial package</p>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup
+                  value={formData.plaqueType}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, plaqueType: value as "silver" | "gold" | "black" })
+                  }
+                  className="grid md:grid-cols-3 gap-6"
+                >
+                  {Object.entries(PRODUCTS.plaques).map(([key, plaque]) => (
+                    <div
+                      key={key}
+                      className={`relative border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        formData.plaqueType === key
+                          ? "border-accent ring-2 ring-accent"
+                          : "border-border hover:border-accent/50"
+                      }`}
+                      onClick={() => setFormData({ ...formData, plaqueType: key as "silver" | "gold" | "black" })}
+                    >
+                      <div className="relative h-32 w-full">
+                        <Image
+                          src={plaque.image || "/placeholder.svg"}
+                          alt={plaque.name}
+                          fill
+                          className="object-contain p-2"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="state">State *</Label>
-                        <Input
-                          id="state"
-                          name="state"
-                          placeholder="NY"
-                          value={formData.state}
-                          onChange={handleInputChange}
-                          required
-                        />
+                      <div className="p-4 bg-background">
+                        <div className="flex items-start gap-3">
+                          <RadioGroupItem value={key} id={key} className="mt-1" />
+                          <div className="flex-1">
+                            <Label htmlFor={key} className="font-semibold cursor-pointer block mb-1">
+                              {plaque.name}
+                            </Label>
+                            <p className="text-xs text-muted-foreground">{plaque.description}</p>
+                          </div>
+                        </div>
                       </div>
+                      {formData.plaqueType === key && (
+                        <div className="absolute top-2 right-2 bg-accent text-accent-foreground rounded-full p-2">
+                          <CheckCircle className="h-5 w-5" />
+                        </div>
+                      )}
                     </div>
+                  ))}
+                </RadioGroup>
+              </CardContent>
+            </Card>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="zipCode">ZIP Code *</Label>
-                      <Input
-                        id="zipCode"
-                        name="zipCode"
-                        placeholder="10001"
-                        value={formData.zipCode}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <SquarePaymentForm
-                amount={2.0}
-                orderId={`order_${Date.now()}`}
-                onSuccess={handlePaymentSuccess}
-                onError={(error) => {
-                  console.error("Payment error:", error)
-                }}
-                onBeforePayment={validateForm}
-                disabled={isSubmitting}
-              />
-
-              <p className="text-xs text-muted-foreground text-center">
-                By completing your order, you agree to our Terms of Service and Privacy Policy. Your memorial will be
-                created within 24 hours of payment.
-              </p>
+            {/* Next Button */}
+            <div className="flex justify-end pt-6">
+              <Button onClick={handleNext} size="lg" className="gap-2">
+                Next
+                <ArrowRight className="h-5 w-5" />
+              </Button>
             </div>
           </div>
         </div>

@@ -95,8 +95,8 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       console.log("[v0] Music uploaded successfully:", data.music)
 
       toast({
-        title: "Audio clip uploaded",
-        description: "Your audio clip has been added to the memorial",
+        title: "Music uploaded",
+        description: "Your music has been added to the memorial",
       })
 
       setFile(null)
@@ -108,7 +108,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       console.error("[v0] Upload error:", error)
       toast({
         title: "Upload failed",
-        description: error instanceof Error ? error.message : "Failed to upload audio clip",
+        description: error instanceof Error ? error.message : "Failed to upload music",
         variant: "destructive",
       })
     } finally {
@@ -132,23 +132,23 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       </div>
 
       <div>
-        <Label htmlFor="music-title">Title *</Label>
+        <Label htmlFor="music-title">Song Title *</Label>
         <Input
           id="music-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter title..."
+          placeholder="Enter song title..."
           disabled={uploading}
         />
       </div>
 
       <div>
-        <Label htmlFor="music-artist">Speaker/Source (Optional)</Label>
+        <Label htmlFor="music-artist">Artist (Optional)</Label>
         <Input
           id="music-artist"
           value={artist}
           onChange={(e) => setArtist(e.target.value)}
-          placeholder="Enter speaker or source..."
+          placeholder="Enter artist name..."
           disabled={uploading}
         />
       </div>
@@ -173,7 +173,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
         ) : (
           <>
             <Upload className="mr-2 h-4 w-4" />
-            Upload Audio Clip
+            Upload Music
           </>
         )}
       </Button>

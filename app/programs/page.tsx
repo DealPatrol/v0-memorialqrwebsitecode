@@ -31,7 +31,7 @@ export default function Programs() {
   const features = [
     { icon: Heart, title: "Beautiful Memorial Page", description: "Personalized tribute with photos and memories" },
     { icon: Users, title: "Family Tree Display", description: "Visual representation of family connections" },
-    { icon: Music, title: "Audio Memories", description: "Add voicemails, recordings, and audio clips" },
+    { icon: Music, title: "Memorial Music", description: "Add meaningful songs and audio memories" },
     { icon: ImageIcon, title: "Photo Gallery", description: "Unlimited photo uploads and organization" },
     { icon: MessageCircle, title: "Guest Messages", description: "Allow visitors to leave condolences and memories" },
     { icon: Share2, title: "Easy Sharing", description: "Share memorial link with family and friends" },
@@ -344,7 +344,7 @@ export default function Programs() {
 
               <div className="mt-8 text-center">
                 <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
-                  <Link href="/pricing">Get Started - $2</Link>
+                  <Link href="/checkout">Get Started - $2</Link>
                 </Button>
                 <p className="text-sm text-gray-500 mt-3">30-day money-back guarantee • Secure payment processing</p>
               </div>
@@ -446,7 +446,7 @@ export default function Programs() {
             Create a beautiful, lasting memorial that celebrates their life and keeps their memory alive forever.
           </p>
           <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-            <Link href="/pricing">Start Creating Memorial - $2</Link>
+            <Link href="/checkout">Start Creating Memorial - $2</Link>
           </Button>
         </div>
       </div>

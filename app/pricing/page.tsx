@@ -4,8 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle } from "lucide-react"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 
 export default function PricingPage() {
+  redirect("/")
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <Header />

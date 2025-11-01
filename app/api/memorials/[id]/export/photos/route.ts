@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const memorialId = params.id
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     // Fetch memorial and photos
     const { data: memorial } = await supabase.from("memorials").select("full_name").eq("id", memorialId).single()

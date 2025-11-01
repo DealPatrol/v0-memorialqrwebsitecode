@@ -28,18 +28,12 @@ export function StarRating({ rating, showReviews = false, reviewCount = 0, size 
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={`${sizeClasses[size]}`}
-            fill={i < rating ? "#facc15" : "none"}
-            stroke={i < rating ? "#facc15" : "#d1d5db"}
-            strokeWidth={2}
+            className={`${sizeClasses[size]} ${i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
           />
         ))}
       </div>
       {showReviews && (
-        <span
-          className={`${textSizeClasses[size]} text-white font-medium`}
-          style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
-        >
+        <span className={`${textSizeClasses[size]} text-white/90 font-medium drop-shadow-md`}>
           {rating}.0 ({reviewCount.toLocaleString()} reviews)
         </span>
       )}

@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = await params
+    const { id } = params
     const supabase = await createClient()
 
     const memorialSlug = id
@@ -41,26 +40,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = await params
+    const { id } = params
     const { title, content, author_name } = await request.json()
 
     if (!title || !content || !author_name) {
       return NextResponse.json({ error: "Title, content, and author name required" }, { status: 400 })
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
-    }
-
-    const serviceSupabase = createSupabaseClient(supabaseUrl, supabaseKey)
+    const supabase = await createClient()
 
     const memorialSlug = id
-    const { data: memorial, error: memorialError } = await serviceSupabase
+    const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
       .eq("slug", memorialSlug)
@@ -70,7 +62,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 
-    const { data: story, error } = await serviceSupabase
+    const { data: story, error } = await supabase
       .from("stories")
       .insert({
         memorial_id: memorial.id,

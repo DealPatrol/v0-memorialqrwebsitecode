@@ -1,6 +1,6 @@
 "use server"
 
-import { createServerClient } from "@/lib/supabase-server"
+import { createClient } from "@/lib/supabase/server"
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/email"
 
 export interface CreateOrderData {
@@ -25,7 +25,7 @@ export interface CreateOrderData {
 
 export async function createOrder(data: CreateOrderData) {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     // Generate unique order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
@@ -95,7 +95,7 @@ export async function createOrder(data: CreateOrderData) {
 
 export async function getOrderByNumber(orderNumber: string) {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     const { data: order, error } = await supabase.from("orders").select("*").eq("order_number", orderNumber).single()
 
@@ -113,7 +113,7 @@ export async function getOrderByNumber(orderNumber: string) {
 
 export async function getAllOrders() {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     const { data: orders, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false })
 
@@ -131,7 +131,7 @@ export async function getAllOrders() {
 
 export async function updateOrderStatus(orderId: string, status: string, adminNotes?: string) {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     const updateData: any = { status }
     if (adminNotes) {
@@ -154,7 +154,7 @@ export async function updateOrderStatus(orderId: string, status: string, adminNo
 
 export async function linkOrderToMemorial(orderId: string, memorialId: string) {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     const { data: order, error } = await supabase
       .from("orders")

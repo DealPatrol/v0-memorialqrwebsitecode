@@ -1,7 +1,6 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { createServerClient } from "@/lib/supabase-server"
 import { revalidatePath } from "next/cache"
 
 export async function createMemorialFromOrder(
@@ -16,7 +15,7 @@ export async function createMemorialFromOrder(
   },
 ) {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     // Generate slug from full name
     const slug = memorialData.fullName
