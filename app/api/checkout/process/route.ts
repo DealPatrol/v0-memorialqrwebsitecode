@@ -65,13 +65,13 @@ export async function POST(req: Request) {
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
 
     // Calculate amounts
-    const baseAmount = planType === "one-time" ? 12999 : 4999 // in cents
+    const baseAmount = planType === "one-time" ? 200 : 200 // in cents
     let addonAmount = 0
     if (addonWoodenQr) addonAmount += 2997
     if (addonPicturePlaque) addonAmount += 3998
     if (addonStoneQr) addonAmount += 5699
     const totalAmountCents = baseAmount + addonAmount
-    const monthlyAmountCents = planType === "monthly" ? 499 : null
+    const monthlyAmountCents = planType === "monthly" ? 200 : null
 
     // Process payment with Square
     console.log("[v0] Processing payment with Square...")

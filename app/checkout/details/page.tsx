@@ -20,9 +20,9 @@ const PRODUCTS = {
   memorial: {
     id: "online_memorial",
     name: "Online Memorial",
-    oneTimePrice: 129.99,
-    monthlyPrice: 49.99,
-    monthlyFee: 4.99,
+    oneTimePrice: 2.0,
+    monthlyPrice: 2.0,
+    monthlyFee: 2.0,
   },
   plaques: {
     silver: { name: "Silver Memorial Plaque" },
@@ -188,41 +188,72 @@ export default function CheckoutDetailsPage() {
     setIsSubmitting(true)
 
     try {
-      const products = [PRODUCTS.plaques[step1Data.plaqueType].name]
-      if (formData.includeWoodenQR) products.push(PRODUCTS.addons.woodenQR.name)
-      if (formData.includePicturePlaque) products.push(PRODUCTS.addons.picturePlaque.name)
-      if (formData.includeStoneQR) products.push(PRODUCTS.addons.stoneQR.name)
+      const formDataToSend = new FormData()
 
+      // Plan and product details
+      formDataToSend.append("planType", step1Data.paymentPlan === "onetime" ? "one-time" : "monthly")
+      formDataToSend.append("plaqueColor", step1Data.plaqueType)
+      formDataToSend.append("boxPersonalization", step1Data.boxPersonalization)
+
+      // Customer information
+      formDataToSend.append("customerName", `${formData.firstName} ${formData.lastName}`)
+      formDataToSend.append("customerEmail", formData.email)
+      formDataToSend.append("customerPhone", formData.phone)
+
+      // Shipping address
+      formDataToSend.append("addressLine1", formData.address)
+      formDataToSend.append("addressLine2", formData.address2)
+      formDataToSend.append("city", formData.city)
+      formDataToSend.append("state", formData.state)
+      formDataToSend.append("zip", formData.zipCode)
+      formDataToSend.append("country", "US")
+
+      // Add-ons
+      formDataToSend.append("addonWoodenQr", formData.includeWoodenQR.toString())
+      formDataToSend.append("addonPicturePlaque", formData.includePicturePlaque.toString())
+      formDataToSend.append("addonStoneQr", formData.includeStoneQR.toString())
+      formDataToSend.append("stoneEngravingText", formData.stoneCustomText)
+
+      // Picture plaque image if selected
+      if (formData.includePicturePlaque && formData.picturePlaqueImage) {
+        formDataToSend.append("picturePlaqueFile", formData.picturePlaqueImage)
+      }
+
+      // Payment details
+      formDataToSend.append("sourceId", paymentId)
+      formDataToSend.append("totalAmount", calculateTotal().toString())
+
+      // Gift information
+      if (formData.isGift) {
+        formDataToSend.append("isGift", "true")
+        formDataToSend.append("recipientName", formData.recipientName)
+        formDataToSend.append("recipientEmail", formData.recipientEmail)
+        formDataToSend.append("giftMessage", formData.giftMessage)
+      }
+
+      console.log("[v0] Creating order after payment...")
+
+      const response = await fetch("/api/checkout/process", {
+        method: "POST",
+        body: formDataToSend,
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create order")
+      }
+
+      console.log("[v0] Order created successfully:", result.order.orderNumber)
+
+      // Store minimal order data for memorial creation
       const orderData = {
+        orderId: result.order.id,
+        orderNumber: result.order.orderNumber,
         customerEmail: formData.email,
         customerName: `${formData.firstName} ${formData.lastName}`,
-        customerPhone: formData.phone,
-        shippingAddress: {
-          line1: formData.address,
-          line2: formData.address2,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zipCode,
-        },
-        paymentId,
-        amountCents: Math.round(calculateTotal() * 100),
-        productType: "memorial_package",
-        productName: products.join(", "),
-        paymentPlan: step1Data.paymentPlan,
-        plaqueType: step1Data.plaqueType,
-        boxPersonalization: step1Data.boxPersonalization,
-        products: {
-          plaque: step1Data.plaqueType,
-          woodenQR: formData.includeWoodenQR,
-          picturePlaque: formData.includePicturePlaque,
-          stoneQR: formData.includeStoneQR,
-        },
-        stoneCustomText: formData.stoneCustomText,
-        picturePlaqueImage: formData.picturePlaqueImage,
-        isGift: formData.isGift,
-        giftMessage: formData.giftMessage,
-        recipientName: formData.recipientName,
-        recipientEmail: formData.recipientEmail,
+        plaqueColor: step1Data.plaqueType,
+        planType: step1Data.paymentPlan,
       }
 
       sessionStorage.setItem("pendingOrder", JSON.stringify(orderData))
@@ -232,12 +263,13 @@ export default function CheckoutDetailsPage() {
         description: "Redirecting you to create your memorial...",
       })
 
+      // Redirect to create memorial page
       router.push("/create-memorial")
     } catch (error: any) {
       console.error("[v0] Error processing payment:", error)
       toast({
         title: "Error",
-        description: "Something went wrong. Please contact support.",
+        description: error.message || "Something went wrong. Please contact support.",
         variant: "destructive",
       })
     } finally {

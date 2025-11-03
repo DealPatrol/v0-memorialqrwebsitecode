@@ -16,9 +16,9 @@ const PRODUCTS = {
   memorial: {
     id: "online_memorial",
     name: "Online Memorial",
-    oneTimePrice: 129.99,
-    monthlyPrice: 49.99,
-    monthlyFee: 4.99,
+    oneTimePrice: 2.0,
+    monthlyPrice: 2.0,
+    monthlyFee: 2.0,
   },
   plaques: {
     silver: {

@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/email"
 
 export interface CreateOrderData {
@@ -25,7 +26,7 @@ export interface CreateOrderData {
 
 export async function createOrder(data: CreateOrderData) {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceRoleClient()
 
     // Generate unique order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
@@ -154,7 +155,7 @@ export async function updateOrderStatus(orderId: string, status: string, adminNo
 
 export async function linkOrderToMemorial(orderId: string, memorialId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceRoleClient()
 
     const { data: order, error } = await supabase
       .from("orders")

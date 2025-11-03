@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { CheckCircle2, Package, Mail, ArrowRight } from "lucide-react"
+import { CheckCircle2, Package, Mail, ArrowRight, Eye } from "lucide-react"
 import Link from "next/link"
 
 export default function OrderConfirmationPage() {
@@ -87,6 +87,24 @@ export default function OrderConfirmationPage() {
           <h1 className="text-4xl font-bold mb-2">Order Confirmed!</h1>
           <p className="text-xl text-muted-foreground">Thank you for your purchase, {order.customer_name}</p>
         </div>
+
+        {order.memorial_id && (
+          <Card className="p-8 mb-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0">
+            <div className="text-center">
+              <CheckCircle2 className="w-16 h-16 mx-auto mb-4" />
+              <h2 className="text-3xl font-bold mb-3">Your Memorial is Live! 🎉</h2>
+              <p className="text-lg mb-6 opacity-90">
+                Your digital memorial has been created and is ready to view and share with family and friends.
+              </p>
+              <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100" asChild>
+                <Link href={`/memorial/${order.memorial_id}`}>
+                  <Eye className="mr-2 h-5 w-5" />
+                  View Memorial Page
+                </Link>
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* Order Details Card */}
         <Card className="p-8 mb-6">
@@ -186,33 +204,53 @@ export default function OrderConfirmationPage() {
           </Card>
         </div>
 
-        {/* Create Memorial CTA */}
-        <Card className="p-8 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-3">Create Your Memorial Now</h2>
-            <p className="text-muted-foreground mb-6">
-              Start building your loved one's memorial page. Add photos, stories, and memories that will be accessible
-              through your QR code plaque.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link href="/create-memorial">
-                  Create Memorial
-                  <ArrowRight className="ml-2 h-5 w-5" />
+        {!order.memorial_id && (
+          <Card className="p-8 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-3">Create Your Memorial Now</h2>
+              <p className="text-muted-foreground mb-6">
+                Start building your loved one's memorial page. Add photos, stories, and memories that will be accessible
+                through your QR code plaque.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" asChild>
+                  <Link href="/create-memorial">
+                    Create Memorial
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/">Return Home</Link>
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Want to manage your memorial later?{" "}
+                <Link href="/auth/sign-up" className="text-primary hover:underline font-medium">
+                  Create a free account
                 </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/">Return Home</Link>
-              </Button>
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              Want to manage your memorial later?{" "}
-              <Link href="/auth/sign-up" className="text-primary hover:underline font-medium">
-                Create a free account
-              </Link>
-            </p>
-          </div>
-        </Card>
+          </Card>
+        )}
+
+        {order.memorial_id && (
+          <Card className="p-6 bg-muted/50">
+            <div className="text-center">
+              <h3 className="font-semibold mb-2">Want to Manage Your Memorial?</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Create a free account to edit your memorial, add more content, and track your order anytime.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button variant="outline" asChild>
+                  <Link href="/auth/sign-up">Create Free Account</Link>
+                </Button>
+                <Button variant="ghost" asChild>
+                  <Link href="/">Return Home</Link>
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Support */}
         <div className="text-center mt-8 text-sm text-muted-foreground">

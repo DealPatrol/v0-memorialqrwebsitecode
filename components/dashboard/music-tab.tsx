@@ -55,8 +55,8 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No Music</CardTitle>
-          <CardDescription>No music has been added to this memorial yet.</CardDescription>
+          <CardTitle>No Voicemails/Audio</CardTitle>
+          <CardDescription>No voicemails or audio have been added to this memorial yet.</CardDescription>
         </CardHeader>
       </Card>
     )
@@ -114,9 +114,9 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Music</AlertDialogTitle>
+            <AlertDialogTitle>Delete Audio</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this song? This action cannot be undone.
+              Are you sure you want to delete this audio? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -168,37 +168,31 @@ export default function CreateMemorialPage() {
       const { memorial } = await memorialResponse.json()
       console.log("[v0] Memorial created successfully:", memorial.id)
 
-      console.log("[v0] Creating order with data:", {
-        ...orderData,
-        memorialId: memorial.id,
-      })
+      console.log("[v0] Linking memorial to order:", orderData.orderId)
 
-      const orderResponse = await fetch("/api/orders", {
+      const linkResponse = await fetch("/api/orders/link-memorial", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...orderData,
+          orderId: orderData.orderId,
           memorialId: memorial.id,
         }),
       })
 
-      if (!orderResponse.ok) {
-        const errorData = await orderResponse.json()
-        console.error("[v0] Order creation failed:", errorData)
-        throw new Error(errorData.error || "Failed to create order")
+      if (!linkResponse.ok) {
+        const errorData = await linkResponse.json()
+        console.error("[v0] Failed to link memorial to order:", errorData)
+        // Don't throw error - memorial was created successfully
       }
-
-      const { order } = await orderResponse.json()
-      console.log("[v0] Order created successfully:", order.order_number)
 
       sessionStorage.removeItem("pendingOrder")
 
       toast({
         title: "Memorial Created Successfully!",
-        description: `Your order ${order.order_number} has been confirmed.`,
+        description: `Your memorial has been created and linked to order ${orderData.orderNumber}.`,
       })
 
-      router.push(`/order-confirmation?order=${order.order_number}`)
+      router.push(`/checkout/confirmation?order=${orderData.orderNumber}`)
     } catch (error: any) {
       console.error("[v0] Error creating memorial:", error)
       toast({

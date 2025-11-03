@@ -87,18 +87,18 @@ export default function ContactPage() {
       {/* Contact Methods */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
             <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors text-center">
               <CardContent className="p-8">
                 <Phone className="w-12 h-12 text-orange-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Phone Support</h3>
                 <p className="text-gray-600 mb-4">Speak with a real person who understands your needs</p>
                 <div className="space-y-2">
-                  <div className="font-semibold text-gray-900">1-800-MEMORIAL</div>
+                  <div className="font-semibold text-gray-900">256-595-3354</div>
                   <div className="text-sm text-gray-600">Available 24/7</div>
                 </div>
                 <Button asChild className="mt-4 bg-orange-600 hover:bg-orange-700">
-                  <Link href="tel:1-800-MEMORIAL">Call Now</Link>
+                  <Link href="tel:256-595-3354">Call Now</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -118,24 +118,6 @@ export default function ContactPage() {
                   className="mt-4 border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
                 >
                   <Link href="mailto:support@memorialqr.com">Send Email</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors text-center">
-              <CardContent className="p-8">
-                <MessageCircle className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Live Chat</h3>
-                <p className="text-gray-600 mb-4">Get instant answers to your questions</p>
-                <div className="space-y-2">
-                  <div className="font-semibold text-gray-900">Available Now</div>
-                  <div className="text-sm text-gray-600">Average response: 30 seconds</div>
-                </div>
-                <Button
-                  variant="outline"
-                  className="mt-4 border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
-                >
-                  Start Chat
                 </Button>
               </CardContent>
             </Card>
@@ -247,10 +229,6 @@ export default function ContactPage() {
                     </div>
                     <div className="flex justify-between">
                       <span>Email Support:</span>
-                      <span className="font-semibold">24/7</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Live Chat:</span>
                       <span className="font-semibold">24/7</span>
                     </div>
                     <div className="flex justify-between">

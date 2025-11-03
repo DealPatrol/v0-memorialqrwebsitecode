@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Header } from "@/components/header"
-import { HelpCircle, Phone, Mail, MessageCircle } from "lucide-react"
+import { HelpCircle, Phone, Mail } from "lucide-react"
 
 const faqCategories = [
   {
@@ -218,7 +218,7 @@ export default function FAQPage() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Phone Support</h3>
                   <p className="text-gray-600 mb-4">Speak with a real person who can help you through the process.</p>
                   <Button asChild className="bg-orange-600 hover:bg-orange-700">
-                    <Link href="tel:1-800-MEMORIAL">Call 1-800-MEMORIAL</Link>
+                    <Link href="tel:256-595-3354">Call 256-595-3354</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -240,16 +240,15 @@ export default function FAQPage() {
 
               <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors">
                 <CardContent className="p-8 text-center">
-                  <MessageCircle className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Live Chat</h3>
-                  <p className="text-gray-600 mb-4">Get instant answers to your questions with our live chat.</p>
+                  <HelpCircle className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Help Center</h3>
+                  <p className="text-gray-600 mb-4">Browse our comprehensive help articles and guides.</p>
                   <Button
                     asChild
                     variant="outline"
-                    size="lg"
-                    className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
+                    className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
                   >
-                    <Link href="/contact">Start Chat</Link>
+                    <Link href="/help">Visit Help Center</Link>
                   </Button>
                 </CardContent>
               </Card>

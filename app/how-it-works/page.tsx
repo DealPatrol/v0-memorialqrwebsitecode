@@ -3,7 +3,18 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { QrCode, Upload, Smartphone, Heart, CheckCircle, ArrowRight, Users, Globe, Shield } from "lucide-react"
+import {
+  QrCode,
+  Upload,
+  Smartphone,
+  Heart,
+  CheckCircle,
+  ArrowRight,
+  Globe,
+  Shield,
+  ShoppingCart,
+  Music,
+} from "lucide-react"
 
 export default function HowItWorksPage() {
   return (
@@ -16,7 +27,7 @@ export default function HowItWorksPage() {
           <Badge className="mb-4 bg-white/20 text-white border-white/30">Simple Process</Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">How Memorial QR Works</h1>
           <p className="text-xl text-white/90 mb-8">
-            Create a lasting digital memorial in just three simple steps. No technical knowledge required.
+            Create a lasting digital memorial in just four simple steps. No account required to get started.
           </p>
           <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
             <Link href="/checkout">
@@ -38,28 +49,29 @@ export default function HowItWorksPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                     1
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Create Your Memorial</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">Choose Your Memorial Package</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  Start by uploading photos, videos, and writing stories about your loved one. Our easy-to-use interface
-                  guides you through creating a beautiful memorial page that captures their life and legacy.
+                  Select from our premium memorial packages. Each order includes your choice of a gold, black, or silver
+                  memorial plaque with a custom QR code. Add optional products like wooden keychains, picture plaques,
+                  or stone QR codes.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Upload unlimited photos and videos</span>
+                    <span>Premium memorial plaque included (gold, black, or silver)</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Write personal stories and memories</span>
+                    <span>Optional wooden QR keychain</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Add biographical information</span>
+                    <span>Optional picture plaque with QR code</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Invite family members to contribute</span>
+                    <span>Optional stone QR code</span>
                   </li>
                 </ul>
               </div>
@@ -67,11 +79,9 @@ export default function HowItWorksPage() {
                 <Card className="p-8 bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
                   <CardContent className="p-0">
                     <div className="text-center">
-                      <Upload className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Memorial Creation</h3>
-                      <p className="text-gray-600">
-                        Our intuitive interface makes it easy to build a comprehensive memorial
-                      </p>
+                      <ShoppingCart className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Select Your Package</h3>
+                      <p className="text-gray-600">Choose the perfect memorial products for your loved one</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -84,9 +94,11 @@ export default function HowItWorksPage() {
                 <Card className="p-8 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
                   <CardContent className="p-0">
                     <div className="text-center">
-                      <QrCode className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Custom QR Code</h3>
-                      <p className="text-gray-600">Get a beautiful, customizable QR code that links to your memorial</p>
+                      <Upload className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Build Your Memorial</h3>
+                      <p className="text-gray-600">
+                        Add photos, videos, voicemails, and stories immediately after checkout
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -96,28 +108,29 @@ export default function HowItWorksPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                     2
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Get Your QR Code</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">Create Your Memorial</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  Once your memorial is complete, we generate a custom QR code that links directly to your memorial
-                  page. You can customize the design and download it in high resolution for your memorial plaque.
+                  After checkout, you'll be taken directly to create your memorial. No account required! Upload photos,
+                  videos, voicemails, and write stories about your loved one. You can even add YouTube links for
+                  favorite songs or videos.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>High-resolution QR code download</span>
+                    <span>Upload unlimited photos and videos</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Customizable design options</span>
+                    <span>Add voicemails and audio messages</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Multiple file formats available</span>
+                    <span>Embed YouTube videos and music</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Perfect for engraving on plaques</span>
+                    <span>Write personal stories and memories</span>
                   </li>
                 </ul>
               </div>
@@ -130,12 +143,69 @@ export default function HowItWorksPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                     3
                   </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Get Your QR Code</h2>
+                </div>
+                <p className="text-lg text-gray-600 mb-6">
+                  Once your memorial is complete, we generate a custom QR code that links directly to your memorial
+                  page. Your QR code will be engraved on your memorial plaque and shipped to you. You can also download
+                  it for other uses.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Custom QR code engraved on plaque</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>High-resolution download available</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Multiple file formats</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Optional account creation to manage memorial</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="lg:order-first">
+                <Card className="p-8 bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
+                  <CardContent className="p-0">
+                    <div className="text-center">
+                      <QrCode className="w-16 h-16 text-green-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Custom QR Code</h3>
+                      <p className="text-gray-600">Get a beautiful QR code engraved on your memorial plaque</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <Card className="p-8 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+                  <CardContent className="p-0">
+                    <div className="text-center">
+                      <Smartphone className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Easy Access</h3>
+                      <p className="text-gray-600">Anyone can scan and view the memorial instantly on their phone</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <div>
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                    4
+                  </div>
                   <h2 className="text-3xl font-bold text-gray-900">Share Their Story</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
                   Visitors can scan the QR code with their smartphone to instantly access your loved one's memorial
-                  page. They can view photos, watch videos, read stories, and even leave their own messages and
-                  memories.
+                  page. They can view photos, watch videos, listen to voicemails, read stories, and leave their own
+                  messages. Create an optional account anytime to manage and update your memorial.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
@@ -148,24 +218,13 @@ export default function HowItWorksPage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Visitors can leave messages</span>
+                    <span>Visitors can leave messages and memories</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Share memories with family</span>
+                    <span>Create account anytime to update memorial</span>
                   </li>
                 </ul>
-              </div>
-              <div className="lg:order-first">
-                <Card className="p-8 bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
-                  <CardContent className="p-0">
-                    <div className="text-center">
-                      <Smartphone className="w-16 h-16 text-green-600 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Easy Access</h3>
-                      <p className="text-gray-600">Anyone can scan and view the memorial instantly on their phone</p>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </div>
@@ -187,15 +246,15 @@ export default function HowItWorksPage() {
               <CardContent className="p-0">
                 <Globe className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Unlimited Content</h3>
-                <p className="text-sm text-gray-600">Upload unlimited photos, videos, and stories</p>
+                <p className="text-sm text-gray-600">Upload unlimited photos, videos, voicemails, and stories</p>
               </CardContent>
             </Card>
 
             <Card className="text-center p-6">
               <CardContent className="p-0">
-                <Users className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Family Collaboration</h3>
-                <p className="text-sm text-gray-600">Invite family members to contribute content</p>
+                <Music className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-900 mb-2">Voicemails & Audio</h3>
+                <p className="text-sm text-gray-600">Add voicemails, audio messages, and YouTube links</p>
               </CardContent>
             </Card>
 

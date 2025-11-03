@@ -122,12 +122,12 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error || "Failed to add YouTube music")
+        throw new Error(error.error || "Failed to add YouTube audio")
       }
 
       toast({
-        title: "Music added",
-        description: "YouTube music has been added to the memorial",
+        title: "Audio added",
+        description: "YouTube audio has been added to the memorial",
       })
 
       setYoutubeUrl("")
@@ -138,7 +138,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       console.error("[v0] YouTube upload error:", error)
       toast({
         title: "Upload failed",
-        description: error instanceof Error ? error.message : "Failed to add YouTube music",
+        description: error instanceof Error ? error.message : "Failed to add YouTube audio",
         variant: "destructive",
       })
     } finally {
@@ -187,8 +187,8 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       console.log("[v0] Music uploaded successfully:", data.music)
 
       toast({
-        title: "Music uploaded",
-        description: "Your music has been added to the memorial",
+        title: "Audio uploaded",
+        description: "Your audio has been added to the memorial",
       })
 
       setFile(null)
@@ -199,7 +199,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       console.error("[v0] Upload error:", error)
       toast({
         title: "Upload failed",
-        description: error instanceof Error ? error.message : "Failed to upload music",
+        description: error instanceof Error ? error.message : "Failed to upload audio",
         variant: "destructive",
       })
     } finally {
@@ -262,7 +262,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
           ) : (
             <>
               <LinkIcon className="mr-2 h-4 w-4" />
-              Add YouTube Music
+              Add YouTube Audio
             </>
           )}
         </Button>
@@ -313,7 +313,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              Upload Music
+              Upload Audio
             </>
           )}
         </Button>

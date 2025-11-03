@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
-import { Search, Phone, Mail, MessageCircle, Book, Video, FileText, Users, HelpCircle } from "lucide-react"
+import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from "lucide-react"
 
 const helpCategories = [
   {
@@ -57,16 +57,10 @@ const quickLinks = [
     href: "#",
   },
   {
-    title: "Live Chat",
-    description: "Chat with our support team",
-    icon: MessageCircle,
-    href: "/contact",
-  },
-  {
     title: "Phone Support",
-    description: "Call 1-800-MEMORIAL",
+    description: "Call 256-595-3354",
     icon: Phone,
-    href: "tel:1-800-MEMORIAL",
+    href: "tel:256-595-3354",
   },
   {
     title: "Email Support",
@@ -111,7 +105,7 @@ export default function HelpPage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Quick Support Options</h2>
 
-          <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {quickLinks.map((link, index) => (
               <Card key={index} className="border-2 border-orange-100 hover:border-orange-300 transition-colors">
                 <CardContent className="p-6 text-center">
@@ -241,7 +235,7 @@ export default function HelpPage() {
               size="lg"
               className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
             >
-              <Link href="tel:1-800-MEMORIAL">Call 1-800-MEMORIAL</Link>
+              <Link href="tel:256-595-3354">Call 256-595-3354</Link>
             </Button>
           </div>
         </div>
