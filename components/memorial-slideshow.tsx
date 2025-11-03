@@ -9,6 +9,7 @@ const slides = [
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/24e70872-240d-475d-a804-7b1e0c9b81d3.jpg",
     alt: "Child holding memorial QR keychain",
     description: "Keep their memory close with a beautiful wooden QR keychain",
+    objectPosition: "center 35%",
   },
   {
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1b96464e-9ee4-4159-ae59-c52cf9696d8f.jpg",
@@ -23,7 +24,7 @@ const slides = [
   {
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/0d748c82-667e-44d4-9821-861b424484de.jpg",
     alt: "Granite memorial plaque",
-    description: "Premium granite plaques with QR codes for lasting remembrance",
+    description: "Premium plaques with QR codes for lasting remembrance",
   },
   {
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/4083425e-6b78-4ec6-a1e4-fcc813bb2686.jpg",
@@ -47,7 +48,7 @@ export function MemorialSlideshow() {
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length)
-    }, 3000)
+    }, 5000)
 
     return () => clearInterval(interval)
   }, [isAutoPlaying])
@@ -94,6 +95,10 @@ export function MemorialSlideshow() {
                   alt={slide.alt}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  style={{
+                    clipPath: "polygon(0 0, 100% 0, 100% 92%, 92% 100%, 0 100%)",
+                    objectPosition: slide.objectPosition || "center",
+                  }}
                   priority={index === 0}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -188,6 +193,10 @@ export function MemorialSlideshow() {
               alt={slides[currentSlide].alt}
               fill
               className="object-contain"
+              style={{
+                clipPath: "polygon(0 0, 100% 0, 100% 92%, 92% 100%, 0 100%)",
+                objectPosition: slides[currentSlide].objectPosition || "center",
+              }}
               priority
             />
             {/* Description in lightbox */}
