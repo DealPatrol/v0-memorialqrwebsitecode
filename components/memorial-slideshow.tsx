@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, X } from "lucide-react"
 
 const slides = [
   {
@@ -41,13 +40,14 @@ const slides = [
 export function MemorialSlideshow() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
   useEffect(() => {
     if (!isAutoPlaying) return
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length)
-    }, 3000) // 3 seconds per slide
+    }, 3000)
 
     return () => clearInterval(interval)
   }, [isAutoPlaying])
@@ -55,7 +55,6 @@ export function MemorialSlideshow() {
   const goToSlide = (index: number) => {
     setCurrentSlide(index)
     setIsAutoPlaying(false)
-    // Resume autoplay after 5 seconds of manual navigation
     setTimeout(() => setIsAutoPlaying(true), 5000)
   }
 
@@ -67,75 +66,139 @@ export function MemorialSlideshow() {
     goToSlide((currentSlide - 1 + slides.length) % slides.length)
   }
 
-  return (
-    <div className="relative max-w-4xl mx-auto">
-      {/* Main Slideshow */}
-      <Link href="/checkout" className="block group cursor-pointer">
-        <div className="relative aspect-[16/10] rounded-xl overflow-hidden shadow-2xl">
-          {slides.map((slide, index) => (
-            <div
-              key={index}
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                index === currentSlide ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <Image
-                src={slide.image || "/placeholder.svg"}
-                alt={slide.alt}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                priority={index === 0}
-              />
-              {/* Overlay gradient for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            </div>
-          ))}
+  const openLightbox = () => {
+    setIsLightboxOpen(true)
+    setIsAutoPlaying(false)
+  }
 
-          {/* Navigation Arrows */}
+  const closeLightbox = () => {
+    setIsLightboxOpen(false)
+    setIsAutoPlaying(true)
+  }
+
+  return (
+    <>
+      <div className="relative max-w-2xl mx-auto">
+        {/* Main Slideshow */}
+        <button onClick={openLightbox} className="block group cursor-pointer w-full">
+          <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
+            {slides.map((slide, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-opacity duration-500 ${
+                  index === currentSlide ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <Image
+                  src={slide.image || "/placeholder.svg"}
+                  alt={slide.alt}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  priority={index === 0}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              </div>
+            ))}
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                prevSlide()
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors flex items-center justify-center text-white z-10"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                nextSlide()
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors flex items-center justify-center text-white z-10"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Description Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+              <p className="text-white text-lg md:text-xl font-medium drop-shadow-lg">
+                {slides[currentSlide].description}
+              </p>
+            </div>
+          </div>
+        </button>
+
+        {/* Dot Indicators */}
+        <div className="flex justify-center gap-2 mt-6">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-2.5 h-2.5 rounded-full transition-all ${
+                index === currentSlide ? "bg-primary w-8" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {isLightboxOpen && (
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={closeLightbox}>
+          {/* Close button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors flex items-center justify-center text-white z-10"
+            aria-label="Close lightbox"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Navigation in lightbox */}
           <button
             onClick={(e) => {
-              e.preventDefault()
+              e.stopPropagation()
               prevSlide()
             }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors flex items-center justify-center text-white z-10"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors flex items-center justify-center text-white z-10"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-8 h-8" />
           </button>
 
           <button
             onClick={(e) => {
-              e.preventDefault()
+              e.stopPropagation()
               nextSlide()
             }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors flex items-center justify-center text-white z-10"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors flex items-center justify-center text-white z-10"
             aria-label="Next slide"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-8 h-8" />
           </button>
 
-          {/* Description Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
-            <p className="text-white text-lg md:text-xl font-medium drop-shadow-lg">
-              {slides[currentSlide].description}
-            </p>
+          {/* Enlarged image */}
+          <div className="relative w-full max-w-6xl aspect-[16/10]" onClick={(e) => e.stopPropagation()}>
+            <Image
+              src={slides[currentSlide].image || "/placeholder.svg"}
+              alt={slides[currentSlide].alt}
+              fill
+              className="object-contain"
+              priority
+            />
+            {/* Description in lightbox */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-center bg-gradient-to-t from-black/80 to-transparent">
+              <p className="text-white text-xl md:text-2xl font-medium drop-shadow-lg">
+                {slides[currentSlide].description}
+              </p>
+            </div>
           </div>
         </div>
-      </Link>
-
-      {/* Dot Indicators */}
-      <div className="flex justify-center gap-2 mt-6">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              index === currentSlide ? "bg-primary w-8" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
-    </div>
+      )}
+    </>
   )
 }
