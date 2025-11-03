@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Package, Mail, Clock } from "lucide-react"
+import { CheckCircle, Package, Mail, Clock, User } from "lucide-react"
 import Link from "next/link"
 import { getOrderByNumber } from "@/app/actions/orders"
 
@@ -144,6 +144,28 @@ export default function OrderConfirmationPage() {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                  <User className="h-6 w-6 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg mb-2">Want to Manage Your Memorial?</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Create a free account to edit your memorial, add more photos and stories, and track your order
+                    anytime.
+                  </p>
+                  <Link href="/auth/sign-up">
+                    <Button variant="outline" className="bg-white">
+                      Create Free Account
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="text-center space-y-4">
             <p className="text-gray-600">

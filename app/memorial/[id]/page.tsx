@@ -72,6 +72,8 @@ interface Music {
   audio_url: string
   duration: string | null
   created_at: string
+  is_youtube?: boolean
+  youtube_id?: string
 }
 
 interface Memorial {
@@ -458,8 +460,8 @@ export default function MemorialPage() {
           const data = await response.json()
           setMusic(data.music || [])
           toast({
-            title: "Audio clip added",
-            description: "Your audio clip has been added to the memorial",
+            title: "Music added",
+            description: "Your music has been added to the memorial",
           })
         }
       } catch (error) {
@@ -935,30 +937,30 @@ export default function MemorialPage() {
                 </CardContent>
               </Card>
 
-              {/* Audio Clips Card */}
+              {/* Music Card */}
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <MusicIcon className="w-5 h-5 text-rose-600" />
-                      <CardTitle className="text-lg">Audio Clips</CardTitle>
+                      <CardTitle className="text-lg">Music</CardTitle>
                     </div>
                     <span className="text-2xl font-bold text-rose-600">{music.length}</span>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-slate-600 mb-3">Share voicemails & audio memories</p>
+                  <p className="text-sm text-slate-600 mb-3">Share memorial music</p>
                   <Dialog open={musicUploadDialogOpen} onOpenChange={setMusicUploadDialogOpen}>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="outline" className="w-full bg-transparent">
                         <Upload className="mr-2 h-4 w-4" />
-                        Add Audio Clip
+                        Add Music
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Upload Audio Clip</DialogTitle>
-                        <DialogDescription>Share a voicemail, recording, or audio memory</DialogDescription>
+                        <DialogTitle>Upload Music</DialogTitle>
+                        <DialogDescription>Share a meaningful song or audio memory</DialogDescription>
                       </DialogHeader>
                       <MusicUpload memorialId={memorialId} onUploadComplete={handleMusicUploadComplete} />
                     </DialogContent>
@@ -971,7 +973,7 @@ export default function MemorialPage() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-indigo-600" />
+                      <Calendar className="w-5 h-5" />
                       <CardTitle className="text-lg">Timeline</CardTitle>
                     </div>
                     <span className="text-2xl font-bold text-indigo-600">{milestones.length}</span>
@@ -1167,7 +1169,7 @@ export default function MemorialPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <MusicIcon className="w-5 h-5" />
-                        Voicemails & Audio Clips
+                        Memorial Music
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -1181,23 +1183,47 @@ export default function MemorialPage() {
                                 {song.artist && <p className="text-xs text-slate-500">{song.artist}</p>}
                               </div>
                             </div>
-                            <audio
-                              controls
-                              className="w-full"
-                              src={song.audio_url}
-                              onError={(e) => {
-                                console.error("[v0] Audio playback error:", {
-                                  songId: song.id,
-                                  audioUrl: song.audio_url,
-                                  error: e,
-                                })
-                              }}
-                              onLoadStart={() => {
-                                console.log("[v0] Audio loading:", song.audio_url)
-                              }}
-                            >
-                              Your browser does not support the audio element.
-                            </audio>
+                            {song.is_youtube && song.youtube_id ? (
+                              <div className="aspect-video w-full">
+                                <iframe
+                                  width="100%"
+                                  height="100%"
+                                  src={`https://www.youtube.com/embed/${song.youtube_id}`}
+                                  title={song.title}
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                  className="rounded-lg"
+                                />
+                              </div>
+                            ) : (
+                              <audio
+                                controls
+                                className="w-full"
+                                src={song.audio_url}
+                                preload="metadata"
+                                onError={(e) => {
+                                  const target = e.currentTarget as HTMLAudioElement
+                                  const error = target.error
+                                  console.error("[v0] Audio playback error:", {
+                                    songId: song.id,
+                                    title: song.title,
+                                    audioUrl: song.audio_url,
+                                    errorCode: error?.code,
+                                    errorMessage: error?.message,
+                                    networkState: target.networkState,
+                                    readyState: target.readyState,
+                                  })
+                                  toast({
+                                    title: "Audio playback error",
+                                    description: `Unable to play "${song.title}". The file format may not be supported by your browser.`,
+                                    variant: "destructive",
+                                  })
+                                }}
+                              >
+                                Your browser does not support the audio element.
+                              </audio>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1252,7 +1278,7 @@ export default function MemorialPage() {
                       onClick={() => setMusicUploadDialogOpen(true)}
                     >
                       <MusicIcon className="w-4 h-4 mr-2" />
-                      Add Audio Clip
+                      Add Music
                     </Button>
                     <Button
                       variant="outline"

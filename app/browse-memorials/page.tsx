@@ -301,7 +301,7 @@ export default function BrowseMemorials() {
             Honor your loved one with a beautiful digital memorial that can be shared with family and friends
           </p>
           <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-            <Link href="/pricing">Get Started Today</Link>
+            <Link href="/checkout">Get Started Today</Link>
           </Button>
         </div>
       </div>

@@ -167,7 +167,7 @@ export function QRColorSelector() {
               </div>
 
               <Button asChild size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6">
-                <Link href="/pricing">Get Started with {selectedOption?.name} - $2</Link>
+                <Link href="/checkout">Get Started with {selectedOption?.name} - $2</Link>
               </Button>
 
               <p className="text-center text-sm text-gray-500 mt-4">

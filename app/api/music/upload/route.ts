@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { put } from "@vercel/blob"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,15 +25,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const validTypes = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg", "audio/m4a"]
+    const validTypes = [
+      "audio/mpeg",
+      "audio/mp3",
+      "audio/wav",
+      "audio/ogg",
+      "audio/m4a",
+      "audio/x-m4a",
+      "audio/mp4",
+      "audio/aac",
+      "audio/x-aac",
+      "audio/amr",
+      "audio/3gpp",
+      "audio/3gpp2",
+      "video/3gpp",
+      "video/3gpp2",
+      "audio/webm",
+    ]
     if (!validTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Invalid file type. Please upload an audio file (MP3, WAV, OGG, or M4A)." },
+        { error: "Invalid file type. Please upload an audio file (MP3, WAV, M4A, AMR, 3GP, AAC, or voicemail)." },
         { status: 400 },
       )
     }
 
-    const supabase = createServerClient()
+    const supabase = await createClient()
 
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
@@ -71,7 +87,6 @@ export async function POST(request: NextRequest) {
         title,
         artist: artist || null,
         audio_url: blob.url,
-        uploaded_by: uploaderName || null,
         user_id: user?.id || null,
       })
       .select()

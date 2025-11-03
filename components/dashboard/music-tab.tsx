@@ -24,6 +24,8 @@ type Music = {
   duration: string | null
   audio_url: string
   created_at: string
+  is_youtube?: boolean
+  youtube_id?: string
 }
 
 export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: string }) {
@@ -53,8 +55,8 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No Audio Clips</CardTitle>
-          <CardDescription>No audio clips have been added to this memorial yet.</CardDescription>
+          <CardTitle>No Music</CardTitle>
+          <CardDescription>No music has been added to this memorial yet.</CardDescription>
         </CardHeader>
       </Card>
     )
@@ -83,9 +85,24 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
               </div>
             </CardHeader>
             <CardContent>
-              <audio controls className="w-full" src={song.audio_url}>
-                Your browser does not support the audio element.
-              </audio>
+              {song.is_youtube && song.youtube_id ? (
+                <div className="aspect-video w-full mb-2">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${song.youtube_id}`}
+                    title={song.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="rounded-lg"
+                  />
+                </div>
+              ) : (
+                <audio controls className="w-full" src={song.audio_url}>
+                  Your browser does not support the audio element.
+                </audio>
+              )}
               <p className="text-xs text-muted-foreground mt-2">
                 Added on {new Date(song.created_at).toLocaleDateString()}
               </p>
@@ -97,9 +114,9 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Audio Clip</AlertDialogTitle>
+            <AlertDialogTitle>Delete Music</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this audio clip? This action cannot be undone.
+              Are you sure you want to delete this song? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

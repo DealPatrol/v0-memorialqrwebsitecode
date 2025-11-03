@@ -163,52 +163,50 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
   const errorCount = items.filter((item) => item.status === "error").length
 
   return (
-    <div className="flex flex-col h-full max-h-[80vh] md:max-h-none">
-      <div className="flex-shrink-0 space-y-4 pb-4">
-        <div>
-          <Label htmlFor="uploaderName">Your Name</Label>
-          <Input
-            id="uploaderName"
-            value={uploaderName}
-            onChange={(e) => setUploaderName(e.target.value)}
-            placeholder="Enter your name..."
-            disabled={isUploading}
-          />
-        </div>
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="uploaderName">Your Name</Label>
+        <Input
+          id="uploaderName"
+          value={uploaderName}
+          onChange={(e) => setUploaderName(e.target.value)}
+          placeholder="Enter your name..."
+          disabled={isUploading}
+        />
+      </div>
 
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            isDragging ? "border-purple-500 bg-purple-50" : "border-gray-300 hover:border-gray-400"
-          }`}
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          isDragging ? "border-purple-500 bg-purple-50" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        <p className="text-sm text-gray-600 mb-2">Drag and drop photos here, or click to select</p>
+        <Input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFileSelect}
+          className="hidden"
+          id="bulk-file-input"
+          disabled={isUploading}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => document.getElementById("bulk-file-input")?.click()}
+          disabled={isUploading}
         >
-          <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-sm text-gray-600 mb-2">Drag and drop photos here, or click to select</p>
-          <Input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileSelect}
-            className="hidden"
-            id="bulk-file-input"
-            disabled={isUploading}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => document.getElementById("bulk-file-input")?.click()}
-            disabled={isUploading}
-          >
-            Select Photos
-          </Button>
-        </div>
+          Select Photos
+        </Button>
       </div>
 
       {items.length > 0 && (
         <>
-          <div className="flex-shrink-0 flex items-center justify-between text-sm text-gray-600 pb-3">
+          <div className="flex items-center justify-between text-sm text-gray-600">
             <span>
               {items.length} photo{items.length !== 1 ? "s" : ""} selected
             </span>
@@ -218,13 +216,13 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto space-y-3 pb-4 max-h-[40vh] md:max-h-96">
+          <div className="max-h-96 overflow-y-auto space-y-3">
             {items.map((item, index) => (
               <div key={index} className="flex items-start gap-3 p-3 border rounded-lg bg-white">
                 <img
                   src={item.preview || "/placeholder.svg"}
                   alt="Preview"
-                  className="w-20 h-20 object-cover rounded flex-shrink-0"
+                  className="w-20 h-20 object-cover rounded"
                 />
                 <div className="flex-1 min-w-0">
                   <Input
@@ -248,24 +246,16 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
                     </div>
                   )}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeItem(index)}
-                  disabled={isUploading}
-                  className="flex-shrink-0"
-                >
+                <Button variant="ghost" size="sm" onClick={() => removeItem(index)} disabled={isUploading}>
                   <X className="w-4 h-4" />
                 </Button>
               </div>
             ))}
           </div>
 
-          <div className="flex-shrink-0 pt-4 sticky bottom-0 bg-white">
-            <Button onClick={handleUploadAll} disabled={isUploading || pendingCount === 0} className="w-full">
-              {isUploading ? "Uploading..." : `Upload ${pendingCount} Photo${pendingCount !== 1 ? "s" : ""}`}
-            </Button>
-          </div>
+          <Button onClick={handleUploadAll} disabled={isUploading || pendingCount === 0} className="w-full">
+            {isUploading ? "Uploading..." : `Upload ${pendingCount} Photo${pendingCount !== 1 ? "s" : ""}`}
+          </Button>
         </>
       )}
     </div>

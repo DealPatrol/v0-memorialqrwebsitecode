@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
 import { User, Calendar, Upload, FileText, Users, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { createClient } from "@/utils/supabase-client"
+import { createClient } from "@/lib/supabase/client"
 
 const steps = [
   { id: 1, title: "Basic Information", icon: User },
@@ -33,7 +33,7 @@ export default function CreateMemorialPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderData, setOrderData] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -41,11 +41,6 @@ export default function CreateMemorialPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser()
-
-      if (!user) {
-        router.push("/auth/sign-up?redirect=create-memorial")
-        return
-      }
 
       setUser(user)
       setIsCheckingAuth(false)
@@ -145,7 +140,7 @@ export default function CreateMemorialPage() {
         dateOfDeath: formData.dateOfDeath,
         location: formData.location,
         biography: formData.biography,
-        userId: user?.id,
+        userId: user?.id || null,
       })
 
       const memorialResponse = await fetch("/api/memorials", {
@@ -160,7 +155,7 @@ export default function CreateMemorialPage() {
           biography: formData.biography,
           customerEmail: orderData.customerEmail,
           customerName: orderData.customerName,
-          userId: user?.id,
+          userId: user?.id || null,
         }),
       })
 
@@ -203,7 +198,7 @@ export default function CreateMemorialPage() {
         description: `Your order ${order.order_number} has been confirmed.`,
       })
 
-      router.push(`/order-confirmation?orderNumber=${order.order_number}`)
+      router.push(`/order-confirmation?order=${order.order_number}`)
     } catch (error: any) {
       console.error("[v0] Error creating memorial:", error)
       toast({
@@ -217,19 +212,6 @@ export default function CreateMemorialPage() {
   }
 
   const progress = (currentStep / steps.length) * 100
-
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
-        <Card className="max-w-md mx-auto text-center">
-          <CardContent className="p-8">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4" />
-            <p className="text-gray-600">Preparing your memorial creation...</p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
 
   if (!orderData) {
     return (

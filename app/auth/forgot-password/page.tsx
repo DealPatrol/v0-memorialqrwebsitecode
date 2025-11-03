@@ -3,13 +3,12 @@
 import type React from "react"
 
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { ArrowLeft, Mail, CheckCircle, AlertCircle } from "lucide-react"
+import { ArrowLeft, Mail, CheckCircle } from "lucide-react"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
@@ -19,38 +18,25 @@ export default function ForgotPasswordPage() {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
     try {
-      const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
-        ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/auth/reset-password`
-        : `${window.location.origin}/auth/callback?next=/auth/reset-password`
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       })
 
-      if (error) {
-        if (error.message.includes("Email not confirmed")) {
-          throw new Error("Please verify your email address first before resetting your password.")
-        } else if (error.message.includes("User not found")) {
-          // Don't reveal if user exists for security, but still show success
-          setIsSuccess(true)
-          return
-        } else if (error.message.includes("sending") || error.message.includes("email")) {
-          throw new Error(
-            "Unable to send reset email. Please contact support at " + process.env.NEXT_PUBLIC_ADMIN_EMAIL ||
-              "support@memorialsqr.com",
-          )
-        }
-        throw error
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send reset email")
       }
 
       setIsSuccess(true)
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred. Please try again or contact support.")
+      setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
       setIsLoading(false)
     }
@@ -67,7 +53,7 @@ export default function ForgotPasswordPage() {
               </div>
               <CardTitle className="text-2xl">Check Your Email</CardTitle>
               <CardDescription>
-                If an account exists for <strong>{email}</strong>, you'll receive a password reset link shortly.
+                We've sent a password reset link to <strong>{email}</strong>
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -112,12 +98,7 @@ export default function ForgotPasswordPage() {
                     disabled={isLoading}
                   />
                 </div>
-                {error && (
-                  <div className="rounded-lg bg-red-50 border border-red-200 p-4 flex gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-red-600">{error}</div>
-                  </div>
-                )}
+                {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>}
                 <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isLoading}>
                   {isLoading ? (
                     <>

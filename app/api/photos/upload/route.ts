@@ -1,7 +1,6 @@
 import { put } from "@vercel/blob"
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,17 +41,7 @@ export async function POST(request: NextRequest) {
 
     console.log("[v0] Photo uploaded to Blob:", blob.url)
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error("[v0] Missing Supabase credentials")
-      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
-    }
-
-    const serviceSupabase = createSupabaseClient(supabaseUrl, supabaseKey)
-
-    const { data: memorial, error: memorialError } = await serviceSupabase
+    const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
       .eq("slug", memorialId)
@@ -76,7 +65,7 @@ export async function POST(request: NextRequest) {
     const userId = user?.id || null
     console.log("[v0] User ID:", userId)
 
-    const { data: photo, error: dbError } = await serviceSupabase
+    const { data: photo, error: dbError } = await supabase
       .from("photos")
       .insert({
         memorial_id: memorial.id,
