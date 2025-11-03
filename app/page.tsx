@@ -6,6 +6,7 @@ import { Header } from "@/components/header"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { StarRating } from "@/components/star-rating"
 import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
+import { MemorialSlideshow } from "@/components/memorial-slideshow"
 import { Heart, QrCode, Shield, Clock, Users, Star, ArrowRight, Play, Smartphone, Globe, Lock } from "lucide-react"
 
 export default function HomePage() {
@@ -26,6 +27,10 @@ export default function HomePage() {
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 text-shadow-lg">
                 Honor Their Memory with a <span className="gradient-text">Digital Memorial</span>
               </h1>
+
+              <div className="mb-8">
+                <MemorialSlideshow />
+              </div>
 
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto text-shadow-lg">
                 Create a beautiful QR code memorial plaque that connects visitors to photos, videos, and stories of your
@@ -89,7 +94,7 @@ export default function HomePage() {
       </section>
 
       {/* Video Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-muted">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="video-container rounded-lg overflow-hidden shadow-2xl border-2 border-border mx-auto">
             <iframe

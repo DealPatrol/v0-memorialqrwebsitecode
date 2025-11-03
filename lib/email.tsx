@@ -39,10 +39,38 @@ interface PasswordResetEmailData {
 const getEmailHeaders = () => ({
   "X-Entity-Ref-ID": `memorial-qr-${Date.now()}`,
   "List-Unsubscribe": "<mailto:unsubscribe@memorialqr.com>",
+  "X-Priority": "3",
+  "X-Mailer": "Memorial QR Email System",
+  Importance: "normal",
 })
 
 export async function sendOrderConfirmationEmail(data: OrderEmailData) {
   try {
+    const plainText = `
+Hi ${data.customerName},
+
+${data.isGift ? `Thank you for your thoughtful gift order! We've received your payment and are processing the memorial QR code plaque for ${data.recipientName}.` : "Thank you for your order! We've received your payment and are processing your memorial QR code plaque."}
+
+ORDER DETAILS
+Order Number: ${data.orderNumber}
+Order Date: ${data.orderDate}
+Product: ${data.productName}
+Total: ${data.amount}
+
+SHIPPING ADDRESS
+${data.shippingAddress.line1}
+${data.shippingAddress.line2 ? `${data.shippingAddress.line2}\n` : ""}${data.shippingAddress.city}, ${data.shippingAddress.state} ${data.shippingAddress.zip}
+
+${data.isGift ? "The recipient will receive instructions for creating their memorial page. Your gift will ship within 5-7 business days." : "You'll receive another email shortly with your memorial page link and instructions for managing your memorial."}
+
+If you have any questions, please contact us at support@memorialqr.com
+
+Best regards,
+The Memorial QR Team
+
+Memorial QR - Creating Lasting Digital Memorials
+    `.trim()
+
     await resend.emails.send({
       from: "Memorial QR Orders <orders@memorialqr.com>",
       to: data.customerEmail,
@@ -51,6 +79,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
         ? `Gift Order Confirmation - ${data.orderNumber}`
         : `Order Confirmation - ${data.orderNumber}`,
       headers: getEmailHeaders(),
+      text: plainText,
       html: `
         <!DOCTYPE html>
         <html>
@@ -334,12 +363,31 @@ export async function sendWelcomeEmail(data: WelcomeEmailData) {
 
 export async function sendPasswordResetEmail(data: PasswordResetEmailData) {
   try {
+    const plainText = `
+Hello,
+
+We received a request to reset the password for your Memorial QR account associated with this email address.
+
+Click the link below to create a new password:
+${data.resetUrl}
+
+SECURITY NOTICE
+This password reset link will expire in 1 hour for your security. If you didn't request this reset, please ignore this email or contact our support team.
+
+Best regards,
+The Memorial QR Team
+
+Memorial QR - Creating Lasting Digital Memorials
+Need help? Contact us at support@memorialqr.com
+    `.trim()
+
     await resend.emails.send({
       from: "Memorial QR Support <support@memorialqr.com>",
       to: data.email,
-      replyTo: "support@memorialsqr.com",
+      replyTo: "support@memorialqr.com",
       subject: "Reset Your Memorial QR Password",
       headers: getEmailHeaders(),
+      text: plainText,
       html: `
         <!DOCTYPE html>
         <html>
@@ -446,12 +494,37 @@ export async function sendGiftNotificationEmail(data: {
   orderNumber: string
 }) {
   try {
+    const plainText = `
+Hi ${data.recipientName},
+
+${data.senderName} has sent you a thoughtful gift from Memorial QR: ${data.productName}
+
+${data.giftMessage ? `PERSONAL MESSAGE:\n"${data.giftMessage}"\n\n` : ""}WHAT'S INCLUDED
+- Digital Memorial Website with lifetime hosting
+- Beautiful QR code memorial plaque
+- Luxury presentation box
+- Free shipping to your address
+
+NEXT STEPS
+Your gift will arrive within 5-7 business days. You'll receive another email with instructions on how to create and customize your memorial page.
+
+If you have any questions about your gift, please contact us at support@memorialqr.com
+
+Order Reference: ${data.orderNumber}
+
+With sympathy and support,
+The Memorial QR Team
+
+Memorial QR - Creating Lasting Digital Memorials
+    `.trim()
+
     await resend.emails.send({
       from: "Memorial QR Gifts <gifts@memorialqr.com>",
       to: data.recipientEmail,
       replyTo: "support@memorialqr.com",
       subject: `${data.senderName} sent you a Memorial QR Gift`,
       headers: getEmailHeaders(),
+      text: plainText,
       html: `
         <!DOCTYPE html>
         <html>

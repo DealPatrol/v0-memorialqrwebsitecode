@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { sendPasswordResetEmail } from "@/lib/email"
 
 export async function POST(request: Request) {
   try {
@@ -11,19 +12,33 @@ export async function POST(request: Request) {
 
     const supabase = await createClient()
 
-    // Generate password reset link using Supabase
     const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
       ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`
       : `${request.headers.get("origin")}/auth/reset-password`
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
     })
 
     if (error) {
-      console.error("[v0] Error sending reset email:", error)
+      console.error("[v0] Error generating reset link:", error)
       // Don't reveal if email exists or not for security
       return NextResponse.json({ success: true })
+    }
+
+    // Note: We need to disable Supabase's default email in the Supabase dashboard
+    // and handle it ourselves for better deliverability
+    try {
+      // Generate a custom reset URL with better branding
+      const resetUrl = `${redirectUrl}?email=${encodeURIComponent(email)}`
+
+      await sendPasswordResetEmail({
+        email,
+        resetUrl,
+      })
+    } catch (emailError) {
+      console.error("[v0] Error sending custom reset email:", emailError)
+      // Continue anyway since Supabase sent their email
     }
 
     return NextResponse.json({ success: true })
