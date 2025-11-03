@@ -19,7 +19,7 @@ export function Header() {
               Browse Memorials
             </Link>
             <Link href="/programs" className="transition-colors hover:text-foreground text-muted-foreground">
-              Programs
+              Products
             </Link>
             <Link href="/how-it-works" className="transition-colors hover:text-foreground text-muted-foreground">
               How It Works
@@ -50,7 +50,7 @@ export function Header() {
                 Browse Memorials
               </Link>
               <Link href="/programs" className="text-muted-foreground hover:text-foreground">
-                Programs
+                Products
               </Link>
               <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground">
                 How It Works
