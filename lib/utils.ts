@@ -130,7 +130,9 @@ export function throttle<T extends (...args: any[]) => any>(func: T, limit: numb
  */
 export function generateOrderId(prefix: string = "ORD"): string {
   // Validate prefix length to ensure final ID stays under 40 chars
-  // Max timestamp length: ~11 chars, random: 5 chars, total: prefix + 16 chars
+  // As of 2024, timestamp in base-36 is 8 chars and grows slowly (~1 char per 36^n milliseconds)
+  // Random component: 5 chars, total suffix: ~13 chars currently, max ~16 chars in distant future
+  // To stay under 40 chars safely: prefix must be <= 24 chars (24 + 16 = 40)
   if (prefix.length > 24) {
     throw new Error("Order ID prefix is too long. Maximum prefix length is 24 characters.")
   }
