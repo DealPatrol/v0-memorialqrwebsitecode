@@ -5,6 +5,7 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, XCircle } from "lucide-react"
+import { generateOrderId } from "@/lib/utils"
 
 export default function TestSquarePage() {
   const [testAmount, setTestAmount] = useState(100) // $1.00 in cents
@@ -87,7 +88,7 @@ export default function TestSquarePage() {
 
                 <SquarePaymentForm 
                   amount={testAmount}
-                  orderId={`TEST${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 7).toUpperCase()}`}
+                  orderId={generateOrderId("TEST")}
                   onSuccess={handlePaymentSuccess} 
                   onError={handlePaymentError} 
                 />

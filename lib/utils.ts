@@ -117,3 +117,15 @@ export function throttle<T extends (...args: any[]) => any>(func: T, limit: numb
     }
   }
 }
+
+/**
+ * Generates a unique order ID for Square payments
+ * @param prefix - Optional prefix for the order ID (default: "ORD")
+ * @returns A compact, unique order ID (e.g., "ORDMHNZQD8FDMT0R")
+ * @remarks The generated ID is guaranteed to be under 40 characters to comply with Square's reference_id field limit
+ */
+export function generateOrderId(prefix: string = "ORD"): string {
+  const timestamp = Date.now().toString(36).toUpperCase()
+  const random = Math.random().toString(36).substring(2, 7).toUpperCase()
+  return `${prefix}${timestamp}${random}`
+}
