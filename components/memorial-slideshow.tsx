@@ -82,7 +82,7 @@ export function MemorialSlideshow() {
     <>
       <div className="relative max-w-2xl mx-auto">
         {/* Main Slideshow */}
-        <button onClick={openLightbox} className="block group cursor-pointer w-full">
+        <div onClick={openLightbox} className="block group cursor-pointer w-full">
           <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
             {slides.map((slide, index) => (
               <div
@@ -137,7 +137,7 @@ export function MemorialSlideshow() {
               </p>
             </div>
           </div>
-        </button>
+        </div>
 
         {/* Dot Indicators */}
         <div className="flex justify-center gap-2 mt-6">

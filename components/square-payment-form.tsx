@@ -38,6 +38,10 @@ export function SquarePaymentForm({
       console.log("[v0] Starting payment with token:", token)
       console.log("[v0] Payment details:", { amount, orderId })
 
+      if (!token || !token.token) {
+        throw new Error("Invalid payment token received from Square")
+      }
+
       const response = await fetch("/api/square/create-payment", {
         method: "POST",
         headers: {
@@ -72,7 +76,20 @@ export function SquarePaymentForm({
         })
         onSuccess?.(data.payment.id)
       } else {
-        throw new Error(data.error || "Payment failed")
+        let errorMessage = data.error || "Payment failed"
+
+        // Provide user-friendly messages for common errors
+        if (data.errorCode === "INVALID_CARD_DATA") {
+          errorMessage = "Invalid card information. Please check your card details and try again."
+        } else if (data.errorCode === "CARD_DECLINED") {
+          errorMessage = "Your card was declined. Please try a different payment method."
+        } else if (data.errorCode === "INSUFFICIENT_FUNDS") {
+          errorMessage = "Insufficient funds. Please try a different payment method."
+        } else if (errorMessage.includes("source_id")) {
+          errorMessage = "Payment token expired. Please try again."
+        }
+
+        throw new Error(errorMessage)
       }
     } catch (error: any) {
       console.error("[v0] Payment error:", error)
@@ -86,7 +103,10 @@ export function SquarePaymentForm({
     }
   }
 
-  if (!process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || !process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID) {
+  const appId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID
+  const locId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
+
+  if (!appId || !locId) {
     return (
       <Card>
         <CardHeader>
@@ -102,6 +122,13 @@ export function SquarePaymentForm({
     )
   }
 
+  console.log("[v0] Square Payment Form initialized with:", {
+    appIdPrefix: appId.substring(0, 10),
+    locIdPrefix: locId.substring(0, 10),
+    amount,
+    orderId,
+  })
+
   return (
     <Card>
       <CardHeader>
@@ -109,11 +136,7 @@ export function SquarePaymentForm({
         <CardDescription>Enter your card details to complete the purchase</CardDescription>
       </CardHeader>
       <CardContent>
-        <PaymentForm
-          applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID}
-          locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID}
-          cardTokenizeResponseReceived={handlePayment}
-        >
+        <PaymentForm applicationId={appId} locationId={locId} cardTokenizeResponseReceived={handlePayment}>
           <CreditCard />
           <Button type="submit" className="w-full mt-4" disabled={isProcessing || disabled}>
             {isProcessing || disabled ? (

@@ -17,8 +17,6 @@ const PRODUCTS = {
     id: "online_memorial",
     name: "Online Memorial",
     oneTimePrice: 2.0,
-    monthlyPrice: 2.0,
-    monthlyFee: 2.0,
   },
   plaques: {
     silver: {
@@ -78,7 +76,6 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     zipCode: "",
-    paymentPlan: "onetime" as "onetime" | "monthly",
     plaqueType: "black" as "silver" | "gold" | "black",
     boxPersonalization: "",
   })
@@ -177,85 +174,6 @@ export default function CheckoutPage() {
       <section className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="space-y-6">
-            {/* Plan Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Choose Your Plan</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <RadioGroup
-                  value={formData.paymentPlan}
-                  onValueChange={(value) => setFormData({ ...formData, paymentPlan: value as "onetime" | "monthly" })}
-                >
-                  <div
-                    className="flex items-start space-x-3 p-6 border-2 rounded-lg cursor-pointer hover:border-accent/50 transition-all"
-                    onClick={() => setFormData({ ...formData, paymentPlan: "onetime" })}
-                  >
-                    <RadioGroupItem value="onetime" id="onetime" className="mt-1" />
-                    <div className="flex-1">
-                      <Label htmlFor="onetime" className="font-semibold text-lg cursor-pointer block">
-                        One-Time Payment
-                      </Label>
-                      <p className="text-sm text-muted-foreground mb-2">Lifetime hosting included</p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                        ${PRODUCTS.memorial.oneTimePrice}
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    className={`flex items-start space-x-3 p-6 border-2 rounded-lg cursor-pointer transition-all ${
-                      formData.paymentPlan === "monthly"
-                        ? "border-accent bg-accent/5 shadow-lg"
-                        : "hover:border-accent/50"
-                    }`}
-                    onClick={() => setFormData({ ...formData, paymentPlan: "monthly" })}
-                  >
-                    <RadioGroupItem value="monthly" id="monthly" className="mt-1" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Label htmlFor="monthly" className="font-semibold text-lg cursor-pointer">
-                          Monthly Payment Plan
-                        </Label>
-                        <span className="text-xs bg-accent text-accent-foreground px-2 py-1 rounded-full font-semibold">
-                          POPULAR
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Lower upfront cost with ongoing website hosting & maintenance
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                        ${PRODUCTS.memorial.monthlyPrice}{" "}
-                        <span className="text-base font-normal text-muted-foreground">today</span>
-                      </p>
-                      <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-                        <p className="text-sm font-semibold text-foreground">
-                          Then ${PRODUCTS.memorial.monthlyFee}/month for:
-                        </p>
-                        <div className="space-y-1.5 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                            <span>Website hosting & maintenance</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                            <span>Automatic updates & security</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                            <span>24/7 uptime monitoring</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                            <span>Unlimited photo & video storage</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
-
             {/* Plaque Color Selection */}
             <Card>
               <CardHeader>

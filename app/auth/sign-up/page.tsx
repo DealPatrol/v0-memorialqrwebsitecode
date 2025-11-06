@@ -57,6 +57,16 @@ export default function SignUpPage() {
 
       if (signUpError) {
         console.error("[v0] Sign up error:", signUpError)
+        if (
+          signUpError.message?.includes("Email signups are disabled") ||
+          (signUpError as any).code === "email_provider_disabled"
+        ) {
+          setError(
+            "Email authentication is currently disabled. Please enable Email provider in your Supabase project settings: Authentication → Providers → Email.",
+          )
+          setIsLoading(false)
+          return
+        }
         throw signUpError
       }
 

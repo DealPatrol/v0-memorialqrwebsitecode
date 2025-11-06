@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
 import { put } from "@vercel/blob"
-import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/email"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(req: Request) {
-  console.log("[v0] Processing checkout...")
-
   try {
     const formData = await req.formData()
 
-    // Extract all form data
+    // Extract form data
     const planType = formData.get("planType") as string
     const plaqueColor = formData.get("plaqueColor") as string
     const boxPersonalization = formData.get("boxPersonalization") as string
@@ -21,7 +18,7 @@ export async function POST(req: Request) {
     const city = formData.get("city") as string
     const state = formData.get("state") as string
     const zip = formData.get("zip") as string
-    const country = (formData.get("country") as string) || "US"
+    const paymentId = formData.get("paymentId") as string
 
     // Add-ons
     const addonWoodenQr = formData.get("addonWoodenQr") === "true"
@@ -29,26 +26,7 @@ export async function POST(req: Request) {
     const addonStoneQr = formData.get("addonStoneQr") === "true"
     const stoneEngravingText = formData.get("stoneEngravingText") as string
 
-    // Payment
-    const sourceId = formData.get("sourceId") as string
-    const totalAmount = Number.parseFloat(formData.get("totalAmount") as string)
-
-    // Validate required fields
-    if (
-      !planType ||
-      !plaqueColor ||
-      !customerName ||
-      !customerEmail ||
-      !addressLine1 ||
-      !city ||
-      !state ||
-      !zip ||
-      !sourceId
-    ) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
-    }
-
-    // Handle picture upload if picture plaque is selected
+    // Handle picture upload
     let picturePlaqueUrl = null
     if (addonPicturePlaque) {
       const pictureFile = formData.get("picturePlaqueFile") as File
@@ -57,50 +35,24 @@ export async function POST(req: Request) {
           access: "public",
         })
         picturePlaqueUrl = blob.url
-        console.log("[v0] Uploaded picture plaque image:", picturePlaqueUrl)
       }
     }
 
-    // Generate unique order number
+    // Generate order number
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
 
     // Calculate amounts
-    const baseAmount = planType === "one-time" ? 200 : 200 // in cents
+    const baseAmount = 200 // $2.00 in cents
     let addonAmount = 0
     if (addonWoodenQr) addonAmount += 2997
     if (addonPicturePlaque) addonAmount += 3998
     if (addonStoneQr) addonAmount += 5699
     const totalAmountCents = baseAmount + addonAmount
-    const monthlyAmountCents = planType === "monthly" ? 200 : null
-
-    // Process payment with Square
-    console.log("[v0] Processing payment with Square...")
-    const paymentResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/square/create-payment`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sourceId,
-          amount: totalAmount,
-          orderId: orderNumber,
-        }),
-      },
-    )
-
-    const paymentData = await paymentResponse.json()
-
-    if (!paymentData.success) {
-      console.error("[v0] Payment failed:", paymentData.error)
-      return NextResponse.json({ success: false, error: paymentData.error || "Payment failed" }, { status: 400 })
-    }
-
-    console.log("[v0] Payment successful:", paymentData.payment.id)
 
     // Create order in database
-    const supabase = await createClient()
+    const supabase = createServiceRoleClient()
 
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error } = await supabase
       .from("orders")
       .insert({
         order_number: orderNumber,
@@ -112,8 +64,8 @@ export async function POST(req: Request) {
         shipping_city: city,
         shipping_state: state,
         shipping_zip: zip,
-        shipping_country: country,
-        payment_id: paymentData.payment.id,
+        shipping_country: "US",
+        payment_id: paymentId,
         payment_status: "completed",
         amount_cents: totalAmountCents,
         currency: "USD",
@@ -128,56 +80,15 @@ export async function POST(req: Request) {
         addon_stone_qr: addonStoneQr,
         stone_engraving_text: stoneEngravingText,
         picture_plaque_url: picturePlaqueUrl,
-        monthly_amount_cents: monthlyAmountCents,
+        monthly_amount_cents: planType === "monthly" ? 200 : null,
       })
       .select()
       .single()
 
-    if (orderError) {
-      console.error("[v0] Error creating order:", orderError)
-      return NextResponse.json({ success: false, error: "Failed to create order" }, { status: 500 })
+    if (error) {
+      console.error("Database error:", error)
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
-
-    console.log("[v0] Order created:", order.order_number)
-
-    // Build product description for emails
-    let productDescription = `${plaqueColor.charAt(0).toUpperCase() + plaqueColor.slice(1)} Memorial Plaque`
-    const addons = []
-    if (addonWoodenQr) addons.push("Wooden QR Code")
-    if (addonPicturePlaque) addons.push("Picture Plaque")
-    if (addonStoneQr) addons.push("Stone QR Code")
-    if (addons.length > 0) {
-      productDescription += ` + ${addons.join(", ")}`
-    }
-
-    // Send confirmation emails (don't block on failure)
-    const emailData = {
-      customerName,
-      customerEmail,
-      orderNumber: order.order_number,
-      orderDate: new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-      productName: productDescription,
-      amount: `$${(totalAmountCents / 100).toFixed(2)}`,
-      shippingAddress: {
-        line1: addressLine1,
-        line2: addressLine2,
-        city,
-        state,
-        zip,
-      },
-    }
-
-    sendOrderConfirmationEmail(emailData).catch((error) => {
-      console.error("[v0] Failed to send confirmation email:", error)
-    })
-
-    sendAdminOrderNotification(emailData).catch((error) => {
-      console.error("[v0] Failed to send admin notification:", error)
-    })
 
     return NextResponse.json({
       success: true,
@@ -187,8 +98,8 @@ export async function POST(req: Request) {
         status: order.status,
       },
     })
-  } catch (error) {
-    console.error("[v0] Checkout processing error:", error)
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 })
+  } catch (error: any) {
+    console.error("Checkout error:", error)
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }

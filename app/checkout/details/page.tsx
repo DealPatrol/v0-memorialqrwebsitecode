@@ -21,8 +21,6 @@ const PRODUCTS = {
     id: "online_memorial",
     name: "Online Memorial",
     oneTimePrice: 2.0,
-    monthlyPrice: 2.0,
-    monthlyFee: 2.0,
   },
   plaques: {
     silver: { name: "Silver Memorial Plaque" },
@@ -59,7 +57,6 @@ export default function CheckoutDetailsPage() {
   const { toast } = useToast()
 
   const [step1Data, setStep1Data] = useState<{
-    paymentPlan: "onetime" | "monthly"
     plaqueType: "silver" | "gold" | "black"
     boxPersonalization: string
   } | null>(null)
@@ -80,9 +77,9 @@ export default function CheckoutDetailsPage() {
     stoneCustomText: "",
     picturePlaqueImage: null as File | null,
     isGift: false,
-    giftMessage: "",
     recipientName: "",
     recipientEmail: "",
+    giftMessage: "",
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -100,7 +97,7 @@ export default function CheckoutDetailsPage() {
   const calculateTotal = () => {
     if (!step1Data) return 0
 
-    let total = step1Data.paymentPlan === "onetime" ? PRODUCTS.memorial.oneTimePrice : PRODUCTS.memorial.monthlyPrice
+    let total = PRODUCTS.memorial.oneTimePrice
 
     if (formData.includeWoodenQR) total += PRODUCTS.addons.woodenQR.price
     if (formData.includePicturePlaque) total += PRODUCTS.addons.picturePlaque.price
@@ -179,6 +176,17 @@ export default function CheckoutDetailsPage() {
       return false
     }
 
+    const fullName = `${formData.firstName} ${formData.lastName}`
+    if (fullName.length > 45) {
+      toast({
+        title: "Name Too Long",
+        description:
+          "Your first and last name combined must be 45 characters or less. Please shorten one or both names.",
+        variant: "destructive",
+      })
+      return false
+    }
+
     return true
   }
 
@@ -191,7 +199,7 @@ export default function CheckoutDetailsPage() {
       const formDataToSend = new FormData()
 
       // Plan and product details
-      formDataToSend.append("planType", step1Data.paymentPlan === "onetime" ? "one-time" : "monthly")
+      formDataToSend.append("planType", "one-time")
       formDataToSend.append("plaqueColor", step1Data.plaqueType)
       formDataToSend.append("boxPersonalization", step1Data.boxPersonalization)
 
@@ -219,19 +227,7 @@ export default function CheckoutDetailsPage() {
         formDataToSend.append("picturePlaqueFile", formData.picturePlaqueImage)
       }
 
-      // Payment details
-      formDataToSend.append("sourceId", paymentId)
-      formDataToSend.append("totalAmount", calculateTotal().toString())
-
-      // Gift information
-      if (formData.isGift) {
-        formDataToSend.append("isGift", "true")
-        formDataToSend.append("recipientName", formData.recipientName)
-        formDataToSend.append("recipientEmail", formData.recipientEmail)
-        formDataToSend.append("giftMessage", formData.giftMessage)
-      }
-
-      console.log("[v0] Creating order after payment...")
+      formDataToSend.append("paymentId", paymentId)
 
       const response = await fetch("/api/checkout/process", {
         method: "POST",
@@ -240,39 +236,23 @@ export default function CheckoutDetailsPage() {
 
       const result = await response.json()
 
-      if (!result.success) {
+      if (!response.ok || !result.success) {
         throw new Error(result.error || "Failed to create order")
       }
-
-      console.log("[v0] Order created successfully:", result.order.orderNumber)
-
-      // Store minimal order data for memorial creation
-      const orderData = {
-        orderId: result.order.id,
-        orderNumber: result.order.orderNumber,
-        customerEmail: formData.email,
-        customerName: `${formData.firstName} ${formData.lastName}`,
-        plaqueColor: step1Data.plaqueType,
-        planType: step1Data.paymentPlan,
-      }
-
-      sessionStorage.setItem("pendingOrder", JSON.stringify(orderData))
 
       toast({
         title: "Payment Successful!",
         description: "Redirecting you to create your memorial...",
       })
 
-      // Redirect to create memorial page
-      router.push("/create-memorial")
+      router.push(`/create-memorial?order=${result.order.orderNumber}`)
     } catch (error: any) {
-      console.error("[v0] Error processing payment:", error)
+      console.error("Payment error:", error)
       toast({
         title: "Error",
         description: error.message || "Something went wrong. Please contact support.",
         variant: "destructive",
       })
-    } finally {
       setIsSubmitting(false)
     }
   }
@@ -311,23 +291,11 @@ export default function CheckoutDetailsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">
-                      {step1Data.paymentPlan === "onetime"
-                        ? "Memorial Package (Lifetime)"
-                        : "Memorial Package (Monthly)"}
-                    </span>
+                    <span className="text-muted-foreground">Memorial Package (Lifetime)</span>
                     <span className="font-semibold text-gray-900 dark:text-gray-100">
-                      $
-                      {step1Data.paymentPlan === "onetime"
-                        ? PRODUCTS.memorial.oneTimePrice.toFixed(2)
-                        : PRODUCTS.memorial.monthlyPrice.toFixed(2)}
+                      ${PRODUCTS.memorial.oneTimePrice.toFixed(2)}
                     </span>
                   </div>
-                  {step1Data.paymentPlan === "monthly" && (
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span>Then ${PRODUCTS.memorial.monthlyFee}/month</span>
-                    </div>
-                  )}
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-muted-foreground">{PRODUCTS.plaques[step1Data.plaqueType].name}</span>
                     <span className="font-semibold text-accent">Included</span>
@@ -373,7 +341,7 @@ export default function CheckoutDetailsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-accent" />
-                    <span>Lifetime Hosting {step1Data.paymentPlan === "onetime" && "(Included)"}</span>
+                    <span>Lifetime Hosting (Included)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-accent" />
@@ -645,6 +613,7 @@ export default function CheckoutDetailsPage() {
                         placeholder="John"
                         value={formData.firstName}
                         onChange={handleInputChange}
+                        maxLength={45}
                         required
                       />
                     </div>
@@ -656,6 +625,7 @@ export default function CheckoutDetailsPage() {
                         placeholder="Doe"
                         value={formData.lastName}
                         onChange={handleInputChange}
+                        maxLength={45}
                         required
                       />
                     </div>
@@ -670,6 +640,7 @@ export default function CheckoutDetailsPage() {
                       placeholder="john@example.com"
                       value={formData.email}
                       onChange={handleInputChange}
+                      maxLength={254}
                       required
                     />
                   </div>
@@ -683,6 +654,7 @@ export default function CheckoutDetailsPage() {
                       placeholder="(555) 123-4567"
                       value={formData.phone}
                       onChange={handleInputChange}
+                      maxLength={20}
                     />
                   </div>
 
@@ -700,6 +672,7 @@ export default function CheckoutDetailsPage() {
                         placeholder="123 Main Street"
                         value={formData.address}
                         onChange={handleInputChange}
+                        maxLength={100}
                         required
                       />
                     </div>
@@ -712,6 +685,7 @@ export default function CheckoutDetailsPage() {
                         placeholder="Apt 4B"
                         value={formData.address2}
                         onChange={handleInputChange}
+                        maxLength={100}
                       />
                     </div>
 
@@ -724,6 +698,7 @@ export default function CheckoutDetailsPage() {
                           placeholder="New York"
                           value={formData.city}
                           onChange={handleInputChange}
+                          maxLength={45}
                           required
                         />
                       </div>
@@ -735,6 +710,7 @@ export default function CheckoutDetailsPage() {
                           placeholder="NY"
                           value={formData.state}
                           onChange={handleInputChange}
+                          maxLength={45}
                           required
                         />
                       </div>
@@ -748,6 +724,7 @@ export default function CheckoutDetailsPage() {
                         placeholder="10001"
                         value={formData.zipCode}
                         onChange={handleInputChange}
+                        maxLength={10}
                         required
                       />
                     </div>
