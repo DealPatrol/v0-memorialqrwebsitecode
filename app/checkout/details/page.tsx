@@ -784,7 +784,7 @@ export default function CheckoutDetailsPage() {
                 <CardContent>
                   <SquarePaymentForm
                     amount={calculateTotal()}
-                    orderId={`order_${Date.now()}`}
+                    orderId={`ORD${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 7).toUpperCase()}`}
                     onSuccess={handlePaymentSuccess}
                     onError={(error) => {
                       console.error("Payment error:", error)

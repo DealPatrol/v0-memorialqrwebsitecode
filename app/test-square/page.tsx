@@ -85,7 +85,12 @@ export default function TestSquarePage() {
                   </ul>
                 </div>
 
-                <SquarePaymentForm amount={testAmount} onSuccess={handlePaymentSuccess} onError={handlePaymentError} />
+                <SquarePaymentForm 
+                  amount={testAmount}
+                  orderId={`TEST${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 7).toUpperCase()}`}
+                  onSuccess={handlePaymentSuccess} 
+                  onError={handlePaymentError} 
+                />
               </div>
             </CardContent>
           </Card>
