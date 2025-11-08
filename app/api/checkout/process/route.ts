@@ -3,9 +3,10 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    console.log("[v0 API] Checkout process route called")
 
-    console.log("[v0] Received checkout data:", JSON.stringify(body, null, 2))
+    const body = await req.json()
+    console.log("[v0 API] Request body received:", JSON.stringify(body, null, 2))
 
     const {
       plaqueColor,
@@ -21,17 +22,28 @@ export async function POST(req: Request) {
       paymentId,
       addonWoodenQr,
       addonPicturePlaque,
-      addonStoneQR, // Frontend sends this with capital QR
+      addonStoneQR,
       stoneEngravingText,
       picturePlaqueUrl,
     } = body
 
     if (!customerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId) {
-      console.error("[v0] Missing required fields")
+      console.error("[v0 API] Missing required fields:", {
+        customerName: !!customerName,
+        customerEmail: !!customerEmail,
+        addressLine1: !!addressLine1,
+        city: !!city,
+        state: !!state,
+        zip: !!zip,
+        paymentId: !!paymentId,
+      })
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
 
+    console.log("[v0 API] All required fields present")
+
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+    console.log("[v0 API] Generated order number:", orderNumber)
 
     const baseAmount = 200
     let addonAmount = 0
@@ -40,7 +52,11 @@ export async function POST(req: Request) {
     if (addonStoneQR) addonAmount += 5699
     const totalAmountCents = baseAmount + addonAmount
 
+    console.log("[v0 API] Calculated total:", totalAmountCents)
+
+    console.log("[v0 API] Creating Supabase client...")
     const supabase = createServiceRoleClient()
+    console.log("[v0 API] Supabase client created")
 
     const orderData = {
       order_number: orderNumber,
@@ -70,12 +86,13 @@ export async function POST(req: Request) {
       picture_plaque_url: picturePlaqueUrl || null,
     }
 
-    console.log("[v0] Inserting order into database:", JSON.stringify(orderData, null, 2))
+    console.log("[v0 API] Order data prepared, inserting into database...")
+    console.log("[v0 API] Order data:", JSON.stringify(orderData, null, 2))
 
     const { data: order, error } = await supabase.from("orders").insert(orderData).select().single()
 
     if (error) {
-      console.error("[v0] Database error:", JSON.stringify(error, null, 2))
+      console.error("[v0 API] Supabase error:", JSON.stringify(error, null, 2))
       return NextResponse.json(
         {
           success: false,
@@ -89,11 +106,11 @@ export async function POST(req: Request) {
     }
 
     if (!order) {
-      console.error("[v0] Order not created - no data returned")
-      return NextResponse.json({ success: false, error: "Order not created" }, { status: 500 })
+      console.error("[v0 API] No order data returned from database")
+      return NextResponse.json({ success: false, error: "Order not created - no data returned" }, { status: 500 })
     }
 
-    console.log("[v0] Order created successfully:", order.id)
+    console.log("[v0 API] Order created successfully! ID:", order.id, "Number:", order.order_number)
 
     return NextResponse.json({
       success: true,
@@ -104,11 +121,16 @@ export async function POST(req: Request) {
       },
     })
   } catch (error: any) {
-    console.error("[v0] Checkout error:", error)
+    console.error("[v0 API] FATAL ERROR in checkout process:", error)
+    console.error("[v0 API] Error stack:", error.stack)
+    console.error("[v0 API] Error message:", error.message)
+    console.error("[v0 API] Error name:", error.name)
+
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Payment processing failed",
+        error: `Server error: ${error.message || "Unknown error"}`,
+        details: error.stack?.substring(0, 200) || "No stack trace",
       },
       { status: 500 },
     )
