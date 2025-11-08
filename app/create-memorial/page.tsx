@@ -133,16 +133,6 @@ export default function CreateMemorialPage() {
     setIsSubmitting(true)
 
     try {
-      console.log("[v0] Starting memorial creation with order data:", orderData)
-      console.log("[v0] Form data:", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        dateOfBirth: formData.dateOfBirth,
-        dateOfDeath: formData.dateOfDeath,
-        location: formData.location,
-        biography: formData.biography,
-      })
-
       const memorialResponse = await fetch("/api/memorials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -161,20 +151,13 @@ export default function CreateMemorialPage() {
 
       if (!memorialResponse.ok) {
         const errorData = await memorialResponse.json()
-        console.error("[v0] Memorial creation failed:", errorData)
         throw new Error(errorData.error || "Failed to create memorial")
       }
 
       const { memorial } = await memorialResponse.json()
-      console.log("[v0] Memorial created successfully:", memorial.id)
 
-      if (!orderData.orderId) {
-        console.error("[v0] No orderId found in orderData:", orderData)
-        // Don't throw error - memorial was created successfully, just can't link
-      } else {
-        console.log("[v0] Linking memorial to order:", orderData.orderId)
-
-        const linkResponse = await fetch("/api/orders/link-memorial", {
+      if (orderData.orderId) {
+        await fetch("/api/orders/link-memorial", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -182,32 +165,17 @@ export default function CreateMemorialPage() {
             memorialId: memorial.id,
           }),
         })
-
-        if (!linkResponse.ok) {
-          const errorData = await linkResponse.json()
-          console.error("[v0] Failed to link memorial to order:", errorData)
-          // Don't throw error - memorial was created successfully
-        } else {
-          console.log("[v0] Successfully linked memorial to order")
-        }
       }
 
       sessionStorage.removeItem("pendingOrder")
 
       toast({
         title: "Memorial Created Successfully!",
-        description: `Your memorial has been created${orderData.orderNumber ? ` and linked to order ${orderData.orderNumber}` : ""}.`,
+        description: "Your memorial is now live and ready to share.",
       })
 
-      if (orderData.orderNumber) {
-        console.log("[v0] Redirecting to confirmation page with order:", orderData.orderNumber)
-        router.push(`/checkout/confirmation?order=${orderData.orderNumber}`)
-      } else {
-        console.log("[v0] No order number, redirecting to memorial page")
-        router.push(`/memorial/${memorial.id}`)
-      }
+      router.push(`/memorial/${memorial.id}`)
     } catch (error: any) {
-      console.error("[v0] Error creating memorial:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to create memorial. Please contact support.",

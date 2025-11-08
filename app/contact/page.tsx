@@ -246,8 +246,8 @@ export default function ContactPage() {
                   <div className="space-y-2 text-gray-700">
                     <div>
                       <div className="font-semibold">Memorial QR LLC</div>
-                      <div>123 Memory Lane</div>
-                      <div>Springfield, IL 62701</div>
+                      <div>12476 County Road 747</div>
+                      <div>Hanceville, AL 35077</div>
                     </div>
                     <div className="pt-2">
                       <div className="font-semibold">Business License:</div>

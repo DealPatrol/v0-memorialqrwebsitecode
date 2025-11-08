@@ -1,18 +1,24 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
+function isUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return uuidRegex.test(str)
+}
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const supabase = await createClient()
-    const memorialSlug = params.id
+    const identifier = params.id
 
-    console.log("[v0] Fetching memorial by slug:", memorialSlug)
+    const isId = isUUID(identifier)
 
-    // Query memorial by slug
+    console.log("[v0] Fetching memorial by", isId ? "ID" : "slug", ":", identifier)
+
     const { data: memorial, error } = await supabase
       .from("memorials")
       .select("*")
-      .eq("slug", memorialSlug)
+      .eq(isId ? "id" : "slug", identifier)
       .maybeSingle()
 
     if (error) {
@@ -21,7 +27,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     if (!memorial) {
-      console.log("[v0] Memorial not found:", memorialSlug)
+      console.log("[v0] Memorial not found:", identifier)
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 

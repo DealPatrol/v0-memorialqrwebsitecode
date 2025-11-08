@@ -3,7 +3,10 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(req: Request) {
   try {
+    console.log("[v0 API] Checkout process started")
+
     const body = await req.json()
+    console.log("[v0 API] Request body received:", JSON.stringify(body, null, 2))
 
     const {
       plaqueColor,
@@ -25,10 +28,24 @@ export async function POST(req: Request) {
     } = body
 
     if (!customerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
+      const missing = []
+      if (!customerName) missing.push("customerName")
+      if (!customerEmail) missing.push("customerEmail")
+      if (!addressLine1) missing.push("addressLine1")
+      if (!city) missing.push("city")
+      if (!state) missing.push("state")
+      if (!zip) missing.push("zip")
+      if (!paymentId) missing.push("paymentId")
+
+      console.error("[v0 API] Missing required fields:", missing)
+      return NextResponse.json(
+        { success: false, error: `Missing required fields: ${missing.join(", ")}` },
+        { status: 400 },
+      )
     }
 
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+    console.log("[v0 API] Generated order number:", orderNumber)
 
     const baseAmount = 200
     let addonAmount = 0
@@ -37,6 +54,9 @@ export async function POST(req: Request) {
     if (addonStoneQR) addonAmount += 5699
     const totalAmountCents = baseAmount + addonAmount
 
+    console.log("[v0 API] Calculated total:", totalAmountCents, "cents")
+
+    console.log("[v0 API] Creating Supabase client...")
     const supabase = createServiceRoleClient()
 
     const orderData = {
@@ -67,10 +87,17 @@ export async function POST(req: Request) {
       picture_plaque_url: picturePlaqueUrl || null,
     }
 
+    console.log("[v0 API] Inserting order into database:", JSON.stringify(orderData, null, 2))
+
     const { data: order, error } = await supabase.from("orders").insert(orderData).select().single()
 
     if (error) {
-      console.error("Database error:", error)
+      console.error("[v0 API] Database error:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      })
       return NextResponse.json(
         {
           success: false,
@@ -84,8 +111,11 @@ export async function POST(req: Request) {
     }
 
     if (!order) {
+      console.error("[v0 API] Order not created - no data returned")
       return NextResponse.json({ success: false, error: "Order not created" }, { status: 500 })
     }
+
+    console.log("[v0 API] Order created successfully:", order)
 
     return NextResponse.json({
       success: true,
@@ -96,12 +126,13 @@ export async function POST(req: Request) {
       },
     })
   } catch (error: any) {
-    console.error("Checkout process error:", error)
+    console.error("[v0 API] Unexpected error:", error)
 
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Unknown server error",
+        stack: error.stack,
       },
       { status: 500 },
     )

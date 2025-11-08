@@ -27,13 +27,29 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
       if (error) throw error
 
-      router.push(`/${redirect || "dashboard"}`)
+      const { data: memorials, error: memorialError } = await supabase
+        .from("memorials")
+        .select("id")
+        .eq("user_id", authData.user.id)
+        .limit(1)
+
+      if (memorialError) {
+        console.error("Error checking memorials:", memorialError)
+      }
+
+      if (redirect) {
+        router.push(`/${redirect}`)
+      } else if (memorials && memorials.length > 0) {
+        router.push("/products")
+      } else {
+        router.push("/")
+      }
       router.refresh()
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")

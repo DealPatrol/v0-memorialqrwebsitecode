@@ -149,6 +149,8 @@ export default function CheckoutDetailsPage() {
     setIsSubmitting(true)
 
     try {
+      console.log("[v0] Payment ID received:", paymentId)
+
       const orderData = {
         planType: "one-time",
         plaqueColor: step1Data.plaqueType,
@@ -169,21 +171,38 @@ export default function CheckoutDetailsPage() {
         paymentId: paymentId,
       }
 
+      console.log("[v0] Sending order data to API:", orderData)
+
       const response = await fetch("/api/checkout/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
       })
 
-      if (!response.ok) {
-        throw new Error(`Failed to process order`)
+      console.log("[v0] API response status:", response.status)
+
+      const responseText = await response.text()
+      console.log("[v0] API response text:", responseText)
+
+      let result
+      try {
+        result = JSON.parse(responseText)
+      } catch (parseError) {
+        console.error("[v0] Failed to parse response:", parseError)
+        throw new Error(`Server returned invalid response: ${responseText.substring(0, 100)}`)
       }
 
-      const result = await response.json()
+      console.log("[v0] Parsed result:", result)
+
+      if (!response.ok) {
+        throw new Error(result.error || `Server error: ${response.status}`)
+      }
 
       if (!result.success) {
         throw new Error(result.error || "Failed to create order")
       }
+
+      console.log("[v0] Order created successfully:", result.order)
 
       sessionStorage.setItem(
         "pendingOrder",
@@ -202,6 +221,7 @@ export default function CheckoutDetailsPage() {
 
       router.push(`/create-memorial?order=${result.order.orderNumber}`)
     } catch (error: any) {
+      console.error("[v0] Payment processing error:", error)
       toast({
         title: "Payment Failed",
         description: error.message || "There was an error processing your payment. Please try again.",

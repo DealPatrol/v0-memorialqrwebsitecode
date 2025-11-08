@@ -1,6 +1,4 @@
 "use server"
-
-import { createClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/email"
 
@@ -96,59 +94,67 @@ export async function createOrder(data: CreateOrderData) {
 
 export async function getOrderByNumber(orderNumber: string) {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceRoleClient()
 
-    const { data: order, error } = await supabase.from("orders").select("*").eq("order_number", orderNumber).single()
+    const { data: order, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("order_number", orderNumber)
+      .maybeSingle()
 
     if (error) {
-      console.error("[v0] Error fetching order:", error)
+      console.error("Error fetching order:", error)
       return { success: false, error: error.message }
+    }
+
+    if (!order) {
+      return { success: false, error: "Order not found" }
     }
 
     return { success: true, order }
   } catch (error) {
-    console.error("[v0] Exception fetching order:", error)
+    console.error("Exception fetching order:", error)
     return { success: false, error: "Failed to fetch order" }
   }
 }
 
 export async function getAllOrders() {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceRoleClient()
 
     const { data: orders, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false })
 
     if (error) {
-      console.error("[v0] Error fetching orders:", error)
-      return { success: false, error: error.message }
+      console.error("Error fetching orders:", error)
+      return { success: false, error: error.message, orders: [] }
     }
 
     return { success: true, orders }
   } catch (error) {
-    console.error("[v0] Exception fetching orders:", error)
-    return { success: false, error: "Failed to fetch orders" }
+    console.error("Exception fetching orders:", error)
+    return { success: false, error: "Failed to fetch orders", orders: [] }
   }
 }
 
 export async function updateOrderStatus(orderId: string, status: string, adminNotes?: string) {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceRoleClient()
 
     const updateData: any = { status }
-    if (adminNotes) {
+    if (adminNotes !== undefined) {
       updateData.admin_notes = adminNotes
     }
 
     const { data: order, error } = await supabase.from("orders").update(updateData).eq("id", orderId).select().single()
 
     if (error) {
-      console.error("[v0] Error updating order:", error)
+      console.error("Error updating order:", error)
       return { success: false, error: error.message }
     }
 
     return { success: true, order }
   } catch (error) {
-    console.error("[v0] Exception updating order:", error)
+    console.error("Exception updating order:", error)
     return { success: false, error: "Failed to update order" }
   }
 }
