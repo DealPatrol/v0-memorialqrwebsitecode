@@ -15,6 +15,8 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 const PRODUCTS = {
   memorial: {
@@ -76,13 +78,11 @@ export default function CheckoutDetailsPage() {
     includeStoneQR: false,
     stoneCustomText: "",
     picturePlaqueImage: null as File | null,
-    isGift: false,
-    recipientName: "",
-    recipientEmail: "",
-    giftMessage: "",
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [debugError, setDebugError] = useState<string | null>(null)
+  const [testMode, setTestMode] = useState(false)
 
   useEffect(() => {
     const savedData = sessionStorage.getItem("checkoutStep1")
@@ -191,66 +191,158 @@ export default function CheckoutDetailsPage() {
   }
 
   const handlePaymentSuccess = async (paymentId: string) => {
-    if (isSubmitting || !step1Data) return
+    console.log("[v0] Payment success callback triggered with ID:", paymentId)
+    setDebugError(null)
+
+    if (isSubmitting || !step1Data) {
+      console.log("[v0] Already submitting or no step1 data")
+      return
+    }
 
     setIsSubmitting(true)
 
     try {
-      const formDataToSend = new FormData()
-
-      // Plan and product details
-      formDataToSend.append("planType", "one-time")
-      formDataToSend.append("plaqueColor", step1Data.plaqueType)
-      formDataToSend.append("boxPersonalization", step1Data.boxPersonalization)
-
-      // Customer information
-      formDataToSend.append("customerName", `${formData.firstName} ${formData.lastName}`)
-      formDataToSend.append("customerEmail", formData.email)
-      formDataToSend.append("customerPhone", formData.phone)
-
-      // Shipping address
-      formDataToSend.append("addressLine1", formData.address)
-      formDataToSend.append("addressLine2", formData.address2)
-      formDataToSend.append("city", formData.city)
-      formDataToSend.append("state", formData.state)
-      formDataToSend.append("zip", formData.zipCode)
-      formDataToSend.append("country", "US")
-
-      // Add-ons
-      formDataToSend.append("addonWoodenQr", formData.includeWoodenQR.toString())
-      formDataToSend.append("addonPicturePlaque", formData.includePicturePlaque.toString())
-      formDataToSend.append("addonStoneQr", formData.includeStoneQR.toString())
-      formDataToSend.append("stoneEngravingText", formData.stoneCustomText)
-
-      // Picture plaque image if selected
+      let picturePlaqueUrl = null
       if (formData.includePicturePlaque && formData.picturePlaqueImage) {
-        formDataToSend.append("picturePlaqueFile", formData.picturePlaqueImage)
+        console.log("[v0] Uploading picture plaque image...")
+        const imageFormData = new FormData()
+        imageFormData.append("file", formData.picturePlaqueImage)
+
+        const uploadResponse = await fetch("/api/upload-image", {
+          method: "POST",
+          body: imageFormData,
+        })
+
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json()
+          picturePlaqueUrl = uploadResult.url
+          console.log("[v0] Image uploaded:", picturePlaqueUrl)
+        }
       }
 
-      formDataToSend.append("paymentId", paymentId)
+      const orderData = {
+        planType: "one-time",
+        plaqueColor: step1Data.plaqueType,
+        boxPersonalization: step1Data.boxPersonalization,
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        customerEmail: formData.email,
+        customerPhone: formData.phone || "",
+        addressLine1: formData.address,
+        addressLine2: formData.address2 || "",
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zipCode,
+        addonWoodenQr: formData.includeWoodenQR,
+        addonPicturePlaque: formData.includePicturePlaque,
+        addonStoneQR: formData.includeStoneQR,
+        stoneEngravingText: formData.stoneCustomText || "",
+        picturePlaqueUrl: picturePlaqueUrl || "",
+        paymentId: paymentId,
+      }
+
+      console.log("[v0] Sending order data to API...")
 
       const response = await fetch("/api/checkout/process", {
         method: "POST",
-        body: formDataToSend,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
       })
 
-      const result = await response.json()
+      console.log("[v0] API response status:", response.status)
 
-      if (!response.ok || !result.success) {
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error("[v0] API error response:", errorText)
+
+        let errorDetails = errorText
+        try {
+          const errorJson = JSON.parse(errorText)
+          errorDetails = `${errorJson.error || errorText}\n${errorJson.details || ""}\n${errorJson.hint || ""}`
+        } catch {
+          // If not JSON, use raw text
+        }
+
+        setDebugError(`API Status ${response.status}: ${errorDetails}`)
+        throw new Error(`API returned status ${response.status}`)
+      }
+
+      const responseText = await response.text()
+      console.log("[v0] API response text:", responseText)
+
+      if (!responseText) {
+        setDebugError("API returned empty response body")
+        throw new Error("Server returned an empty response")
+      }
+
+      let result
+      try {
+        result = JSON.parse(responseText)
+        console.log("[v0] Parsed result:", result)
+      } catch (parseError) {
+        console.error("[v0] JSON parse error:", parseError)
+        setDebugError(`JSON Parse Failed: ${responseText.substring(0, 300)}`)
+        throw new Error("Server returned invalid JSON")
+      }
+
+      if (!result.success) {
+        console.error("[v0] Order creation failed:", result.error)
+        setDebugError(`DB Error: ${result.error}\nDetails: ${result.details || "none"}\nHint: ${result.hint || "none"}`)
         throw new Error(result.error || "Failed to create order")
       }
+
+      console.log("[v0] Order created successfully, storing in sessionStorage...")
+      setDebugError(`✅ SUCCESS! Order created: ${result.order.orderNumber} (ID: ${result.order.id})`)
+
+      sessionStorage.setItem(
+        "pendingOrder",
+        JSON.stringify({
+          orderId: result.order.id,
+          orderNumber: result.order.orderNumber,
+          customerName: orderData.customerName,
+          customerEmail: orderData.customerEmail,
+        }),
+      )
 
       toast({
         title: "Payment Successful!",
         description: "Redirecting you to create your memorial...",
       })
 
+      console.log("[v0] Redirecting to create-memorial page...")
       router.push(`/create-memorial?order=${result.order.orderNumber}`)
     } catch (error: any) {
-      console.error("Payment error:", error)
+      console.error("[v0] Payment processing error:", error)
+      if (!debugError) {
+        setDebugError(`Caught Exception: ${error.message}\nStack: ${error.stack?.substring(0, 200) || "none"}`)
+      }
       toast({
-        title: "Error",
-        description: error.message || "Something went wrong. Please contact support.",
+        title: "Payment Failed",
+        description: `Error: ${error.message}. Check the red alert above for details.`,
+        variant: "destructive",
+        duration: 10000,
+      })
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleTestModeSubmit = async () => {
+    if (!validateForm()) {
+      return
+    }
+
+    setDebugError(null)
+    setIsSubmitting(true)
+
+    try {
+      const testPaymentId = `TEST-${Date.now()}`
+      console.log("[v0] TEST MODE: Skipping Square payment, using test payment ID:", testPaymentId)
+
+      await handlePaymentSuccess(testPaymentId)
+    } catch (error: any) {
+      console.error("[v0] Test mode error:", error)
+      toast({
+        title: "Test Mode Error",
+        description: error.message,
         variant: "destructive",
       })
       setIsSubmitting(false)
@@ -272,6 +364,38 @@ export default function CheckoutDetailsPage() {
               <ArrowLeft className="h-4 w-4" />
               Back to Plan Selection
             </Button>
+          </div>
+
+          {debugError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Debug Error (Visible for Troubleshooting)</AlertTitle>
+              <AlertDescription className="mt-2 font-mono text-xs break-words">{debugError}</AlertDescription>
+              <Button variant="outline" size="sm" className="mt-3 bg-transparent" onClick={() => setDebugError(null)}>
+                Dismiss
+              </Button>
+            </Alert>
+          )}
+
+          <div className="mb-6">
+            <Alert className="bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
+              <AlertTitle className="flex items-center gap-2">
+                🧪 Test Mode
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setTestMode(!testMode)}
+                  className={testMode ? "bg-green-100 border-green-300" : ""}
+                >
+                  {testMode ? "ON" : "OFF"}
+                </Button>
+              </AlertTitle>
+              <AlertDescription className="text-xs mt-2">
+                {testMode
+                  ? "Test mode enabled. This will skip Square payment and test database order creation only."
+                  : "Click ON to test database order creation without processing payment."}
+              </AlertDescription>
+            </Alert>
           </div>
 
           <div className="text-center mb-12">
@@ -529,84 +653,9 @@ export default function CheckoutDetailsPage() {
                   <CardTitle>Shipping Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2 p-4 bg-accent/10 rounded-lg border border-accent/20">
-                    <Checkbox
-                      id="isGift"
-                      checked={formData.isGift}
-                      onCheckedChange={(checked) => setFormData({ ...formData, isGift: checked as boolean })}
-                    />
-                    <Label htmlFor="isGift" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-accent"
-                      >
-                        <polyline points="20 12 20 22 4 22 4 12" />
-                        <rect x="2" y="7" width="20" height="5" />
-                        <line x1="12" y1="22" x2="12" y2="7" />
-                        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
-                        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
-                      </svg>
-                      This is a gift
-                    </Label>
-                  </div>
-
-                  {formData.isGift && (
-                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg border">
-                      <h3 className="font-semibold text-sm">Gift Recipient Information</h3>
-                      <div className="space-y-2">
-                        <Label htmlFor="recipientName">Recipient Name *</Label>
-                        <Input
-                          id="recipientName"
-                          name="recipientName"
-                          placeholder="Jane Smith"
-                          value={formData.recipientName}
-                          onChange={handleInputChange}
-                          required={formData.isGift}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="recipientEmail">Recipient Email *</Label>
-                        <Input
-                          id="recipientEmail"
-                          name="recipientEmail"
-                          type="email"
-                          placeholder="jane@example.com"
-                          value={formData.recipientEmail}
-                          onChange={handleInputChange}
-                          required={formData.isGift}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          We'll send the recipient instructions to create their memorial
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="giftMessage">Gift Message (Optional)</Label>
-                        <Textarea
-                          id="giftMessage"
-                          name="giftMessage"
-                          placeholder="Write a personal message to include with your gift..."
-                          value={formData.giftMessage}
-                          onChange={handleTextareaChange}
-                          maxLength={500}
-                          rows={4}
-                          className="resize-none"
-                        />
-                        <p className="text-xs text-muted-foreground">{formData.giftMessage.length}/500 characters</p>
-                      </div>
-                    </div>
-                  )}
-
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">{formData.isGift ? "Your" : ""} First Name *</Label>
+                      <Label htmlFor="firstName">First Name *</Label>
                       <Input
                         id="firstName"
                         name="firstName"
@@ -618,7 +667,7 @@ export default function CheckoutDetailsPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">{formData.isGift ? "Your" : ""} Last Name *</Label>
+                      <Label htmlFor="lastName">Last Name *</Label>
                       <Input
                         id="lastName"
                         name="lastName"
@@ -632,7 +681,7 @@ export default function CheckoutDetailsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">{formData.isGift ? "Your" : ""} Email Address *</Label>
+                    <Label htmlFor="email">Email Address *</Label>
                     <Input
                       id="email"
                       name="email"
@@ -661,9 +710,7 @@ export default function CheckoutDetailsPage() {
                   <Separator />
 
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-sm">
-                      {formData.isGift ? "Shipping Address (Where to send the gift)" : "Shipping Address"}
-                    </h3>
+                    <h3 className="font-semibold text-sm">Shipping Address</h3>
                     <div className="space-y-2">
                       <Label htmlFor="address">Street Address *</Label>
                       <Input
@@ -737,7 +784,7 @@ export default function CheckoutDetailsPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lock className="h-5 w-5 text-accent" />
-                    Secure Payment
+                    {testMode ? "Test Mode - Database Only" : "Secure Payment"}
                   </CardTitle>
                   {/* Trust signals section */}
                   <div className="flex flex-wrap items-center gap-4 pt-4 border-t mt-4">
@@ -759,16 +806,31 @@ export default function CheckoutDetailsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <SquarePaymentForm
-                    amount={calculateTotal()}
-                    orderId={`order_${Date.now()}`}
-                    onSuccess={handlePaymentSuccess}
-                    onError={(error) => {
-                      console.error("Payment error:", error)
-                    }}
-                    onBeforePayment={validateForm}
-                    disabled={isSubmitting}
-                  />
+                  {testMode ? (
+                    <div className="space-y-4">
+                      <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
+                        <AlertTitle>Test Mode Active</AlertTitle>
+                        <AlertDescription className="text-sm">
+                          This will create a test order in the database without processing a real payment. Use this to
+                          verify the database integration works correctly.
+                        </AlertDescription>
+                      </Alert>
+                      <Button onClick={handleTestModeSubmit} disabled={isSubmitting} className="w-full" size="lg">
+                        {isSubmitting ? "Creating Test Order..." : "Create Test Order"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <SquarePaymentForm
+                      amount={calculateTotal()}
+                      orderId={`order_${Date.now()}`}
+                      onSuccess={handlePaymentSuccess}
+                      onError={(error) => {
+                        console.error("Payment error:", error)
+                      }}
+                      onBeforePayment={validateForm}
+                      disabled={isSubmitting}
+                    />
+                  )}
                 </CardContent>
               </Card>
 

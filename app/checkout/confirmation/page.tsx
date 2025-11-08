@@ -16,21 +16,30 @@ export default function OrderConfirmationPage() {
 
   useEffect(() => {
     if (!orderNumber) {
+      console.log("[v0] Confirmation - No order number in URL, redirecting to home")
       router.push("/")
       return
     }
 
+    console.log("[v0] Confirmation - Fetching order details for:", orderNumber)
+
     // Fetch order details
     fetch(`/api/orders/${orderNumber}`)
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("[v0] Confirmation - Order fetch response status:", res.status)
+        return res.json()
+      })
       .then((data) => {
+        console.log("[v0] Confirmation - Order fetch response data:", data)
         if (data.success) {
           setOrder(data.order)
+        } else {
+          console.error("[v0] Confirmation - Order fetch failed:", data.error)
         }
         setLoading(false)
       })
       .catch((error) => {
-        console.error("[v0] Error fetching order:", error)
+        console.error("[v0] Confirmation - Error fetching order:", error)
         setLoading(false)
       })
   }, [orderNumber, router])
