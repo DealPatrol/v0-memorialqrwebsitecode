@@ -1,22 +1,17 @@
 "use client"
 
 import type React from "react"
-import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
 import { CheckCircle, Shield, ArrowLeft, Lock, CreditCard, Award } from "lucide-react"
 import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
 
 const PRODUCTS = {
   memorial: {
@@ -73,37 +68,21 @@ export default function CheckoutDetailsPage() {
     city: "",
     state: "",
     zipCode: "",
-    includeWoodenQR: false,
-    includePicturePlaque: false,
-    includeStoneQR: false,
-    stoneCustomText: "",
-    picturePlaqueImage: null as File | null,
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [debugError, setDebugError] = useState<string | null>(null)
-  const [testMode, setTestMode] = useState(false)
 
   useEffect(() => {
     const savedData = sessionStorage.getItem("checkoutStep1")
     if (savedData) {
       setStep1Data(JSON.parse(savedData))
     } else {
-      // Redirect back to step 1 if no data found
       router.push("/checkout")
     }
   }, [router])
 
   const calculateTotal = () => {
-    if (!step1Data) return 0
-
-    let total = PRODUCTS.memorial.oneTimePrice
-
-    if (formData.includeWoodenQR) total += PRODUCTS.addons.woodenQR.price
-    if (formData.includePicturePlaque) total += PRODUCTS.addons.picturePlaque.price
-    if (formData.includeStoneQR) total += PRODUCTS.addons.stoneQR.price
-
-    return total
+    return PRODUCTS.memorial.oneTimePrice
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,34 +96,6 @@ export default function CheckoutDetailsPage() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File Too Large",
-          description: "Please upload an image smaller than 5MB.",
-          variant: "destructive",
-        })
-        return
-      }
-      setFormData({
-        ...formData,
-        picturePlaqueImage: file,
-      })
-    }
-  }
-
-  const handleProductChange = (
-    productKey: "includeWoodenQR" | "includePicturePlaque" | "includeStoneQR",
-    checked: boolean,
-  ) => {
-    setFormData({
-      ...formData,
-      [productKey]: checked,
     })
   }
 
@@ -191,35 +142,13 @@ export default function CheckoutDetailsPage() {
   }
 
   const handlePaymentSuccess = async (paymentId: string) => {
-    console.log("[v0] Payment success callback triggered with ID:", paymentId)
-    setDebugError(null)
-
     if (isSubmitting || !step1Data) {
-      console.log("[v0] Already submitting or no step1 data")
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      let picturePlaqueUrl = null
-      if (formData.includePicturePlaque && formData.picturePlaqueImage) {
-        console.log("[v0] Uploading picture plaque image...")
-        const imageFormData = new FormData()
-        imageFormData.append("file", formData.picturePlaqueImage)
-
-        const uploadResponse = await fetch("/api/upload-image", {
-          method: "POST",
-          body: imageFormData,
-        })
-
-        if (uploadResponse.ok) {
-          const uploadResult = await uploadResponse.json()
-          picturePlaqueUrl = uploadResult.url
-          console.log("[v0] Image uploaded:", picturePlaqueUrl)
-        }
-      }
-
       const orderData = {
         planType: "one-time",
         plaqueColor: step1Data.plaqueType,
@@ -232,15 +161,13 @@ export default function CheckoutDetailsPage() {
         city: formData.city,
         state: formData.state,
         zip: formData.zipCode,
-        addonWoodenQr: formData.includeWoodenQR,
-        addonPicturePlaque: formData.includePicturePlaque,
-        addonStoneQR: formData.includeStoneQR,
-        stoneEngravingText: formData.stoneCustomText || "",
-        picturePlaqueUrl: picturePlaqueUrl || "",
+        addonWoodenQr: false,
+        addonPicturePlaque: false,
+        addonStoneQR: false,
+        stoneEngravingText: "",
+        picturePlaqueUrl: "",
         paymentId: paymentId,
       }
-
-      console.log("[v0] Sending order data to API...")
 
       const response = await fetch("/api/checkout/process", {
         method: "POST",
@@ -248,50 +175,15 @@ export default function CheckoutDetailsPage() {
         body: JSON.stringify(orderData),
       })
 
-      console.log("[v0] API response status:", response.status)
-
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error("[v0] API error response:", errorText)
-
-        let errorDetails = errorText
-        try {
-          const errorJson = JSON.parse(errorText)
-          errorDetails = `${errorJson.error || errorText}\n${errorJson.details || ""}\n${errorJson.hint || ""}`
-        } catch {
-          // If not JSON, use raw text
-        }
-
-        setDebugError(`API Status ${response.status}: ${errorDetails}`)
-        throw new Error(`API returned status ${response.status}`)
+        throw new Error(`Failed to process order`)
       }
 
-      const responseText = await response.text()
-      console.log("[v0] API response text:", responseText)
-
-      if (!responseText) {
-        setDebugError("API returned empty response body")
-        throw new Error("Server returned an empty response")
-      }
-
-      let result
-      try {
-        result = JSON.parse(responseText)
-        console.log("[v0] Parsed result:", result)
-      } catch (parseError) {
-        console.error("[v0] JSON parse error:", parseError)
-        setDebugError(`JSON Parse Failed: ${responseText.substring(0, 300)}`)
-        throw new Error("Server returned invalid JSON")
-      }
+      const result = await response.json()
 
       if (!result.success) {
-        console.error("[v0] Order creation failed:", result.error)
-        setDebugError(`DB Error: ${result.error}\nDetails: ${result.details || "none"}\nHint: ${result.hint || "none"}`)
         throw new Error(result.error || "Failed to create order")
       }
-
-      console.log("[v0] Order created successfully, storing in sessionStorage...")
-      setDebugError(`✅ SUCCESS! Order created: ${result.order.orderNumber} (ID: ${result.order.id})`)
 
       sessionStorage.setItem(
         "pendingOrder",
@@ -308,16 +200,11 @@ export default function CheckoutDetailsPage() {
         description: "Redirecting you to create your memorial...",
       })
 
-      console.log("[v0] Redirecting to create-memorial page...")
       router.push(`/create-memorial?order=${result.order.orderNumber}`)
     } catch (error: any) {
-      console.error("[v0] Payment processing error:", error)
-      if (!debugError) {
-        setDebugError(`Caught Exception: ${error.message}\nStack: ${error.stack?.substring(0, 200) || "none"}`)
-      }
       toast({
         title: "Payment Failed",
-        description: `Error: ${error.message}. Check the red alert above for details.`,
+        description: error.message || "There was an error processing your payment. Please try again.",
         variant: "destructive",
         duration: 10000,
       })
@@ -325,32 +212,8 @@ export default function CheckoutDetailsPage() {
     }
   }
 
-  const handleTestModeSubmit = async () => {
-    if (!validateForm()) {
-      return
-    }
-
-    setDebugError(null)
-    setIsSubmitting(true)
-
-    try {
-      const testPaymentId = `TEST-${Date.now()}`
-      console.log("[v0] TEST MODE: Skipping Square payment, using test payment ID:", testPaymentId)
-
-      await handlePaymentSuccess(testPaymentId)
-    } catch (error: any) {
-      console.error("[v0] Test mode error:", error)
-      toast({
-        title: "Test Mode Error",
-        description: error.message,
-        variant: "destructive",
-      })
-      setIsSubmitting(false)
-    }
-  }
-
   if (!step1Data) {
-    return null // Will redirect in useEffect
+    return null
   }
 
   return (
@@ -366,45 +229,12 @@ export default function CheckoutDetailsPage() {
             </Button>
           </div>
 
-          {debugError && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Debug Error (Visible for Troubleshooting)</AlertTitle>
-              <AlertDescription className="mt-2 font-mono text-xs break-words">{debugError}</AlertDescription>
-              <Button variant="outline" size="sm" className="mt-3 bg-transparent" onClick={() => setDebugError(null)}>
-                Dismiss
-              </Button>
-            </Alert>
-          )}
-
-          <div className="mb-6">
-            <Alert className="bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
-              <AlertTitle className="flex items-center gap-2">
-                🧪 Test Mode
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setTestMode(!testMode)}
-                  className={testMode ? "bg-green-100 border-green-300" : ""}
-                >
-                  {testMode ? "ON" : "OFF"}
-                </Button>
-              </AlertTitle>
-              <AlertDescription className="text-xs mt-2">
-                {testMode
-                  ? "Test mode enabled. This will skip Square payment and test database order creation only."
-                  : "Click ON to test database order creation without processing payment."}
-              </AlertDescription>
-            </Alert>
-          </div>
-
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Order</h1>
             <p className="text-lg text-muted-foreground">Add optional extras and enter your shipping information</p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Order Summary */}
             <Card className="h-fit lg:col-span-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -424,30 +254,6 @@ export default function CheckoutDetailsPage() {
                     <span className="text-muted-foreground">{PRODUCTS.plaques[step1Data.plaqueType].name}</span>
                     <span className="font-semibold text-accent">Included</span>
                   </div>
-                  {formData.includeWoodenQR && (
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Wooden QR Code</span>
-                      <span className="font-semibold text-gray-900 dark:text-gray-100">
-                        ${PRODUCTS.addons.woodenQR.price.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                  {formData.includePicturePlaque && (
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Picture Plaque</span>
-                      <span className="font-semibold text-gray-900 dark:text-gray-100">
-                        ${PRODUCTS.addons.picturePlaque.price.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                  {formData.includeStoneQR && (
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Stone QR Code</span>
-                      <span className="font-semibold text-gray-900 dark:text-gray-100">
-                        ${PRODUCTS.addons.stoneQR.price.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
                   <Separator />
                   <div className="flex justify-between items-center text-lg font-bold">
                     <span>Total Today</span>
@@ -484,227 +290,68 @@ export default function CheckoutDetailsPage() {
               </CardContent>
             </Card>
 
-            {/* Main Content */}
             <div className="space-y-6 lg:col-span-2">
-              {/* Add-ons */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Optional Add-ons</CardTitle>
-                  <p className="text-sm text-muted-foreground">Enhance your memorial with these additional products</p>
+                  <CardTitle>Customer Information</CardTitle>
+                  <p className="text-sm text-muted-foreground">Enter your contact and shipping details</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Wooden QR Code */}
-                  <div
-                    className={`p-4 border-2 rounded-lg transition-all cursor-pointer ${
-                      formData.includeWoodenQR ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"
-                    }`}
-                    onClick={() => handleProductChange("includeWoodenQR", !formData.includeWoodenQR)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <Checkbox
-                        id="woodenQR"
-                        checked={formData.includeWoodenQR}
-                        onCheckedChange={(checked) => handleProductChange("includeWoodenQR", checked as boolean)}
-                        className="mt-1"
-                      />
-                      <div className="relative h-20 w-20 rounded overflow-hidden border flex-shrink-0">
-                        <Image
-                          src={PRODUCTS.addons.woodenQR.image || "/placeholder.svg"}
-                          alt={PRODUCTS.addons.woodenQR.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <Label htmlFor="woodenQR" className="font-semibold text-sm cursor-pointer block mb-1">
-                          {PRODUCTS.addons.woodenQR.name}
-                        </Label>
-                        <p className="text-xs text-muted-foreground mb-2">{PRODUCTS.addons.woodenQR.description}</p>
-                        <span className="text-sm font-semibold text-accent">
-                          +${PRODUCTS.addons.woodenQR.price.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Picture Plaque */}
-                  <div
-                    className={`p-4 border-2 rounded-lg transition-all cursor-pointer ${
-                      formData.includePicturePlaque
-                        ? "border-accent bg-accent/5"
-                        : "border-border hover:border-accent/50"
-                    }`}
-                    onClick={() => handleProductChange("includePicturePlaque", !formData.includePicturePlaque)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <Checkbox
-                        id="picturePlaque"
-                        checked={formData.includePicturePlaque}
-                        onCheckedChange={(checked) => handleProductChange("includePicturePlaque", checked as boolean)}
-                        className="mt-1"
-                      />
-                      <div className="relative h-20 w-24 rounded overflow-hidden border flex-shrink-0">
-                        <Image
-                          src={PRODUCTS.addons.picturePlaque.image || "/placeholder.svg"}
-                          alt={PRODUCTS.addons.picturePlaque.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <Label htmlFor="picturePlaque" className="font-semibold text-sm cursor-pointer block mb-1">
-                          {PRODUCTS.addons.picturePlaque.name}
-                        </Label>
-                        <p className="text-xs text-muted-foreground mb-2">
-                          {PRODUCTS.addons.picturePlaque.description}
-                        </p>
-                        <span className="text-sm font-semibold text-accent">
-                          +${PRODUCTS.addons.picturePlaque.price.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                    {formData.includePicturePlaque && (
-                      <div className="mt-4 pt-4 border-t" onClick={(e) => e.stopPropagation()}>
-                        <Label htmlFor="picturePlaqueUpload" className="text-sm font-medium mb-2 block">
-                          Upload Your Photo
-                        </Label>
-                        <div className="flex items-center gap-3">
-                          <Input
-                            id="picturePlaqueUpload"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="cursor-pointer"
-                          />
-                          {formData.picturePlaqueImage && (
-                            <div className="flex items-center gap-2 text-xs text-accent">
-                              <CheckCircle className="h-4 w-4" />
-                              <span>{formData.picturePlaqueImage.name}</span>
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Upload a high-quality photo (max 5MB). JPG, PNG, or HEIC format.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Stone QR Code */}
-                  <div
-                    className={`p-4 border-2 rounded-lg transition-all cursor-pointer ${
-                      formData.includeStoneQR ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"
-                    }`}
-                    onClick={() => handleProductChange("includeStoneQR", !formData.includeStoneQR)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <Checkbox
-                        id="stoneQR"
-                        checked={formData.includeStoneQR}
-                        onCheckedChange={(checked) => handleProductChange("includeStoneQR", checked as boolean)}
-                        className="mt-1"
-                      />
-                      <div className="relative h-20 w-20 rounded overflow-hidden border flex-shrink-0">
-                        <Image
-                          src={PRODUCTS.addons.stoneQR.image || "/placeholder.svg"}
-                          alt={PRODUCTS.addons.stoneQR.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <Label htmlFor="stoneQR" className="font-semibold text-sm cursor-pointer block mb-1">
-                          {PRODUCTS.addons.stoneQR.name}
-                        </Label>
-                        <p className="text-xs text-muted-foreground mb-2">{PRODUCTS.addons.stoneQR.description}</p>
-                        <span className="text-sm font-semibold text-accent">
-                          +${PRODUCTS.addons.stoneQR.price.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                    {formData.includeStoneQR && (
-                      <div className="mt-4 pt-4 border-t" onClick={(e) => e.stopPropagation()}>
-                        <Label htmlFor="stoneCustomText" className="text-sm font-medium mb-2 block">
-                          Custom Engraving Text
-                        </Label>
-                        <Textarea
-                          id="stoneCustomText"
-                          name="stoneCustomText"
-                          placeholder="Gone But Never Forgotten&#10;John Doe&#10;1950 - 2024"
-                          value={formData.stoneCustomText}
-                          onChange={handleTextareaChange}
-                          maxLength={100}
-                          rows={3}
-                          className="resize-none"
-                        />
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {formData.stoneCustomText.length}/100 characters. This text will be engraved on your stone
-                          plaque.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Customer Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Shipping Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name *</Label>
+                      <Label htmlFor="firstName">
+                        First Name <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="firstName"
                         name="firstName"
-                        placeholder="John"
                         value={formData.firstName}
                         onChange={handleInputChange}
-                        maxLength={45}
                         required
+                        placeholder="John"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name *</Label>
+                      <Label htmlFor="lastName">
+                        Last Name <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="lastName"
                         name="lastName"
-                        placeholder="Doe"
                         value={formData.lastName}
                         onChange={handleInputChange}
-                        maxLength={45}
                         required
+                        placeholder="Doe"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="john@example.com"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      maxLength={254}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="(555) 123-4567"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      maxLength={20}
-                    />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">
+                        Email Address <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="john.doe@example.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="(555) 123-4567"
+                      />
+                    </div>
                   </div>
 
                   <Separator />
@@ -712,15 +359,16 @@ export default function CheckoutDetailsPage() {
                   <div className="space-y-4">
                     <h3 className="font-semibold text-sm">Shipping Address</h3>
                     <div className="space-y-2">
-                      <Label htmlFor="address">Street Address *</Label>
+                      <Label htmlFor="address">
+                        Street Address <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="address"
                         name="address"
-                        placeholder="123 Main Street"
                         value={formData.address}
                         onChange={handleInputChange}
-                        maxLength={100}
                         required
+                        placeholder="123 Main Street"
                       />
                     </div>
 
@@ -729,64 +377,64 @@ export default function CheckoutDetailsPage() {
                       <Input
                         id="address2"
                         name="address2"
-                        placeholder="Apt 4B"
                         value={formData.address2}
                         onChange={handleInputChange}
-                        maxLength={100}
+                        placeholder="Apt 4B"
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="city">City *</Label>
+                        <Label htmlFor="city">
+                          City <span className="text-red-500">*</span>
+                        </Label>
                         <Input
                           id="city"
                           name="city"
-                          placeholder="New York"
                           value={formData.city}
                           onChange={handleInputChange}
-                          maxLength={45}
                           required
+                          placeholder="New York"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="state">State *</Label>
+                        <Label htmlFor="state">
+                          State <span className="text-red-500">*</span>
+                        </Label>
                         <Input
                           id="state"
                           name="state"
-                          placeholder="NY"
                           value={formData.state}
                           onChange={handleInputChange}
-                          maxLength={45}
                           required
+                          placeholder="NY"
+                          maxLength={2}
                         />
                       </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="zipCode">ZIP Code *</Label>
-                      <Input
-                        id="zipCode"
-                        name="zipCode"
-                        placeholder="10001"
-                        value={formData.zipCode}
-                        onChange={handleInputChange}
-                        maxLength={10}
-                        required
-                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="zipCode">
+                          ZIP Code <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="zipCode"
+                          name="zipCode"
+                          value={formData.zipCode}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="10001"
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Payment */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lock className="h-5 w-5 text-accent" />
-                    {testMode ? "Test Mode - Database Only" : "Secure Payment"}
+                    Secure Payment
                   </CardTitle>
-                  {/* Trust signals section */}
                   <div className="flex flex-wrap items-center gap-4 pt-4 border-t mt-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Shield className="h-5 w-5 text-green-600" />
@@ -806,31 +454,16 @@ export default function CheckoutDetailsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {testMode ? (
-                    <div className="space-y-4">
-                      <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
-                        <AlertTitle>Test Mode Active</AlertTitle>
-                        <AlertDescription className="text-sm">
-                          This will create a test order in the database without processing a real payment. Use this to
-                          verify the database integration works correctly.
-                        </AlertDescription>
-                      </Alert>
-                      <Button onClick={handleTestModeSubmit} disabled={isSubmitting} className="w-full" size="lg">
-                        {isSubmitting ? "Creating Test Order..." : "Create Test Order"}
-                      </Button>
-                    </div>
-                  ) : (
-                    <SquarePaymentForm
-                      amount={calculateTotal()}
-                      orderId={`order_${Date.now()}`}
-                      onSuccess={handlePaymentSuccess}
-                      onError={(error) => {
-                        console.error("Payment error:", error)
-                      }}
-                      onBeforePayment={validateForm}
-                      disabled={isSubmitting}
-                    />
-                  )}
+                  <SquarePaymentForm
+                    amount={calculateTotal()}
+                    orderId={`order_${Date.now()}`}
+                    onSuccess={handlePaymentSuccess}
+                    onError={(error) => {
+                      console.error("Payment error:", error)
+                    }}
+                    onBeforePayment={validateForm}
+                    disabled={isSubmitting}
+                  />
                 </CardContent>
               </Card>
 
