@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
       hasBiography: !!body.biography,
       customerEmail: body.customerEmail,
       userId: body.userId,
+      profileImageUrl: body.profileImageUrl || null, // Added profile image URL logging
     })
 
     if (!body.firstName || !body.lastName) {
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
       slug,
       hasBiography: !!body.biography,
       user_id: body.userId || null,
+      profile_image_url: body.profileImageUrl || null, // Added profile image URL logging
     })
 
     const { data: memorial, error } = await supabase
@@ -56,6 +58,7 @@ export async function POST(request: NextRequest) {
         biography: body.biography || null,
         slug,
         user_id: body.userId || null,
+        profile_image_url: body.profileImageUrl || null, // Save profile image URL to database
       })
       .select()
       .single()
@@ -87,6 +90,7 @@ export async function POST(request: NextRequest) {
       slug: memorial.slug,
       full_name: memorial.full_name,
       user_id: memorial.user_id,
+      profile_image_url: memorial.profile_image_url || null, // Log profile image URL
     })
 
     const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/memorial/${memorial.id}`

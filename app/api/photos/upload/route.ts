@@ -41,10 +41,12 @@ export async function POST(request: NextRequest) {
 
     console.log("[v0] Photo uploaded to Blob:", blob.url)
 
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
+
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialId)
+      .eq(isUUID ? "id" : "slug", memorialId)
       .maybeSingle()
 
     if (memorialError) {
@@ -56,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!memorial) {
-      console.error("[v0] Memorial not found for slug:", memorialId)
+      console.error("[v0] Memorial not found for identifier:", memorialId)
       return NextResponse.json({ error: "Memorial not found. Please verify the memorial page URL." }, { status: 404 })
     }
 

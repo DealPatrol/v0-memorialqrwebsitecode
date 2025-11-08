@@ -4,14 +4,16 @@ import { createClient } from "@/lib/supabase/server"
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const supabase = await createClient()
-    const memorialSlug = params.id
+    const identifier = params.id
 
-    // First, find the memorial by slug to get the UUID
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)
+
+    // Query by ID if UUID, otherwise by slug
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialSlug)
-      .single()
+      .eq(isUUID ? "id" : "slug", identifier)
+      .maybeSingle()
 
     if (memorialError || !memorial) {
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })

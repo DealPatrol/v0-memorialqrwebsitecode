@@ -6,11 +6,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const { id } = await params
     const supabase = await createClient()
 
-    const memorialSlug = id
+    const identifier = id
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)
+
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialSlug)
+      .eq(isUUID ? "id" : "slug", identifier)
       .maybeSingle()
 
     if (memorialError) {

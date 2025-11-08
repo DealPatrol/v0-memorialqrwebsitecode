@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Header } from "@/components/header"
@@ -8,95 +8,75 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Search, Grid, List, Heart, Calendar, MapPin } from "lucide-react"
+import { Search, Grid, List, Calendar, MapPin, Loader2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
-const memorials = [
-  {
-    id: "glenda-kelso",
-    name: "Glenda Kelso",
-    dates: "July 27, 1952 - August 27, 2025",
-    location: "Cullman, AL",
-    image: "/glenda-memorial-portrait.jpeg",
-    description: "Beloved mother, grandmother, and friend who touched countless lives with her kindness and wisdom.",
-    tags: ["Mother", "Grandmother", "Teacher"],
-    featured: true,
-  },
-  {
-    id: "robert-johnson",
-    name: "Robert Johnson",
-    dates: "March 15, 1945 - December 10, 2024",
-    location: "Birmingham, AL",
-    image: "/elderly-man-smiling-portrait.png",
-    description: "Devoted father and veteran who served his country and community with honor.",
-    tags: ["Father", "Veteran", "Community Leader"],
-    featured: false,
-  },
-  {
-    id: "maria-gonzalez",
-    name: "Maria Gonzalez",
-    dates: "June 8, 1960 - November 22, 2024",
-    location: "Mobile, AL",
-    image: "/hispanic-woman-smiling-professional-portrait.png",
-    description: "Caring nurse and mother who dedicated her life to helping others heal.",
-    tags: ["Mother", "Nurse", "Caregiver"],
-    featured: false,
-  },
-  {
-    id: "james-williams",
-    name: "James Williams",
-    dates: "September 12, 1938 - October 5, 2024",
-    location: "Huntsville, AL",
-    image: "/elderly-veteran-man-uniform-portrait.png",
-    description: "Proud veteran and grandfather who shared his wisdom with three generations.",
-    tags: ["Grandfather", "Veteran", "Mentor"],
-    featured: false,
-  },
-  {
-    id: "sarah-davis",
-    name: "Dr. Sarah Davis",
-    dates: "April 3, 1955 - September 18, 2024",
-    location: "Montgomery, AL",
-    image: "/professional-woman-doctor-white-coat-smiling.png",
-    description: "Pioneering physician who broke barriers and saved countless lives.",
-    tags: ["Doctor", "Pioneer", "Healer"],
-    featured: false,
-  },
-  {
-    id: "michael-chen",
-    name: "Michael Chen",
-    dates: "January 20, 1962 - August 14, 2024",
-    location: "Tuscaloosa, AL",
-    image: "/asian-man-engineer-smiling-professional-portrait.png",
-    description: "Innovative engineer and loving father who built bridges both literal and metaphorical.",
-    tags: ["Father", "Engineer", "Innovator"],
-    featured: false,
-  },
-]
+type Memorial = {
+  id: string
+  full_name: string
+  birth_date: string | null
+  death_date: string | null
+  location: string | null
+  biography: string | null
+  profile_image_url: string | null
+  slug: string
+  created_at: string
+}
 
 export default function BrowseMemorials() {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("recent")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [filterTag, setFilterTag] = useState("all")
+  const [memorials, setMemorials] = useState<Memorial[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const allTags = ["all", ...Array.from(new Set(memorials.flatMap((m) => m.tags)))]
+  useEffect(() => {
+    const fetchMemorials = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase.from("memorials").select("*").order("created_at", { ascending: false })
+
+        if (error) {
+          console.error("Error fetching memorials:", error)
+          return
+        }
+
+        setMemorials(data || [])
+      } catch (error) {
+        console.error("Failed to fetch memorials:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMemorials()
+  }, [])
 
   const filteredMemorials = memorials
     .filter((memorial) => {
+      const approvedNames = ["Glenda Jane Kelso", "Janice & Earl Melton"]
+      const isApproved = approvedNames.includes(memorial.full_name)
+
       const matchesSearch =
-        memorial.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        memorial.location.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesTag = filterTag === "all" || memorial.tags.includes(filterTag)
-      return matchesSearch && matchesTag
+        memorial.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (memorial.location && memorial.location.toLowerCase().includes(searchTerm.toLowerCase()))
+
+      return isApproved && matchesSearch
     })
     .sort((a, b) => {
-      if (sortBy === "recent")
-        return new Date(b.dates.split(" - ")[1]).getTime() - new Date(a.dates.split(" - ")[1]).getTime()
-      if (sortBy === "alphabetical") return a.name.localeCompare(b.name)
-      if (sortBy === "featured") return b.featured ? 1 : -1
+      if (sortBy === "recent") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      if (sortBy === "alphabetical") return a.full_name.localeCompare(b.full_name)
       return 0
     })
+
+  const formatDates = (birthDate: string | null, deathDate: string | null) => {
+    const formatDate = (dateStr: string | null) => {
+      if (!dateStr) return "Unknown"
+      const date = new Date(dateStr)
+      return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+    }
+    return `${formatDate(birthDate)} - ${formatDate(deathDate)}`
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -130,19 +110,6 @@ export default function BrowseMemorials() {
             </div>
 
             <div className="flex gap-4 items-center">
-              <Select value={filterTag} onValueChange={setFilterTag}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Filter by tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  {allTags.map((tag) => (
-                    <SelectItem key={tag} value={tag}>
-                      {tag === "all" ? "All Tags" : tag}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Sort by" />
@@ -150,7 +117,6 @@ export default function BrowseMemorials() {
                 <SelectContent>
                   <SelectItem value="recent">Most Recent</SelectItem>
                   <SelectItem value="alphabetical">Alphabetical</SelectItem>
-                  <SelectItem value="featured">Featured</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -176,51 +142,50 @@ export default function BrowseMemorials() {
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Showing {filteredMemorials.length} memorial{filteredMemorials.length !== 1 ? "s" : ""}
-          </p>
-        </div>
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-slate-600" />
+            <span className="ml-3 text-slate-600">Loading memorials...</span>
+          </div>
+        )}
 
-        {/* Memorials Grid/List */}
-        {viewMode === "grid" ? (
+        {/* Results Count */}
+        {!loading && (
+          <div className="mb-6">
+            <p className="text-gray-600">
+              Showing {filteredMemorials.length} memorial{filteredMemorials.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+        )}
+
+        {!loading && viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMemorials.map((memorial) => (
               <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <Image
-                    src={memorial.image || "/placeholder.svg"}
-                    alt={memorial.name}
+                    src={memorial.profile_image_url || "/placeholder.svg?height=300&width=400"}
+                    alt={memorial.full_name}
                     width={400}
                     height={300}
                     className="w-full h-48 object-cover"
                   />
-                  {memorial.featured && (
-                    <Badge className="absolute top-2 right-2 bg-red-500">
-                      <Heart className="h-3 w-3 mr-1" />
-                      Featured
-                    </Badge>
-                  )}
                 </div>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{memorial.name}</h3>
+                  <h3 className="text-xl font-semibold mb-2">{memorial.full_name}</h3>
                   <div className="flex items-center text-gray-600 mb-2">
                     <Calendar className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{memorial.dates}</span>
+                    <span className="text-sm">{formatDates(memorial.birth_date, memorial.death_date)}</span>
                   </div>
-                  <div className="flex items-center text-gray-600 mb-3">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{memorial.location}</span>
-                  </div>
-                  <p className="text-gray-700 text-sm mb-4 line-clamp-3">{memorial.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {memorial.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
+                  {memorial.location && (
+                    <div className="flex items-center text-gray-600 mb-3">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      <span className="text-sm">{memorial.location}</span>
+                    </div>
+                  )}
+                  {memorial.biography && (
+                    <p className="text-gray-700 text-sm mb-4 line-clamp-3">{memorial.biography}</p>
+                  )}
                   <Button asChild className="w-full">
                     <Link href={`/memorial/${memorial.id}`}>View Memorial</Link>
                   </Button>
@@ -228,7 +193,9 @@ export default function BrowseMemorials() {
               </Card>
             ))}
           </div>
-        ) : (
+        )}
+
+        {!loading && viewMode === "list" && (
           <div className="space-y-4">
             {filteredMemorials.map((memorial) => (
               <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -236,39 +203,31 @@ export default function BrowseMemorials() {
                   <div className="flex gap-6">
                     <div className="relative flex-shrink-0">
                       <Image
-                        src={memorial.image || "/placeholder.svg"}
-                        alt={memorial.name}
+                        src={memorial.profile_image_url || "/placeholder.svg?height=120&width=120"}
+                        alt={memorial.full_name}
                         width={120}
                         height={120}
                         className="w-24 h-24 object-cover rounded-lg"
                       />
-                      {memorial.featured && (
-                        <Badge className="absolute -top-2 -right-2 bg-red-500">
-                          <Heart className="h-3 w-3" />
-                        </Badge>
-                      )}
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-semibold">{memorial.name}</h3>
+                        <h3 className="text-xl font-semibold">{memorial.full_name}</h3>
                         <Button asChild>
                           <Link href={`/memorial/${memorial.id}`}>View Memorial</Link>
                         </Button>
                       </div>
                       <div className="flex items-center text-gray-600 mb-2">
                         <Calendar className="h-4 w-4 mr-2" />
-                        <span className="text-sm mr-6">{memorial.dates}</span>
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{memorial.location}</span>
+                        <span className="text-sm mr-6">{formatDates(memorial.birth_date, memorial.death_date)}</span>
+                        {memorial.location && (
+                          <>
+                            <MapPin className="h-4 w-4 mr-2" />
+                            <span className="text-sm">{memorial.location}</span>
+                          </>
+                        )}
                       </div>
-                      <p className="text-gray-700 text-sm mb-3">{memorial.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {memorial.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
+                      {memorial.biography && <p className="text-gray-700 text-sm mb-3">{memorial.biography}</p>}
                     </div>
                   </div>
                 </CardContent>
@@ -277,13 +236,12 @@ export default function BrowseMemorials() {
           </div>
         )}
 
-        {filteredMemorials.length === 0 && (
+        {!loading && filteredMemorials.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No memorials found matching your criteria.</p>
             <Button
               onClick={() => {
                 setSearchTerm("")
-                setFilterTag("all")
               }}
               className="mt-4"
             >

@@ -16,12 +16,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       )
     }
 
-    const memorialSlug = params.id
+    const identifier = params.id
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)
 
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialSlug)
+      .eq(isUUID ? "id" : "slug", identifier)
       .maybeSingle()
 
     if (memorialError) {
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 
     if (!memorial) {
-      console.log("[v0] Memorial not found:", memorialSlug)
+      console.log("[v0] Memorial not found:", identifier)
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 

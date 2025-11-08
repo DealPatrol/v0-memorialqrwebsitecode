@@ -133,6 +133,24 @@ export default function CreateMemorialPage() {
     setIsSubmitting(true)
 
     try {
+      let profileImageUrl = null
+      if (formData.profilePhoto) {
+        const formDataBlob = new FormData()
+        formDataBlob.append("file", formData.profilePhoto)
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formDataBlob,
+        })
+
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json()
+          profileImageUrl = uploadData.url
+        } else {
+          console.error("Failed to upload profile photo")
+        }
+      }
+
       const memorialResponse = await fetch("/api/memorials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -146,6 +164,7 @@ export default function CreateMemorialPage() {
           customerEmail: orderData.customerEmail,
           customerName: orderData.customerName,
           userId: user?.id || null,
+          profileImageUrl, // Include profile image URL
         }),
       })
 

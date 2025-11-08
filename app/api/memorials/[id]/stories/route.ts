@@ -6,11 +6,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { id } = params
     const supabase = await createClient()
 
-    const memorialSlug = id
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialSlug)
+      .eq(isUUID ? "id" : "slug", id)
       .maybeSingle()
 
     if (memorialError) {
@@ -51,11 +52,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const supabase = await createClient()
 
-    const memorialSlug = id
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialSlug)
+      .eq(isUUID ? "id" : "slug", id)
       .maybeSingle()
 
     if (memorialError || !memorial) {
