@@ -3,13 +3,11 @@ import { createClient } from "@/lib/supabase/server"
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    console.log("[v0] Fetching photos for memorial:", params.id)
-
     let supabase
     try {
       supabase = await createClient()
     } catch (clientError) {
-      console.error("[v0] Failed to create Supabase client:", clientError)
+      console.error("Failed to create Supabase client:", clientError)
       return NextResponse.json(
         { error: "Database connection failed. Please check environment variables." },
         { status: 500 },
@@ -26,12 +24,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       .maybeSingle()
 
     if (memorialError) {
-      console.error("[v0] Error finding memorial:", memorialError)
+      console.error("Error finding memorial:", memorialError.message)
       return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
     }
 
     if (!memorial) {
-      console.log("[v0] Memorial not found:", identifier)
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 
@@ -43,14 +40,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       .limit(100)
 
     if (error) {
-      console.error("[v0] Error fetching photos:", error)
+      console.error("Error fetching photos:", error.message)
       throw error
     }
 
-    console.log("[v0] Successfully fetched", photos?.length || 0, "photos")
     return NextResponse.json({ photos })
   } catch (error) {
-    console.error("[v0] Error fetching photos:", error)
+    console.error("Error fetching photos:", error)
     return NextResponse.json({ error: "Failed to fetch photos" }, { status: 500 })
   }
 }

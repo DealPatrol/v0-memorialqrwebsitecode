@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get("file") as File
     const memorialId = formData.get("memorialId") as string
     const caption = formData.get("caption") as string
-    const uploadedBy = formData.get("uploadedBy") as string
+    const uploadedBy = (formData.get("uploaderName") || formData.get("uploadedBy")) as string
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
@@ -33,13 +33,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `File too large. Maximum size is ${maxSize / 1024 / 1024}MB` }, { status: 400 })
     }
 
-    console.log("[v0] Uploading photo to Vercel Blob...")
-
     const blob = await put(`memorials/${memorialId}/${Date.now()}-${file.name}`, file, {
       access: "public",
     })
-
-    console.log("[v0] Photo uploaded to Blob:", blob.url)
 
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
 
@@ -50,7 +46,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (memorialError) {
-      console.error("[v0] Error fetching memorial:", memorialError)
+      console.error("Error fetching memorial:", memorialError)
       return NextResponse.json(
         { error: "Failed to find memorial. Please check the memorial ID and try again." },
         { status: 500 },
@@ -58,14 +54,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!memorial) {
-      console.error("[v0] Memorial not found for identifier:", memorialId)
+      console.error("Memorial not found for identifier:", memorialId)
       return NextResponse.json({ error: "Memorial not found. Please verify the memorial page URL." }, { status: 404 })
     }
 
-    console.log("[v0] Found memorial UUID:", memorial.id)
-
     const userId = user?.id || null
-    console.log("[v0] User ID:", userId)
 
     const { data: photo, error: dbError } = await supabase
       .from("photos")
@@ -80,11 +73,9 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (dbError) {
-      console.error("[v0] Database error:", dbError)
+      console.error("Database error:", dbError)
       return NextResponse.json({ error: `Failed to save photo: ${dbError.message}` }, { status: 500 })
     }
-
-    console.log("[v0] Photo saved to database:", photo)
 
     return NextResponse.json({
       success: true,
@@ -92,7 +83,7 @@ export async function POST(request: NextRequest) {
       url: blob.url,
     })
   } catch (error) {
-    console.error("[v0] Upload error:", error)
+    console.error("Upload error:", error)
     const errorMessage = error instanceof Error ? error.message : "Upload failed"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }

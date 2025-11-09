@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import Image from "next/image"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -144,7 +145,13 @@ export function PhotoUpload({ memorialId, onUploadComplete }: PhotoUploadProps) 
 
       {preview && (
         <div className="relative w-full h-48 rounded-lg overflow-hidden">
-          <img src={preview || "/placeholder.svg"} alt="Preview" className="w-full h-full object-cover" />
+          <Image
+            src={preview || "/placeholder.svg"}
+            alt="Preview"
+            width={400}
+            height={192}
+            className="w-full h-full object-cover"
+          />
         </div>
       )}
 

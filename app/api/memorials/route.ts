@@ -6,20 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    console.log("[v0] Received memorial creation request:", {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      dateOfBirth: body.dateOfBirth,
-      dateOfDeath: body.dateOfDeath,
-      location: body.location,
-      hasBiography: !!body.biography,
-      customerEmail: body.customerEmail,
-      userId: body.userId,
-      profileImageUrl: body.profileImageUrl || null, // Added profile image URL logging
-    })
-
     if (!body.firstName || !body.lastName) {
-      console.error("[v0] Validation failed: Missing required fields")
       return NextResponse.json(
         {
           error: "First name and last name are required",
@@ -37,17 +24,6 @@ export async function POST(request: NextRequest) {
     const birthDate = body.dateOfBirth && body.dateOfBirth.trim() !== "" ? body.dateOfBirth : null
     const deathDate = body.dateOfDeath && body.dateOfDeath.trim() !== "" ? body.dateOfDeath : null
 
-    console.log("[v0] Preparing memorial data:", {
-      full_name: `${body.firstName} ${body.lastName}`,
-      birth_date: birthDate,
-      death_date: deathDate,
-      location: body.location || null,
-      slug,
-      hasBiography: !!body.biography,
-      user_id: body.userId || null,
-      profile_image_url: body.profileImageUrl || null, // Added profile image URL logging
-    })
-
     const { data: memorial, error } = await supabase
       .from("memorials")
       .insert({
@@ -58,18 +34,13 @@ export async function POST(request: NextRequest) {
         biography: body.biography || null,
         slug,
         user_id: body.userId || null,
-        profile_image_url: body.profileImageUrl || null, // Save profile image URL to database
+        profile_image_url: body.profileImageUrl || null,
       })
       .select()
       .single()
 
     if (error) {
-      console.error("[v0] Supabase error creating memorial:", {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code,
-      })
+      console.error("Supabase error creating memorial:", error.message)
       return NextResponse.json(
         {
           error: "Database error: " + error.message,
@@ -81,23 +52,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!memorial) {
-      console.error("[v0] Memorial creation returned no data")
       return NextResponse.json({ error: "Memorial was not created - no data returned" }, { status: 500 })
     }
-
-    console.log("[v0] Memorial created successfully:", {
-      id: memorial.id,
-      slug: memorial.slug,
-      full_name: memorial.full_name,
-      user_id: memorial.user_id,
-      profile_image_url: memorial.profile_image_url || null, // Log profile image URL
-    })
 
     const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/memorial/${memorial.id}`
 
     try {
-      console.log("[v0] Generating QR code for memorial:", memorial.id)
-
       const qrResponse = await fetch(
         `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/qr-code/generate`,
         {
@@ -110,9 +70,7 @@ export async function POST(request: NextRequest) {
         },
       )
 
-      if (!qrResponse.ok) {
-        console.error("[v0] QR code generation failed with status:", qrResponse.status)
-      } else {
+      if (qrResponse.ok) {
         const qrData = await qrResponse.json()
 
         if (qrData.success && qrData.qrCodeUrl) {
@@ -121,22 +79,17 @@ export async function POST(request: NextRequest) {
             .update({ qr_code_url: qrData.qrCodeUrl })
             .eq("id", memorial.id)
 
-          if (updateError) {
-            console.error("[v0] Failed to update memorial with QR code:", updateError)
-          } else {
-            console.log("[v0] QR code generated and saved:", qrData.qrCodeUrl)
+          if (!updateError) {
             memorial.qr_code_url = qrData.qrCodeUrl
           }
         }
       }
     } catch (qrError) {
-      console.error("[v0] Exception generating QR code:", qrError)
+      console.error("Exception generating QR code:", qrError)
     }
 
     if (body.customerEmail) {
       try {
-        console.log("[v0] Sending welcome email to:", body.customerEmail)
-
         const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/dashboard`
 
         await sendWelcomeEmail({
@@ -147,19 +100,14 @@ export async function POST(request: NextRequest) {
           dashboardUrl,
           qrCodeUrl: memorial.qr_code_url,
         })
-
-        console.log("[v0] Welcome email sent successfully")
       } catch (emailError) {
-        console.error("[v0] Failed to send welcome email:", emailError)
+        console.error("Failed to send welcome email:", emailError)
       }
     }
 
     return NextResponse.json({ memorial }, { status: 201 })
   } catch (error: any) {
-    console.error("[v0] Unexpected exception creating memorial:", {
-      message: error.message,
-      stack: error.stack,
-    })
+    console.error("Unexpected exception creating memorial:", error.message)
     return NextResponse.json(
       {
         error: "Failed to create memorial: " + error.message,

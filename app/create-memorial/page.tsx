@@ -164,7 +164,7 @@ export default function CreateMemorialPage() {
           customerEmail: orderData.customerEmail,
           customerName: orderData.customerName,
           userId: user?.id || null,
-          profileImageUrl, // Include profile image URL
+          profileImageUrl,
         }),
       })
 
@@ -174,6 +174,29 @@ export default function CreateMemorialPage() {
       }
 
       const { memorial } = await memorialResponse.json()
+
+      if (formData.additionalPhotos.length > 0) {
+        for (const photo of formData.additionalPhotos) {
+          try {
+            const photoFormData = new FormData()
+            photoFormData.append("file", photo)
+            photoFormData.append("memorialId", memorial.id)
+            photoFormData.append("caption", photo.name)
+            photoFormData.append("uploaderName", orderData.customerName || "Memorial Creator")
+
+            const photoResponse = await fetch("/api/photos/upload", {
+              method: "POST",
+              body: photoFormData,
+            })
+
+            if (!photoResponse.ok) {
+              console.error("Failed to upload photo:", photo.name)
+            }
+          } catch (photoError) {
+            console.error("Failed to upload photo:", photoError)
+          }
+        }
+      }
 
       if (orderData.orderId) {
         await fetch("/api/orders/link-memorial", {

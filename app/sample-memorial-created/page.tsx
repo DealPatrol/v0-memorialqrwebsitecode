@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -52,7 +53,13 @@ export default function SampleMemorialCreatedPage() {
                 </CardHeader>
                 <CardContent className="text-center space-y-6">
                   <div className="bg-white p-6 rounded-lg border-2 border-gray-200 inline-block">
-                    <img src={qrCodeUrl || "/placeholder.svg"} alt="Memorial QR Code" className="w-48 h-48 mx-auto" />
+                    <Image
+                      src={qrCodeUrl || "/placeholder.svg"}
+                      alt="Memorial QR Code"
+                      width={192}
+                      height={192}
+                      className="w-48 h-48 mx-auto"
+                    />
                   </div>
 
                   <div className="space-y-3">
@@ -273,7 +280,7 @@ export default function SampleMemorialCreatedPage() {
           </div>
 
           <div className="border-t border-slate-800 mt-8 pt-8 text-center text-sm text-slate-400">
-            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
+            <p>&copy; 2025 Memorial QR. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -29,6 +29,7 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
   const [uploaderName, setUploaderName] = useState("")
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadAttempted, setUploadAttempted] = useState(false)
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -135,8 +136,9 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
   }
 
   const handleUploadAll = async () => {
+    setUploadAttempted(true)
+
     if (!uploaderName.trim()) {
-      alert("Please enter your name")
       return
     }
 
@@ -162,17 +164,33 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
   const successCount = items.filter((item) => item.status === "success").length
   const errorCount = items.filter((item) => item.status === "error").length
 
+  const showNameError = uploadAttempted && !uploaderName.trim()
+
+  const handleNameChange = (value: string) => {
+    setUploaderName(value)
+    // Reset upload attempted flag when name is entered
+    if (value.trim()) {
+      setUploadAttempted(false)
+      // Clear error status from items so they can be retried
+      setItems((prev) =>
+        prev.map((item) => (item.status === "error" ? { ...item, status: "pending", error: undefined } : item)),
+      )
+    }
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-20">
       <div>
         <Label htmlFor="uploaderName">Your Name</Label>
         <Input
           id="uploaderName"
           value={uploaderName}
-          onChange={(e) => setUploaderName(e.target.value)}
+          onChange={(e) => handleNameChange(e.target.value)}
           placeholder="Enter your name..."
           disabled={isUploading}
+          className={showNameError ? "border-red-500" : ""}
         />
+        {showNameError && <p className="text-sm text-red-600 mt-1">Please enter your name before uploading</p>}
       </div>
 
       <div
@@ -216,7 +234,7 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
             </div>
           </div>
 
-          <div className="max-h-96 overflow-y-auto space-y-3">
+          <div className="max-h-[50vh] overflow-y-auto space-y-3">
             {items.map((item, index) => (
               <div key={index} className="flex items-start gap-3 p-3 border rounded-lg bg-white">
                 <img

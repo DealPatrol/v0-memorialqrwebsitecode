@@ -54,14 +54,11 @@ export default function BrowseMemorials() {
 
   const filteredMemorials = memorials
     .filter((memorial) => {
-      const approvedNames = ["Glenda Jane Kelso", "Janice & Earl Melton"]
-      const isApproved = approvedNames.includes(memorial.full_name)
-
       const matchesSearch =
         memorial.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (memorial.location && memorial.location.toLowerCase().includes(searchTerm.toLowerCase()))
 
-      return isApproved && matchesSearch
+      return matchesSearch
     })
     .sort((a, b) => {
       if (sortBy === "recent") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

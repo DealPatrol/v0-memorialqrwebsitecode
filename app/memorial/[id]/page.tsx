@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { Upload, MusicIcon, VideoIcon, BookOpen, Calendar } from "lucide-react"
+import Image from "next/image"
 
 import { useParams } from "next/navigation"
 import Link from "next/link"
@@ -686,11 +687,14 @@ export default function MemorialPage() {
 
             <div className="bg-white p-8 rounded-lg shadow-lg">
               <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="w-48 h-48 bg-gradient-to-br from-purple-200 to-blue-200 rounded-full flex items-center justify-center">
-                  <img
+                <div className="w-48 h-48 bg-gradient-to-br from-purple-200 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <Image
                     src={memorial?.profile_image_url || "/elderly-man-smiling-portrait.png"}
                     alt="Memorial Portrait"
+                    width={176}
+                    height={176}
                     className="w-44 h-44 rounded-full object-cover"
+                    priority
                   />
                 </div>
 
@@ -1075,9 +1079,11 @@ export default function MemorialPage() {
                           <div className="grid md:grid-cols-3 gap-4">
                             {validPhotos.map((photo) => (
                               <div key={photo.id} className="space-y-2">
-                                <img
+                                <Image
                                   src={photo.image_url || "/placeholder.svg"}
                                   alt={photo.caption || "Memorial photo"}
+                                  width={400}
+                                  height={300}
                                   className="w-full h-48 object-cover rounded-lg"
                                   onError={() => handleImageError(photo.id, photo.image_url)}
                                 />
