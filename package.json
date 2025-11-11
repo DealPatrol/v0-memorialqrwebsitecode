@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "latest",
     "@hookform/resolvers": "^3.3.2",
     "@next/mdx": "^14.0.4",
     "@radix-ui/react-accordion": "latest",

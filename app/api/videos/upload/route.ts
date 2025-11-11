@@ -1,8 +1,18 @@
-import { put } from "@vercel/blob"
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
+
+const s3Client = new S3Client({
+  region: process.env.SUPABASE_S3_REGION!,
+  endpoint: process.env.SUPABASE_S3_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.SUPABASE_S3_SECRET_ACCESS_KEY!,
+  },
+  forcePathStyle: true,
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,34 +51,71 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Uploader name required" }, { status: 400 })
     }
 
-    console.log("[v0] Uploading video to Vercel Blob...")
+    console.log("[v0] Starting video upload. File size:", file.size, "bytes")
+    console.log("[v0] File name:", file.name)
+    console.log("[v0] Memorial ID:", memorialId)
 
-    let blob
+    let videoUrl
     try {
-      blob = await put(`memorials/${memorialId}/videos/${Date.now()}-${file.name}`, file, {
-        access: "public",
+      const timestamp = Date.now()
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
+      const key = `memorials/${memorialId}/videos/${timestamp}-${sanitizedFileName}`
+
+      const arrayBuffer = await file.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+
+      const uploadCommand = new PutObjectCommand({
+        Bucket: process.env.SUPABASE_S3_BUCKET!,
+        Key: key,
+        Body: buffer,
+        ContentType: file.type,
       })
-      console.log("[v0] Video uploaded to Blob:", blob.url)
-    } catch (blobError: any) {
-      console.error("[v0] Blob upload failed")
+
+      await s3Client.send(uploadCommand)
+
+      videoUrl = `${process.env.SUPABASE_S3_ENDPOINT}/${process.env.SUPABASE_S3_BUCKET}/${key}`
+      console.log("[v0] Video uploaded to S3 successfully:", videoUrl)
+    } catch (uploadError: any) {
+      console.error("[v0] S3 upload failed:", uploadError)
+      console.error("[v0] Error name:", uploadError?.name)
+      console.error("[v0] Error message:", uploadError?.message)
+      console.error("[v0] Error stack:", uploadError?.stack)
+
       return NextResponse.json(
         {
-          error:
-            "Video upload failed. The file may be too large or there may be a storage issue. Please try a smaller file or contact support.",
+          error: uploadError?.message || "Video upload to storage failed. Please try again or contact support.",
         },
         { status: 500 },
       )
     }
 
-    const { data: memorial, error: memorialError } = await supabase
-      .from("memorials")
-      .select("id")
-      .eq("slug", memorialId)
-      .maybeSingle()
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
 
-    if (memorialError) {
-      console.error("[v0] Error fetching memorial:", memorialError)
-      return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
+    let memorial
+    if (isUUID) {
+      const { data, error: memorialError } = await supabase
+        .from("memorials")
+        .select("id")
+        .eq("id", memorialId)
+        .maybeSingle()
+
+      if (memorialError) {
+        console.error("[v0] Error fetching memorial by UUID:", memorialError)
+        return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
+      }
+      memorial = data
+    } else {
+      const { data, error: memorialError } = await supabase
+        .from("memorials")
+        .select("id")
+        .eq("slug", memorialId)
+        .maybeSingle()
+
+      if (memorialError) {
+        console.error("[v0] Error fetching memorial by slug:", memorialError)
+        return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
+      }
+      memorial = data
     }
 
     if (!memorial) {
@@ -86,7 +133,7 @@ export async function POST(request: NextRequest) {
       .insert({
         memorial_id: memorial.id,
         user_id: userId,
-        video_url: blob.url,
+        video_url: videoUrl,
         title: title,
         uploaded_by: uploadedBy,
       })
@@ -99,16 +146,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Database error: ${dbError.message}` }, { status: 500 })
     }
 
-    console.log("[v0] Video saved to database:", video)
+    console.log("[v0] Video saved to database successfully:", video)
 
     return NextResponse.json({
       success: true,
       video,
-      url: blob.url,
+      url: videoUrl,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error("[v0] Upload error:", error)
-    return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 500 })
+    console.error("[v0] Error details:", error?.message, error?.stack)
+    return NextResponse.json(
+      {
+        error: error?.message || "Upload failed. Please try again.",
+      },
+      { status: 500 },
+    )
   }
 }
 
