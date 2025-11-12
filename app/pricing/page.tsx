@@ -10,7 +10,7 @@ export default function PricingPage() {
     {
       id: "basic",
       name: "Basic Package",
-      price: 89.89,
+      price: 1.0,
       popular: false,
       features: [
         "3 videos",
@@ -27,7 +27,7 @@ export default function PricingPage() {
     {
       id: "standard",
       name: "Standard Package",
-      price: 129.89,
+      price: 2.0,
       popular: true,
       features: [
         "5 videos",
@@ -44,7 +44,7 @@ export default function PricingPage() {
     {
       id: "premium",
       name: "Premium Package",
-      price: 199.89,
+      price: 3.0,
       popular: false,
       features: [
         "10 videos",

@@ -12,29 +12,29 @@ const ADDON_PLAQUES = [
     id: "wooden_qr",
     name: "Wooden QR Keychain",
     description: "Natural wood finish with laser-engraved QR code",
-    price: 29.97,
+    price: 2.97,
     image: "/wooden-keychain.png",
   },
   {
     id: "picture_plaque",
     name: "Picture Plaque",
     description: "Custom photo plaque with memorial details",
-    price: 39.98,
+    price: 3.98,
     image: "/aluminum-card.jpg",
   },
   {
     id: "stone_qr",
     name: "Stone Memorial",
     description: "Durable stone memorial with engraved QR code",
-    price: 56.99,
+    price: 1.99,
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/e4de3d0a-3087-4815-924d-3bcb93c7a20d.jpg",
   },
 ]
 
 const PACKAGES = {
-  basic: { id: "basic", name: "Basic Package", price: 89.89 },
-  standard: { id: "standard", name: "Standard Package", price: 129.89 },
-  premium: { id: "premium", name: "Premium Package", price: 199.89 },
+  basic: { id: "basic", name: "Basic Package", price: 1.0 },
+  standard: { id: "standard", name: "Standard Package", price: 2.0 },
+  premium: { id: "premium", name: "Premium Package", price: 3.0 },
 }
 
 export default function AddOnsPage() {

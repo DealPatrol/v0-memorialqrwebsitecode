@@ -87,7 +87,7 @@ export default function Programs() {
           <Card className="border-2 border-gray-200">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-2">Basic</CardTitle>
-              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$89.89</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$1.00</CardTitle>
               <p className="text-sm text-gray-600">Perfect for simple memorials</p>
             </CardHeader>
             <CardContent>
@@ -127,7 +127,7 @@ export default function Programs() {
             </div>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-2">Standard</CardTitle>
-              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$129.89</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$2.00</CardTitle>
               <p className="text-sm text-gray-600">Best value for families</p>
             </CardHeader>
             <CardContent>
@@ -164,7 +164,7 @@ export default function Programs() {
           <Card className="border-2 border-purple-200">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-2">Premium</CardTitle>
-              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$199.89</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$3.00</CardTitle>
               <p className="text-sm text-gray-600">Complete memorial experience</p>
             </CardHeader>
             <CardContent>
@@ -209,7 +209,7 @@ export default function Programs() {
             Create a beautiful, lasting memorial that celebrates their life and keeps their memory alive forever.
           </p>
           <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-            <Link href="/checkout">Start Creating Memorial - $2.00</Link>
+            <Link href="/checkout">Start Creating Memorial - $1.00</Link>
           </Button>
         </div>
       </div>

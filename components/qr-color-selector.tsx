@@ -160,7 +160,7 @@ export function QRColorSelector() {
               <div className="bg-white rounded-lg p-6 mb-6">
                 <p className="text-sm text-gray-600 mb-3">Starting at:</p>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-4xl font-bold text-slate-900">$89.89</span>
+                  <span className="text-4xl font-bold text-slate-900">$1.00</span>
                 </div>
                 <p className="text-sm text-gray-600">Choose from 3 package tiers</p>
               </div>

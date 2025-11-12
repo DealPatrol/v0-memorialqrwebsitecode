@@ -44,12 +44,11 @@ export async function POST(req: Request) {
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
 
     const packagePrices: Record<string, number> = {
-      basic: 8989, // $89.89
-      standard: 12989, // $129.89
-      premium: 19989, // $199.89
+      basic: 100, // $1.00
+      standard: 200, // $2.00
+      premium: 300, // $3.00
     }
     const baseAmount = packagePrices[packageTier as string] || packagePrices.standard
-    // </CHANGE>
 
     let addonAmount = 0
     if (addonWoodenQr) addonAmount += 2997

@@ -51,9 +51,9 @@ const PRODUCTS = {
 }
 
 const PACKAGES = {
-  basic: { id: "basic", name: "Basic Package", price: 89.89 },
-  standard: { id: "standard", name: "Standard Package", price: 129.89 },
-  premium: { id: "premium", name: "Premium Package", price: 199.89 },
+  basic: { id: "basic", name: "Basic Package", price: 1.0 },
+  standard: { id: "standard", name: "Standard Package", price: 2.0 },
+  premium: { id: "premium", name: "Premium Package", price: 3.0 },
 }
 
 export default function CheckoutDetailsPage() {

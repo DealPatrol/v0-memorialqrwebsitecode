@@ -68,7 +68,7 @@ const PACKAGES = {
   basic: {
     id: "basic",
     name: "Basic Package",
-    price: 89.89,
+    price: 1.0,
     videos: 3,
     audio: 10,
     photos: 30,
@@ -76,7 +76,7 @@ const PACKAGES = {
   standard: {
     id: "standard",
     name: "Standard Package",
-    price: 129.89,
+    price: 2.0,
     videos: 5,
     audio: 15,
     photos: 50,
@@ -84,7 +84,7 @@ const PACKAGES = {
   premium: {
     id: "premium",
     name: "Premium Package",
-    price: 199.89,
+    price: 3.0,
     videos: 10,
     audio: 30,
     photos: 100,
@@ -213,7 +213,7 @@ export default function CheckoutPage() {
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="relative h-64 md:h-full min-h-[300px]">
                   <Image
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/box1-ddkM8m6r7XISkEEH5qA6RU6DblzyIK.jpg"
+                    src="/images/design-mode/box1(1).jpg"
                     alt="Luxury Memorial Presentation Box"
                     fill
                     className="object-cover"
