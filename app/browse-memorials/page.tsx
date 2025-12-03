@@ -106,12 +106,12 @@ export default function BrowseMemorials() {
           <h2 className="text-2xl font-bold mb-6 text-slate-900">Featured Memorial</h2>
           <Card className="overflow-hidden hover:shadow-xl transition-shadow border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
             <div className="relative">
-              <Image
-                src="/catholic-church-notre-dame-kinshasa-congo-universi.jpg"
-                alt="Paroisse Universitaire Notre Dame de l'Espérance"
-                width={1200}
-                height={400}
-                className="w-full h-64 md:h-96 object-cover"
+              <div
+                className="w-full h-64 md:h-96 bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://images.unsplash.com/photo-1511284733678-65fb8ac11154?w=1200&h=400&fit=crop')",
+                }}
               />
               <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
                 Featured Parish Memorial
