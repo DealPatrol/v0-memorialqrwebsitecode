@@ -17,7 +17,7 @@ const PRODUCTS = {
   memorial: {
     id: "online_memorial",
     name: "Online Memorial",
-    oneTimePrice: 2.0,
+    oneTimePrice: 89.89,
   },
   plaques: {
     silver: {
@@ -44,22 +44,22 @@ const PRODUCTS = {
       id: "wooden_qr",
       name: "Wooden QR Keychain",
       description: "Natural wood finish with laser-engraved QR code",
-      price: 29.97,
-      image: "/wooden-keychain.png",
+      price: 29.97, // Restored from $19.89 to normal price
+      image: "/images/2e4fdbea-5150-40fa-bb82.jpeg",
     },
     picture_plaque: {
       id: "picture_plaque",
       name: "Picture Plaque",
       description: "Custom photo plaque with memorial details",
-      price: 39.98,
+      price: 39.98, // Restored from $29.89 to normal price
       image: "/aluminum-card.jpg",
     },
     stone_qr: {
       id: "stone_qr",
       name: "Stone Memorial",
       description: "Durable stone memorial with engraved QR code",
-      price: 56.99,
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/e4de3d0a-3087-4815-924d-3bcb93c7a20d.jpg",
+      price: 56.99, // Restored from $39.98 to normal price
+      image: "/images/e4de3d0a-3087-4815-924d.jpg",
     },
   },
 }
@@ -68,7 +68,7 @@ const PACKAGES = {
   basic: {
     id: "basic",
     name: "Basic Package",
-    price: 1.0,
+    price: 89.89,
     videos: 3,
     audio: 10,
     photos: 30,
@@ -76,7 +76,7 @@ const PACKAGES = {
   standard: {
     id: "standard",
     name: "Standard Package",
-    price: 2.0,
+    price: 129.89,
     videos: 5,
     audio: 15,
     photos: 50,
@@ -84,7 +84,7 @@ const PACKAGES = {
   premium: {
     id: "premium",
     name: "Premium Package",
-    price: 3.0,
+    price: 199.89,
     videos: 10,
     audio: 30,
     photos: 100,
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
                     return (
                       <div key={addonId} className="flex justify-between items-center">
                         <span className="text-sm font-medium">{addon.name}</span>
-                        <span className="text-sm text-accent font-semibold">${addon.price.toFixed(2)}</span>
+                        <span className="text-sm text-gray-900 font-bold">${addon.price.toFixed(2)}</span>
                       </div>
                     )
                   })}
@@ -204,6 +204,57 @@ export default function CheckoutPage() {
           </div>
         </section>
       )}
+
+      {/* Add-ons Selection Section */}
+      <section className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Add Optional Extras</CardTitle>
+              <p className="text-sm text-muted-foreground">Enhance your memorial with additional products</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-6">
+                {Object.entries(PRODUCTS.addons).map(([key, addon]) => {
+                  const isSelected = selectedAddOns.includes(addon.id)
+                  return (
+                    <div
+                      key={key}
+                      className={`relative border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        isSelected ? "border-accent ring-2 ring-accent" : "border-border hover:border-accent/50"
+                      }`}
+                      onClick={() => {
+                        setSelectedAddOns((prev) =>
+                          prev.includes(addon.id) ? prev.filter((id) => id !== addon.id) : [...prev, addon.id],
+                        )
+                      }}
+                    >
+                      <div className="relative h-40 w-full">
+                        <Image
+                          src={addon.image || "/placeholder.svg"}
+                          alt={addon.name}
+                          fill
+                          className="object-contain p-2"
+                        />
+                      </div>
+                      <div className="p-4 bg-background">
+                        <h3 className="font-semibold mb-1">{addon.name}</h3>
+                        <p className="text-xs text-muted-foreground mb-2">{addon.description}</p>
+                        <p className="text-lg font-bold text-gray-900">${addon.price.toFixed(2)}</p>
+                      </div>
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 bg-accent text-accent-foreground rounded-full p-2">
+                          <CheckCircle className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
       {/* Luxury Box Section */}
       <section className="py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-accent/20 via-accent/10 to-accent/20">

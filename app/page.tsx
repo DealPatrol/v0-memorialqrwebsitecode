@@ -5,7 +5,8 @@ import { Header } from "@/components/header"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
 import { MemorialSlideshow } from "@/components/memorial-slideshow"
-import { Heart, QrCode, Shield, Clock, Users, Star, ArrowRight, Play, Smartphone, Globe, Lock } from "lucide-react"
+import { CustomerTestimonials } from "@/components/customer-testimonials"
+import { Heart, QrCode, Shield, Clock, Users, Star, ArrowRight, Play, Smartphone, Globe, Lock } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -39,7 +40,7 @@ export default function HomePage() {
                 size="lg"
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8 py-4 btn-hover-lift"
               >
-                <Link href="/checkout">
+                <Link href="/pricing">
                   Create Memorial Now
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
@@ -213,67 +214,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 bg-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">What Families Say</h2>
-            <p className="text-xl text-muted-foreground">
-              Hear from families who have honored their loved ones with Memorial QR
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-muted-foreground mb-4">
-                  "Memorial QR helped us create a beautiful tribute to my father. The QR code on his headstone allows
-                  visitors to see his life story and photos."
-                </p>
-                <div className="font-semibold text-foreground">Sarah Johnson</div>
-                <div className="text-sm text-muted-foreground">Verified Customer</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-muted-foreground mb-4">
-                  "The process was so easy and the support team was incredibly helpful. Our family can now share
-                  memories and photos in one place."
-                </p>
-                <div className="font-semibold text-foreground">Michael Chen</div>
-                <div className="text-sm text-muted-foreground">Verified Customer</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-muted-foreground mb-4">
-                  "What a wonderful way to keep mom's memory alive. Friends and family love being able to access her
-                  photos and stories anytime."
-                </p>
-                <div className="font-semibold text-foreground">Lisa Rodriguez</div>
-                <div className="text-sm text-muted-foreground">Verified Customer</div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      {/* Customer Testimonials Section */}
+      <CustomerTestimonials />
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-primary to-accent">
@@ -287,7 +229,7 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-background text-primary hover:bg-background/90 text-lg px-8 py-4">
-              <Link href="/checkout">
+              <Link href="/pricing">
                 Get Started Today
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
@@ -330,7 +272,7 @@ export default function HomePage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/checkout" className="hover:text-primary-foreground">
+                  <Link href="/pricing" className="hover:text-primary-foreground">
                     Pricing
                   </Link>
                 </li>

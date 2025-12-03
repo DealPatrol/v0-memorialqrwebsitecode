@@ -30,7 +30,7 @@ export default function HowItWorksPage() {
             Create a lasting digital memorial in just four simple steps. No account required to get started.
           </p>
           <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-            <Link href="/checkout">
+            <Link href="/pricing">
               Get Started Now
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
@@ -287,7 +287,7 @@ export default function HowItWorksPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-              <Link href="/checkout">
+              <Link href="/pricing">
                 Get Started Now
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
@@ -328,7 +328,7 @@ export default function HowItWorksPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/checkout" className="hover:text-white">
+                  <Link href="/pricing" className="hover:text-white">
                     Pricing
                   </Link>
                 </li>

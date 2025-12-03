@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
-import { User, Calendar, Upload, FileText, Users, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
+import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
 import { ThemeSelector } from "@/components/theme-selector"
@@ -34,7 +34,8 @@ export default function CreateMemorialPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderData, setOrderData] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
-  const [isCheckingAuth, setIsCheckingAuth] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isFreePlan, setIsFreePlan] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -44,57 +45,72 @@ export default function CreateMemorialPage() {
       } = await supabase.auth.getUser()
 
       setUser(user)
+
+      const planParam = searchParams.get("plan")
+
+      if (planParam === "free") {
+        setIsFreePlan(true)
+        setOrderData({
+          customerEmail: "",
+          customerName: "",
+          orderId: null,
+          packageType: "free",
+        })
+        setOrderId(`FREE-${Date.now()}`)
+        setIsCheckingAuth(false)
+        return
+      }
+
+      const pendingOrderData = sessionStorage.getItem("pendingOrder")
+
+      if (!pendingOrderData) {
+        setOrderData({
+          customerEmail: "",
+          customerName: "",
+          orderId: null,
+          packageType: "basic",
+        })
+        setOrderId(`ANON-${Date.now()}`)
+        setIsCheckingAuth(false)
+        return
+      }
+
+      try {
+        const parsedOrderData = JSON.parse(pendingOrderData)
+        setOrderData(parsedOrderData)
+        setOrderId(`ORDER-${parsedOrderData.orderId || Date.now()}`)
+      } catch (error) {
+        console.error("Error parsing order data:", error)
+        setOrderData({
+          customerEmail: "",
+          customerName: "",
+          orderId: null,
+          packageType: "basic",
+        })
+        setOrderId(`ANON-${Date.now()}`)
+      }
+
       setIsCheckingAuth(false)
     }
 
     checkAuth()
-
-    const pendingOrderData = sessionStorage.getItem("pendingOrder")
-
-    if (!pendingOrderData) {
-      toast({
-        title: "Access Denied",
-        description: "Please complete your purchase first to create your memorial.",
-        variant: "destructive",
-      })
-      router.push("/checkout")
-      return
-    }
-
-    try {
-      const parsedOrderData = JSON.parse(pendingOrderData)
-      setOrderData(parsedOrderData)
-      setOrderId(`PENDING-${Date.now()}`)
-    } catch (error) {
-      console.error("[v0] Error parsing order data:", error)
-      router.push("/checkout")
-    }
-  }, [router, toast])
+  }, [router, toast, searchParams])
 
   const [formData, setFormData] = useState({
-    // Step 1: Basic Information
     firstName: "",
     lastName: "",
     dateOfBirth: "",
     dateOfDeath: "",
     location: "",
-    theme: "classic", // Added theme field with default value
-
-    // Step 2: Life Details
+    theme: "classic",
     occupation: "",
     hobbies: "",
     achievements: "",
     favoriteQuote: "",
-
-    // Step 3: Photos & Media
     profilePhoto: null as File | null,
     additionalPhotos: [] as File[],
-
-    // Step 4: Biography
     biography: "",
     personalStory: "",
-
-    // Step 5: Family & Friends
     spouse: "",
     children: "",
     parents: "",
@@ -138,7 +154,6 @@ export default function CreateMemorialPage() {
       let profileImageUrl = null
 
       if (formData.profilePhoto) {
-        console.log("[v0] Uploading profile photo:", formData.profilePhoto.name)
         const formDataBlob = new FormData()
         formDataBlob.append("file", formData.profilePhoto)
 
@@ -150,19 +165,9 @@ export default function CreateMemorialPage() {
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
           profileImageUrl = uploadData.url
-          console.log("[v0] Profile photo uploaded successfully:", profileImageUrl)
-        } else {
-          const errorText = await uploadResponse.text()
-          console.error("[v0] Failed to upload profile photo:", errorText)
-          toast({
-            title: "Warning",
-            description: "Profile photo upload failed, continuing with memorial creation...",
-            variant: "destructive",
-          })
         }
       }
 
-      console.log("[v0] Creating memorial with profile image:", profileImageUrl)
       const memorialResponse = await fetch("/api/memorials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -173,11 +178,13 @@ export default function CreateMemorialPage() {
           dateOfDeath: formData.dateOfDeath,
           location: formData.location,
           biography: formData.biography,
-          customerEmail: orderData.customerEmail,
-          customerName: orderData.customerName,
+          customerEmail: user?.email || orderData?.customerEmail || formData.firstName + "@memorial.temp",
+          customerName:
+            user?.user_metadata?.full_name || orderData?.customerName || `${formData.firstName} ${formData.lastName}`,
           userId: user?.id || null,
           profileImageUrl: profileImageUrl,
-          theme: formData.theme, // Include theme in memorial creation
+          theme: formData.theme,
+          packageType: isFreePlan ? "free" : orderData?.packageType || "basic",
         }),
       })
 
@@ -187,35 +194,27 @@ export default function CreateMemorialPage() {
       }
 
       const { memorial } = await memorialResponse.json()
-      console.log("[v0] Memorial created successfully:", memorial)
 
       if (formData.additionalPhotos.length > 0) {
-        console.log("[v0] Uploading", formData.additionalPhotos.length, "additional photos")
         for (const photo of formData.additionalPhotos) {
           try {
             const photoFormData = new FormData()
             photoFormData.append("file", photo)
             photoFormData.append("memorialId", memorial.id)
             photoFormData.append("caption", photo.name)
-            photoFormData.append("uploaderName", orderData.customerName || "Memorial Creator")
+            photoFormData.append("uploaderName", orderData?.customerName || "Memorial Creator")
 
-            const photoResponse = await fetch("/api/photos/upload", {
+            await fetch("/api/photos/upload", {
               method: "POST",
               body: photoFormData,
             })
-
-            if (!photoResponse.ok) {
-              console.error("[v0] Failed to upload photo:", photo.name)
-            } else {
-              console.log("[v0] Photo uploaded successfully:", photo.name)
-            }
           } catch (photoError) {
-            console.error("[v0] Error uploading photo:", photoError)
+            console.error("Error uploading photo:", photoError)
           }
         }
       }
 
-      if (orderData.orderId) {
+      if (orderData?.orderId && !isFreePlan) {
         await fetch("/api/orders/link-memorial", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -230,12 +229,14 @@ export default function CreateMemorialPage() {
 
       toast({
         title: "Memorial Created Successfully!",
-        description: "Your memorial is now live and ready to share.",
+        description: isFreePlan
+          ? "Your free memorial is now live! Upgrade anytime to unlock more features."
+          : "Your memorial is now live and ready to share.",
       })
 
       router.push(`/memorial/${memorial.id}`)
     } catch (error: any) {
-      console.error("[v0] Error creating memorial:", error)
+      console.error("Error creating memorial:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to create memorial. Please contact support.",
@@ -248,39 +249,50 @@ export default function CreateMemorialPage() {
 
   const progress = (currentStep / steps.length) * 100
 
-  if (!orderData) {
+  if (isCheckingAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
         <Card className="max-w-md mx-auto text-center">
           <CardContent className="p-8">
-            <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Purchase Required</h2>
-            <p className="text-gray-600 mb-6">
-              Please purchase a memorial product first to access the memorial creation form.
-            </p>
-            <Button asChild className="bg-purple-600 hover:bg-purple-700">
-              <Link href="/checkout">Go to Checkout</Link>
-            </Button>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading...</p>
           </CardContent>
         </Card>
       </div>
     )
   }
 
+  if (!orderData) {
+    return null // This shouldn't happen now, but safety check
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100">
       <Header />
 
-      {/* Order Confirmation Banner */}
-      <div className="bg-green-50 border-b border-green-200 py-3">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 text-green-700">
-            <CheckCircle className="w-5 h-5" />
-            <span className="font-semibold">Payment Confirmed!</span>
-            <span>Now create your digital memorial</span>
+      {!isFreePlan && orderData.orderId && (
+        <div className="bg-green-50 border-b border-green-200 py-3">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-2 text-green-700">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-semibold">Payment Confirmed!</span>
+              <span>Now create your digital memorial</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {isFreePlan && (
+        <div className="bg-blue-50 border-b border-blue-200 py-3">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-2 text-blue-700">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-semibold">Free Memorial</span>
+              <span>Create your memorial at no cost</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Progress Header */}
       <section className="py-8 bg-white border-b">

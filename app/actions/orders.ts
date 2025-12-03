@@ -55,11 +55,8 @@ export async function createOrder(data: CreateOrderData) {
       .single()
 
     if (error) {
-      console.error("[v0] Error creating order:", error)
       return { success: false, error: error.message }
     }
-
-    console.log("[v0] Order created successfully:", order.order_number)
 
     const emailData = {
       customerName: data.customerName,
@@ -76,18 +73,13 @@ export async function createOrder(data: CreateOrderData) {
     }
 
     // Send customer confirmation email (don't block on failure)
-    sendOrderConfirmationEmail(emailData).catch((error) => {
-      console.error("[v0] Failed to send customer confirmation email:", error)
-    })
+    sendOrderConfirmationEmail(emailData).catch(() => {})
 
     // Send admin notification email (don't block on failure)
-    sendAdminOrderNotification(emailData).catch((error) => {
-      console.error("[v0] Failed to send admin notification email:", error)
-    })
+    sendAdminOrderNotification(emailData).catch(() => {})
 
     return { success: true, order }
   } catch (error) {
-    console.error("[v0] Exception creating order:", error)
     return { success: false, error: "Failed to create order" }
   }
 }
@@ -171,13 +163,11 @@ export async function linkOrderToMemorial(orderId: string, memorialId: string) {
       .single()
 
     if (error) {
-      console.error("[v0] Error linking order to memorial:", error)
       return { success: false, error: error.message }
     }
 
     return { success: true, order }
   } catch (error) {
-    console.error("[v0] Exception linking order to memorial:", error)
     return { success: false, error: "Failed to link order to memorial" }
   }
 }

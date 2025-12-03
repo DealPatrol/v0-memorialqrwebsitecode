@@ -9,12 +9,21 @@ export async function POST(request: NextRequest) {
     const { memorialId, memorialName, memorialUrl, recipientEmail } = body
 
     if (!recipientEmail || !memorialUrl) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+      return NextResponse.json({ error: "Missing required fields. Please provide an email address." }, { status: 400 })
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(recipientEmail)) {
+      return NextResponse.json({ error: "Invalid email address format" }, { status: 400 })
+    }
+
+    const fromEmail = process.env.RESEND_FROM_EMAIL || "Memorial QR <noreply@memorialsqr.com>"
+
     const { data, error } = await resend.emails.send({
-      from: "Memorial QR <noreply@memorialqr.com>",
+      from: fromEmail,
       to: recipientEmail,
+      replyTo: "support@memorialsQR.com",
       subject: `Memorial for ${memorialName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -38,13 +47,21 @@ export async function POST(request: NextRequest) {
     })
 
     if (error) {
-      console.error("[v0] Email send error:", error)
-      return NextResponse.json({ error: "Failed to send email" }, { status: 500 })
+      if (error.message?.includes("domain")) {
+        return NextResponse.json(
+          { error: "Email service configuration error. Please contact support." },
+          { status: 500 },
+        )
+      }
+      return NextResponse.json(
+        { error: "Failed to send email. Please try again or contact support if the issue persists." },
+        { status: 500 },
+      )
     }
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error("[v0] Email API error:", error)
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    return NextResponse.json({ error: "Failed to send email. Please try again later." }, { status: 500 })
   }
 }

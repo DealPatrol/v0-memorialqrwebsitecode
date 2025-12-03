@@ -44,16 +44,16 @@ export async function POST(req: Request) {
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
 
     const packagePrices: Record<string, number> = {
-      basic: 100, // $1.00
-      standard: 200, // $2.00
-      premium: 300, // $3.00
+      basic: 8989,
+      standard: 12989,
+      premium: 19989,
     }
     const baseAmount = packagePrices[packageTier as string] || packagePrices.standard
 
     let addonAmount = 0
-    if (addonWoodenQr) addonAmount += 2997
-    if (addonPicturePlaque) addonAmount += 3998
-    if (addonStoneQR) addonAmount += 5699
+    if (addonWoodenQr) addonAmount += 1989
+    if (addonPicturePlaque) addonAmount += 2989
+    if (addonStoneQR) addonAmount += 3998
     const totalAmountCents = baseAmount + addonAmount
 
     const supabase = createServiceRoleClient()
@@ -89,7 +89,6 @@ export async function POST(req: Request) {
     const { data: order, error } = await supabase.from("orders").insert(orderData).select().single()
 
     if (error) {
-      console.error("Database error creating order:", error.message)
       return NextResponse.json(
         {
           success: false,
@@ -115,8 +114,6 @@ export async function POST(req: Request) {
       },
     })
   } catch (error: any) {
-    console.error("Unexpected error in checkout:", error.message)
-
     return NextResponse.json(
       {
         success: false,

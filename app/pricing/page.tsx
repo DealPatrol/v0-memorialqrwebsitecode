@@ -4,59 +4,84 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Star } from "lucide-react"
 import Link from "next/link"
+import { UrgencyBanner } from "@/components/urgency-banner"
+import { TrustBadges } from "@/components/trust-badges"
 
 export default function PricingPage() {
   const packages = [
     {
-      id: "basic",
-      name: "Basic Package",
-      price: 1.0,
+      id: "starter",
+      name: "Starter Package",
+      price: 39.89,
       popular: false,
+      storage: "500 MB",
+      plaques: 1,
       features: [
-        "3 videos",
-        "10 voicemails/audio files",
-        "30 photos",
+        "500 MB storage space",
+        "1 premium QR plaque (Gold, Silver, or Black)",
+        "Unlimited photos, videos & audio files",
         "Unlimited guest messages",
         "Family tree display",
         "Easy social media sharing",
-        "Custom QR code",
-        "Choice of Gold, Black, or Silver plaque",
+        "Custom QR code design",
+        "Lifetime hosting included",
+      ],
+    },
+    {
+      id: "basic",
+      name: "Basic Package",
+      price: 89.89,
+      popular: false,
+      storage: "1 GB",
+      plaques: 1,
+      features: [
+        "1 GB storage space",
+        "1 premium QR plaque (Gold, Silver, or Black)",
+        "Unlimited photos, videos & audio files",
+        "Unlimited guest messages",
+        "Family tree display",
+        "Easy social media sharing",
+        "Custom QR code design",
         "Lifetime hosting included",
       ],
     },
     {
       id: "standard",
       name: "Standard Package",
-      price: 2.0,
+      price: 129.89,
       popular: true,
+      storage: "2 GB",
+      plaques: 2,
       features: [
-        "5 videos",
-        "15 voicemails/audio files",
-        "50 photos",
+        "2 GB storage space",
+        "2 premium QR plaques (Gold, Silver, or Black)",
+        "Unlimited photos, videos & audio files",
         "Unlimited guest messages",
         "Family tree display",
         "Easy social media sharing",
-        "Custom QR code",
-        "Choice of Gold, Black, or Silver plaque",
+        "Custom QR code design",
         "Lifetime hosting included",
+        "Priority email support",
       ],
     },
     {
       id: "premium",
       name: "Premium Package",
-      price: 3.0,
+      price: 199.89,
       popular: false,
+      storage: "5 GB",
+      plaques: 3,
       features: [
-        "10 videos",
-        "30 voicemails/audio files",
-        "100 photos",
-        "3 different plaques OR wooden keychain/necklace",
+        "5 GB storage space",
+        "3 premium QR plaques (Gold, Silver, or Black)",
+        "Unlimited photos, videos & audio files",
         "Unlimited guest messages",
         "Family tree display",
         "Easy social media sharing",
-        "Custom QR code",
+        "Custom QR code design",
         "Lifetime hosting included",
-        "Priority support",
+        "Priority phone & email support",
+        "Wooden keychain or necklace option",
       ],
     },
   ]
@@ -64,16 +89,17 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <Header />
+      <UrgencyBanner />
 
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Choose Your Memorial Package</h1>
           <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            Create a beautiful, lasting tribute for your loved one. All packages include lifetime hosting with no hidden
-            fees or monthly charges.
+            Create a beautiful, lasting tribute with unlimited content. All packages include lifetime hosting and
+            premium QR plaques with no hidden fees.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {packages.map((pkg) => (
               <Card
                 key={pkg.id}
@@ -98,10 +124,19 @@ export default function PricingPage() {
                     <span className="text-5xl font-bold text-gray-900">${pkg.price}</span>
                   </div>
                   <CardDescription className="text-base">One-time payment • Lifetime access</CardDescription>
+
+                  <div className="flex flex-col gap-2 mt-4">
+                    <Badge variant="outline" className="text-sm font-semibold py-1">
+                      {pkg.storage} Storage
+                    </Badge>
+                    <Badge variant="outline" className="text-sm font-semibold py-1">
+                      {pkg.plaques} {pkg.plaques === 1 ? "Plaque" : "Plaques"}
+                    </Badge>
+                  </div>
                 </CardHeader>
 
                 <CardContent className="pt-4">
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-3 mb-6">
                     {pkg.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
@@ -119,7 +154,7 @@ export default function PricingPage() {
                         : "bg-purple-600 hover:bg-purple-700"
                     }`}
                   >
-                    <Link href={`/checkout/add-ons?package=${pkg.id}`}>Get Started</Link>
+                    <Link href={`/checkout/simple?package=${pkg.id}`}>Get Started</Link>
                   </Button>
 
                   <p className="text-sm text-gray-500 mt-4 text-center">30-Day Money-Back Guarantee</p>
@@ -130,22 +165,21 @@ export default function PricingPage() {
 
           <div className="mt-16 text-center">
             <h3 className="text-2xl font-bold mb-4">All Packages Include:</h3>
-            <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className="text-center">
+                <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                <p className="font-semibold">Unlimited Files</p>
+                <p className="text-sm text-gray-600">Upload as many photos, videos & audio as your storage allows</p>
+              </div>
+              <div className="text-center">
+                <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                <p className="font-semibold">Premium Plaques</p>
+                <p className="text-sm text-gray-600">Beautiful QR plaques in Gold, Silver, or Black finish</p>
+              </div>
               <div className="text-center">
                 <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
                 <p className="font-semibold">Lifetime Hosting</p>
-              </div>
-              <div className="text-center">
-                <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p className="font-semibold">No Monthly Fees</p>
-              </div>
-              <div className="text-center">
-                <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p className="font-semibold">Free Shipping</p>
-              </div>
-              <div className="text-center">
-                <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p className="font-semibold">24/7 Access</p>
+                <p className="text-sm text-gray-600">No monthly fees, no renewals • Keep forever</p>
               </div>
             </div>
           </div>
@@ -158,6 +192,8 @@ export default function PricingPage() {
           </div>
         </div>
       </section>
+
+      <TrustBadges />
     </div>
   )
 }

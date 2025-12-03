@@ -96,24 +96,15 @@ export interface RefundResult {
 // Create Order
 export async function createOrder(data: CreateOrderData): Promise<OrderResult> {
   try {
-    // Validate input data
     const validatedData = CreateOrderSchema.parse(data)
-
-    // Simulate order creation
     await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Generate mock order ID
     const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-    console.log("Order created:", { orderId, ...validatedData })
 
     return {
       success: true,
       orderId,
     }
   } catch (error) {
-    console.error("Create order error:", error)
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -131,17 +122,10 @@ export async function createOrder(data: CreateOrderData): Promise<OrderResult> {
 // Create Payment Intent
 export async function createPaymentIntent(data: PaymentIntentData): Promise<PaymentIntentResult> {
   try {
-    // Validate input data
     const validatedData = PaymentIntentSchema.parse(data)
-
-    // Simulate payment intent creation
     await new Promise((resolve) => setTimeout(resolve, 800))
-
-    // Generate mock payment intent
     const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const clientSecret = `${paymentIntentId}_secret_${Math.random().toString(36).substr(2, 9)}`
-
-    console.log("Payment intent created:", { paymentIntentId, ...validatedData })
 
     return {
       success: true,
@@ -149,8 +133,6 @@ export async function createPaymentIntent(data: PaymentIntentData): Promise<Paym
       paymentIntentId,
     }
   } catch (error) {
-    console.error("Create payment intent error:", error)
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -168,17 +150,10 @@ export async function createPaymentIntent(data: PaymentIntentData): Promise<Paym
 // Create Checkout Session
 export async function getCheckoutSession(data: CheckoutSessionData): Promise<CheckoutSessionResult> {
   try {
-    // Validate input data
     const validatedData = CheckoutSessionSchema.parse(data)
-
-    // Simulate checkout session creation
     await new Promise((resolve) => setTimeout(resolve, 600))
-
-    // Generate mock session
     const sessionId = `cs_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const sessionUrl = `https://checkout.example.com/pay/${sessionId}`
-
-    console.log("Checkout session created:", { sessionId, ...validatedData })
 
     return {
       success: true,
@@ -186,8 +161,6 @@ export async function getCheckoutSession(data: CheckoutSessionData): Promise<Che
       sessionId,
     }
   } catch (error) {
-    console.error("Create checkout session error:", error)
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -205,17 +178,10 @@ export async function getCheckoutSession(data: CheckoutSessionData): Promise<Che
 // Process Payment
 export async function processPayment(data: ProcessPaymentData): Promise<PaymentResult> {
   try {
-    // Validate input data
     const validatedData = ProcessPaymentSchema.parse(data)
-
-    // Simulate payment processing
     await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Generate mock payment result
     const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    const status = Math.random() > 0.1 ? "succeeded" : "failed" // 90% success rate
-
-    console.log("Payment processed:", { paymentId, status, ...validatedData })
+    const status = Math.random() > 0.1 ? "succeeded" : "failed"
 
     if (status === "failed") {
       return {
@@ -230,8 +196,6 @@ export async function processPayment(data: ProcessPaymentData): Promise<PaymentR
       status,
     }
   } catch (error) {
-    console.error("Process payment error:", error)
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -260,7 +224,7 @@ export async function processSquarePayment(data: {
     const payment = await paymentsApi.createPayment({
       sourceId: data.sourceId,
       amountMoney: {
-        amount: BigInt(Math.round(data.amount * 100)), // Convert to cents
+        amount: BigInt(Math.round(data.amount * 100)),
         currency: data.currency || "USD",
       },
       idempotencyKey: randomUUID(),
@@ -281,7 +245,6 @@ export async function processSquarePayment(data: {
       }
     }
   } catch (error: any) {
-    console.error("Square payment error:", error)
     return {
       success: false,
       error: error.message || "Failed to process payment",
@@ -292,18 +255,11 @@ export async function processSquarePayment(data: {
 // Refund Payment
 export async function refundPayment(data: RefundPaymentData): Promise<RefundResult> {
   try {
-    // Validate input data
     const validatedData = RefundPaymentSchema.parse(data)
-
-    // Simulate refund processing
     await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Generate mock refund result
     const refundId = `re_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    const amount = validatedData.amount || 11999 // Default to $119.99
+    const amount = validatedData.amount || 11999
     const status = "succeeded"
-
-    console.log("Refund processed:", { refundId, amount, status, ...validatedData })
 
     return {
       success: true,
@@ -312,8 +268,6 @@ export async function refundPayment(data: RefundPaymentData): Promise<RefundResu
       status,
     }
   } catch (error) {
-    console.error("Refund payment error:", error)
-
     if (error instanceof z.ZodError) {
       return {
         success: false,

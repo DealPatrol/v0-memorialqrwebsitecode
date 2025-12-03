@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
-import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from "lucide-react"
+import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from 'lucide-react'
 
 const helpCategories = [
   {
@@ -66,7 +66,7 @@ const quickLinks = [
     title: "Email Support",
     description: "Send us your questions",
     icon: Mail,
-    href: "mailto:support@memorialqr.com",
+    href: "mailto:support@memorialsQR.com",
   },
 ]
 

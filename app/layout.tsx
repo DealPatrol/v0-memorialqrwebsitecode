@@ -6,6 +6,9 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { ExitIntentPopup } from "@/components/exit-intent-popup"
+import { LiveChatButton } from "@/components/live-chat-button"
+import { SocialProofTicker } from "@/components/social-proof-ticker"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -40,7 +43,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://memorialqr.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"),
   alternates: {
     canonical: "/",
   },
@@ -48,7 +51,7 @@ export const metadata: Metadata = {
     title: "Memorial QR - Digital Memorial Plaques",
     description:
       "Create beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones life.",
-    url: "https://memorialqr.com",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com",
     siteName: "Memorial QR",
     images: [
       {
@@ -60,6 +63,9 @@ export const metadata: Metadata = {
     ],
     locale: "en_US",
     type: "website",
+  },
+  facebook: {
+    appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "",
   },
   twitter: {
     card: "summary_large_image",
@@ -82,7 +88,7 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
-    generator: 'v0.app'
+  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -97,6 +103,17 @@ export default function RootLayout({
       className={`${inter.variable} ${dancingScript.variable} ${greatVibes.variable}`}
     >
       <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBP2W2XN7P"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-RBP2W2XN7P');
+            `,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
@@ -106,6 +123,9 @@ export default function RootLayout({
           <Toaster />
           <Analytics />
           <SpeedInsights />
+          <ExitIntentPopup />
+          <LiveChatButton />
+          <SocialProofTicker />
         </ThemeProvider>
       </body>
     </html>

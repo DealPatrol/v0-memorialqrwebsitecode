@@ -1,20 +1,21 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
+    
     let supabase
     try {
       supabase = await createClient()
     } catch (clientError) {
-      console.error("Failed to create Supabase client:", clientError)
       return NextResponse.json(
         { error: "Database connection failed. Please check environment variables." },
         { status: 500 },
       )
     }
 
-    const identifier = params.id
+    const identifier = id
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)
 
     const { data: memorial, error: memorialError } = await supabase
@@ -24,7 +25,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       .maybeSingle()
 
     if (memorialError) {
-      console.error("Error finding memorial:", memorialError.message)
       return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
     }
 
@@ -40,13 +40,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       .limit(100)
 
     if (error) {
-      console.error("Error fetching photos:", error.message)
       throw error
     }
 
-    return NextResponse.json({ photos })
+    return NextResponse.json({ photos: photos || [] })
   } catch (error) {
-    console.error("Error fetching photos:", error)
     return NextResponse.json({ error: "Failed to fetch photos" }, { status: 500 })
   }
 }

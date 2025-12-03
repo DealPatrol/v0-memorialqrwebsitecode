@@ -16,7 +16,7 @@ export function Header() {
           </Link>
           <nav className="flex items-center gap-6 text-sm font-medium">
             <Link href="/browse-memorials" className="transition-colors hover:text-foreground text-muted-foreground">
-              Browse Memorials
+              Sample Memorials
             </Link>
             <Link href="/programs" className="transition-colors hover:text-foreground text-muted-foreground">
               Products
@@ -47,7 +47,7 @@ export function Header() {
             </Link>
             <nav className="flex flex-col gap-4">
               <Link href="/browse-memorials" className="text-muted-foreground hover:text-foreground">
-                Browse Memorials
+                Sample Memorials
               </Link>
               <Link href="/programs" className="text-muted-foreground hover:text-foreground">
                 Products
@@ -81,7 +81,7 @@ export function Header() {
             <Link href="/auth/login">Sign In</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href="/checkout">Get Started</Link>
+            <Link href="/pricing">Get Started</Link>
           </Button>
         </div>
       </div>

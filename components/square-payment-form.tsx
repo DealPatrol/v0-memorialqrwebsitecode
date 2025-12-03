@@ -4,7 +4,7 @@ import { useState } from "react"
 import { CreditCard, PaymentForm } from "react-square-web-payments-sdk"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2 } from "lucide-react"
+import { Loader2 } from 'lucide-react'
 
 interface SquarePaymentFormProps {
   amount: number
@@ -38,6 +38,8 @@ export function SquarePaymentForm({
         throw new Error("Invalid payment token received from Square")
       }
 
+      console.log("[v0] Processing payment for order:", orderId, "Amount:", amount)
+
       const response = await fetch("/api/square/create-payment", {
         method: "POST",
         headers: {
@@ -50,11 +52,16 @@ export function SquarePaymentForm({
         }),
       })
 
+      console.log("[v0] Payment response status:", response.status)
+
       if (!response.ok) {
-        throw new Error("Payment processing failed. Please try again.")
+        const errorData = await response.json()
+        console.log("[v0] Payment error response:", errorData)
+        throw new Error(errorData.error || "Payment processing failed. Please try again.")
       }
 
       const data = await response.json()
+      console.log("[v0] Payment data:", data)
 
       if (data.success) {
         toast({
@@ -66,7 +73,7 @@ export function SquarePaymentForm({
         throw new Error(data.error || "Payment failed")
       }
     } catch (error: any) {
-      console.error("Payment error:", error)
+      console.error("[v0] Payment error:", error)
       toast({
         title: "Payment Failed",
         description: error.message || "There was an error processing your payment.",
@@ -79,12 +86,13 @@ export function SquarePaymentForm({
   }
 
   const handlePaymentError = (errors: any) => {
-    console.error("Square tokenization error:", errors)
+    console.error("[v0] Square tokenization error:", errors)
 
     let errorMessage = "Unable to process card information. Please try again."
 
     if (errors && Array.isArray(errors) && errors.length > 0) {
       const error = errors[0]
+      console.log("[v0] First error:", error)
       if (error.type === "VALIDATION_ERROR") {
         errorMessage = "Please check your card details and try again."
       } else if (error.message) {
@@ -104,6 +112,8 @@ export function SquarePaymentForm({
 
   const appId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID
   const locId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
+
+  console.log("[v0] Square config check - AppId exists:", !!appId, "LocationId exists:", !!locId)
 
   if (!appId || !locId) {
     return (

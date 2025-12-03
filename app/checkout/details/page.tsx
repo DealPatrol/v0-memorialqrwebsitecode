@@ -18,7 +18,7 @@ const PRODUCTS = {
   memorial: {
     id: "online_memorial",
     name: "Online Memorial",
-    oneTimePrice: 2.0,
+    oneTimePrice: 89.89,
   },
   plaques: {
     silver: { name: "Silver Memorial Plaque" },
@@ -30,30 +30,30 @@ const PRODUCTS = {
       id: "wooden_qr",
       name: "Wooden QR Code",
       description: "Natural wood finish with laser-engraved QR code",
-      price: 29.97,
+      price: 29.97, // Restored from $19.89 to normal price
       image: "/wooden-keychain.png",
     },
     picturePlaque: {
       id: "picture_plaque",
       name: "Picture Plaque",
       description: "Custom photo plaque with memorial details",
-      price: 39.98,
+      price: 39.98, // Already at normal price, no change needed
       image: "/aluminum-card.jpg",
     },
     stoneQR: {
       id: "stone_qr",
       name: "Stone QR Code",
       description: "Durable stone memorial with engraved QR code",
-      price: 56.99,
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/e4de3d0a-3087-4815-924d-3bcb93c7a20d.jpg",
+      price: 56.99, // Restored from $39.98 to normal price
+      image: "/images/e4de3d0a-3087-4815-924d.jpg",
     },
   },
 }
 
 const PACKAGES = {
-  basic: { id: "basic", name: "Basic Package", price: 1.0 },
-  standard: { id: "standard", name: "Standard Package", price: 2.0 },
-  premium: { id: "premium", name: "Premium Package", price: 3.0 },
+  basic: { id: "basic", name: "Basic Package", price: 89.89 },
+  standard: { id: "standard", name: "Standard Package", price: 129.89 },
+  premium: { id: "premium", name: "Premium Package", price: 199.89 },
 }
 
 export default function CheckoutDetailsPage() {
@@ -295,10 +295,6 @@ export default function CheckoutDetailsPage() {
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-accent" />
                     <span>Luxury Presentation Box</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
-                    <span>Free Shipping</span>
                   </div>
                 </div>
 

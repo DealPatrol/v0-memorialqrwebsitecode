@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Grid, List, Calendar, MapPin, Loader2 } from "lucide-react"
+import { Search, Grid, List, Calendar, MapPin } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
 type Memorial = {
@@ -38,12 +38,11 @@ export default function BrowseMemorials() {
 
         if (error) {
           console.error("Error fetching memorials:", error)
-          return
+        } else {
+          setMemorials(data || [])
         }
-
-        setMemorials(data || [])
       } catch (error) {
-        console.error("Failed to fetch memorials:", error)
+        console.error("Error:", error)
       } finally {
         setLoading(false)
       }
@@ -75,6 +74,17 @@ export default function BrowseMemorials() {
     return `${formatDate(birthDate)} - ${formatDate(deathDate)}`
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p className="text-gray-600">Loading memorials...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -83,15 +93,90 @@ export default function BrowseMemorials() {
       <div className="relative bg-slate-900 text-white py-16">
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-slate-800/90" />
         <div className="relative container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Browse Memorials</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Sample Memorials</h1>
           <p className="text-xl text-slate-200 max-w-2xl mx-auto">
-            Honor the memories of loved ones and discover the stories that shaped their lives
+            Explore beautiful digital memorials created by our community
           </p>
         </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* Featured PUNDE Memorial Section */}
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-6 text-slate-900">Featured Memorial</h2>
+          <Card className="overflow-hidden hover:shadow-xl transition-shadow border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+            <div className="relative">
+              <Image
+                src="/catholic-church-notre-dame-kinshasa-congo-universi.jpg"
+                alt="Paroisse Universitaire Notre Dame de l'Espérance"
+                width={1200}
+                height={400}
+                className="w-full h-64 md:h-96 object-cover"
+              />
+              <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                Featured Parish Memorial
+              </div>
+            </div>
+            <CardContent className="p-8">
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex-1">
+                  <h3 className="text-3xl font-bold mb-3 text-slate-900">
+                    Paroisse Universitaire Notre Dame de l'Espérance (PUNDE)
+                  </h3>
+                  <div className="flex items-center text-gray-600 mb-3">
+                    <Calendar className="h-5 w-5 mr-2" />
+                    <span className="text-base">Fondée le 8 décembre 1968</span>
+                  </div>
+                  <div className="flex items-center text-gray-600 mb-4">
+                    <MapPin className="h-5 w-5 mr-2" />
+                    <span className="text-base">Campus de l'Université de Kinshasa, Lemba, RD Congo</span>
+                  </div>
+                  <p className="text-gray-700 text-base mb-6 leading-relaxed">
+                    La Paroisse Universitaire Notre Dame de l'Espérance a été créée par le Cardinal Joseph-Albert Malula
+                    pour accompagner spirituellement la communauté universitaire de Kinshasa. Découvrez plus de 55 ans
+                    d'histoire, les biographies de six prêtres remarquables, et le patrimoine spirituel de cette
+                    paroisse exceptionnelle.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+                      <Link href="/punde">Découvrir l'Histoire Complète</Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline">
+                      <Link href="/punde#biographies">Biographies des Prêtres</Link>
+                    </Button>
+                  </div>
+                </div>
+                <div className="md:w-64 bg-gradient-to-br from-blue-100 to-purple-100 p-6 rounded-lg">
+                  <h4 className="font-bold text-lg mb-4 text-slate-900">Sections Disponibles</h4>
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex items-start">
+                      <span className="text-blue-600 mr-2">📰</span>
+                      <span>Actualités (mises à jour hebdomadaires)</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-purple-600 mr-2">📖</span>
+                      <span>Histoire depuis 1968</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-amber-600 mr-2">👥</span>
+                      <span>Biographies de 6 curés</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-pink-600 mr-2">🎥</span>
+                      <span>Guide vidéo et ressources</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <h2 className="text-2xl font-bold mb-6 text-slate-900">Other Memorials</h2>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="container mx-auto px-4 pb-8">
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="flex-1 max-w-md">
@@ -139,23 +224,14 @@ export default function BrowseMemorials() {
           </div>
         </div>
 
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-600" />
-            <span className="ml-3 text-slate-600">Loading memorials...</span>
-          </div>
-        )}
-
         {/* Results Count */}
-        {!loading && (
-          <div className="mb-6">
-            <p className="text-gray-600">
-              Showing {filteredMemorials.length} memorial{filteredMemorials.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-        )}
+        <div className="mb-6">
+          <p className="text-gray-600">
+            Showing {filteredMemorials.length} memorial{filteredMemorials.length !== 1 ? "s" : ""}
+          </p>
+        </div>
 
-        {!loading && viewMode === "grid" && (
+        {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMemorials.map((memorial) => (
               <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -184,7 +260,7 @@ export default function BrowseMemorials() {
                     <p className="text-gray-700 text-sm mb-4 line-clamp-3">{memorial.biography}</p>
                   )}
                   <Button asChild className="w-full">
-                    <Link href={`/memorial/${memorial.id}`}>View Memorial</Link>
+                    <Link href={`/memorial/${memorial.slug || memorial.id}`}>View Memorial</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -192,7 +268,7 @@ export default function BrowseMemorials() {
           </div>
         )}
 
-        {!loading && viewMode === "list" && (
+        {viewMode === "list" && (
           <div className="space-y-4">
             {filteredMemorials.map((memorial) => (
               <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -211,7 +287,7 @@ export default function BrowseMemorials() {
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-xl font-semibold">{memorial.full_name}</h3>
                         <Button asChild>
-                          <Link href={`/memorial/${memorial.id}`}>View Memorial</Link>
+                          <Link href={`/memorial/${memorial.slug || memorial.id}`}>View Memorial</Link>
                         </Button>
                       </div>
                       <div className="flex items-center text-gray-600 mb-2">
@@ -233,16 +309,20 @@ export default function BrowseMemorials() {
           </div>
         )}
 
-        {!loading && filteredMemorials.length === 0 && (
+        {filteredMemorials.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No memorials found matching your criteria.</p>
+            <p className="text-gray-500 text-lg">
+              {memorials.length === 0
+                ? "No public memorials available yet. Be the first to create one!"
+                : "No memorials found matching your criteria."}
+            </p>
             <Button
               onClick={() => {
                 setSearchTerm("")
               }}
               className="mt-4"
             >
-              Clear Filters
+              {memorials.length === 0 ? "Create Memorial" : "Clear Filters"}
             </Button>
           </div>
         )}
@@ -256,7 +336,7 @@ export default function BrowseMemorials() {
             Honor your loved one with a beautiful digital memorial that can be shared with family and friends
           </p>
           <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-            <Link href="/checkout">Get Started Today</Link>
+            <Link href="/pricing">Get Started Today</Link>
           </Button>
         </div>
       </div>

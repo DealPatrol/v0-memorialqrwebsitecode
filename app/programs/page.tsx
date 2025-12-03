@@ -25,17 +25,17 @@ export default function Programs() {
   const colorOptions = [
     {
       name: "Classic Black",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/black-uzcKSInG8bp4K2tta5njv5Mb0s2QMN.jpg",
+      image: "/images/black.jpg",
       description: "Elegant black finish with white QR code",
     },
     {
       name: "Premium Gold",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gold-YKcMRbRzoprn4nOPSLASZgVAG0oK7f.jpg",
+      image: "/images/gold.jpg",
       description: "Luxurious gold finish with black QR code",
     },
     {
       name: "Modern Silver",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/silver-5qPRpDXC2vLxCx2OV9fu8LHUeo1y0y.jpg",
+      image: "/images/silver.jpg",
       description: "Sleek silver finish with black QR code",
     },
   ]
@@ -57,7 +57,7 @@ export default function Programs() {
       name: "Stone QR Code",
       description: "Durable stone memorial with engraved QR code",
       price: 56.99,
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/e4de3d0a-3087-4815-924d-3bcb93c7a20d.jpg",
+      image: "/images/e4de3d0a-3087-4815-924d.jpg",
     },
   ]
 
@@ -87,7 +87,7 @@ export default function Programs() {
           <Card className="border-2 border-gray-200">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-2">Basic</CardTitle>
-              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$1.00</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$89.89</CardTitle>
               <p className="text-sm text-gray-600">Perfect for simple memorials</p>
             </CardHeader>
             <CardContent>
@@ -127,7 +127,7 @@ export default function Programs() {
             </div>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-2">Standard</CardTitle>
-              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$2.00</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$129.89</CardTitle>
               <p className="text-sm text-gray-600">Best value for families</p>
             </CardHeader>
             <CardContent>
@@ -164,7 +164,7 @@ export default function Programs() {
           <Card className="border-2 border-purple-200">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-2">Premium</CardTitle>
-              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$3.00</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$199.89</CardTitle>
               <p className="text-sm text-gray-600">Complete memorial experience</p>
             </CardHeader>
             <CardContent>
@@ -209,7 +209,7 @@ export default function Programs() {
             Create a beautiful, lasting memorial that celebrates their life and keeps their memory alive forever.
           </p>
           <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-            <Link href="/checkout">Start Creating Memorial - $1.00</Link>
+            <Link href="/checkout">Start Creating Memorial - $89.89</Link>
           </Button>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Header } from "@/components/header"
-import { HelpCircle, Phone, Mail } from "lucide-react"
+import { HelpCircle, Phone, Mail } from 'lucide-react'
 
 const faqCategories = [
   {
@@ -233,7 +233,7 @@ export default function FAQPage() {
                     variant="outline"
                     className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
                   >
-                    <Link href="mailto:support@memorialqr.com">Email Us</Link>
+                    <Link href="mailto:support@memorialsQR.com">Email Us</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -246,7 +246,7 @@ export default function FAQPage() {
                   <Button
                     asChild
                     variant="outline"
-                    className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
+                    className="border-orange-600 text-orange-600 hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
                   >
                     <Link href="/help">Visit Help Center</Link>
                   </Button>

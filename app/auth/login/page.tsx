@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from "react"
 
 export default function LoginPage() {
@@ -52,7 +52,12 @@ export default function LoginPage() {
       }
       router.refresh()
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      const errorMessage = error instanceof Error ? error.message : "An error occurred"
+      if (errorMessage.includes("Invalid login credentials")) {
+        setError("Incorrect email or password. Please try again.")
+      } else {
+        setError(errorMessage)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -82,6 +87,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -98,11 +104,15 @@ export default function LoginPage() {
                     id="password"
                     type="password"
                     required
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
                   />
                 </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
+                {error && (
+                  <div className="rounded-md bg-red-50 p-3 text-sm text-red-800 border border-red-200">{error}</div>
+                )}
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
@@ -111,9 +121,9 @@ export default function LoginPage() {
                 Don&apos;t have an account?{" "}
                 <Link
                   href={`/auth/sign-up${redirect ? `?redirect=${redirect}` : ""}`}
-                  className="underline underline-offset-4"
+                  className="underline underline-offset-4 text-purple-600 hover:text-purple-700"
                 >
-                  Sign up
+                  Create account
                 </Link>
               </div>
             </form>

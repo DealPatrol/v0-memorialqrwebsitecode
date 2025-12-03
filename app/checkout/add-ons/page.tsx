@@ -12,29 +12,29 @@ const ADDON_PLAQUES = [
     id: "wooden_qr",
     name: "Wooden QR Keychain",
     description: "Natural wood finish with laser-engraved QR code",
-    price: 2.97,
-    image: "/wooden-keychain.png",
+    price: 29.97, // Restored from $19.89 to normal price
+    image: "/images/7e603a13-5813-4af5-ae6b.jpeg",
   },
   {
     id: "picture_plaque",
     name: "Picture Plaque",
     description: "Custom photo plaque with memorial details",
-    price: 3.98,
+    price: 39.98, // Restored from $29.89 to normal price
     image: "/aluminum-card.jpg",
   },
   {
     id: "stone_qr",
     name: "Stone Memorial",
     description: "Durable stone memorial with engraved QR code",
-    price: 1.99,
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/e4de3d0a-3087-4815-924d-3bcb93c7a20d.jpg",
+    price: 56.99, // Restored from $39.98 to normal price
+    image: "/images/e4de3d0a-3087-4815-924d.jpg",
   },
 ]
 
 const PACKAGES = {
-  basic: { id: "basic", name: "Basic Package", price: 1.0 },
-  standard: { id: "standard", name: "Standard Package", price: 2.0 },
-  premium: { id: "premium", name: "Premium Package", price: 3.0 },
+  basic: { id: "basic", name: "Basic Package", price: 89.89 },
+  standard: { id: "standard", name: "Standard Package", price: 129.89 },
+  premium: { id: "premium", name: "Premium Package", price: 199.89 },
 }
 
 export default function AddOnsPage() {
@@ -139,7 +139,7 @@ export default function AddOnsPage() {
                     <div className="mb-4">
                       <h3 className="text-lg font-bold mb-2">{addon.name}</h3>
                       <p className="text-sm text-muted-foreground mb-3">{addon.description}</p>
-                      <p className="text-2xl font-bold text-accent">${addon.price.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-gray-900">${addon.price.toFixed(2)}</p>
                     </div>
                     <Button
                       variant={isSelected ? "default" : "outline"}
