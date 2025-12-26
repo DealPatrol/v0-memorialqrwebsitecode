@@ -154,7 +154,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       style={{
-        fontFamily: 'var(--font-inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
+        fontFamily: 'var(--font-inter)',
       }}
     >
       <head>

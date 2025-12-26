@@ -17,9 +17,14 @@ export function getStripe(): Stripe {
   return stripeInstance
 }
 
-// For backwards compatibility
+// For backwards compatibility with existing code
 export const stripe = new Proxy({} as Stripe, {
-  get(target, prop) {
-    return (getStripe() as any)[prop]
+  get(_target, prop: string | symbol) {
+    const stripeClient = getStripe()
+    const value = stripeClient[prop as keyof Stripe]
+    if (typeof value === 'function') {
+      return value.bind(stripeClient)
+    }
+    return value
   }
 })
