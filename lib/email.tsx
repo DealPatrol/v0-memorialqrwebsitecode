@@ -1,6 +1,18 @@
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy initialization to avoid build-time errors when RESEND_API_KEY is not set
+let resend: Resend | null = null
+
+function getResend(): Resend {
+  if (!resend) {
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY is not set in environment variables")
+    }
+    resend = new Resend(apiKey)
+  }
+  return resend
+}
 
 interface OrderEmailData {
   customerName: string
@@ -89,7 +101,7 @@ The Memorial QR Team
 Memorial QR - Creating Lasting Digital Memorials
     `.trim()
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR Orders <orders@memorialsqr.com>",
       to: data.customerEmail,
       replyTo: "support@memorialsqr.com",
@@ -267,7 +279,7 @@ export async function sendAdminOrderNotification(data: OrderEmailData) {
   }
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR System <system@memorialsqr.com>",
       to: adminEmail,
       subject: `New Order: ${data.orderNumber}`,
@@ -302,7 +314,7 @@ export async function sendAdminOrderNotification(data: OrderEmailData) {
 
 export async function sendWelcomeEmail(data: WelcomeEmailData) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR <noreply@memorialsqr.com>",
       to: data.customerEmail,
       subject: `Welcome to Your Memorial - ${data.memorialName}`,
@@ -399,7 +411,7 @@ Memorial QR - Creating Lasting Digital Memorials
 Need help? Contact us at support@memorialsQR.com
     `.trim()
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR Support <support@memorialsQR.com>",
       to: data.email,
       replyTo: "support@memorialsQR.com",
@@ -536,7 +548,7 @@ The Memorial QR Team
 Memorial QR - Creating Lasting Digital Memorials
     `.trim()
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR Gifts <gifts@memorialsqr.com>",
       to: data.recipientEmail,
       replyTo: "support@memorialsQR.com",
@@ -659,7 +671,7 @@ Memorial QR - Creating Lasting Digital Memorials
 
 export async function sendAccountCreatedEmail(data: AccountCreatedEmailData) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR <noreply@memorialsqr.com>",
       to: data.customerEmail,
       subject: `Your Memorial QR Account - ${data.memorialName}`,
@@ -742,7 +754,7 @@ export async function sendEmail(options: {
   replyTo?: string
 }) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: options.from || "Memorial QR <noreply@memorialsqr.com>",
       to: options.to,
       replyTo: options.replyTo,
@@ -766,7 +778,7 @@ export async function sendNewAccountNotification(data: NewAccountNotificationDat
   }
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR System <system@memorialsqr.com>",
       to: adminEmail,
       subject: `New Account Created: ${data.userName}`,

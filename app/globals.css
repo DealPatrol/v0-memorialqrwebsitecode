@@ -38,6 +38,11 @@
     --sidebar-accent-foreground: 264 80% 10%;
     --sidebar-border: 0 0% 92%;
     --sidebar-ring: 264 80% 10%;
+    
+    /* Font families */
+    --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-dancing-script: 'Dancing Script', cursive;
+    --font-great-vibes: 'Great Vibes', cursive;
   }
 
   .dark {
