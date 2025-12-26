@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { ProductsClient } from "./products-client"
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: "Memorial QR Plaque - Premium QR Code Memorial Product | Memorial QR",
   description:
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
     title: "Memorial QR Plaque - Weather-Resistant with Lifetime Digital Memorial",
     description:
       "Premium aluminum plaque with custom QR code linking to a lifetime digital memorial. Weather-resistant, laser-engraved, with 5-year guarantee.",
-    type: "product",
+    type: "website",
     url: "https://memorialsqr.com/products",
     images: [
       {

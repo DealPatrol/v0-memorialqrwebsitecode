@@ -106,7 +106,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     openGraph: {
       title: `${product.name} - Premium ${product.material}`,
       description: product.description,
-      type: "product",
+      type: "website",
       url: `https://memorialsqr.com/products/${params.id}`,
       images: [
         {
