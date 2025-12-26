@@ -16,6 +16,8 @@ type Memorial = {
   created_at: string
 }
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: "Browse Memorial Examples | See Beautiful Digital Memorials | Memorial QR",
   description:

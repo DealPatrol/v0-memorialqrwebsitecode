@@ -2,9 +2,15 @@ import { type NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { getProductById } from "@/lib/products"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-11-20.acacia",
-})
+function getStripe() {
+  const secretKey = process.env.STRIPE_SECRET_KEY
+  if (!secretKey) {
+    throw new Error("STRIPE_SECRET_KEY is not set in environment variables")
+  }
+  return new Stripe(secretKey, {
+    apiVersion: "2024-11-20.acacia",
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,7 +47,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No valid products found" }, { status: 400 })
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
