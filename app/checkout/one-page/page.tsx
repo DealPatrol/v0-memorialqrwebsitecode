@@ -2,105 +2,41 @@
 
 import type React from "react"
 import Image from "next/image"
-import { useState, useEffect } from "react"
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback, Suspense } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, Package, Shield, Lock, CreditCard, Award, ChevronDown, ChevronUp } from 'lucide-react'
+import { CheckCircle, Package, Lock, ChevronDown, ChevronUp } from "lucide-react"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useToast } from "@/hooks/use-toast"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { StripeCheckout } from "@/components/stripe-checkout"
+import { createCheckoutSession } from "@/app/actions/stripe"
+import { PACKAGES, ADDONS, PLAQUES, formatPrice } from "@/lib/products"
 
-const PRODUCTS = {
-  plaques: {
-    silver: {
-      id: "silver_plaque",
-      name: "Silver Memorial Plaque",
-      description: "Premium silver finish with engraved QR code",
-      image: "/images/silver.jpg",
-    },
-    gold: {
-      id: "gold_plaque",
-      name: "Gold Memorial Plaque",
-      description: "Elegant gold finish with engraved QR code",
-      image: "/images/gold.jpg",
-    },
-    black: {
-      id: "black_plaque",
-      name: "Black Memorial Plaque",
-      description: "Classic black finish with engraved QR code",
-      image: "/images/black.jpg",
-    },
-  },
-  addons: {
-    wooden_qr: {
-      id: "wooden_qr",
-      name: "Wooden QR Keychain",
-      description: "Natural wood finish with laser-engraved QR code",
-      price: 29.97,
-      image: "/images/2e4fdbea-5150-40fa-bb82.jpeg",
-    },
-    picture_plaque: {
-      id: "picture_plaque",
-      name: "Picture Plaque",
-      description: "Custom photo plaque with memorial details",
-      price: 39.98,
-      image: "/aluminum-card.jpg",
-    },
-    stone_qr: {
-      id: "stone_qr",
-      name: "Stone Memorial",
-      description: "Durable stone memorial with engraved QR code",
-      price: 56.99,
-      image: "/images/e4de3d0a-3087-4815-924d.jpg",
-    },
-  },
+function CheckoutLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="animate-pulse text-muted-foreground">Loading checkout...</div>
+    </div>
+  )
 }
 
-const PACKAGES = {
-  basic: {
-    id: "basic",
-    name: "Basic Package",
-    price: 89.89,
-    videos: 3,
-    audio: 10,
-    photos: 30,
-  },
-  standard: {
-    id: "standard",
-    name: "Standard Package",
-    price: 129.89,
-    videos: 5,
-    audio: 15,
-    photos: 50,
-  },
-  premium: {
-    id: "premium",
-    name: "Premium Package",
-    price: 199.89,
-    videos: 10,
-    audio: 30,
-    photos: 100,
-  },
-}
-
-export default function OnePageCheckout() {
+function OnePageCheckoutContent() {
   const router = useRouter()
   const { toast } = useToast()
   const searchParams = useSearchParams()
   const packageId = searchParams.get("package") || "standard"
-  const selectedPackage = PACKAGES[packageId as keyof typeof PACKAGES] || PACKAGES.standard
+  const selectedPackage = PACKAGES[packageId] || PACKAGES.standard
 
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([])
   const [plaqueType, setPlaqueType] = useState<"silver" | "gold" | "black">("black")
   const [boxPersonalization, setBoxPersonalization] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPayment, setShowPayment] = useState(false)
 
   const [addOnsOpen, setAddOnsOpen] = useState(false)
   const [plaqueOpen, setPlaqueOpen] = useState(false)
@@ -120,20 +56,29 @@ export default function OnePageCheckout() {
   })
 
   useEffect(() => {
-    if (formData.firstName && formData.lastName && formData.email && formData.address && formData.city && formData.state && formData.zipCode) {
+    if (
+      formData.firstName &&
+      formData.lastName &&
+      formData.email &&
+      formData.address &&
+      formData.city &&
+      formData.state &&
+      formData.zipCode
+    ) {
       setShippingOpen(false)
+      setShowPayment(true)
     }
   }, [formData])
 
   const calculateAddOnsTotal = () => {
     return selectedAddOns.reduce((sum, addonId) => {
-      const addon = Object.values(PRODUCTS.addons).find((a) => a.id === addonId)
-      return sum + (addon?.price || 0)
+      const addon = ADDONS[addonId]
+      return sum + (addon?.priceInCents || 0)
     }, 0)
   }
 
   const calculateTotal = () => {
-    return selectedPackage.price + calculateAddOnsTotal()
+    return selectedPackage.priceInCents + calculateAddOnsTotal()
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,82 +116,50 @@ export default function OnePageCheckout() {
       return false
     }
 
-    const fullName = `${formData.firstName} ${formData.lastName}`
-    if (fullName.length > 45) {
-      toast({
-        title: "Name Too Long",
-        description: "Your first and last name combined must be 45 characters or less.",
-        variant: "destructive",
-      })
-      return false
-    }
-
     return true
   }
 
-  const handlePaymentSuccess = async (paymentId: string) => {
-    if (isSubmitting) return
+  const fetchClientSecret = useCallback(async () => {
+    if (!validateForm()) {
+      throw new Error("Please fill in all required fields")
+    }
 
-    setIsSubmitting(true)
-
-    try {
-      const orderData = {
-        package: packageId,
-        plaqueColor: plaqueType,
-        boxPersonalization,
-        customerName: `${formData.firstName} ${formData.lastName}`,
-        customerEmail: formData.email,
-        customerPhone: formData.phone || "",
-        addressLine1: formData.address,
-        addressLine2: formData.address2 || "",
+    const result = await createCheckoutSession({
+      packageId,
+      addonIds: selectedAddOns,
+      plaqueColor: plaqueType,
+      boxPersonalization,
+      customerEmail: formData.email,
+      customerName: `${formData.firstName} ${formData.lastName}`,
+      shippingAddress: {
+        line1: formData.address,
+        line2: formData.address2,
         city: formData.city,
         state: formData.state,
-        zip: formData.zipCode,
-        addonWoodenQr: selectedAddOns.includes("wooden_qr"),
-        addonPicturePlaque: selectedAddOns.includes("picture_plaque"),
-        addonStoneQR: selectedAddOns.includes("stone_qr"),
-        stoneEngravingText: "",
-        picturePlaqueUrl: "",
-        paymentId,
-      }
+        postal_code: formData.zipCode,
+        country: "US",
+      },
+    })
 
-      const response = await fetch("/api/checkout/process", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      })
+    return result.clientSecret!
+  }, [packageId, selectedAddOns, plaqueType, boxPersonalization, formData])
 
-      const result = await response.json()
+  const handleCheckoutComplete = () => {
+    toast({
+      title: "Payment Successful!",
+      description: "Redirecting you to create your memorial...",
+    })
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.error || "Failed to create order")
-      }
+    // Store order info and redirect
+    sessionStorage.setItem(
+      "pendingOrder",
+      JSON.stringify({
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        customerEmail: formData.email,
+      }),
+    )
 
-      sessionStorage.setItem(
-        "pendingOrder",
-        JSON.stringify({
-          orderId: result.order.id,
-          orderNumber: result.order.orderNumber,
-          customerName: orderData.customerName,
-          customerEmail: orderData.customerEmail,
-        }),
-      )
-
-      toast({
-        title: "Payment Successful!",
-        description: "Redirecting you to create your memorial...",
-      })
-
-      router.push(`/create-memorial?order=${result.order.orderNumber}`)
-    } catch (error: any) {
-      toast({
-        title: "Payment Failed",
-        description: error.message || "There was an error processing your payment.",
-        variant: "destructive",
-        duration: 10000,
-      })
-      setIsSubmitting(false)
-    }
+    router.push("/checkout/success")
   }
 
   return (
@@ -267,9 +180,9 @@ export default function OnePageCheckout() {
                   </div>
                 </div>
                 <div className="text-left sm:text-right">
-                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">${calculateTotal().toFixed(2)}</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">${formatPrice(calculateTotal())}</p>
                   {selectedAddOns.length > 0 && (
-                    <p className="text-xs sm:text-sm text-accent">+ ${calculateAddOnsTotal().toFixed(2)} add-ons</p>
+                    <p className="text-xs sm:text-sm text-accent">+ ${formatPrice(calculateAddOnsTotal())} add-ons</p>
                   )}
                 </div>
               </div>
@@ -289,11 +202,15 @@ export default function OnePageCheckout() {
                     <CardHeader className="cursor-pointer hover:bg-accent/5 transition-colors p-3 sm:p-6">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-base sm:text-lg">Optional Add-ons</CardTitle>
-                        {addOnsOpen ? <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" /> : <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />}
+                        {addOnsOpen ? (
+                          <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
                       </div>
                       {selectedAddOns.length > 0 && (
                         <p className="text-xs sm:text-sm text-accent text-left">
-                          {selectedAddOns.length} selected (+${calculateAddOnsTotal().toFixed(2)})
+                          {selectedAddOns.length} selected (+${formatPrice(calculateAddOnsTotal())})
                         </p>
                       )}
                     </CardHeader>
@@ -301,15 +218,13 @@ export default function OnePageCheckout() {
                   <CollapsibleContent>
                     <CardContent className="p-3 sm:p-6">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                        {Object.entries(PRODUCTS.addons).map(([key, addon]) => {
+                        {Object.entries(ADDONS).map(([key, addon]) => {
                           const isSelected = selectedAddOns.includes(addon.id)
                           return (
                             <div
                               key={key}
                               className={`relative border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
-                                isSelected
-                                  ? "border-accent ring-2 ring-accent"
-                                  : "border-border hover:border-accent/50"
+                                isSelected ? "border-accent ring-2 ring-accent" : "border-border hover:border-accent/50"
                               }`}
                               onClick={() => {
                                 setSelectedAddOns((prev) =>
@@ -327,8 +242,12 @@ export default function OnePageCheckout() {
                               </div>
                               <div className="p-2 sm:p-3 bg-background">
                                 <h3 className="font-semibold text-xs sm:text-sm mb-1">{addon.name}</h3>
-                                <p className="text-xs text-muted-foreground mb-1 hidden sm:block">{addon.description}</p>
-                                <p className="text-sm sm:text-base font-bold text-gray-900">${addon.price.toFixed(2)}</p>
+                                <p className="text-xs text-muted-foreground mb-1 hidden sm:block">
+                                  {addon.description}
+                                </p>
+                                <p className="text-sm sm:text-base font-bold text-foreground">
+                                  ${formatPrice(addon.priceInCents)}
+                                </p>
                               </div>
                               {isSelected && (
                                 <div className="absolute top-2 right-2 bg-accent text-accent-foreground rounded-full p-1 sm:p-1.5">
@@ -351,10 +270,14 @@ export default function OnePageCheckout() {
                     <CardHeader className="cursor-pointer hover:bg-accent/5 transition-colors p-3 sm:p-6">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-base sm:text-lg">Plaque Color</CardTitle>
-                        {plaqueOpen ? <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" /> : <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />}
+                        {plaqueOpen ? (
+                          <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
                       </div>
                       <p className="text-xs sm:text-sm text-muted-foreground text-left">
-                        {PRODUCTS.plaques[plaqueType].name} selected
+                        {PLAQUES[plaqueType].name} selected
                       </p>
                     </CardHeader>
                   </CollapsibleTrigger>
@@ -365,7 +288,7 @@ export default function OnePageCheckout() {
                         onValueChange={(value) => setPlaqueType(value as "silver" | "gold" | "black")}
                         className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4"
                       >
-                        {Object.entries(PRODUCTS.plaques).map(([key, plaque]) => (
+                        {Object.entries(PLAQUES).map(([key, plaque]) => (
                           <div
                             key={key}
                             className={`relative border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
@@ -415,7 +338,11 @@ export default function OnePageCheckout() {
                           <Package className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
                           <CardTitle className="text-base sm:text-lg">Presentation Box</CardTitle>
                         </div>
-                        {boxOpen ? <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" /> : <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />}
+                        {boxOpen ? (
+                          <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
                       </div>
                       <p className="text-xs sm:text-sm text-muted-foreground text-left">Personalize (optional)</p>
                     </CardHeader>
@@ -424,12 +351,7 @@ export default function OnePageCheckout() {
                     <CardContent className="p-3 sm:p-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div className="relative h-32 sm:h-48 rounded-lg overflow-hidden">
-                          <Image
-                            src="/images/design-mode/box1(1).jpg"
-                            alt="Luxury Box"
-                            fill
-                            className="object-cover"
-                          />
+                          <Image src="/images/design-mode/box1(1).jpg" alt="Luxury Box" fill className="object-cover" />
                         </div>
                         <div className="space-y-2 sm:space-y-3">
                           <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
@@ -471,7 +393,11 @@ export default function OnePageCheckout() {
                     <CardHeader className="cursor-pointer hover:bg-accent/5 transition-colors p-3 sm:p-6">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-base sm:text-lg">Shipping Information</CardTitle>
-                        {shippingOpen ? <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" /> : <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />}
+                        {shippingOpen ? (
+                          <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
                       </div>
                       {formData.firstName && formData.email && (
                         <p className="text-xs sm:text-sm text-accent text-left">Information provided</p>
@@ -483,7 +409,7 @@ export default function OnePageCheckout() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="firstName" className="text-xs sm:text-sm">
-                            First Name <span className="text-red-500">*</span>
+                            First Name <span className="text-destructive">*</span>
                           </Label>
                           <Input
                             id="firstName"
@@ -496,7 +422,7 @@ export default function OnePageCheckout() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName" className="text-xs sm:text-sm">
-                            Last Name <span className="text-red-500">*</span>
+                            Last Name <span className="text-destructive">*</span>
                           </Label>
                           <Input
                             id="lastName"
@@ -512,7 +438,7 @@ export default function OnePageCheckout() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="email" className="text-xs sm:text-sm">
-                            Email <span className="text-red-500">*</span>
+                            Email <span className="text-destructive">*</span>
                           </Label>
                           <Input
                             id="email"
@@ -525,33 +451,64 @@ export default function OnePageCheckout() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="phone" className="text-xs sm:text-sm">Phone</Label>
-                          <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} className="text-sm" />
+                          <Label htmlFor="phone" className="text-xs sm:text-sm">
+                            Phone
+                          </Label>
+                          <Input
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            className="text-sm"
+                          />
                         </div>
                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="address" className="text-xs sm:text-sm">
-                          Address <span className="text-red-500">*</span>
+                          Address <span className="text-destructive">*</span>
                         </Label>
-                        <Input id="address" name="address" value={formData.address} onChange={handleInputChange} required className="text-sm" />
+                        <Input
+                          id="address"
+                          name="address"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                          required
+                          className="text-sm"
+                        />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="address2" className="text-xs sm:text-sm">Apartment, Suite, etc.</Label>
-                        <Input id="address2" name="address2" value={formData.address2} onChange={handleInputChange} className="text-sm" />
+                        <Label htmlFor="address2" className="text-xs sm:text-sm">
+                          Apartment, Suite, etc.
+                        </Label>
+                        <Input
+                          id="address2"
+                          name="address2"
+                          value={formData.address2}
+                          onChange={handleInputChange}
+                          className="text-sm"
+                        />
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 sm:gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="city" className="text-xs sm:text-sm">
-                            City <span className="text-red-500">*</span>
+                            City <span className="text-destructive">*</span>
                           </Label>
-                          <Input id="city" name="city" value={formData.city} onChange={handleInputChange} required className="text-sm" />
+                          <Input
+                            id="city"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleInputChange}
+                            required
+                            className="text-sm"
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="state" className="text-xs sm:text-sm">
-                            State <span className="text-red-500">*</span>
+                            State <span className="text-destructive">*</span>
                           </Label>
                           <Input
                             id="state"
@@ -565,9 +522,16 @@ export default function OnePageCheckout() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="zipCode" className="text-xs sm:text-sm">
-                            ZIP <span className="text-red-500">*</span>
+                            ZIP <span className="text-destructive">*</span>
                           </Label>
-                          <Input id="zipCode" name="zipCode" value={formData.zipCode} onChange={handleInputChange} required className="text-sm" />
+                          <Input
+                            id="zipCode"
+                            name="zipCode"
+                            value={formData.zipCode}
+                            onChange={handleInputChange}
+                            required
+                            className="text-sm"
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -575,44 +539,22 @@ export default function OnePageCheckout() {
                 </Card>
               </Collapsible>
 
-              {/* Payment Section */}
-              <Card>
-                <CardHeader className="p-3 sm:p-6">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-                    Secure Payment
-                  </CardTitle>
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 sm:pt-3">
-                    <div className="flex items-center gap-1 sm:gap-2 text-xs text-muted-foreground">
-                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-                      <span>SSL Encrypted</span>
-                    </div>
-                    <div className="flex items-center gap-1 sm:gap-2 text-xs text-muted-foreground">
-                      <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-                      <span>Secure</span>
-                    </div>
-                    <div className="flex items-center gap-1 sm:gap-2 text-xs text-muted-foreground">
-                      <Award className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600" />
-                      <span>30-Day Guarantee</span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-3 sm:p-6">
-                  <SquarePaymentForm
-                    amount={calculateTotal()}
-                    orderId={`order_${Date.now()}`}
-                    onSuccess={handlePaymentSuccess}
-                    onError={(error) => {
-                      console.error("Payment error:", error)
-                    }}
-                    onBeforePayment={validateForm}
-                    disabled={isSubmitting}
-                  />
-                </CardContent>
-              </Card>
+              {/* Payment Section - Stripe Embedded Checkout */}
+              {showPayment && (
+                <StripeCheckout fetchClientSecret={fetchClientSecret} onComplete={handleCheckoutComplete} />
+              )}
+
+              {!showPayment && (
+                <Card>
+                  <CardContent className="p-6 text-center text-muted-foreground">
+                    <Lock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Complete shipping information to proceed to payment</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
-            {/* Order Summary Sidebar - Hidden on mobile, shown as sticky summary */}
+            {/* Order Summary Sidebar */}
             <div className="hidden lg:block lg:col-span-1">
               <Card className="sticky top-24">
                 <CardHeader>
@@ -625,19 +567,21 @@ export default function OnePageCheckout() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{selectedPackage.name}</span>
-                      <span className="font-semibold text-gray-900">${selectedPackage.price.toFixed(2)}</span>
+                      <span className="font-semibold text-foreground">
+                        ${formatPrice(selectedPackage.priceInCents)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{PRODUCTS.plaques[plaqueType].name}</span>
+                      <span className="text-muted-foreground">{PLAQUES[plaqueType].name}</span>
                       <span className="font-semibold text-accent">Included</span>
                     </div>
                     {selectedAddOns.map((addonId) => {
-                      const addon = Object.values(PRODUCTS.addons).find((a) => a.id === addonId)
+                      const addon = ADDONS[addonId]
                       if (!addon) return null
                       return (
                         <div key={addonId} className="flex justify-between">
                           <span className="text-muted-foreground">{addon.name}</span>
-                          <span className="font-semibold text-gray-900">${addon.price.toFixed(2)}</span>
+                          <span className="font-semibold text-foreground">${formatPrice(addon.priceInCents)}</span>
                         </div>
                       )
                     })}
@@ -647,7 +591,7 @@ export default function OnePageCheckout() {
 
                   <div className="flex justify-between items-center text-lg font-bold">
                     <span>Total</span>
-                    <span className="text-2xl text-gray-900">${calculateTotal().toFixed(2)}</span>
+                    <span className="text-2xl text-foreground">${formatPrice(calculateTotal())}</span>
                   </div>
 
                   <Separator />
@@ -677,5 +621,13 @@ export default function OnePageCheckout() {
         </div>
       </section>
     </div>
+  )
+}
+
+export default function OnePageCheckoutPage() {
+  return (
+    <Suspense fallback={<CheckoutLoading />}>
+      <OnePageCheckoutContent />
+    </Suspense>
   )
 }

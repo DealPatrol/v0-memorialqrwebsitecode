@@ -6,6 +6,127 @@ import { CheckCircle, Star } from "lucide-react"
 import Link from "next/link"
 import { UrgencyBanner } from "@/components/urgency-banner"
 import { TrustBadges } from "@/components/trust-badges"
+import type { Metadata } from "next"
+import Script from "next/script"
+import { BreadcrumbSchema } from "@/components/seo/structured-data"
+
+export const metadata: Metadata = {
+  title: "Pricing - Affordable Memorial QR Packages | Memorial QR",
+  description:
+    "Choose from 4 memorial packages starting at $39.89. One-time payment, lifetime hosting. Includes premium QR plaques, unlimited photos/videos, and 30-day money-back guarantee.",
+  keywords:
+    "memorial pricing, QR code plaque cost, digital memorial packages, memorial prices, affordable memorial, lifetime memorial hosting, cemetery QR code price, grave marker QR code cost",
+  openGraph: {
+    title: "Memorial QR Pricing - From $39.89 with Lifetime Hosting",
+    description:
+      "Create a lasting digital memorial with our affordable packages. One-time payment includes premium QR plaque, unlimited content, and lifetime hosting. No monthly fees.",
+    type: "website",
+    url: "https://memorialsqr.com/pricing",
+    images: [
+      {
+        url: "https://memorialsqr.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Memorial QR Pricing Packages",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Affordable Memorial Packages - From $39.89",
+    description: "One-time payment • Lifetime hosting • Premium QR plaques • Unlimited content",
+    images: ["https://memorialsqr.com/og-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://memorialsqr.com/pricing",
+  },
+}
+
+function PricingSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Memorial QR Pricing Packages",
+    description: "Choose from 4 memorial packages with lifetime hosting",
+    numberOfItems: 4,
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        item: {
+          "@type": "Product",
+          name: "Starter Package",
+          description: "500 MB storage, 1 premium QR plaque, unlimited photos/videos, lifetime hosting",
+          offers: {
+            "@type": "Offer",
+            price: "39.89",
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+          },
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        item: {
+          "@type": "Product",
+          name: "Basic Package",
+          description: "1 GB storage, 1 premium QR plaque, unlimited photos/videos, lifetime hosting",
+          offers: {
+            "@type": "Offer",
+            price: "89.89",
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+          },
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        item: {
+          "@type": "Product",
+          name: "Standard Package",
+          description:
+            "2 GB storage, 2 premium QR plaques, unlimited photos/videos, lifetime hosting, priority support",
+          offers: {
+            "@type": "Offer",
+            price: "129.89",
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+          },
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        item: {
+          "@type": "Product",
+          name: "Premium Package",
+          description:
+            "5 GB storage, 3 premium QR plaques, unlimited photos/videos, lifetime hosting, priority phone & email support",
+          offers: {
+            "@type": "Offer",
+            price: "199.89",
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+          },
+        },
+      },
+    ],
+  }
+
+  return (
+    <Script
+      id="pricing-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
 
 export default function PricingPage() {
   const packages = [
@@ -88,6 +209,14 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+      <PricingSchema />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://memorialsqr.com" },
+          { name: "Pricing", url: "https://memorialsqr.com/pricing" },
+        ]}
+      />
+
       <Header />
       <UrgencyBanner />
 

@@ -39,7 +39,7 @@ export function HomepageStickyCTA() {
           <div className="flex-1">
             <p className="text-white font-semibold text-sm mb-2">Ready to get started?</p>
             <Button asChild size="sm" className="bg-white text-purple-600 hover:bg-gray-100 w-full">
-              <Link href="/pricing">
+              <Link href="/store">
                 Create Memorial
                 <ArrowRight className="ml-1 w-4 h-4" />
               </Link>

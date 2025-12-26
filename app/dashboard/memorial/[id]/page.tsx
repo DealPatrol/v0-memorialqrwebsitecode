@@ -20,7 +20,7 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect("/auth/signin")
   }
 
   // Fetch memorial and verify ownership

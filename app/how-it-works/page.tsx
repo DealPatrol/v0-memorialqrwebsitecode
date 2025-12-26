@@ -15,10 +15,53 @@ import {
   ShoppingCart,
   Music,
 } from "lucide-react"
+import type { Metadata } from "next"
+import { HowToSchema, BreadcrumbSchema, ProductSchema } from "@/components/seo/structured-data"
+
+export const metadata: Metadata = {
+  title: "How It Works - Create a Digital Memorial in 4 Easy Steps | Memorial QR",
+  description:
+    "Learn how to create a digital memorial with QR code plaque in 4 simple steps. Choose package, build memorial, get QR code, share their story. No technical skills needed. Starting at $39.89.",
+  keywords:
+    "how memorial QR works, create digital memorial, QR code memorial process, memorial creation steps, how to make memorial, memorial tutorial, QR code grave marker how to",
+  openGraph: {
+    title: "How Memorial QR Works - Simple 4-Step Process",
+    description:
+      "Create a lasting digital memorial in minutes. Choose your package, upload content, receive your QR plaque, and share their story forever.",
+    type: "website",
+    url: "https://memorialsqr.com/how-it-works",
+    images: [
+      {
+        url: "https://memorialsqr.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "How Memorial QR Works",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "How to Create a Digital Memorial - 4 Easy Steps",
+    description: "Choose package → Build memorial → Get QR code → Share their story",
+    images: ["https://memorialsqr.com/og-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://memorialsqr.com/how-it-works",
+  },
+}
 
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <HowToSchema />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://memorialsqr.com" },
+          { name: "How It Works", url: "https://memorialsqr.com/how-it-works" },
+        ]}
+      />
+      <ProductSchema />
+
       <Header />
 
       {/* Hero Section */}
@@ -30,7 +73,7 @@ export default function HowItWorksPage() {
             Create a lasting digital memorial in just four simple steps. No account required to get started.
           </p>
           <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-            <Link href="/pricing">
+            <Link href="/store">
               Get Started Now
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
@@ -287,7 +330,7 @@ export default function HowItWorksPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-              <Link href="/pricing">
+              <Link href="/store">
                 Get Started Now
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
@@ -328,7 +371,7 @@ export default function HowItWorksPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pricing" className="hover:text-white">
+                  <Link href="/store" className="hover:text-white">
                     Pricing
                   </Link>
                 </li>

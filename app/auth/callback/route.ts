@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { sendNewAccountNotification } from "@/lib/email"
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -23,6 +24,29 @@ export async function GET(request: Request) {
 
     if (!error && authData.user) {
       console.log("[v0] Auth successful for user:", authData.user.email)
+
+      const isNewUser = authData.user.created_at === authData.user.last_sign_in_at
+      if (isNewUser) {
+        try {
+          const userName = authData.user.user_metadata?.full_name || authData.user.email?.split("@")[0] || "Unknown"
+          const accountType = authData.user.app_metadata?.provider || "email"
+
+          console.log("[v0] New OAuth user detected, sending admin notification")
+          await sendNewAccountNotification({
+            userName,
+            userEmail: authData.user.email || "no-email@provided.com",
+            accountType: accountType as "email" | "google" | "facebook",
+            signupDate: new Date().toLocaleString("en-US", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            }),
+          })
+          console.log("[v0] Admin notification sent for new OAuth account")
+        } catch (notifError) {
+          console.error("[v0] Failed to send admin notification for OAuth signup:", notifError)
+          // Don't fail the auth flow if notification fails
+        }
+      }
 
       // Handle custom redirect first
       if (redirect) {
@@ -61,5 +85,5 @@ export async function GET(request: Request) {
 
   const errorMessage = encodeURIComponent("Authentication failed. Please try again or contact support.")
   console.log("[v0] Redirecting to sign-in with error")
-  return NextResponse.redirect(new URL(`/auth/sign-in?error=${errorMessage}`, requestUrl.origin))
+  return NextResponse.redirect(new URL(`/auth/signin?error=${errorMessage}`, requestUrl.origin))
 }

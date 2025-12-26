@@ -6,7 +6,7 @@ import { CountdownTimer } from "@/components/countdown-timer"
 import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
 import { MemorialSlideshow } from "@/components/memorial-slideshow"
 import { CustomerTestimonials } from "@/components/customer-testimonials"
-import { Heart, QrCode, Shield, Clock, Users, Star, ArrowRight, Play, Smartphone, Globe, Lock } from 'lucide-react'
+import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Play, Smartphone, Globe, Lock } from "lucide-react"
 
 export default function HomePage() {
   return (
@@ -40,7 +40,7 @@ export default function HomePage() {
                 size="lg"
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8 py-4 btn-hover-lift"
               >
-                <Link href="/pricing">
+                <Link href="/store">
                   Create Memorial Now
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
@@ -86,11 +86,11 @@ export default function HomePage() {
       {/* Video Section */}
       <section className="py-20 bg-muted">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="video-container rounded-lg overflow-hidden shadow-2xl border-2 border-border mx-auto">
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             <iframe
               src="https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=0&mute=0&controls=1&rel=0"
               title="Memorial QR Video"
-              className="w-full h-full"
+              className="absolute top-0 left-0 w-full h-full rounded-lg shadow-2xl border-2 border-border"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
@@ -227,9 +227,15 @@ export default function HomePage() {
             Create a lasting digital memorial that celebrates their life and keeps their memory alive forever.
           </p>
 
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8 max-w-md mx-auto">
+            <p className="text-sm text-primary-foreground/80 mb-2">Starting at</p>
+            <p className="text-5xl font-bold text-primary-foreground mb-2">$39.89</p>
+            <p className="text-sm text-primary-foreground/80">One-time payment • Lifetime hosting</p>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-background text-primary hover:bg-background/90 text-lg px-8 py-4">
-              <Link href="/pricing">
+              <Link href="/store">
                 Get Started Today
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
@@ -272,7 +278,7 @@ export default function HomePage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pricing" className="hover:text-primary-foreground">
+                  <Link href="/store" className="hover:text-primary-foreground">
                     Pricing
                   </Link>
                 </li>

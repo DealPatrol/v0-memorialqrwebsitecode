@@ -62,27 +62,38 @@ export default function PundePage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div
               className="aspect-square bg-cover bg-center rounded-lg shadow-lg"
-              style={{ backgroundImage: "url('/catholic-church-exterior-congo.jpg')" }}
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1511284733678-65fb8ac11154?w=500&h=500&fit=crop')",
+              }}
             />
             <div
               className="aspect-square bg-cover bg-center rounded-lg shadow-lg"
-              style={{ backgroundImage: "url('/university-students-praying-church.jpg')" }}
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=500&h=500&fit=crop')",
+              }}
             />
             <div
               className="aspect-square bg-cover bg-center rounded-lg shadow-lg"
-              style={{ backgroundImage: "url('/african-catholic-mass-celebration.jpg')" }}
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1548625361-6c6e277c7d3e?w=500&h=500&fit=crop')",
+              }}
             />
             <div
               className="aspect-square bg-cover bg-center rounded-lg shadow-lg"
-              style={{ backgroundImage: "url('/virgin-mary-notre-dame-statue.jpg')" }}
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1467360581507-6c5e0e7a71e0?w=500&h=500&fit=crop')",
+              }}
             />
             <div
               className="aspect-square bg-cover bg-center rounded-lg shadow-lg"
-              style={{ backgroundImage: "url('/church-interior-altar-congo.jpg')" }}
-            />
-            <div
-              className="aspect-square bg-cover bg-center rounded-lg shadow-lg"
-              style={{ backgroundImage: "url('/congregation-worship-african-church.jpg')" }}
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=500&h=500&fit=crop&q=80')",
+              }}
             />
           </div>
         </section>
