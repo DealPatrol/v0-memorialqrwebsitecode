@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
-  <rect width="120" height="40" fill="transparent"/>
-  <path d="M15 10H25C27.2 10 29 11.8 29 14V26C29 28.2 27.2 30 25 30H15C12.8 30 11 28.2 11 26V14C11 11.8 12.8 10 15 10Z" fill="#3E4348"/>
-  <text x="35" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#3E4348">Square</text>
-</svg>
