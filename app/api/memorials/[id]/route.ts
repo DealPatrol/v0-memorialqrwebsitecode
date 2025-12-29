@@ -1,84 +1,35 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { createServerSupabaseClient } from "@/lib/supabase"
+import { NextResponse } from "next/server"
+import { createClient } from "@/lib/supabase/server"
 
-export const runtime = "edge"
+function isUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return uuidRegex.test(str)
+}
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const supabase = createServerSupabaseClient()
-    const { data: memorial, error: memorialError } = await supabase
+    const supabase = await createClient()
+    const identifier = params.id
+    const isId = isUUID(identifier)
+
+    const { data: memorial, error } = await supabase
       .from("memorials")
       .select("*")
-      .eq("id", params.id)
-      .single()
-
-    if (memorialError) {
-      return NextResponse.json({ error: memorialError.message }, { status: 404 })
-    }
-
-    // Get media for this memorial
-    const { data: media, error: mediaError } = await supabase
-      .from("media")
-      .select("*")
-      .eq("memorial_id", params.id)
-      .order("display_order", { ascending: true })
-
-    // Get approved stories for this memorial
-    const { data: stories, error: storiesError } = await supabase
-      .from("stories")
-      .select("*")
-      .eq("memorial_id", params.id)
-      .eq("is_approved", true)
-
-    // Track visit
-    const clientIp = request.headers.get("x-forwarded-for") || "unknown"
-    const userAgent = request.headers.get("user-agent") || "unknown"
-
-    await supabase.from("visitors").insert({
-      memorial_id: params.id,
-      ip_address: clientIp,
-      user_agent: userAgent,
-    })
-
-    return NextResponse.json({
-      memorial,
-      media: media || [],
-      stories: stories || [],
-    })
-  } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
-  }
-}
-
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  try {
-    const supabase = createServerSupabaseClient()
-    const body = await request.json()
-
-    const { data, error } = await supabase.from("memorials").update(body).eq("id", params.id).select()
+      .eq(isId ? "id" : "slug", identifier)
+      .maybeSingle()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error("Error fetching memorial:", error.message)
+      return NextResponse.json({ error: "Failed to fetch memorial" }, { status: 500 })
     }
 
-    return NextResponse.json({ memorial: data[0] })
-  } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
-  }
-}
-
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  try {
-    const supabase = createServerSupabaseClient()
-
-    const { error } = await supabase.from("memorials").delete().eq("id", params.id)
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (!memorial) {
+      return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ memorial })
   } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+    console.error("Error in memorial API:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

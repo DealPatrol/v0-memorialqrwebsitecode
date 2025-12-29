@@ -1,157 +1,162 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Header } from "@/components/header"
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="container mx-auto py-12 px-4">
-        <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
-          <h1 className="text-3xl font-serif mb-6">Privacy Policy</h1>
-          <p className="text-gray-500 mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
+    <div className="min-h-screen bg-white">
+      <Header />
 
-          <div className="space-y-6">
-            <section>
-              <h2 className="text-xl font-medium mb-3">1. Introduction</h2>
-              <p>
-                Welcome to Memorial QR. We respect your privacy and are committed to protecting your personal data. This
-                privacy policy will inform you about how we look after your personal data when you visit our website and
-                tell you about your privacy rights and how the law protects you.
-              </p>
-            </section>
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
+          <p className="text-gray-600 mb-8">Last updated: December 2024</p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">2. The Data We Collect</h2>
-              <p>
-                We may collect, use, store and transfer different kinds of personal data about you which we have grouped
-                together as follows:
-              </p>
-              <ul className="list-disc pl-6 mt-2 space-y-1">
-                <li>
-                  <strong>Identity Data</strong> includes first name, last name, username or similar identifier.
-                </li>
-                <li>
-                  <strong>Contact Data</strong> includes billing address, email address and telephone numbers.
-                </li>
-                <li>
-                  <strong>Financial Data</strong> includes payment card details.
-                </li>
-                <li>
-                  <strong>Transaction Data</strong> includes details about payments to and from you and other details of
-                  products and services you have purchased from us.
-                </li>
-                <li>
-                  <strong>Technical Data</strong> includes internet protocol (IP) address, your login data, browser type
-                  and version, time zone setting and location, browser plug-in types and versions, operating system and
-                  platform, and other technology on the devices you use to access this website.
-                </li>
-                <li>
-                  <strong>Memorial Data</strong> includes photos, videos, stories, and other content you upload to
-                  create memorial pages.
-                </li>
-              </ul>
-            </section>
+          <div className="prose prose-lg max-w-none">
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Information We Collect</h2>
+            <p className="text-gray-700 mb-4">
+              We collect information you provide directly to us when creating memorial profiles, including names, dates,
+              photos, biographical information, and contact details. We also collect payment information (processed
+              securely through Square), shipping addresses, and account credentials for your memorial dashboard.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">3. How We Use Your Data</h2>
-              <p>
-                We will only use your personal data when the law allows us to. Most commonly, we will use your personal
-                data in the following circumstances:
-              </p>
-              <ul className="list-disc pl-6 mt-2 space-y-1">
-                <li>Where we need to perform the contract we are about to enter into or have entered into with you.</li>
-                <li>
-                  Where it is necessary for our legitimate interests and your interests and fundamental rights do not
-                  override those interests.
-                </li>
-                <li>Where we need to comply with a legal obligation.</li>
-              </ul>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">How We Use Your Information</h2>
+            <p className="text-gray-700 mb-4">
+              We use the information to create and maintain digital memorials, process orders and payments, ship
+              physical products, provide customer support, send important updates about your memorial, and improve our
+              services. We will never sell your personal information to third parties.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">4. Data Security</h2>
-              <p>
-                We have put in place appropriate security measures to prevent your personal data from being accidentally
-                lost, used or accessed in an unauthorized way, altered or disclosed. In addition, we limit access to
-                your personal data to those employees, agents, contractors and other third parties who have a business
-                need to know.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Information Sharing</h2>
+            <p className="text-gray-700 mb-4">
+              We do not sell, trade, or rent your personal information to third parties. Memorial content is shared only
+              according to the privacy settings you choose (public, private, or password-protected). We share
+              information with service providers who help us operate our business (payment processing, shipping, email
+              delivery) under strict confidentiality agreements.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">5. Data Retention</h2>
-              <p>
-                We will only retain your personal data for as long as reasonably necessary to fulfill the purposes we
-                collected it for, including for the purposes of satisfying any legal, regulatory, tax, accounting or
-                reporting requirements.
-              </p>
-              <p className="mt-2">
-                Memorial content will be retained according to the plan you purchase. Premium and Legacy plans include
-                lifetime hosting, while the Essential plan includes 5 years of hosting.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Data Security</h2>
+            <p className="text-gray-700 mb-4">
+              We implement appropriate security measures to protect your personal information against unauthorized
+              access, alteration, disclosure, or destruction. All payment information is processed through PCI-compliant
+              Square payment systems. Memorial content is stored securely with automatic backups.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">6. Your Legal Rights</h2>
-              <p>
-                Under certain circumstances, you have rights under data protection laws in relation to your personal
-                data, including the right to:
-              </p>
-              <ul className="list-disc pl-6 mt-2 space-y-1">
-                <li>Request access to your personal data.</li>
-                <li>Request correction of your personal data.</li>
-                <li>Request erasure of your personal data.</li>
-                <li>Object to processing of your personal data.</li>
-                <li>Request restriction of processing your personal data.</li>
-                <li>Request transfer of your personal data.</li>
-                <li>Right to withdraw consent.</li>
-              </ul>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Your Rights and Choices</h2>
+            <p className="text-gray-700 mb-4">
+              You have the right to access, update, or delete your personal information through your account dashboard.
+              You can control memorial privacy settings at any time. You can opt out of marketing emails while still
+              receiving essential service notifications. You can request a complete copy of your data or permanent
+              deletion of your account.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">7. Third-Party Links</h2>
-              <p>
-                This website may include links to third-party websites, plug-ins and applications. Clicking on those
-                links or enabling those connections may allow third parties to collect or share data about you. We do
-                not control these third-party websites and are not responsible for their privacy statements.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Cookies and Tracking</h2>
+            <p className="text-gray-700 mb-4">
+              We use cookies and similar technologies to improve user experience, analyze site usage, and remember your
+              preferences. You can control cookie settings through your browser, though some features may not function
+              properly if cookies are disabled.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">8. Cookies</h2>
-              <p>
-                We use cookies to distinguish you from other users of our website, remember your preferences, and
-                provide you with a good experience when you browse our website. You can set your browser to refuse all
-                or some browser cookies, or to alert you when websites set or access cookies.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Children's Privacy</h2>
+            <p className="text-gray-700 mb-4">
+              Our services are not directed to children under 13. We do not knowingly collect personal information from
+              children under 13. If you believe we have collected information from a child under 13, please contact us
+              immediately.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">9. Changes to the Privacy Policy</h2>
-              <p>
-                We may update our privacy policy from time to time. We will notify you of any changes by posting the new
-                privacy policy on this page and updating the "Last Updated" date at the top of this privacy policy.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Changes to Privacy Policy</h2>
+            <p className="text-gray-700 mb-4">
+              We may update this Privacy Policy periodically. We will notify you of significant changes via email or
+              through prominent notice on our website. Continued use of our services after changes constitutes
+              acceptance of the updated policy.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">10. Contact Us</h2>
-              <p>
-                If you have any questions about this privacy policy or our privacy practices, please contact us at:{" "}
-                <a href="mailto:colecollins763@gmail.com" className="text-blue-600 hover:underline">
-                  colecollins763@gmail.com
-                </a>{" "}
-                or call us at (256) 595-3354. Our mailing address is: 12476 CR 747, Hanceville, AL 35077.
-              </p>
-            </section>
-          </div>
-
-          <div className="mt-12 text-center">
-            <Button asChild>
-              <Link href="/">Return to Home</Link>
-            </Button>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Contact Us</h2>
+            <p className="text-gray-700 mb-4">
+              If you have questions about this Privacy Policy, please contact us at{" "}
+              <Link
+                href={`mailto:${process.env.NEXT_PUBLIC_ADMIN_EMAIL || "privacy@memorialqr.com"}`}
+                className="text-orange-600 hover:underline"
+              >
+                {process.env.NEXT_PUBLIC_ADMIN_EMAIL || "privacy@memorialqr.com"}
+              </Link>
+            </p>
           </div>
         </div>
-      </main>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
+              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/how-it-works" className="hover:text-white">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-white">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/browse-memorials" className="hover:text-white">
+                    Sample Memorials
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/help" className="hover:text-white">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/privacy-policy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="hover:text-white">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

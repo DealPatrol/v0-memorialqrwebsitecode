@@ -1,14 +1,16 @@
-export const dynamic = "force-static"
-
 import type { MetadataRoute } from "next"
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"
+
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/api/", "/dashboard/"],
-    },
-    sitemap: "https://memorialqr.com/sitemap.xml",
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/dashboard/", "/api/", "/admin/"],
+      },
+    ],
+    sitemap: `${baseUrl}/sitemap.xml`,
   }
 }

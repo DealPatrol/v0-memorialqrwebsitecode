@@ -1,22 +1,23 @@
 import { type NextRequest, NextResponse } from "next/server"
-
-export const runtime = "edge"
+import { put } from "@vercel/blob"
 
 export async function POST(request: NextRequest) {
   try {
-    // In a real implementation, you would:
-    // 1. Parse the form data
-    // 2. Upload the file to storage
-    // 3. Return the URL
+    const formData = await request.formData()
+    const file = formData.get("file") as File
 
-    // For now, we'll just simulate a successful upload
-    return NextResponse.json({
-      success: true,
-      message: "Upload simulation successful",
-      url: "/videos/memorial-qr-demo.mp4", // Return the existing video path
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 })
+    }
+
+    // Upload to Vercel Blob
+    const blob = await put(file.name, file, {
+      access: "public",
     })
-  } catch (error) {
+
+    return NextResponse.json({ url: blob.url }, { status: 200 })
+  } catch (error: any) {
     console.error("Upload error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to upload file: " + error.message }, { status: 500 })
   }
 }

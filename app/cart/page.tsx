@@ -1,315 +1,440 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
+import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Trash2, ShoppingCart, Plus, Minus, ArrowLeft } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { Header } from "@/components/header"
+import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Tag, Shield, Truck } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useCartStore } from "@/lib/cart-store"
 
-// Define cart item type
-interface CartItem {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  image: string
-  plan: string
+const PROMO_CODES = {
+  SAVE10: { discount: 10, description: "10% off your order" },
+  MEMORIAL15: { discount: 15, description: "15% off memorial products" },
+  FIRST20: { discount: 20, description: "20% off first order" },
+  WELCOME25: { discount: 25, description: "25% off welcome discount" },
+  FAMILY30: { discount: 30, description: "30% off family memorial" },
 }
 
-// Available products
-const availableProducts = [
-  {
-    id: "premium-qr",
-    name: "Premium Memorial QR",
-    price: 49.99,
-    image: "/images/qr-code-gravestone.png",
-    plan: "premium",
-    description: "Perfect for a simple memorial tribute.",
-  },
-  {
-    id: "deluxe-qr",
-    name: "Deluxe Memorial QR",
-    price: 79.99,
-    image: "/images/qr-code-gravestone.png",
-    plan: "deluxe",
-    description: "Our most popular comprehensive memorial package.",
-  },
-  {
-    id: "legacy-qr",
-    name: "Legacy Memorial QR",
-    price: 99.99,
-    image: "/images/qr-code-gravestone.png",
-    plan: "legacy",
-    description: "The ultimate memorial experience for your loved one.",
-  },
-]
-
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
+  const { items, removeItem, updateQuantity, getTotalPrice } = useCartStore()
+  const [promoCode, setPromoCode] = useState("")
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number; description: string } | null>(null)
 
-  // Load cart from localStorage on component mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem("memorialQrCart")
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart))
-      } catch (e) {
-        console.error("Error parsing cart data:", e)
-      }
-    }
-    setIsLoading(false)
-  }, [])
-
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem("memorialQrCart", JSON.stringify(cartItems))
-    }
-  }, [cartItems, isLoading])
-
-  // Calculate cart totals
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = cartItems.length > 0 ? 4.99 : 0
-  const total = subtotal + shipping
-
-  // Add item to cart
-  const addToCart = (product: (typeof availableProducts)[0]) => {
-    setCartItems((prev) => {
-      // Check if item already exists in cart
-      const existingItemIndex = prev.findIndex((item) => item.id === product.id)
-
-      if (existingItemIndex >= 0) {
-        // Update quantity if item exists
-        const updatedItems = [...prev]
-        updatedItems[existingItemIndex].quantity += 1
-        return updatedItems
-      } else {
-        // Add new item if it doesn't exist
-        return [
-          ...prev,
-          {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: 1,
-            image: product.image,
-            plan: product.plan,
-          },
-        ]
-      }
-    })
-
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    })
-  }
-
-  // Update item quantity
-  const updateQuantity = (id: string, newQuantity: number) => {
+  const handleUpdateQuantity = (id: string, size: string, color: string, newQuantity: number) => {
     if (newQuantity < 1) return
-
-    setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)))
+    updateQuantity(id, size, color, newQuantity)
   }
 
-  // Remove item from cart
-  const removeItem = (id: string) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id))
-
+  const handleRemoveItem = (id: string, size: string, color: string, name: string) => {
+    removeItem(id, size, color)
     toast({
-      title: "Item removed",
-      description: "The item has been removed from your cart.",
+      title: "Item Removed",
+      description: `${name} has been removed from your cart.`,
     })
   }
 
-  // Clear entire cart
-  const clearCart = () => {
-    setCartItems([])
+  const applyPromoCode = () => {
+    const upperCode = promoCode.toUpperCase()
+    const promoData = PROMO_CODES[upperCode as keyof typeof PROMO_CODES]
 
+    if (promoData) {
+      setAppliedPromo({
+        code: upperCode,
+        discount: promoData.discount,
+        description: promoData.description,
+      })
+      toast({
+        title: "Promo Code Applied! 🎉",
+        description: `${promoData.description} - You saved ${promoData.discount}%!`,
+      })
+      setPromoCode("")
+    } else {
+      toast({
+        title: "Invalid Promo Code",
+        description: "Please check your promo code and try again. Try SAVE10, MEMORIAL15, or FIRST20.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const removePromoCode = () => {
+    setAppliedPromo(null)
     toast({
-      title: "Cart cleared",
-      description: "All items have been removed from your cart.",
+      title: "Promo Code Removed",
+      description: "Promo code has been removed from your order.",
     })
   }
 
-  if (isLoading) {
+  const subtotal = getTotalPrice()
+  const savings = items.reduce((sum, item) => {
+    const itemSavings = item.originalPrice ? (item.originalPrice - item.price) * item.quantity : 0
+    return sum + itemSavings
+  }, 0)
+  const promoDiscount = appliedPromo ? (subtotal * appliedPromo.discount) / 100 : 0
+  const shipping = subtotal > 100 ? 0 : 15
+  const tax = (subtotal - promoDiscount) * 0.08 // 8% tax
+  const total = subtotal - promoDiscount + shipping + tax
+
+  if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100">
+        <Header />
+
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto text-center">
+              <ShoppingCart className="w-24 h-24 text-slate-400 mx-auto mb-6" />
+              <h1 className="text-3xl font-bold text-slate-900 mb-4">Your Cart is Empty</h1>
+              <p className="text-slate-600 mb-8">Ready to create a beautiful memorial for your loved one?</p>
+              <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700">
+                <Link href="/products">View Memorial Plaque</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100">
+      <Header />
+
       {/* Header */}
-      <header className="bg-white border-b py-4">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-serif flex items-center">
-            Memorial QR
-            <span className="text-yellow-400 ml-1">★</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-gray-600 hover:text-gray-900">
-              Login
-            </Link>
+      <section className="py-12 bg-gradient-to-br from-slate-100 to-purple-100">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Shopping Cart</h1>
+            <p className="text-slate-600">Review your memorial plaque order before checkout</p>
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center mb-8">
-          <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Continue Shopping
-          </Link>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Cart Items */}
-          <div className="md:w-2/3">
-            <Card>
-              <CardHeader className="border-b">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="flex items-center">
-                    <ShoppingCart className="h-5 w-5 mr-2" />
-                    Your Cart
-                  </CardTitle>
-                  {cartItems.length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={clearCart}>
-                      Clear Cart
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="pt-6">
-                {cartItems.length === 0 ? (
-                  <div className="text-center py-12">
-                    <ShoppingCart className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium mb-2">Your cart is empty</h3>
-                    <p className="text-gray-500 mb-6">Browse our products and add items to your cart.</p>
-
-                    <div className="grid md:grid-cols-3 gap-6 mt-8">
-                      {availableProducts.map((product) => (
-                        <Card key={product.id} className="overflow-hidden">
-                          <div className="relative h-48 bg-gray-100">
-                            <Image
-                              src={product.image || "/placeholder.svg"}
-                              alt={product.name}
-                              fill
-                              className="object-contain p-4"
-                            />
-                          </div>
-                          <CardContent className="p-4">
-                            <h3 className="font-medium">{product.name}</h3>
-                            <p className="text-sm text-gray-500 mb-2">{product.description}</p>
-                            <div className="font-bold">${product.price.toFixed(2)}</div>
-                          </CardContent>
-                          <CardFooter className="p-4 pt-0">
-                            <Button className="w-full" onClick={() => addToCart(product)}>
-                              Add to Cart
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {cartItems.map((item) => (
-                      <div key={item.id} className="flex items-center border-b pb-6 last:border-0 last:pb-0">
-                        <div className="relative h-20 w-20 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
-                          <Image
-                            src={item.image || "/placeholder.svg"}
-                            alt={item.name}
-                            fill
-                            className="object-contain p-2"
-                          />
+      {/* Cart Content */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Cart Items */}
+              <div className="lg:col-span-2 space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      Cart Items ({items.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {items.map((item) => (
+                      <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-4 p-4 border rounded-lg">
+                        <div className="w-24 h-24 relative overflow-hidden rounded-lg bg-white">
+                          <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
                         </div>
-                        <div className="ml-4 flex-grow">
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="text-sm text-gray-500">
-                            Plan: {item.plan.charAt(0).toUpperCase() + item.plan.slice(1)}
-                          </p>
-                          <div className="text-gray-900 font-bold mt-1">${item.price.toFixed(2)}</div>
-                        </div>
-                        <div className="flex items-center">
-                          <div className="flex items-center border rounded-md mr-4">
-                            <button
-                              className="p-2"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              disabled={item.quantity <= 1}
-                            >
-                              <Minus className="h-4 w-4" />
-                            </button>
-                            <span className="px-4">{item.quantity}</span>
-                            <button className="p-2" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                              <Plus className="h-4 w-4" />
-                            </button>
+
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
+
+                          <div className="text-sm text-slate-600 space-y-1 mb-3">
+                            <div>Size: {item.size}</div>
+                            <div>Color: {item.color}</div>
+                            {item.digitalMemorialIncluded && (
+                              <div className="flex items-center gap-1 text-green-600">
+                                <Shield className="w-4 h-4" />
+                                Digital Memorial Included
+                              </div>
+                            )}
                           </div>
-                          <button className="text-red-500 hover:text-red-700" onClick={() => removeItem(item.id)}>
-                            <Trash2 className="h-5 w-5" />
-                          </button>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl font-bold text-purple-600">${item.price}</span>
+                              {item.originalPrice && item.originalPrice > item.price && (
+                                <span className="text-sm text-slate-500 line-through">${item.originalPrice}</span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleUpdateQuantity(item.id, item.size, item.color, item.quantity - 1)
+                                  }
+                                  disabled={item.quantity <= 1}
+                                >
+                                  <Minus className="w-4 h-4" />
+                                </Button>
+                                <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleUpdateQuantity(item.id, item.size, item.color, item.quantity + 1)
+                                  }
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveItem(item.id, item.size, item.color, item.name)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  </CardContent>
+                </Card>
 
-          {/* Order Summary */}
-          {cartItems.length > 0 && (
-            <div className="md:w-1/3">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span>${shipping.toFixed(2)}</span>
-                  </div>
-                  <div className="border-t pt-4 flex justify-between font-bold">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button className="w-full" asChild>
-                    <Link href="/checkout">Proceed to Checkout</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                {/* Promo Code */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Tag className="w-5 h-5" />
+                      Promo Code
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {!appliedPromo ? (
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Enter promo code (try SAVE10, MEMORIAL15, FIRST20)"
+                            value={promoCode}
+                            onChange={(e) => setPromoCode(e.target.value)}
+                            className="flex-1"
+                            onKeyPress={(e) => e.key === "Enter" && applyPromoCode()}
+                          />
+                          <Button onClick={applyPromoCode} variant="outline">
+                            Apply
+                          </Button>
+                        </div>
+                        <div className="text-sm text-slate-600">
+                          <p className="font-medium mb-1">Available codes:</p>
+                          <ul className="space-y-1">
+                            <li>
+                              • <code className="bg-slate-100 px-1 rounded">SAVE10</code> - 10% off your order
+                            </li>
+                            <li>
+                              • <code className="bg-slate-100 px-1 rounded">MEMORIAL15</code> - 15% off memorial
+                              products
+                            </li>
+                            <li>
+                              • <code className="bg-slate-100 px-1 rounded">FIRST20</code> - 20% off first order
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-green-700 font-semibold">{appliedPromo.code} Applied! 🎉</span>
+                            <p className="text-sm text-green-600">{appliedPromo.description}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-700 font-bold">-{appliedPromo.discount}%</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={removePromoCode}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Order Summary */}
+              <div className="lg:col-span-1">
+                <Card className="sticky top-24">
+                  <CardHeader>
+                    <CardTitle>Order Summary</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span>Subtotal:</span>
+                        <span>${subtotal.toFixed(2)}</span>
+                      </div>
+
+                      {savings > 0 && (
+                        <div className="flex justify-between text-green-600">
+                          <span>Product Savings:</span>
+                          <span>-${savings.toFixed(2)}</span>
+                        </div>
+                      )}
+
+                      {appliedPromo && (
+                        <div className="flex justify-between text-green-600">
+                          <span>Promo ({appliedPromo.code}):</span>
+                          <span>-${promoDiscount.toFixed(2)}</span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between">
+                        <span>Shipping:</span>
+                        <span className={shipping === 0 ? "text-green-600" : ""}>
+                          {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between">
+                        <span>Tax:</span>
+                        <span>${tax.toFixed(2)}</span>
+                      </div>
+
+                      <Separator />
+
+                      <div className="flex justify-between text-lg font-bold">
+                        <span>Total:</span>
+                        <span>${total.toFixed(2)}</span>
+                      </div>
+
+                      {(savings > 0 || appliedPromo) && (
+                        <div className="text-center text-green-600 font-medium">
+                          You saved ${(savings + promoDiscount).toFixed(2)}! 🎉
+                        </div>
+                      )}
+                    </div>
+
+                    <Button asChild size="lg" className="w-full bg-purple-600 hover:bg-purple-700">
+                      <Link href="/checkout">
+                        Proceed to Checkout
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+
+                    <Button asChild variant="outline" size="lg" className="w-full bg-transparent">
+                      <Link href="/products">Continue Shopping</Link>
+                    </Button>
+
+                    {/* Trust Indicators */}
+                    <div className="pt-4 border-t space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <Shield className="w-4 h-4 text-green-600" />
+                        <span>Secure SSL Encryption</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <Truck className="w-4 h-4 text-green-600" />
+                        <span>Free shipping on orders over $100</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <Shield className="w-4 h-4 text-green-600" />
+                        <span>5-year quality guarantee</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          )}
+          </div>
         </div>
-      </main>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t py-6 mt-12">
-        <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
-          <div className="flex justify-center space-x-4 mt-2">
-            <Link href="/privacy" className="hover:text-gray-700">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-gray-700">
-              Terms of Service
-            </Link>
-            <Link href="/contact" className="hover:text-gray-700">
-              Contact Us
-            </Link>
+      <footer className="bg-slate-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
+              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>
+                  <Link href="/products" className="hover:text-white">
+                    Memorial Plaque
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/how-it-works" className="hover:text-white">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-white">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/browse-memorials" className="hover:text-white">
+                    Sample Memorials
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>
+                  <Link href="/help" className="hover:text-white">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shipping" className="hover:text-white">
+                    Shipping Info
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>
+                  <Link href="/privacy-policy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="hover:text-white">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/returns" className="hover:text-white">
+                    Returns
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-800 mt-8 pt-8 text-center text-sm text-slate-400">
+            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
           </div>
         </div>
       </footer>

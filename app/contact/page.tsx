@@ -5,240 +5,369 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, Phone, MapPin, CheckCircle } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Header } from "@/components/header"
+import { Phone, Mail, MessageCircle, MapPin, Clock, Send, CheckCircle } from 'lucide-react'
+import { useToast } from "@/hooks/use-toast"
 
 export default function ContactPage() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [subject, setSubject] = useState("")
-  const [message, setMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setError(null)
 
-    try {
-      // In a real implementation, you would send this data to your server
-      // For now, we'll simulate a successful submission
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+    // Simulate form submission
+    await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      setIsSubmitted(true)
-      setName("")
-      setEmail("")
-      setSubject("")
-      setMessage("")
-    } catch (err) {
-      setError("There was an error submitting your message. Please try again.")
-    } finally {
-      setIsSubmitting(false)
-    }
+    setIsSubmitting(false)
+    setIsSubmitted(true)
+
+    toast({
+      title: "Message sent successfully!",
+      description: "We'll get back to you within 2 hours.",
+    })
+  }
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <Card className="max-w-md mx-auto text-center">
+            <CardContent className="p-8">
+              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Message Sent!</h2>
+              <p className="text-gray-600 mb-6">
+                Thank you for contacting us. We'll get back to you within 2 hours during business hours.
+              </p>
+              <div className="space-y-3">
+                <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
+                  <Link href="/">Return Home</Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full bg-transparent">
+                  <Link href="/faq">View FAQ</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b py-4">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-serif flex items-center">
-            Memorial QR
-            <span className="text-yellow-400 ml-1">★</span>
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-white">
+      <Header />
 
-      {/* Main Content */}
-      <main className="container mx-auto py-12 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl font-serif mb-4">Contact Us</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Have questions about our memorial QR codes? We're here to help. Fill out the form below and we'll get back
-              to you as soon as possible.
-            </p>
+      {/* Hero Section */}
+      <section className="py-20 bg-gradient-to-br from-orange-50 to-orange-100">
+        <div className="container mx-auto px-4 text-center">
+          <Badge className="mb-6 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-lg">
+            <MessageCircle className="w-4 h-4 mr-2" />
+            We're Here to Help
+          </Badge>
+
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Contact Our Support Team</h1>
+
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Have questions about creating a memorial? Need technical support? Our friendly team is available 24/7 to
+            help you honor your loved one with a beautiful digital tribute.
+          </p>
+        </div>
+      </section>
+
+      {/* Contact Methods */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
+            <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors text-center">
+              <CardContent className="p-8">
+                <Phone className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Phone Support</h3>
+                <p className="text-gray-600 mb-4">Speak with a real person who understands your needs</p>
+                <div className="space-y-2">
+                  <div className="font-semibold text-gray-900">256-595-3354</div>
+                  <div className="text-sm text-gray-600">Available 24/7</div>
+                </div>
+                <Button asChild className="mt-4 bg-orange-600 hover:bg-orange-700">
+                  <Link href="tel:256-595-3354">Call Now</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-orange-100 hover:border-orange-300 transition-colors text-center">
+              <CardContent className="p-8">
+                <Mail className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h3>
+                <p className="text-gray-600 mb-4">Send us your questions and get detailed responses</p>
+                <div className="space-y-2">
+                  <div className="font-semibold text-gray-900">support@memorialsQR.com</div>
+                  <div className="text-sm text-gray-600">Response within 2 hours</div>
+                </div>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-4 border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
+                >
+                  <Link href="mailto:support@memorialsQR.com">Send Email</Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Send Us a Message</CardTitle>
-                  <CardDescription>Fill out the form below and we'll respond within 24 hours.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isSubmitted ? (
-                    <div className="text-center py-8">
-                      <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                        <CheckCircle className="h-6 w-6 text-green-600" />
-                      </div>
-                      <h3 className="text-xl font-medium mb-2">Message Sent!</h3>
-                      <p className="text-gray-600 mb-6">
-                        Thank you for reaching out. We've received your message and will get back to you shortly.
-                      </p>
-                      <Button onClick={() => setIsSubmitted(false)}>Send Another Message</Button>
+          {/* Contact Form */}
+          <div className="max-w-2xl mx-auto">
+            <Card className="border-2 border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center">Send Us a Message</CardTitle>
+                <p className="text-center text-gray-600">
+                  Fill out the form below and we'll get back to you within 2 hours
+                </p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName">First Name *</Label>
+                      <Input id="firstName" name="firstName" required className="mt-1" />
                     </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="name">Your Name</Label>
-                          <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="John Doe"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="email">Email Address</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="john@example.com"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="subject">Subject</Label>
-                        <Input
-                          id="subject"
-                          value={subject}
-                          onChange={(e) => setSubject(e.target.value)}
-                          placeholder="How can we help you?"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
-                        <Textarea
-                          id="message"
-                          value={message}
-                          onChange={(e) => setMessage(e.target.value)}
-                          placeholder="Please provide details about your inquiry..."
-                          rows={5}
-                          required
-                        />
-                      </div>
-                      {error && <p className="text-red-500 text-sm">{error}</p>}
-                      <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? "Sending..." : "Send Message"}
-                      </Button>
-                    </form>
-                  )}
+                    <div>
+                      <Label htmlFor="lastName">Last Name *</Label>
+                      <Input id="lastName" name="lastName" required className="mt-1" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input id="email" name="email" type="email" required className="mt-1" />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input id="phone" name="phone" type="tel" className="mt-1" />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="subject">How can we help? *</Label>
+                    <Select name="subject" required>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select a topic" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="general">General Questions</SelectItem>
+                        <SelectItem value="technical">Technical Support</SelectItem>
+                        <SelectItem value="billing">Billing & Payment</SelectItem>
+                        <SelectItem value="memorial">Memorial Creation Help</SelectItem>
+                        <SelectItem value="plaque">QR Code Plaque Issues</SelectItem>
+                        <SelectItem value="refund">Refund Request</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="message">Message *</Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      required
+                      rows={5}
+                      className="mt-1"
+                      placeholder="Please describe your question or issue in detail..."
+                    />
+                  </div>
+
+                  <div className="text-center">
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-orange-600 hover:bg-orange-700 px-8 py-3 text-lg"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Message
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Business Hours & Location */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Commitment to You</h2>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="border-2 border-orange-100">
+                <CardContent className="p-8">
+                  <Clock className="w-12 h-12 text-orange-600 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Support Hours</h3>
+                  <div className="space-y-2 text-gray-700">
+                    <div className="flex justify-between">
+                      <span>Phone Support:</span>
+                      <span className="font-semibold">24/7</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Email Support:</span>
+                      <span className="font-semibold">24/7</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Response Time:</span>
+                      <span className="font-semibold text-orange-600">Within 2 hours</span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
+
+              <Card className="border-2 border-orange-100">
+                <CardContent className="p-8">
+                  <MapPin className="w-12 h-12 text-orange-600 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Company Information</h3>
+                  <div className="space-y-2 text-gray-700">
+                    <div>
+                      <div className="font-semibold">Memorial QR LLC</div>
+                      <div>12476 County Road 747</div>
+                      <div>Hanceville, AL 35077</div>
+                    </div>
+                    <div className="pt-2">
+                      <div className="font-semibold">Business License:</div>
+                      <div className="text-sm">#MEM-2024-001</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="text-center mt-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">We're Here for You</h3>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Creating a memorial for a loved one is deeply personal. Our compassionate support team understands the
+                importance of honoring their memory perfectly. We're here to help every step of the way.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+            Start honoring your loved one today. Our team is standing by to help you create a beautiful tribute.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              asChild
+              size="lg"
+              className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
+            >
+              <Link href="/create-profile">Create Memorial - $119.99</Link>
+            </Button>
+
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
+            >
+              <Link href="/faq">View FAQ</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
+              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
             </div>
 
             <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contact Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-start">
-                    <Mail className="h-5 w-5 text-gray-600 mr-3 mt-0.5" />
-                    <div>
-                      <h3 className="font-medium">Email</h3>
-                      <a href="mailto:colecollins763@gmail.com" className="text-blue-600 hover:underline">
-                        colecollins763@gmail.com
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <Phone className="h-5 w-5 text-gray-600 mr-3 mt-0.5" />
-                    <div>
-                      <h3 className="font-medium">Phone</h3>
-                      <a href="tel:+12565953354" className="text-blue-600 hover:underline">
-                        (256) 595-3354
-                      </a>
-                      <p className="text-sm text-gray-500">Mon-Fri, 9am-5pm CST</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <MapPin className="h-5 w-5 text-gray-600 mr-3 mt-0.5" />
-                    <div>
-                      <h3 className="font-medium">Address</h3>
-                      <address className="not-italic text-gray-600">
-                        Memorial QR
-                        <br />
-                        12476 CR 747
-                        <br />
-                        Hanceville, AL 35077
-                      </address>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <div className="w-full bg-gray-100 rounded-md p-4 text-center">
-                    <p className="text-sm text-gray-600">
-                      For urgent matters, please call us directly at (256) 595-3354.
-                    </p>
-                  </div>
-                </CardFooter>
-              </Card>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/how-it-works" className="hover:text-white">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-white">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/browse-memorials" className="hover:text-white">
+                    Sample Memorials
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/help" className="hover:text-white">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/privacy-policy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="hover:text-white">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
 
-          <div className="mt-16">
-            <h2 className="text-2xl font-serif mb-6 text-center">Frequently Asked Questions</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {[
-                {
-                  question: "How long does shipping take?",
-                  answer:
-                    "Standard shipping takes 5-7 business days. Express shipping options are available at checkout for 2-3 business day delivery.",
-                },
-                {
-                  question: "Are the QR codes weather resistant?",
-                  answer:
-                    "Yes, our QR codes are made with weather-resistant materials designed to withstand outdoor conditions for years. They're UV-resistant, waterproof, and can handle temperature extremes.",
-                },
-                {
-                  question: "How do I set up my memorial page?",
-                  answer:
-                    "After purchasing, you'll receive instructions to create your account. From your dashboard, you can easily upload photos, videos, and stories to create your memorial page.",
-                },
-                {
-                  question: "Can I upgrade my plan later?",
-                  answer:
-                    "Yes, you can upgrade from Essential to Premium or Legacy at any time. You'll only pay the difference between your current plan and the new plan.",
-                },
-              ].map((faq, i) => (
-                <Card key={i} className="p-6">
-                  <h3 className="font-medium text-lg mb-2">{faq.question}</h3>
-                  <p className="text-gray-600">{faq.answer}</p>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-white border-t py-6 mt-12">
-        <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
-          <div className="flex justify-center space-x-4 mt-2">
-            <Link href="/privacy-policy" className="hover:text-gray-700">
-              Privacy Policy
-            </Link>
-            <Link href="/terms-of-service" className="hover:text-gray-700">
-              Terms of Service
-            </Link>
-            <Link href="/contact" className="hover:text-gray-700">
-              Contact Us
-            </Link>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
           </div>
         </div>
       </footer>

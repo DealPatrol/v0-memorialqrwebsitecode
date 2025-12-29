@@ -1,299 +1,239 @@
-import Image from "next/image"
-import Link from "next/link"
+import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import {
+  QrCode,
+  Upload,
+  Smartphone,
+  Heart,
+  CheckCircle,
+  ArrowRight,
+  Globe,
+  Shield,
+  ShoppingCart,
+  Music,
+  User,
+  PawPrint,
+} from "lucide-react"
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="container mx-auto py-6 flex justify-between items-center border-b">
-        <button className="lg:hidden">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-        <div className="text-center flex-grow lg:flex-grow-0">
-          <Link href="/" className="text-2xl font-serif flex items-center justify-center">
-            Memorial QR
-            <span className="text-yellow-400 ml-1">★</span>
-          </Link>
-        </div>
-        <div className="hidden lg:flex space-x-6 flex-grow justify-center">
-          <Link href="/products" className="hover:text-gray-600">
-            Products
-          </Link>
-          <Link href="/how-it-works" className="text-gray-900 font-medium">
-            How It Works
-          </Link>
-          <Link href="/testimonials" className="hover:text-gray-600">
-            Testimonials
-          </Link>
-          <Link href="/contact" className="hover:text-gray-600">
-            Contact
-          </Link>
-        </div>
-        <Link href="/cart">
-          <div className="relative">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            <span className="absolute -top-2 -right-2 bg-gray-900 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-              0
-            </span>
-          </div>
-        </Link>
-      </header>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
 
       {/* Hero Section */}
-      <section className="bg-gray-50 py-16">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl font-serif mb-6">How Memorial QR Works</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Our innovative QR code technology connects physical memorials with digital memories, creating a lasting
-            tribute that can be accessed for generations to come.
+      <section className="bg-gradient-to-r from-blue-600 via-purple-600 to-amber-500 py-20">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <Badge className="mb-4 bg-white/20 text-white border-white/30">Simple Process</Badge>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">How Memorial QR Works</h1>
+          <p className="text-xl text-white/90 mb-8">
+            Create a lasting tribute for loved ones or beloved pets in just four simple steps.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+              <Link href="/pricing">
+                Get Started Now
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Memorial Type Selection */}
+      <section className="py-12 bg-white border-b">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold mb-6">Choose Your Memorial Type</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <Card className="border-2 border-blue-200 hover:border-blue-400 transition-colors cursor-pointer">
+              <Link href="/human-memorials">
+                <CardContent className="p-6 text-center">
+                  <User className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                  <h3 className="font-semibold text-lg">Human Memorials</h3>
+                  <p className="text-sm text-muted-foreground">For loved ones who have passed</p>
+                </CardContent>
+              </Link>
+            </Card>
+            <Card className="border-2 border-amber-200 hover:border-amber-400 transition-colors cursor-pointer">
+              <Link href="/pet-memorials">
+                <CardContent className="p-6 text-center">
+                  <PawPrint className="w-12 h-12 text-amber-600 mx-auto mb-3" />
+                  <h3 className="font-semibold text-lg">Pet Memorials</h3>
+                  <p className="text-sm text-muted-foreground">For beloved furry friends</p>
+                </CardContent>
+              </Link>
+            </Card>
+          </div>
         </div>
       </section>
 
       {/* Steps Section */}
-      <section className="py-16">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
-            <div className="relative aspect-square rounded-lg overflow-hidden">
-              <Image src="/images/qr-code-sample.png" alt="Choose your Memorial QR" fill className="object-cover" />
-            </div>
-            <div>
-              <div className="inline-block bg-gray-900 text-white text-4xl font-bold rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                1
-              </div>
-              <h2 className="text-3xl font-serif mb-4">Choose Your Memorial QR</h2>
-              <p className="text-gray-600 mb-6">
-                Select from our range of durable, weather-resistant QR code options designed to be placed on headstones,
-                plaques, urns, or any memorial location. Each QR code is uniquely linked to your loved one's digital
-                memorial page.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Weather-resistant and durable
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Multiple design options
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Easy to install
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
-            <div className="order-2 md:order-1">
-              <div className="inline-block bg-gray-900 text-white text-4xl font-bold rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                2
-              </div>
-              <h2 className="text-3xl font-serif mb-4">Create the Memorial Page</h2>
-              <p className="text-gray-600 mb-6">
-                Use our intuitive editor to build a beautiful digital memorial. Add photos, videos, stories,
-                biographical information, and more to celebrate your loved one's life and legacy.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Unlimited photos and videos
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Family tree integration
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Visitor guestbook
-                </li>
-              </ul>
-            </div>
-            <div className="relative aspect-square rounded-lg overflow-hidden order-1 md:order-2">
-              <Image src="/images/memorial-1.jpg" alt="Create the Memorial Page" fill className="object-cover" />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-square rounded-lg overflow-hidden">
-              <Image src="/images/memorial-3.jpg" alt="Share and Remember" fill className="object-cover" />
-            </div>
-            <div>
-              <div className="inline-block bg-gray-900 text-white text-4xl font-bold rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                3
-              </div>
-              <h2 className="text-3xl font-serif mb-4">Share and Remember</h2>
-              <p className="text-gray-600 mb-6">
-                Visitors can scan the QR code with any smartphone to instantly access the memorial page. Family and
-                friends can view memories, add their own tributes, and stay connected to your loved one's legacy.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Private or public sharing options
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Visitor contributions
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  Lifetime access
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Video Tutorial Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif mb-4">Watch Our Tutorial</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              See how our Memorial QR codes work and how they can help preserve the memory of your loved ones.
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto bg-gray-50 rounded-lg p-8">
-            <div className="relative aspect-video w-full rounded-lg overflow-hidden shadow-lg">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/RyGH38lunSM"
-                title="Preserving Memories QR Codes"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></iframe>
-            </div>
-
-            <div className="mt-8 grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="inline-block bg-gray-900 text-white text-xl font-bold rounded-full w-8 h-8 flex items-center justify-center mb-2">
-                  1
+      <section className="py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="space-y-20">
+            {/* Step 1 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                    1
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Choose Your Memorial</h2>
                 </div>
-                <h3 className="font-medium mb-2">Choose Your QR Code</h3>
-                <p className="text-gray-600 text-sm">Select the perfect QR code design for your memorial.</p>
-              </div>
-
-              <div className="text-center">
-                <div className="inline-block bg-gray-900 text-white text-xl font-bold rounded-full w-8 h-8 flex items-center justify-center mb-2">
-                  2
-                </div>
-                <h3 className="font-medium mb-2">Create Your Memorial</h3>
-                <p className="text-gray-600 text-sm">Build a beautiful digital memorial with photos and stories.</p>
-              </div>
-
-              <div className="text-center">
-                <div className="inline-block bg-gray-900 text-white text-xl font-bold rounded-full w-8 h-8 flex items-center justify-center mb-2">
-                  3
-                </div>
-                <h3 className="font-medium mb-2">Share & Remember</h3>
-                <p className="text-gray-600 text-sm">
-                  Anyone can scan the QR code to view and contribute to the memorial.
+                <p className="text-lg text-gray-600 mb-6">
+                  Select the type of memorial you want to create — for a loved one or a beloved pet. Choose from
+                  headstone plaques, wall displays, collar tags, garden stones, or keepsake boxes.
                 </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Human memorials with dignified plaques</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Pet memorials with collar tags or garden stones</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>All products include custom QR code</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="lg:order-first">
+                <Card className="p-8 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+                  <CardContent className="p-0">
+                    <div className="text-center">
+                      <ShoppingCart className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Select Your Package</h3>
+                      <p className="text-gray-600">Choose the perfect memorial products</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <Card className="p-8 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+                  <CardContent className="p-0">
+                    <div className="text-center">
+                      <Upload className="w-16 h-16 text-amber-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Build Their Profile</h3>
+                      <p className="text-gray-600">Add photos, videos, and memories</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <div>
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                    2
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Create Their Profile</h2>
+                </div>
+                <p className="text-lg text-gray-600 mb-6">
+                  Upload photos spanning their life, add videos, audio recordings, and write their story. For humans,
+                  include biography and family tree. For pets, add their personality and favorite things.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Upload unlimited photos and videos</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Add voice recordings or favorite songs</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Write their complete life story</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                    3
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Receive Your Memorial</h2>
+                </div>
+                <p className="text-lg text-gray-600 mb-6">
+                  We'll ship your custom engraved QR plaque or tag. Our products are designed to withstand outdoor
+                  conditions for headstones, gardens, or wherever you choose to place them.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Custom QR code engraved on plaque or tag</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Weather-resistant and durable materials</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Free shipping on all orders</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="lg:order-first">
+                <Card className="p-8 bg-gradient-to-br from-green-50 to-teal-50 border-green-200">
+                  <CardContent className="p-0">
+                    <div className="text-center">
+                      <QrCode className="w-16 h-16 text-green-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Custom QR Memorial</h3>
+                      <p className="text-gray-600">Beautiful, durable, and meaningful</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <Card className="p-8 bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200">
+                  <CardContent className="p-0">
+                    <div className="text-center">
+                      <Smartphone className="w-16 h-16 text-pink-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Easy Scanning</h3>
+                      <p className="text-gray-600">Anyone can scan to see their story</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <div>
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                    4
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Share Their Legacy</h2>
+                </div>
+                <p className="text-lg text-gray-600 mb-6">
+                  Visitors can scan the QR code to instantly view the memorial page. They can see photos, videos, and
+                  stories — and leave their own condolences and memories.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Works with any smartphone camera</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>No app download required</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span>Visitors can leave messages and memories</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -301,242 +241,157 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-gray-50 py-16">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-serif text-center mb-12">Features & Benefits</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Preserves Memories",
-                description: "Create a lasting digital legacy that can be accessed by future generations.",
-                icon: (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Easy to Use",
-                description: "Simple setup process with an intuitive editor that anyone can use.",
-                icon: (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                  </svg>
-                ),
-              },
-              {
-                title: "Weather Resistant",
-                description: "Durable QR codes designed to withstand outdoor conditions for years to come.",
-                icon: (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"></path>
-                    <path d="M16 14v2"></path>
-                    <path d="M8 14v2"></path>
-                    <path d="M12 16v2"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Unlimited Storage",
-                description: "Add as many photos, videos, and stories as you want with no storage limits.",
-                icon: (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                  </svg>
-                ),
-              },
-              {
-                title: "Privacy Controls",
-                description: "Choose between public access or private sharing with only family and friends.",
-                icon: (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Lifetime Access",
-                description: "One-time payment for permanent access to your memorial page.",
-                icon: (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
-                ),
-              },
-            ].map((feature, i) => (
-              <Card key={i} className="p-6">
-                <div className="flex items-center mb-4">
-                  <div className="bg-gray-900 p-3 rounded-full text-white mr-4">{feature.icon}</div>
-                  <h3 className="text-xl font-medium">{feature.title}</h3>
-                </div>
-                <p className="text-gray-600">{feature.description}</p>
-              </Card>
-            ))}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Powerful Features Included</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Every memorial comes with these essential features
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <Card className="text-center p-6">
+              <CardContent className="p-0">
+                <Globe className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-900 mb-2">Unlimited Memories</h3>
+                <p className="text-sm text-gray-600">Upload unlimited photos and videos</p>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center p-6">
+              <CardContent className="p-0">
+                <Music className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-900 mb-2">Audio Tributes</h3>
+                <p className="text-sm text-gray-600">Add voice recordings and favorite songs</p>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center p-6">
+              <CardContent className="p-0">
+                <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-900 mb-2">Lifetime Hosting</h3>
+                <p className="text-sm text-gray-600">Your memorial will be hosted forever</p>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center p-6">
+              <CardContent className="p-0">
+                <Heart className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-900 mb-2">Guest Messages</h3>
+                <p className="text-sm text-gray-600">Visitors can leave condolences</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gray-900 text-white">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-serif mb-6">Ready to Create a Lasting Memorial?</h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Honor your loved one with a digital memorial that preserves their memory for generations to come.
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-amber-500">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Create a Memorial?</h2>
+          <p className="text-xl text-white/90 mb-8">
+            Start honoring your loved ones today with a beautiful digital memorial that lasts forever.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/products/memorial-star">
-              <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100">
-                Get Started Today
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-gray-800">
-                Contact Us
-              </Button>
-            </Link>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+              <Link href="/pricing">
+                View Packages
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
+
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+            >
+              <Link href="/browse-memorials">View Examples</Link>
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto grid md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-xl font-serif mb-4">Memorial QR</h3>
-            <p className="text-gray-400">Preserving memories for generations to come with innovative QR technology.</p>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/products" className="text-gray-400 hover:text-white">
-                  Products
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="text-gray-400 hover:text-white">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/testimonials" className="text-gray-400 hover:text-white">
-                  Testimonials
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-gray-400 hover:text-white">
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Customer Support</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="text-gray-400 hover:text-white">
-                  Shipping Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-gray-400 hover:text-white">
-                  Returns & Refunds
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Newsletter</h4>
-            <p className="text-gray-400 mb-4">Subscribe to receive updates and special offers.</p>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 w-full rounded-l-md focus:outline-none text-gray-900"
-              />
-              <Button className="rounded-l-none">Subscribe</Button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <QrCode className="w-5 h-5 text-white" />
+                </div>
+                <span className="memorial-logo text-xl font-bold">Memorial QR</span>
+              </div>
+              <p className="text-gray-400">
+                Creating lasting digital memorials to honor and remember loved ones — both human and pet.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Services</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <Link href="/human-memorials" className="hover:text-white">
+                    Human Memorials
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pet-memorials" className="hover:text-white">
+                    Pet Memorials
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-white">
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <Link href="/our-story" className="hover:text-white">
+                    Our Story
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <Link href="/privacy-policy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="hover:text-white">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
-        </div>
-        <div className="container mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Memorial QR. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

@@ -1,168 +1,170 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Header } from "@/components/header"
 
 export default function TermsOfServicePage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="container mx-auto py-12 px-4">
-        <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
-          <h1 className="text-3xl font-serif mb-6">Terms of Service</h1>
-          <p className="text-gray-500 mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
+    <div className="min-h-screen bg-white">
+      <Header />
 
-          <div className="space-y-6">
-            <section>
-              <h2 className="text-xl font-medium mb-3">1. Introduction</h2>
-              <p>
-                Welcome to Memorial QR. These Terms of Service govern your use of our website and services. By accessing
-                or using our website, you agree to be bound by these Terms. If you disagree with any part of the terms,
-                you may not access the website.
-              </p>
-            </section>
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">Terms of Service</h1>
+          <p className="text-gray-600 mb-8">Last updated: December 2024</p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">2. Definitions</h2>
-              <ul className="list-disc pl-6 mt-2 space-y-1">
-                <li>
-                  <strong>"Service"</strong> refers to the Memorial QR website and all services provided through it.
-                </li>
-                <li>
-                  <strong>"User"</strong> refers to the person who accesses or uses the Service.
-                </li>
-                <li>
-                  <strong>"Content"</strong> refers to all text, images, videos, audio, and other materials uploaded to
-                  or displayed on the Service.
-                </li>
-                <li>
-                  <strong>"QR Code"</strong> refers to the physical or digital QR code provided as part of our Service.
-                </li>
-              </ul>
-            </section>
+          <div className="prose prose-lg max-w-none">
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Acceptance of Terms</h2>
+            <p className="text-gray-700 mb-4">
+              By using Memorial QR services, you agree to be bound by these Terms of Service and all applicable laws and
+              regulations.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">3. Account Registration</h2>
-              <p>
-                To use certain features of the Service, you may be required to register for an account. You agree to
-                provide accurate, current, and complete information during the registration process and to update such
-                information to keep it accurate, current, and complete.
-              </p>
-              <p className="mt-2">
-                You are responsible for safeguarding the password that you use to access the Service and for any
-                activities or actions under your password. We encourage you to use a strong password (a password that
-                uses a combination of upper and lower case letters, numbers, and symbols) with your account.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Description</h2>
+            <p className="text-gray-700 mb-4">
+              Memorial QR provides digital memorial services including online memorial pages and QR code products
+              (plaques, tags, stones, and accessories) to honor deceased individuals and pets. All products include a
+              one-time purchase price plus a monthly website hosting fee of $4.99.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">4. User Content</h2>
-              <p>
-                Our Service allows you to post, link, store, share and otherwise make available certain information,
-                text, graphics, videos, or other material ("Content"). You are responsible for the Content that you post
-                on or through the Service, including its legality, reliability, and appropriateness.
-              </p>
-              <p className="mt-2">
-                By posting Content on or through the Service, you represent and warrant that: (i) the Content is yours
-                (you own it) and/or you have the right to use it and the right to grant us the rights and license as
-                provided in these Terms, and (ii) that the posting of your Content on or through the Service does not
-                violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any
-                person or entity.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
+            <p className="text-gray-700 mb-4">
+              You are responsible for providing accurate information and ensuring you have the right to create memorials
+              for the individuals or pets represented. You must maintain accurate payment information for monthly
+              hosting fees.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">5. QR Codes and Memorial Pages</h2>
-              <p>
-                The QR codes we provide are designed to be durable and weather-resistant, but we cannot guarantee their
-                longevity in all environmental conditions. We are not responsible for damage to QR codes caused by
-                vandalism, extreme weather, or improper installation.
-              </p>
-              <p className="mt-2">
-                Memorial pages will be hosted according to the plan you purchase. Premium and Legacy plans include
-                lifetime hosting, while the Essential plan includes 5 years of hosting. After the initial hosting period
-                for the Essential plan, you may renew for an additional fee.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
+            <p className="text-gray-700 mb-4">
+              Payment is required at the time of order for physical products. Monthly hosting fees of $4.99 will be
+              charged automatically to maintain your digital memorial website. We offer a 30-day money-back guarantee
+              for physical products. Monthly hosting fees are non-refundable but can be canceled at any time.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">6. Payments and Refunds</h2>
-              <p>
-                We offer various payment options for our services. All payments are processed securely through our
-                payment processors. Prices for our services are subject to change without notice.
-              </p>
-              <p className="mt-2">
-                We offer a 30-day money-back guarantee on all our plans. If you are not satisfied with our service, you
-                may request a refund within 30 days of your purchase. Refunds will be processed through the original
-                payment method.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
+            <p className="text-gray-700 mb-4">
+              Physical memorial products ship within 3-5 business days. Free shipping is included on all orders within
+              the United States. International shipping rates apply for orders outside the US.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">7. Intellectual Property</h2>
-              <p>
-                The Service and its original content (excluding Content provided by users), features, and functionality
-                are and will remain the exclusive property of Memorial QR and its licensors. The Service is protected by
-                copyright, trademark, and other laws of both the United States and foreign countries.
-              </p>
-              <p className="mt-2">
-                Our trademarks and trade dress may not be used in connection with any product or service without the
-                prior written consent of Memorial QR.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Digital Memorial Content</h2>
+            <p className="text-gray-700 mb-4">
+              You retain ownership of all photos, videos, and content uploaded to your memorial pages. Memorial QR has
+              the right to host and display this content as part of the memorial service. Content must comply with our
+              acceptable use policy and must not include illegal, offensive, or inappropriate material.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">8. Termination</h2>
-              <p>
-                We may terminate or suspend your account and bar access to the Service immediately, without prior notice
-                or liability, under our sole discretion, for any reason whatsoever and without limitation, including but
-                not limited to a breach of the Terms.
-              </p>
-              <p className="mt-2">
-                If you wish to terminate your account, you may simply discontinue using the Service, or contact us to
-                request account deletion.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Prohibited Uses</h2>
+            <p className="text-gray-700 mb-4">
+              You may not use our service for any unlawful purpose or to create memorials without proper authorization.
+              You may not upload content that infringes on intellectual property rights, contains malware, or violates
+              privacy laws.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">9. Limitation of Liability</h2>
-              <p>
-                In no event shall Memorial QR, nor its directors, employees, partners, agents, suppliers, or affiliates,
-                be liable for any indirect, incidental, special, consequential or punitive damages, including without
-                limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your
-                access to or use of or inability to access or use the Service; (ii) any conduct or content of any third
-                party on the Service; (iii) any content obtained from the Service; and (iv) unauthorized access, use or
-                alteration of your transmissions or content, whether based on warranty, contract, tort (including
-                negligence) or any other legal theory, whether or not we have been informed of the possibility of such
-                damage.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Cancellation and Refunds</h2>
+            <p className="text-gray-700 mb-4">
+              Physical products can be returned within 30 days for a full refund. Monthly hosting subscriptions can be
+              canceled at any time through your account dashboard. Upon cancellation, your memorial website will remain
+              active until the end of your current billing period.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">10. Changes to Terms</h2>
-              <p>
-                We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a
-                revision is material we will provide at least 30 days' notice prior to any new terms taking effect. What
-                constitutes a material change will be determined at our sole discretion.
-              </p>
-            </section>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitation of Liability</h2>
+            <p className="text-gray-700 mb-4">
+              Memorial QR shall not be liable for any indirect, incidental, special, consequential, or punitive damages.
+              Our total liability shall not exceed the amount paid for services in the past 12 months.
+            </p>
 
-            <section>
-              <h2 className="text-xl font-medium mb-3">11. Contact Us</h2>
-              <p>
-                If you have any questions about these Terms, please contact us at:{" "}
-                <a href="mailto:colecollins763@gmail.com" className="text-blue-600 hover:underline">
-                  colecollins763@gmail.com
-                </a>{" "}
-                or call us at (256) 595-3354. Our mailing address is: 12476 CR 747, Hanceville, AL 35077.
-              </p>
-            </section>
-          </div>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Changes to Terms</h2>
+            <p className="text-gray-700 mb-4">
+              We reserve the right to modify these terms at any time. Continued use of our services constitutes
+              acceptance of modified terms. We will notify users of significant changes via email.
+            </p>
 
-          <div className="mt-12 text-center">
-            <Button asChild>
-              <Link href="/">Return to Home</Link>
-            </Button>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Contact Information</h2>
+            <p className="text-gray-700 mb-4">
+              Questions about these Terms should be sent to{" "}
+              <Link
+                href={`mailto:${process.env.NEXT_PUBLIC_ADMIN_EMAIL || "support@memorialqr.com"}`}
+                className="text-orange-600 hover:underline"
+              >
+                {process.env.NEXT_PUBLIC_ADMIN_EMAIL || "support@memorialqr.com"}
+              </Link>
+            </p>
           </div>
         </div>
-      </main>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
+              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/how-it-works" className="hover:text-white">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-white">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/browse-memorials" className="hover:text-white">
+                    Sample Memorials
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/help" className="hover:text-white">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/privacy-policy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="hover:text-white">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

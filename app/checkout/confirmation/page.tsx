@@ -1,299 +1,276 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Package, Truck, Calendar } from "lucide-react"
-import { getCheckoutSession } from "@/app/actions/payment"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
+import { Card } from "@/components/ui/card"
+import { CheckCircle2, Package, Mail, ArrowRight, Eye } from "lucide-react"
+import Link from "next/link"
 
-export default function ConfirmationPage() {
+export default function OrderConfirmationPage() {
   const searchParams = useSearchParams()
-  const sessionId = searchParams.get("session_id")
-
-  const [orderId, setOrderId] = useState("")
-  const [orderDetails, setOrderDetails] = useState<any>(null)
-  const [estimatedDelivery, setEstimatedDelivery] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  const orderNumber = searchParams.get("order")
+  const [order, setOrder] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Calculate estimated delivery date (5-7 business days from now)
-    const today = new Date()
-    const deliveryDate = new Date(today)
-    deliveryDate.setDate(today.getDate() + 7) // 7 days from now
-
-    // Format the date
-    setEstimatedDelivery(
-      deliveryDate.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-      }),
-    )
-
-    // Fetch order details
-    async function fetchOrderDetails() {
-      if (!sessionId) {
-        setError("No session ID found. Please try again.")
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        // Get session data from Stripe
-        const session = await getCheckoutSession(sessionId)
-
-        // Get order data from database
-        const supabase = getSupabaseBrowserClient()
-        const { data: order } = await supabase.from("orders").select("*").eq("stripe_session_id", sessionId).single()
-
-        if (order) {
-          setOrderId(order.id)
-          setOrderDetails(order)
-        }
-
-        setIsLoading(false)
-      } catch (err) {
-        console.error("Error fetching order details:", err)
-        setError("Failed to load order information. Please contact support.")
-        setIsLoading(false)
-      }
+    if (!orderNumber) {
+      console.log("[v0] Confirmation - No order number in URL, redirecting to home")
+      router.push("/")
+      return
     }
 
-    fetchOrderDetails()
-  }, [sessionId])
+    console.log("[v0] Confirmation - Fetching order details for:", orderNumber)
 
-  if (isLoading) {
+    // Fetch order details
+    fetch(`/api/orders/${orderNumber}`)
+      .then((res) => {
+        console.log("[v0] Confirmation - Order fetch response status:", res.status)
+        return res.json()
+      })
+      .then((data) => {
+        console.log("[v0] Confirmation - Order fetch response data:", data)
+        if (data.success) {
+          setOrder(data.order)
+        } else {
+          console.error("[v0] Confirmation - Order fetch failed:", data.error)
+        }
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error("[v0] Confirmation - Error fetching order:", error)
+        setLoading(false)
+      })
+  }, [orderNumber, router])
+
+  useEffect(() => {
+    if (order) {
+      sessionStorage.setItem(
+        "pendingOrder",
+        JSON.stringify({
+          orderNumber: order.order_number,
+          orderId: order.id,
+          customerEmail: order.customer_email,
+          customerName: order.customer_name,
+          plaqueColor: order.plaque_color,
+          planType: order.plan_type,
+        }),
+      )
+    }
+  }, [order])
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading order information...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your order...</p>
         </div>
       </div>
     )
   }
 
-  if (error) {
+  if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-            <CardDescription>{error}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <Link href="/">Return to Home</Link>
-            </Button>
-          </CardContent>
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="p-8 max-w-md text-center">
+          <h1 className="text-2xl font-bold mb-4">Order Not Found</h1>
+          <p className="text-xl text-muted-foreground mb-6">
+            We couldn't find your order. Please check your email for confirmation details.
+          </p>
+          <Button onClick={() => router.push("/")}>Return Home</Button>
         </Card>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b py-4">
-        <div className="container mx-auto px-4">
-          <Link href="/" className="text-2xl font-serif flex items-center justify-center">
-            Memorial QR
-            <span className="text-yellow-400 ml-1">★</span>
-          </Link>
-        </div>
-      </header>
-
-      {/* Checkout Steps */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center">
-            <div className="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center">
-              <CheckCircle size={16} />
-            </div>
-            <div className="text-gray-900 font-medium ml-2">Payment</div>
-            <div className="w-16 h-1 bg-green-500 mx-2"></div>
-            <div className="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center">
-              <CheckCircle size={16} />
-            </div>
-            <div className="text-gray-900 font-medium ml-2">Account</div>
-            <div className="w-16 h-1 bg-gray-900 mx-2"></div>
-            <div className="bg-gray-900 text-white w-8 h-8 rounded-full flex items-center justify-center">3</div>
-            <div className="text-gray-900 font-medium ml-2">Confirmation</div>
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background py-12 px-4">
+      <div className="max-w-3xl mx-auto">
+        {/* Success Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-4">
+            <CheckCircle2 className="w-12 h-12 text-green-600" />
           </div>
+          <h1 className="text-4xl font-bold mb-2">Order Confirmed!</h1>
+          <p className="text-xl text-muted-foreground">Thank you for your purchase, {order.customer_name}</p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
-          <Card className="mb-8">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 bg-green-100 p-3 rounded-full">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <CardTitle className="text-2xl font-serif">Order Confirmed!</CardTitle>
-              <CardDescription>Thank you for your purchase. Your order #{orderId} has been confirmed.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-gray-50 p-6 rounded-lg mb-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center">
-                    <Package className="h-5 w-5 text-gray-600 mr-2" />
-                    <span className="font-medium">Order Processing</span>
-                  </div>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    In Progress
-                  </span>
-                </div>
-
-                <div className="relative">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <div className="bg-green-500 w-6 h-6 rounded-full flex items-center justify-center">
-                        <CheckCircle className="h-4 w-4 text-white" />
-                      </div>
-                    </div>
-                    <div className="flex-1 mx-4">
-                      <div className="h-1 bg-green-500"></div>
-                    </div>
-                    <div>
-                      <div className="bg-blue-500 w-6 h-6 rounded-full flex items-center justify-center">
-                        <div className="h-2 w-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="flex-1 mx-4">
-                      <div className="h-1 bg-gray-300"></div>
-                    </div>
-                    <div>
-                      <div className="bg-gray-300 w-6 h-6 rounded-full flex items-center justify-center">
-                        <div className="h-2 w-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="flex-1 mx-4">
-                      <div className="h-1 bg-gray-300"></div>
-                    </div>
-                    <div>
-                      <div className="bg-gray-300 w-6 h-6 rounded-full flex items-center justify-center">
-                        <div className="h-2 w-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between text-xs text-gray-600">
-                    <div className="text-center w-16">
-                      <p>Order Placed</p>
-                    </div>
-                    <div className="text-center w-16">
-                      <p>Processing</p>
-                    </div>
-                    <div className="text-center w-16">
-                      <p>Shipped</p>
-                    </div>
-                    <div className="text-center w-16">
-                      <p>Delivered</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <Truck className="h-5 w-5 text-gray-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium">Shipping Information</p>
-                    <p className="text-gray-600 text-sm">
-                      Your QR code will be shipped to the address you provided during checkout.
-                    </p>
-                    <p className="text-gray-600 text-sm mt-1">
-                      Estimated delivery: <span className="font-medium">{estimatedDelivery}</span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <Calendar className="h-5 w-5 text-gray-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium">Next Steps</p>
-                    <p className="text-gray-600 text-sm">
-                      While your QR code is being prepared, you can start setting up your memorial page.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-center mt-8">
-                <Button asChild>
-                  <Link href="/dashboard">Go to Dashboard</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="font-medium text-lg mb-4">What to expect next</h3>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                  1
-                </div>
-                <div>
-                  <p className="font-medium">Manufacturing (1-2 days)</p>
-                  <p className="text-gray-600 text-sm">Your weather-resistant QR code is being manufactured</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                  2
-                </div>
-                <div>
-                  <p className="font-medium">Shipping (3-5 days)</p>
-                  <p className="text-gray-600 text-sm">Your QR code will be shipped via tracked delivery</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                  3
-                </div>
-                <div>
-                  <p className="font-medium">Delivery</p>
-                  <p className="text-gray-600 text-sm">
-                    You'll receive an email notification when your QR code is delivered
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 border-t pt-6">
-              <h4 className="font-medium mb-2">Need help?</h4>
-              <p className="text-gray-600 text-sm mb-4">
-                If you have any questions about your order, please contact our customer support team.
+        {order.memorial_id && (
+          <Card className="p-8 mb-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0">
+            <div className="text-center">
+              <CheckCircle2 className="w-16 h-16 mx-auto mb-4" />
+              <h2 className="text-3xl font-bold mb-3">Your Memorial is Live! 🎉</h2>
+              <p className="text-lg mb-6 opacity-90">
+                Your digital memorial has been created and is ready to view and share with family and friends.
               </p>
-              <Button variant="outline" asChild>
-                <Link href="/contact">Contact Support</Link>
+              <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100" asChild>
+                <Link href={`/memorial/${order.memorial_id}`}>
+                  <Eye className="mr-2 h-5 w-5" />
+                  View Memorial Page
+                </Link>
               </Button>
             </div>
+          </Card>
+        )}
+
+        {/* Order Details Card */}
+        <Card className="p-8 mb-6">
+          <div className="flex items-center justify-between mb-6 pb-6 border-b">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Order Number</p>
+              <p className="text-2xl font-bold">{order.order_number}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground mb-1">Total Paid</p>
+              <p className="text-2xl font-bold text-primary">${(order.amount_cents / 100).toFixed(2)}</p>
+            </div>
           </div>
+
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold mb-2">Order Details</h3>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Product:</span>
+                  <span className="font-medium">{order.product_name}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Plan:</span>
+                  <span className="font-medium capitalize">{order.plan_type} Payment</span>
+                </div>
+                {order.plan_type === "monthly" && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Monthly:</span>
+                    <span className="font-medium">${(order.monthly_amount_cents / 100).toFixed(2)}/month</span>
+                  </div>
+                )}
+                {order.addon_wooden_qr && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Add-on:</span>
+                    <span className="font-medium">Wooden QR Code</span>
+                  </div>
+                )}
+                {order.addon_picture_plaque && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Add-on:</span>
+                    <span className="font-medium">Picture Plaque</span>
+                  </div>
+                )}
+                {order.addon_stone_qr && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Add-on:</span>
+                    <span className="font-medium">Stone QR Code</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Shipping Address</h3>
+              <div className="bg-muted/50 rounded-lg p-4">
+                <p className="text-sm">{order.shipping_address_line1}</p>
+                {order.shipping_address_line2 && <p className="text-sm">{order.shipping_address_line2}</p>}
+                <p className="text-sm">
+                  {order.shipping_city}, {order.shipping_state} {order.shipping_zip}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Next Steps */}
+        <div className="grid md:grid-cols-2 gap-4 mb-8">
+          <Card className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Mail className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Check Your Email</h3>
+                <p className="text-sm text-muted-foreground">
+                  We've sent a confirmation email to <strong>{order.customer_email}</strong> with your order details and
+                  next steps.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Package className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Shipping Timeline</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your memorial plaque will be carefully crafted and shipped within 3-5 business days. You'll receive
+                  tracking information via email.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {!order.memorial_id && (
+          <Card className="p-8 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-3">Create Your Memorial Now</h2>
+              <p className="text-muted-foreground mb-6">
+                Start building your loved one's memorial page. Add photos, stories, and memories that will be accessible
+                through your QR code plaque.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" asChild>
+                  <Link href="/create-memorial">
+                    Create Memorial
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/">Return Home</Link>
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Want to manage your memorial later?{" "}
+                <Link href="/auth/sign-up" className="text-primary hover:underline font-medium">
+                  Create a free account
+                </Link>
+              </p>
+            </div>
+          </Card>
+        )}
+
+        {order.memorial_id && (
+          <Card className="p-6 bg-muted/50">
+            <div className="text-center">
+              <h3 className="font-semibold mb-2">Want to Manage Your Memorial?</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Create a free account to edit your memorial, add more content, and track your order anytime.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button variant="outline" asChild>
+                  <Link href="/auth/sign-up">Create Free Account</Link>
+                </Button>
+                <Button variant="ghost" asChild>
+                  <Link href="/">Return Home</Link>
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Support */}
+        <div className="text-center mt-8 text-sm text-muted-foreground">
+          <p>
+            Questions about your order?{" "}
+            <Link href="/contact" className="text-primary hover:underline">
+              Contact our support team
+            </Link>
+          </p>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-white border-t py-6 mt-12">
-        <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
-          <div className="flex justify-center space-x-4 mt-2">
-            <Link href="/privacy" className="hover:text-gray-700">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-gray-700">
-              Terms of Service
-            </Link>
-            <Link href="/contact" className="hover:text-gray-700">
-              Contact Us
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
