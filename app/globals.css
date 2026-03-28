@@ -78,14 +78,15 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground antialiased;
-    /* Added professional typography settings */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "kern" 1, "liga" 1;
     letter-spacing: -0.011em;
-    /* </CHANGE> */
   }
 }
 
