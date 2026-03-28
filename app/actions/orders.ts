@@ -1,6 +1,7 @@
 "use server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/email"
+import { syncOrderToSupplier } from "@/lib/suppliers/order-sync"
 
 export interface CreateOrderData {
   customerEmail: string
@@ -77,6 +78,11 @@ export async function createOrder(data: CreateOrderData) {
 
     // Send admin notification email (don't block on failure)
     sendAdminOrderNotification(emailData).catch(() => {})
+
+    // Sync order to supplier (non-blocking, fire and forget)
+    syncOrderToSupplier(order.id).catch((error) => {
+      console.error("[v0] Failed to sync order to supplier:", error)
+    })
 
     return { success: true, order }
   } catch (error) {
