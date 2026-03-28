@@ -20,72 +20,36 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Description</h2>
             <p className="text-gray-700 mb-4">
-              Memorial QR provides digital memorial services including online memorial pages and QR code products
-              (plaques, tags, stones, and accessories) to honor deceased individuals and pets. All products include a
-              one-time purchase price plus a monthly website hosting fee of $4.99.
+              Memorial QR provides digital memorial services including online memorial pages and QR code plaques to
+              honor deceased individuals.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
             <p className="text-gray-700 mb-4">
               You are responsible for providing accurate information and ensuring you have the right to create memorials
-              for the individuals or pets represented. You must maintain accurate payment information for monthly
-              hosting fees.
+              for the individuals represented.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
-              Payment is required at the time of order for physical products. Monthly hosting fees of $4.99 will be
-              charged automatically to maintain your digital memorial website. We offer a 30-day money-back guarantee
-              for physical products. Monthly hosting fees are non-refundable but can be canceled at any time.
-            </p>
-
-            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
-            <p className="text-gray-700 mb-4">
-              Physical memorial products ship within 3-5 business days. Free shipping is included on all orders within
-              the United States. International shipping rates apply for orders outside the US.
-            </p>
-
-            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Digital Memorial Content</h2>
-            <p className="text-gray-700 mb-4">
-              You retain ownership of all photos, videos, and content uploaded to your memorial pages. Memorial QR has
-              the right to host and display this content as part of the memorial service. Content must comply with our
-              acceptable use policy and must not include illegal, offensive, or inappropriate material.
+              Payment is required at the time of order. We offer a 30-day money-back guarantee for our services.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Prohibited Uses</h2>
             <p className="text-gray-700 mb-4">
               You may not use our service for any unlawful purpose or to create memorials without proper authorization.
-              You may not upload content that infringes on intellectual property rights, contains malware, or violates
-              privacy laws.
-            </p>
-
-            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Cancellation and Refunds</h2>
-            <p className="text-gray-700 mb-4">
-              Physical products can be returned within 30 days for a full refund. Monthly hosting subscriptions can be
-              canceled at any time through your account dashboard. Upon cancellation, your memorial website will remain
-              active until the end of your current billing period.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitation of Liability</h2>
             <p className="text-gray-700 mb-4">
               Memorial QR shall not be liable for any indirect, incidental, special, consequential, or punitive damages.
-              Our total liability shall not exceed the amount paid for services in the past 12 months.
-            </p>
-
-            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Changes to Terms</h2>
-            <p className="text-gray-700 mb-4">
-              We reserve the right to modify these terms at any time. Continued use of our services constitutes
-              acceptance of modified terms. We will notify users of significant changes via email.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Contact Information</h2>
             <p className="text-gray-700 mb-4">
               Questions about these Terms should be sent to{" "}
-              <Link
-                href={`mailto:${process.env.NEXT_PUBLIC_ADMIN_EMAIL || "support@memorialqr.com"}`}
-                className="text-orange-600 hover:underline"
-              >
-                {process.env.NEXT_PUBLIC_ADMIN_EMAIL || "support@memorialqr.com"}
+              <Link href="mailto:legal@memorialqr.com" className="text-orange-600 hover:underline">
+                legal@memorialqr.com
               </Link>
             </p>
           </div>

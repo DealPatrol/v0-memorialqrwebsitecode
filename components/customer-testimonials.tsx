@@ -1,36 +1,36 @@
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
-import { Star } from "lucide-react"
+import { Star, Shield, Clock, Heart } from "lucide-react"
 
 const testimonials = [
   {
     name: "Sarah Johnson",
     location: "California",
-    image: "/diverse-woman-smiling.png",
+    image: "/professional-woman-diverse.png",
     rating: 5,
     quote:
-      "Memorial QR helped me create a beautiful tribute to my Golden Retriever, Max. The QR code on his garden stone allows us to revisit his puppy photos and happy moments. It's so comforting.",
-    productPhoto: "/dog-memorial-stone.jpg",
+      "Memorial QR helped us create a beautiful tribute to my father. The QR code on his headstone allows visitors to see his life story and photos. It's been such a comfort to our family.",
+    productPhoto: "/memorial-plaque-on-headstone.jpg",
     verified: true,
   },
   {
     name: "Michael Chen",
     location: "Texas",
-    image: "/smiling-man.png",
+    image: "/professional-asian-man.png",
     rating: 5,
     quote:
-      "Losing our cat Luna was heartbreaking. This digital memorial lets us share her funny videos and sweet moments with friends. The setup was incredibly easy.",
-    productPhoto: "/cat-memorial.png",
+      "The process was so easy and the support team was incredibly helpful. Our family can now share memories and photos in one place. The luxury box presentation was stunning.",
+    productPhoto: "/luxury-memorial-box-with-plaque.jpg",
     verified: true,
   },
   {
     name: "Lisa Rodriguez",
     location: "Florida",
-    image: "/woman-portrait.png",
+    image: "/professional-latina-woman.png",
     rating: 5,
     quote:
-      "I got a QR tag for my horse's stall plaque. Everyone at the stable loves scanning it to see his competition highlights and baby photos. Such a special way to remember him.",
-    productPhoto: "/horse-memorial.jpg",
+      "What a wonderful way to keep mom's memory alive. Friends and family love being able to access her photos and stories anytime. The wooden QR necklace is beautiful.",
+    productPhoto: "/wooden-qr-code-necklace-being-worn.jpg",
     verified: true,
   },
   {
@@ -70,13 +70,50 @@ export function CustomerTestimonials() {
     <section className="py-20 bg-muted">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Real Stories from Pet Parents</h2>
-          <p className="text-xl text-muted-foreground">
-            Over 5,000 families trust Memorial QR to honor their beloved pets
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Why Families Choose Us</h2>
+          <p className="text-xl text-muted-foreground">Our commitment to honoring your loved ones</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Lifetime Hosting */}
+          <Card className="text-center p-8">
+            <CardContent className="pt-6">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Clock className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Lifetime Hosting</h3>
+              <p className="text-muted-foreground">
+                Your memorial stays online forever. One payment, no subscriptions, no renewals.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Secure & Private */}
+          <Card className="text-center p-8">
+            <CardContent className="pt-6">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Shield className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Secure & Private</h3>
+              <p className="text-muted-foreground">
+                Your photos and memories are protected. You control who can view and contribute.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Made with Care */}
+          <Card className="text-center p-8">
+            <CardContent className="pt-6">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Made with Care</h3>
+              <p className="text-muted-foreground">
+                Each plaque is handcrafted with attention to detail. We understand this matters.
+              </p>
+            </CardContent>
+          </Card>
+
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow">
               <div className="relative h-48 w-full bg-gray-100">
@@ -124,10 +161,10 @@ export function CustomerTestimonials() {
         </div>
 
         <div className="text-center mt-12">
-          <div className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-full px-6 py-3">
-            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            <span className="font-semibold text-foreground">4.9/5</span>
-            <span className="text-muted-foreground">from 2,847 reviews</span>
+          <div className="inline-flex items-center gap-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-full px-6 py-3">
+            <Star className="w-5 h-5 text-purple-600" />
+            <span className="font-semibold text-foreground">Quality Guaranteed</span>
+            <span className="text-muted-foreground">or your money back</span>
           </div>
         </div>
       </div>

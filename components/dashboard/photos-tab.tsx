@@ -28,8 +28,7 @@ import { PhotoUpload } from "@/components/photo-upload"
 
 type Photo = {
   id: string
-  photo_url?: string
-  image_url?: string
+  photo_url: string
   caption: string | null
   uploaded_by: string
   created_at: string
@@ -121,37 +120,33 @@ export function PhotosTab({ photos, memorialId }: { photos: Photo[]; memorialId:
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {photos.map((photo) => {
-          const photoUrl = photo.photo_url || photo.image_url || "/placeholder.svg"
-
-          return (
-            <Card key={photo.id} className="overflow-hidden">
-              <div className="relative aspect-square">
-                <Image
-                  src={photoUrl || "/placeholder.svg"}
-                  alt={photo.caption || "Memorial photo"}
-                  fill
-                  className="object-cover"
-                />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    setDeleteId(photo.id)
-                    setDeleteUrl(photoUrl)
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <CardContent className="pt-4">
-                {photo.caption && <p className="text-sm text-muted-foreground mt-1">{photo.caption}</p>}
-                <p className="text-xs text-muted-foreground mt-2">{new Date(photo.created_at).toLocaleDateString()}</p>
-              </CardContent>
-            </Card>
-          )
-        })}
+        {photos.map((photo) => (
+          <Card key={photo.id} className="overflow-hidden">
+            <div className="relative aspect-square">
+              <Image
+                src={photo.photo_url || "/placeholder.svg"}
+                alt={photo.caption || "Memorial photo"}
+                fill
+                className="object-cover"
+              />
+              <Button
+                variant="destructive"
+                size="icon"
+                className="absolute top-2 right-2"
+                onClick={() => {
+                  setDeleteId(photo.id)
+                  setDeleteUrl(photo.photo_url)
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <CardContent className="pt-4">
+              {photo.caption && <p className="text-sm text-muted-foreground mt-1">{photo.caption}</p>}
+              <p className="text-xs text-muted-foreground mt-2">{new Date(photo.created_at).toLocaleDateString()}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>

@@ -234,7 +234,7 @@ export default function OrderConfirmationPage() {
               </div>
               <p className="text-sm text-muted-foreground mt-4">
                 Want to manage your memorial later?{" "}
-                <Link href="/auth/sign-up" className="text-primary hover:underline font-medium">
+                <Link href="/auth/signup" className="text-primary hover:underline font-medium">
                   Create a free account
                 </Link>
               </p>
@@ -251,7 +251,7 @@ export default function OrderConfirmationPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button variant="outline" asChild>
-                  <Link href="/auth/sign-up">Create Free Account</Link>
+                  <Link href="/auth/signup">Create Free Account</Link>
                 </Button>
                 <Button variant="ghost" asChild>
                   <Link href="/">Return Home</Link>

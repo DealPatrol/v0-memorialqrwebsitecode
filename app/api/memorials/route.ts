@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { sendWelcomeEmail } from "@/lib/email"
+import { createAdminClient, generateSecurePassword } from "@/lib/supabase/admin"
+import { sendAccountCreatedEmail } from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +18,37 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
+    let userId = body.userId || null
+
+    if (!userId && body.customerEmail) {
+      try {
+        console.log("[v0] Creating auto-account for:", body.customerEmail)
+        const adminClient = createAdminClient()
+        const generatedPassword = generateSecurePassword(16)
+
+        const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
+          email: body.customerEmail,
+          password: generatedPassword,
+          email_confirm: true, // Auto-confirm email
+          user_metadata: {
+            full_name: body.customerName || `${body.firstName} ${body.lastName}`,
+          },
+        })
+
+        if (authError) {
+          console.error("[v0] Auto-account creation failed:", authError.message)
+          // Continue without userId - memorial can still be created
+        } else if (authData.user) {
+          userId = authData.user.id
+          console.log("[v0] Auto-account created successfully:", userId)
+          // Store password to email later
+          body._generatedPassword = generatedPassword
+        }
+      } catch (autoAccountError) {
+        console.error("[v0] Exception during auto-account creation:", autoAccountError)
+        // Continue without userId
+      }
+    }
 
     // Generate unique memorial slug
     const slug = `${body.firstName}-${body.lastName}-${Date.now()}`.toLowerCase().replace(/[^a-z0-9]+/g, "-")
@@ -35,10 +67,10 @@ export async function POST(request: NextRequest) {
         location: body.location || null,
         biography: body.biography || null,
         slug,
-        user_id: body.userId || null,
-        profile_image_url: body.profileImageUrl || null, // Store the profile image URL
-        theme: body.theme || "classic", // Store theme selection
-        package_type: packageType, // Store package type
+        user_id: userId, // Now includes auto-created user ID
+        profile_image_url: body.profileImageUrl || null,
+        theme: body.theme || "classic",
+        package_type: packageType,
       })
       .select()
       .single()
@@ -59,7 +91,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Memorial was not created - no data returned" }, { status: 500 })
     }
 
-    const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/memorial/${memorial.id}`
+    const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/memorial/${memorial.id}`
 
     try {
       const qrResponse = await fetch(
@@ -94,18 +126,22 @@ export async function POST(request: NextRequest) {
 
     if (body.customerEmail) {
       try {
-        const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/dashboard`
+        const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/dashboard`
 
-        await sendWelcomeEmail({
-          customerName: body.customerName || `${body.firstName} ${body.lastName}`,
-          customerEmail: body.customerEmail,
-          memorialName: memorial.full_name,
-          memorialUrl,
-          dashboardUrl,
-          qrCodeUrl: memorial.qr_code_url,
-        })
+        if (body._generatedPassword) {
+          // Send email with account credentials
+          await sendAccountCreatedEmail({
+            customerName: body.customerName || `${body.firstName} ${body.lastName}`,
+            customerEmail: body.customerEmail,
+            generatedPassword: body._generatedPassword,
+            memorialName: memorial.full_name,
+            memorialUrl,
+            dashboardUrl,
+            qrCodeUrl: memorial.qr_code_url,
+          })
+        }
       } catch (emailError) {
-        console.error("Failed to send welcome email:", emailError)
+        console.error("Failed to send email:", emailError)
       }
     }
 

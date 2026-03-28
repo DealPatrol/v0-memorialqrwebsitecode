@@ -6,39 +6,61 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react"
 
 const slides = [
   {
-    image: "/images/41730040-9590-452b-80df.jpeg",
-    alt: "Memorial QR products - various keychains, plaques, and accessories",
-    description: "Premium QR memorial products for every keepsake and memorial need",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/db959b4e-7646-4003-b6e6-6fa8ea3f431b.jpeg",
+    alt: "Memorial QR products display with plaques, necklace, and keychain",
+    description: "Beautiful memorial QR products - plaques, necklaces, and keychains to honor your loved one",
   },
   {
-    image: "/images/7dc9e3be-9214-4273-b976.jpeg",
-    alt: "Memorial QR urns, jewelry boxes, and personalized items",
-    description: "Elegant memorial displays for urns, frames, and treasured mementos",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/a1be63e5-6538-4d42-9250-a9d76a8a754e.jpeg",
+    alt: "Three memorial QR plaques in different finishes",
+    description: "Choose from black, silver, or gold memorial QR plaques",
   },
   {
-    image: "/images/1e1eb652-cd3d-4fa5-86c5.jpeg",
-    alt: "Memorial QR plaques mounted on various outdoor surfaces",
-    description: "Durable outdoor memorial plaques for benches, trees, stones, and special places",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/df829b59-08c6-44a7-9667-65d1483327e9.jpeg",
+    alt: "Stone memorial plaque with white rose and wooden keychain",
+    description: "Elegant memorial stone plaque paired with wooden QR keychain",
   },
   {
-    image: "/images/92623621-9554-4f8b-a5be.jpeg",
-    alt: "Memorial QR plaque with custom engraving",
-    description: "Custom engraved plaques with lifetime QR memorial access",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/2fb8ebb5-03da-4770-8bcf-480f1de6e781.jpeg",
+    alt: "Memorial keepsake box with engraved message",
+    description: "Personalized wooden memorial box to treasure precious keepsakes forever",
   },
   {
-    image: "/images/adc4c31b-2080-4d10-809a.jpeg",
-    alt: "Memorial QR tags in multiple finishes",
-    description: "Choose from black, silver, or gold finishes for your memorial tag",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/a2fb5ef4-2050-4706-a4c2-56f4eef83ebb.jpeg",
+    alt: "Woman wearing wooden QR memorial necklace",
+    description: "Keep their memory close with a beautiful wooden QR necklace",
   },
   {
-    image: "/images/30a0c26e-3bab-4662-9598.jpeg",
-    alt: "Memorial QR pendant necklace",
-    description: "Keep their memory close with a beautiful QR pendant necklace",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/24e70872-240d-475d-a804-7b1e0c9b81d3.jpg",
+    alt: "Child holding memorial QR keychain",
+    description: "Share their story across generations with memorial QR keychains",
+    objectPosition: "center 45%",
+    scale: 0.75,
   },
   {
-    image: "/images/5a066d02-9fa2-4039-8ac7.jpeg",
-    alt: "Memorial slate coaster with QR code",
-    description: "Timeless slate memorial with personalized engraving and QR access",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1b96464e-9ee4-4159-ae59-c52cf9696d8f.jpg",
+    alt: "Memorial plaque on vintage books",
+    description: "Timeless memorial plaques that honor your loved one with dignity",
+  },
+  {
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/fc0a30c8-be3a-4d54-b05b-d783eae0bf49.jpg",
+    alt: "Wooden memorial keepsake box",
+    description: "Beautiful memorial boxes with QR codes for lasting remembrance",
+  },
+  {
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/0d748c82-667e-44d4-9821-861b424484de.jpg",
+    alt: "Granite memorial plaque",
+    description: "Premium granite plaques with QR codes for eternal remembrance",
+  },
+  {
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/4083425e-6b78-4ec6-a1e4-fcc813bb2686.jpg",
+    alt: "Woman visiting memorial with QR code",
+    description: "Connect visitors to cherished memories with a simple scan",
+  },
+  {
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/50e6a4f9-9a11-49fc-9168-716424a46c6f.jpg",
+    alt: "Child scanning memorial QR code",
+    description: "Share their story and keep memories alive forever",
   },
 ]
 

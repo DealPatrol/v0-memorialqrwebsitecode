@@ -36,6 +36,24 @@ interface PasswordResetEmailData {
   resetUrl: string
 }
 
+interface AccountCreatedEmailData {
+  customerName: string
+  customerEmail: string
+  generatedPassword: string
+  memorialName: string
+  memorialUrl: string
+  dashboardUrl: string
+  qrCodeUrl?: string
+}
+
+// Add new interface for admin notifications when accounts are created
+interface NewAccountNotificationData {
+  userName: string
+  userEmail: string
+  accountType: "email" | "google" | "facebook"
+  signupDate: string
+}
+
 const getEmailHeaders = () => ({
   "X-Entity-Ref-ID": `memorial-qr-${Date.now()}`,
   "List-Unsubscribe": "<mailto:unsubscribe@memorialsqr.com>",
@@ -594,7 +612,6 @@ Memorial QR - Creating Lasting Digital Memorials
                         <table width="100%" cellpadding="0" cellspacing="0" style="background: #e8f4f8; border-left: 4px solid #667eea; border-radius: 4px; margin: 20px 0;">
                           <tr>
                             <td style="padding: 16px 20px;">
-                              <p style="margin: 0 0 8px 0; font-size: 14px; color: #0c5460; font-weight: 600;">Next Steps:</p>
                               <p style="margin: 0; font-size: 14px; color: #0c5460; line-height: 1.5;">
                                 Your gift will arrive within 5-7 business days. You'll receive another email with instructions on how to create and customize your memorial page.
                               </p>
@@ -619,15 +636,9 @@ Memorial QR - Creating Lasting Digital Memorials
                     
                     <!-- Footer -->
                     <tr>
-                      <td style="background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
-                        <p style="margin: 0 0 10px 0; font-size: 14px; color: #666;">
-                          Memorial QR - Creating Lasting Digital Memorials
-                        </p>
+                      <td style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
                         <p style="margin: 0; font-size: 13px; color: #999;">
-                          This is an automated message from a trusted sender.
-                        </p>
-                        <p style="margin: 10px 0 0 0; font-size: 13px; color: #999;">
-                          <a href="mailto:support@memorialsQR.com" style="color: #667eea; text-decoration: none;">Contact Support</a>
+                          Memorial QR - System Notification
                         </p>
                       </td>
                     </tr>
@@ -642,6 +653,83 @@ Memorial QR - Creating Lasting Digital Memorials
     console.log("[v0] Gift notification email sent to:", data.recipientEmail)
   } catch (error) {
     console.error("[v0] Error sending gift notification email:", error)
+    throw error
+  }
+}
+
+export async function sendAccountCreatedEmail(data: AccountCreatedEmailData) {
+  try {
+    await resend.emails.send({
+      from: "Memorial QR <noreply@memorialsqr.com>",
+      to: data.customerEmail,
+      subject: `Your Memorial QR Account - ${data.memorialName}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">Your Memorial & Account Created!</h1>
+            </div>
+            
+            <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+              <p style="font-size: 16px; margin-bottom: 20px;">Hi ${data.customerName},</p>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">Your memorial page for <strong>${data.memorialName}</strong> has been created successfully!</p>
+              
+              <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                <h3 style="color: #856404; margin-top: 0;">⚠️ Your Account Credentials</h3>
+                <p style="margin: 10px 0; font-size: 15px;">We've automatically created an account so you can manage and edit your memorial anytime.</p>
+                <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                  <p style="margin: 5px 0;"><strong>Email:</strong> ${data.customerEmail}</p>
+                  <p style="margin: 5px 0;"><strong>Password:</strong> <code style="background: #f4f4f4; padding: 5px 10px; border-radius: 3px; font-size: 16px;">${data.generatedPassword}</code></p>
+                </div>
+                <p style="margin: 10px 0; font-size: 14px; color: #856404;"><strong>Important:</strong> Save these credentials in a secure place. You can change your password after logging in.</p>
+              </div>
+              
+              <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                <h2 style="color: #667eea; margin-top: 0;">Memorial Page</h2>
+                <p style="margin: 15px 0;">Visit your memorial page at:</p>
+                <a href="${data.memorialUrl}" style="display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 10px 0;">View Memorial</a>
+              </div>
+              
+              ${
+                data.qrCodeUrl
+                  ? `
+              <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                <h3 style="color: #667eea; margin-top: 0;">Your QR Code</h3>
+                <img src="${data.qrCodeUrl}" alt="Memorial QR Code" style="max-width: 250px; height: auto; margin: 15px 0;" />
+              </div>
+              `
+                  : ""
+              }
+              
+              <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                <h3 style="color: #667eea; margin-top: 0;">Manage Your Memorial</h3>
+                <p style="margin: 10px 0;">Use your credentials to sign in and:</p>
+                <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                  <li>Edit memorial information</li>
+                  <li>Add or remove photos and videos</li>
+                  <li>Moderate messages and stories</li>
+                  <li>Download your QR code</li>
+                </ul>
+                <a href="${data.dashboardUrl}" style="display: inline-block; background: #764ba2; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 10px 0;">Sign In to Dashboard</a>
+              </div>
+              
+              <p style="font-size: 14px; color: #666; margin-top: 30px;">If you have any questions, please contact us.</p>
+              
+              <p style="font-size: 16px; margin-top: 20px;">With sympathy and support,<br><strong>The Memorial QR Team</strong></p>
+            </div>
+          </body>
+        </html>
+      `,
+    })
+    console.log("[v0] Account credentials email sent to:", data.customerEmail)
+  } catch (error) {
+    console.error("[v0] Failed to send account credentials email:", error)
     throw error
   }
 }
@@ -666,5 +754,117 @@ export async function sendEmail(options: {
   } catch (error) {
     console.error("[v0] Error sending email:", error)
     throw error
+  }
+}
+
+// Add new function for admin notifications when accounts are created
+export async function sendNewAccountNotification(data: NewAccountNotificationData) {
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL
+  if (!adminEmail) {
+    console.warn("[v0] ADMIN_EMAIL not configured, skipping new account notification")
+    return
+  }
+
+  try {
+    await resend.emails.send({
+      from: "Memorial QR System <system@memorialsqr.com>",
+      to: adminEmail,
+      subject: `New Account Created: ${data.userName}`,
+      headers: getEmailHeaders(),
+      text: `
+New Account Created
+
+Name: ${data.userName}
+Email: ${data.userEmail}
+Account Type: ${data.accountType}
+Signup Date: ${data.signupDate}
+
+This is an automated notification from your Memorial QR website.
+      `,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>New Account Created</title>
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f5f5f5;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px;">
+              <tr>
+                <td>
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <tr>
+                      <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">✨</div>
+                        <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 600;">New Account Created</h1>
+                      </td>
+                    </tr>
+                    
+                    <tr>
+                      <td style="padding: 40px 30px;">
+                        <p style="font-size: 16px; margin: 0 0 20px 0; color: #333;">
+                          A new user has signed up for Memorial QR!
+                        </p>
+                        
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background: #f8f9fa; border-radius: 8px; margin: 20px 0; overflow: hidden;">
+                          <tr>
+                            <td style="padding: 20px;">
+                              <h2 style="color: #10b981; margin: 0 0 15px 0; font-size: 18px;">Account Details</h2>
+                              <table width="100%" cellpadding="8" cellspacing="0">
+                                <tr>
+                                  <td style="border-bottom: 1px solid #e9ecef; color: #666; font-size: 14px;"><strong>Name:</strong></td>
+                                  <td style="border-bottom: 1px solid #e9ecef; text-align: right; font-size: 14px;">${data.userName}</td>
+                                </tr>
+                                <tr>
+                                  <td style="border-bottom: 1px solid #e9ecef; color: #666; font-size: 14px;"><strong>Email:</strong></td>
+                                  <td style="border-bottom: 1px solid #e9ecef; text-align: right; font-size: 14px;">${data.userEmail}</td>
+                                </tr>
+                                <tr>
+                                  <td style="border-bottom: 1px solid #e9ecef; color: #666; font-size: 14px;"><strong>Signup Method:</strong></td>
+                                  <td style="border-bottom: 1px solid #e9ecef; text-align: right; font-size: 14px;">
+                                    ${data.accountType === "email" ? "📧 Email/Password" : data.accountType === "google" ? "🔵 Google OAuth" : "🔵 Facebook OAuth"}
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td style="color: #666; font-size: 14px;"><strong>Date:</strong></td>
+                                  <td style="text-align: right; font-size: 14px;">${data.signupDate}</td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background: #e8f4f8; border-left: 4px solid #10b981; border-radius: 4px; margin: 20px 0;">
+                          <tr>
+                            <td style="padding: 16px 20px;">
+                              <p style="margin: 0; font-size: 14px; color: #0c5460; line-height: 1.5;">
+                                This is an automated notification from your Memorial QR website. No action is required.
+                              </p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    
+                    <tr>
+                      <td style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+                        <p style="margin: 0; font-size: 13px; color: #999;">
+                          Memorial QR - System Notification
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+        </html>
+      `,
+    })
+    console.log("[v0] New account notification sent to admin:", adminEmail)
+  } catch (error) {
+    console.error("[v0] Error sending new account notification:", error)
+    // Don't throw - we don't want signup to fail if notification fails
   }
 }

@@ -51,8 +51,8 @@ export default function CreateMemorialPage() {
       if (planParam === "free") {
         setIsFreePlan(true)
         setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
+          customerEmail: "",
+          customerName: "",
           orderId: null,
           packageType: "free",
         })
@@ -65,8 +65,8 @@ export default function CreateMemorialPage() {
 
       if (!pendingOrderData) {
         setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
+          customerEmail: "",
+          customerName: "",
           orderId: null,
           packageType: "basic",
         })
@@ -82,8 +82,8 @@ export default function CreateMemorialPage() {
       } catch (error) {
         console.error("Error parsing order data:", error)
         setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
+          customerEmail: "",
+          customerName: "",
           orderId: null,
           packageType: "basic",
         })
@@ -165,12 +165,6 @@ export default function CreateMemorialPage() {
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
           profileImageUrl = uploadData.url
-        } else {
-          toast({
-            title: "Warning",
-            description: "Profile photo upload failed, continuing with memorial creation...",
-            variant: "destructive",
-          })
         }
       }
 
@@ -184,12 +178,13 @@ export default function CreateMemorialPage() {
           dateOfDeath: formData.dateOfDeath,
           location: formData.location,
           biography: formData.biography,
-          customerEmail: user?.email || orderData.customerEmail,
-          customerName: user?.user_metadata?.full_name || orderData.customerName,
+          customerEmail: user?.email || orderData?.customerEmail || formData.firstName + "@memorial.temp",
+          customerName:
+            user?.user_metadata?.full_name || orderData?.customerName || `${formData.firstName} ${formData.lastName}`,
           userId: user?.id || null,
           profileImageUrl: profileImageUrl,
           theme: formData.theme,
-          packageType: isFreePlan ? "free" : orderData.packageType || "basic",
+          packageType: isFreePlan ? "free" : orderData?.packageType || "basic",
         }),
       })
 
@@ -207,7 +202,7 @@ export default function CreateMemorialPage() {
             photoFormData.append("file", photo)
             photoFormData.append("memorialId", memorial.id)
             photoFormData.append("caption", photo.name)
-            photoFormData.append("uploaderName", orderData.customerName || "Memorial Creator")
+            photoFormData.append("uploaderName", orderData?.customerName || "Memorial Creator")
 
             await fetch("/api/photos/upload", {
               method: "POST",
@@ -219,7 +214,7 @@ export default function CreateMemorialPage() {
         }
       }
 
-      if (orderData.orderId && !isFreePlan) {
+      if (orderData?.orderId && !isFreePlan) {
         await fetch("/api/orders/link-memorial", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
