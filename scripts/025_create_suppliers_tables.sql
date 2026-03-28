@@ -25,6 +25,50 @@ CREATE TABLE IF NOT EXISTS public.suppliers (
   admin_notes TEXT
 );
 
+-- Create memorials reference table if needed
+CREATE TABLE IF NOT EXISTS public.memorials (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create orders table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
+  order_number TEXT UNIQUE NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  customer_email TEXT NOT NULL,
+  customer_name TEXT NOT NULL,
+  customer_phone TEXT,
+  
+  shipping_address_line1 TEXT NOT NULL,
+  shipping_address_line2 TEXT,
+  shipping_city TEXT NOT NULL,
+  shipping_state TEXT NOT NULL,
+  shipping_zip TEXT NOT NULL,
+  shipping_country TEXT DEFAULT 'US',
+  
+  payment_id TEXT,
+  payment_status TEXT DEFAULT 'pending',
+  amount_cents INTEGER NOT NULL,
+  currency TEXT DEFAULT 'USD',
+  
+  product_type TEXT NOT NULL,
+  product_name TEXT NOT NULL,
+  quantity INTEGER DEFAULT 1,
+  
+  memorial_id UUID REFERENCES public.memorials(id) ON DELETE SET NULL,
+  special_instructions TEXT,
+  admin_notes TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_orders_customer_email ON public.orders(customer_email);
+CREATE INDEX IF NOT EXISTS idx_orders_order_number ON public.orders(order_number);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
+
 -- Create order_suppliers table to track which supplier each order was sent to
 CREATE TABLE IF NOT EXISTS public.order_suppliers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -91,49 +135,45 @@ CREATE INDEX IF NOT EXISTS idx_order_suppliers_submitted_at ON public.order_supp
 CREATE INDEX IF NOT EXISTS idx_product_supplier_mappings_supplier_id ON public.product_supplier_mappings(supplier_id);
 CREATE INDEX IF NOT EXISTS idx_product_supplier_mappings_product_type ON public.product_supplier_mappings(product_type);
 
--- Enable RLS
-ALTER TABLE public.suppliers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.order_suppliers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.product_supplier_mappings ENABLE ROW LEVEL SECURITY;
+-- Create product_supplier_mappings table for routing products to specific suppliers
+CREATE TABLE IF NOT EXISTS public.product_supplier_mappings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
+  -- Foreign keys
+  supplier_id UUID NOT NULL REFERENCES public.suppliers(id) ON DELETE CASCADE,
+  
+  -- Product mapping
+  product_type TEXT NOT NULL, -- e.g., 'wooden-keychain-necklace', 'slate-coaster', 'photo-frame'
+  product_name TEXT,
+  
+  -- Supplier product details
+  supplier_product_id TEXT, -- ID in the supplier's system
+  supplier_product_name TEXT,
+  
+  -- Settings
+  priority INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  fallback_supplier_id UUID REFERENCES public.suppliers(id) ON DELETE SET NULL, -- Fallback if this supplier fails
+  
+  -- Configuration
+  variant_mapping JSONB DEFAULT '{}'::jsonb, -- Map our options to supplier's options
+  
+  UNIQUE(supplier_id, product_type)
+);
 
--- RLS Policies for suppliers (admin only)
-CREATE POLICY "Allow service role full access to suppliers"
-  ON public.suppliers
-  TO service_role
-  USING (true)
-  WITH CHECK (true);
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_suppliers_active ON public.suppliers(is_active);
+CREATE INDEX IF NOT EXISTS idx_suppliers_primary ON public.suppliers(is_primary);
+CREATE INDEX IF NOT EXISTS idx_order_suppliers_order_id ON public.order_suppliers(order_id);
+CREATE INDEX IF NOT EXISTS idx_order_suppliers_supplier_id ON public.order_suppliers(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_order_suppliers_status ON public.order_suppliers(supplier_status);
+CREATE INDEX IF NOT EXISTS idx_order_suppliers_submitted_at ON public.order_suppliers(submitted_at);
+CREATE INDEX IF NOT EXISTS idx_product_supplier_mappings_supplier_id ON public.product_supplier_mappings(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_product_supplier_mappings_product_type ON public.product_supplier_mappings(product_type);
 
-CREATE POLICY "Deny public access to suppliers"
-  ON public.suppliers
-  FOR SELECT
-  TO public
-  USING (false);
-
--- RLS Policies for order_suppliers
-CREATE POLICY "Allow service role full access to order_suppliers"
-  ON public.order_suppliers
-  TO service_role
-  USING (true)
-  WITH CHECK (true);
-
-CREATE POLICY "Deny public access to order_suppliers"
-  ON public.order_suppliers
-  FOR SELECT
-  TO public
-  USING (false);
-
--- RLS Policies for product_supplier_mappings
-CREATE POLICY "Allow service role full access to product_supplier_mappings"
-  ON public.product_supplier_mappings
-  TO service_role
-  USING (true)
-  WITH CHECK (true);
-
-CREATE POLICY "Deny public access to product_supplier_mappings"
-  ON public.product_supplier_mappings
-  FOR SELECT
-  TO public
-  USING (false);
+-- Row Level Security will be configured separately
 
 -- Create update triggers
 CREATE OR REPLACE FUNCTION update_suppliers_updated_at()
