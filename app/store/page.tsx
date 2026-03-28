@@ -15,7 +15,7 @@ const products = [
     monthlyFee: 4.99,
     rating: 4.9,
     reviews: 487,
-    image: "/images/17c80bbb-d33f-4068-8656.jpeg",
+    image: "/images/wooden-keychain.jpg",
     badge: "Best Seller",
     features: [
       "Natural wood with laser-engraved QR code",
@@ -33,7 +33,7 @@ const products = [
     monthlyFee: 4.99,
     rating: 4.8,
     reviews: 203,
-    image: "/images/slate-memorial-coaster.jpeg",
+    image: "/images/slate-coaster.jpg",
     badge: "Popular",
     features: [
       "Natural slate with laser engraving",
@@ -51,7 +51,7 @@ const products = [
     monthlyFee: 4.99,
     rating: 4.9,
     reviews: 156,
-    image: "/images/0d120a50-1c8d-4a75-a564.jpeg",
+    image: "/images/photo-frame.jpg",
     badge: "Premium",
     features: [
       "Displays cherished memorial photo",
@@ -95,7 +95,7 @@ export default function StorePage() {
             {products.map((product) => (
               <Card key={product.id} className="flex flex-col overflow-hidden hover:shadow-xl transition-shadow">
                 <div className="relative aspect-square">
-                  <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
+                  <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" crossOrigin="anonymous" />
                   {product.badge && (
                     <Badge className="absolute top-3 left-3 bg-orange-500 text-white">{product.badge}</Badge>
                   )}
