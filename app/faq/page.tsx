@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
+import type { Metadata } from "next"
+import { FAQSchema, BreadcrumbSchema } from "@/components/seo/structured-data"
 
 const faqCategories = [
   {
@@ -38,10 +40,10 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "No! Memorial QR is a one-time payment of $119.99 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
+          "No! Memorial QR is a one-time payment starting at $39.89 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
       },
       {
-        question: "What's included in the $119.99 price?",
+        question: "What's included in the price?",
         answer:
           "Everything! You get a complete digital memorial website, unlimited photo uploads, guest message board, a weatherproof QR code plaque with professional engraving, free shipping, and lifetime hosting. No additional costs.",
       },
@@ -142,41 +144,53 @@ const faqCategories = [
       },
     ],
   },
-  {
-    title: "Memorial QR Codes for Tombstones",
-    faqs: [
+]
+
+const allFaqs = faqCategories.flatMap((category) => category.faqs)
+
+export const metadata: Metadata = {
+  title: "FAQ - Frequently Asked Questions About QR Memorial Plaques",
+  description:
+    "Get answers about Memorial QR: pricing ($39.89+), QR code plaques, digital memorials, lifetime hosting, free shipping, 30-day guarantee, and 24/7 support.",
+  keywords:
+    "memorial FAQ, QR code plaque questions, digital memorial help, memorial pricing, memorial support, QR memorial answers, cemetery QR code FAQ",
+  openGraph: {
+    title: "Memorial QR FAQ - Your Questions Answered",
+    description:
+      "Find answers about creating digital memorials, QR code plaques, pricing, shipping, and our lifetime hosting guarantee.",
+    type: "website",
+    url: "https://memorialsqr.com/faq",
+    images: [
       {
-        question: "What is a memorial QR code for tombstones?",
-        answer:
-          "A memorial QR code for tombstones is a weather-resistant plaque or tag that attaches to a headstone or gravestone. When scanned with a smartphone, it links to a digital memorial website with photos, videos, life stories, and guest messages. It transforms traditional cemetery markers into interactive tributes.",
-      },
-      {
-        question: "How durable are headstone QR code tags for cemetery use?",
-        answer:
-          "Our tombstone QR code plaques are laser-engraved on premium metal with UV-resistant coating. They're specifically designed for outdoor cemetery use and withstand rain, snow, extreme temperatures, and direct sunlight. We offer a 5-year durability guarantee, and most remain perfectly scannable for 10+ years.",
-      },
-      {
-        question: "Will the QR code work in all weather conditions at the cemetery?",
-        answer:
-          "Yes! Our memorial QR codes for headstones are engineered for permanent outdoor installation. The laser engraving won't fade, the protective coating prevents weather damage, and they remain scannable in rain, snow, heat, and cold. Cemetery visitors can scan the gravestone QR tag year-round.",
-      },
-      {
-        question: "Do cemeteries allow QR codes on tombstones and headstones?",
-        answer:
-          "Most modern cemeteries and memorial parks permit memorial QR code tags on headstones. Our discreet, professional designs comply with typical cemetery regulations. We recommend checking with your specific cemetery, but the vast majority approve our products for gravestone installation.",
-      },
-      {
-        question: "How do I attach the QR code plaque to a tombstone?",
-        answer:
-          "Each headstone QR tag includes multiple mounting options: industrial-strength adhesive for permanent attachment, screw holes for bolt-mounting on stone, or magnetic backing for temporary placement. Detailed instructions are included. Most families complete cemetery installation in under 10 minutes.",
+        url: "https://memorialsqr.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Memorial QR FAQ",
       },
     ],
   },
-]
+  twitter: {
+    card: "summary_large_image",
+    title: "Memorial QR FAQ - Your Questions Answered",
+    description: "Get answers about pricing, setup, QR plaques, and our lifetime guarantee",
+    images: ["https://memorialsqr.com/og-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://memorialsqr.com/faq",
+  },
+}
 
 export default function FAQPage() {
   return (
     <div className="min-h-screen bg-white">
+      <FAQSchema faqs={allFaqs} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://memorialsqr.com" },
+          { name: "FAQ", url: "https://memorialsqr.com/faq" },
+        ]}
+      />
+
       <Header />
 
       {/* Hero Section */}
@@ -302,7 +316,7 @@ export default function FAQPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/create-profile">Create Memorial - $119.99</Link>
+              <Link href="/create-profile">Create Memorial - $39.89</Link>
             </Button>
 
             <Button
@@ -386,7 +400,7 @@ export default function FAQPage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
+            <p>&copy; 2025 Memorial QR. All rights reserved.</p>
           </div>
         </div>
       </footer>

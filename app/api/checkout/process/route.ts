@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
-import { createClient } from "@/lib/supabase/server"
 
 export async function POST(req: Request) {
   try {
@@ -57,16 +56,6 @@ export async function POST(req: Request) {
     if (addonStoneQR) addonAmount += 3998
     const totalAmountCents = baseAmount + addonAmount
 
-    const supabaseAuth = await createClient()
-    const {
-      data: { user },
-    } = await supabaseAuth.auth.getUser()
-
-    const userId = user?.id || null
-    const squareCustomerId = user?.user_metadata?.square_customer_id || null
-
-    console.log("[v0] Processing checkout - User ID:", userId, "Square Customer ID:", squareCustomerId)
-
     const supabase = createServiceRoleClient()
 
     const orderData = {
@@ -95,8 +84,6 @@ export async function POST(req: Request) {
       addon_stone_qr: addonStoneQR || false,
       stone_engraving_text: stoneEngravingText || null,
       picture_plaque_url: picturePlaqueUrl || null,
-      user_id: userId,
-      square_customer_id: squareCustomerId,
     }
 
     const { data: order, error } = await supabase.from("orders").insert(orderData).select().single()

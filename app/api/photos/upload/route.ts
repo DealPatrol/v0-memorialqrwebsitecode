@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
 
     const blob = await put(`memorials/${memorialId}/${Date.now()}-${file.name}`, file, {
       access: "public",
+      addRandomSuffix: true,
     })
 
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
