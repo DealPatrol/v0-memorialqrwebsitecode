@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -7,110 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Calendar, Clock, Search, ArrowRight, User } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-
-const blogPosts = [
-  {
-    slug: "complete-guide-to-memorial-qr-codes",
-    title: "The Complete Guide to Memorial QR Codes: Honoring Loved Ones in the Digital Age",
-    excerpt:
-      "Discover how QR code memorials are revolutionizing the way we remember and honor those we've lost. Learn everything about creating lasting digital tributes.",
-    category: "Guides",
-    author: "Sarah Mitchell",
-    date: "2024-12-15",
-    readTime: "8 min read",
-    image: "/images/92623621-9554-4f8b-a5be.jpeg",
-    featured: true,
-  },
-  {
-    slug: "pet-memorial-ideas-honoring-furry-friends",
-    title: "25 Beautiful Pet Memorial Ideas to Honor Your Furry Friend",
-    excerpt:
-      "Losing a pet is heartbreaking. Explore creative and touching ways to memorialize your beloved companion and keep their memory alive forever.",
-    category: "Pet Memorials",
-    author: "Dr. Emily Rogers",
-    date: "2024-12-10",
-    readTime: "10 min read",
-    image: "/images/41730040-9590-452b-80df.jpeg",
-    featured: true,
-  },
-  {
-    slug: "how-to-create-meaningful-digital-memorial",
-    title: "How to Create a Meaningful Digital Memorial: Step-by-Step Guide",
-    excerpt:
-      "Creating a digital memorial doesn't have to be overwhelming. Follow our comprehensive guide to build a beautiful tribute that honors your loved one's legacy.",
-    category: "Guides",
-    author: "Michael Chen",
-    date: "2024-12-05",
-    readTime: "12 min read",
-    image: "/images/7dc9e3be-9214-4273-b976.jpeg",
-  },
-  {
-    slug: "grief-support-coping-with-loss",
-    title: "Coping with Loss: A Guide to Grief Support and Healing",
-    excerpt:
-      "Grieving is a personal journey. Find helpful resources, coping strategies, and support for navigating the difficult path of losing someone you love.",
-    category: "Grief Support",
-    author: "Dr. Jennifer Walsh",
-    date: "2024-12-01",
-    readTime: "7 min read",
-    image: "/images/5a066d02-9fa2-4039-8ac7.jpeg",
-  },
-  {
-    slug: "memorial-headstone-plaques-buying-guide",
-    title: "Memorial Headstone Plaques: Everything You Need to Know Before You Buy",
-    excerpt:
-      "Choosing a memorial plaque is an important decision. Learn about materials, customization options, installation, and how to select the perfect tribute.",
-    category: "Product Guides",
-    author: "Robert Thompson",
-    date: "2024-11-28",
-    readTime: "9 min read",
-    image: "/images/1e1eb652-cd3d-4fa5-86c5.jpeg",
-  },
-  {
-    slug: "personalized-memorial-gifts-ideas",
-    title: "20 Personalized Memorial Gifts That Bring Comfort and Remembrance",
-    excerpt:
-      "Looking for a thoughtful memorial gift? Discover meaningful, personalized options that help keep cherished memories alive and provide comfort during difficult times.",
-    category: "Gift Ideas",
-    author: "Lisa Anderson",
-    date: "2024-11-25",
-    readTime: "6 min read",
-    image: "/images/30a0c26e-3bab-4662-9598.jpeg",
-  },
-  {
-    slug: "qr-code-technology-memorials",
-    title: "How QR Code Technology is Transforming Memorial Services",
-    excerpt:
-      "QR codes are bridging the physical and digital worlds in memorial services. Explore the innovative technology making memorials more accessible and interactive.",
-    category: "Technology",
-    author: "David Martinez",
-    date: "2024-11-20",
-    readTime: "8 min read",
-    image: "/images/adc4c31b-2080-4d10-809a.jpeg",
-  },
-  {
-    slug: "veteran-memorial-ideas",
-    title: "Honoring Veterans: Memorial Ideas for Military Service Members",
-    excerpt:
-      "Veterans deserve special recognition. Discover meaningful ways to honor military service members with patriotic memorial tributes and digital memorials.",
-    category: "Special Tributes",
-    author: "Colonel James Wilson (Ret.)",
-    date: "2024-11-15",
-    readTime: "10 min read",
-    image: "/images/1e1eb652-cd3d-4fa5-86c5.jpeg",
-  },
-  {
-    slug: "preserving-family-history-digital-memorials",
-    title: "Preserving Family History Through Digital Memorials",
-    excerpt:
-      "Digital memorials are more than tributes—they're family archives. Learn how to preserve stories, photos, and memories for future generations.",
-    category: "Family Legacy",
-    author: "Margaret Sullivan",
-    date: "2024-11-10",
-    readTime: "11 min read",
-    image: "/images/7dc9e3be-9214-4273-b976.jpeg",
-  },
-]
+import { blogPosts } from "@/lib/blog-posts"
 
 const categories = [
   "All Posts",
@@ -127,6 +26,9 @@ const categories = [
 export function BlogContent() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All Posts")
+  const [email, setEmail] = useState("")
+  const [isSubscribing, setIsSubscribing] = useState(false)
+  const [subscribeMessage, setSubscribeMessage] = useState("")
 
   const filteredPosts = blogPosts.filter((post) => {
     const matchesSearch =
@@ -137,6 +39,33 @@ export function BlogContent() {
   })
 
   const featuredPosts = blogPosts.filter((post) => post.featured)
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubscribing(true)
+    setSubscribeMessage("")
+
+    try {
+      const response = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSubscribeMessage("Successfully subscribed! Check your email for confirmation.")
+        setEmail("")
+      } else {
+        setSubscribeMessage(data.error || "Failed to subscribe. Please try again.")
+      }
+    } catch (error) {
+      setSubscribeMessage("An error occurred. Please try again later.")
+    } finally {
+      setIsSubscribing(false)
+    }
+  }
 
   return (
     <>
@@ -316,12 +245,21 @@ export function BlogContent() {
             <p className="text-xl text-white/90 mb-8">
               Subscribe to receive helpful guides, memorial ideas, and grief support resources delivered to your inbox.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Input placeholder="Enter your email" className="bg-white flex-1" />
-              <Button size="lg" variant="secondary">
-                Subscribe
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isSubscribing}
+                className="bg-white flex-1 text-black"
+              />
+              <Button size="lg" variant="secondary" type="submit" disabled={isSubscribing}>
+                {isSubscribing ? "Subscribing..." : "Subscribe"}
               </Button>
-            </div>
+            </form>
+            {subscribeMessage && <p className="text-sm text-white mt-4 font-semibold">{subscribeMessage}</p>}
             <p className="text-sm text-white/70 mt-4">We respect your privacy. Unsubscribe at any time.</p>
           </div>
         </div>

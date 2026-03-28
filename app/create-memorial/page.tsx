@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
-import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react"
+import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, ArrowLeft, Heart } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
 import { ThemeSelector } from "@/components/theme-selector"
@@ -36,6 +36,8 @@ export default function CreateMemorialPage() {
   const [user, setUser] = useState<any>(null)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [isFreePlan, setIsFreePlan] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(false)
+  const [customerName, setCustomerName] = useState("")
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,6 +47,32 @@ export default function CreateMemorialPage() {
       } = await supabase.auth.getUser()
 
       setUser(user)
+
+      const welcomeParam = searchParams.get("welcome")
+      const orderIdParam = searchParams.get("orderId")
+
+      if (welcomeParam === "true" && user) {
+        setShowWelcome(true)
+        // Extract first name from email or metadata
+        const name = user.user_metadata?.full_name || user.email?.split("@")[0] || "there"
+        setCustomerName(name.split(" ")[0])
+      }
+
+      if (orderIdParam) {
+        const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
+
+        if (order) {
+          setOrderData({
+            customerEmail: order.customer_email || user?.email || "",
+            customerName: order.customer_name || user?.user_metadata?.full_name || "",
+            orderId: order.id,
+            packageType: order.product_name || "basic",
+          })
+          setOrderId(`ORDER-${order.id}`)
+          setIsCheckingAuth(false)
+          return
+        }
+      }
 
       const planParam = searchParams.get("plan")
 
@@ -256,11 +284,11 @@ export default function CreateMemorialPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
-        <Card className="max-w-md mx-auto text-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Card className="max-w-md mx-auto text-center bg-zinc-900 border-zinc-800">
           <CardContent className="p-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4" />
-            <p className="text-gray-600">Loading...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4" />
+            <p className="text-zinc-400">Loading...</p>
           </CardContent>
         </Card>
       </div>
@@ -268,51 +296,72 @@ export default function CreateMemorialPage() {
   }
 
   if (!orderData) {
-    return null // This shouldn't happen now, but safety check
+    return null
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100">
+    <div className="min-h-screen bg-black">
       <Header />
 
-      {!isFreePlan && orderData.orderId && (
-        <div className="bg-green-50 border-b border-green-200 py-3">
+      {showWelcome && (
+        <div className="bg-gradient-to-r from-amber-600 to-amber-500 py-6">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-center gap-2 text-green-700">
+            <div className="flex flex-col items-center justify-center gap-2 text-white text-center">
+              <Heart className="w-8 h-8 animate-pulse" />
+              <h2 className="text-2xl font-bold">Welcome back, {customerName}!</h2>
+              <p className="text-amber-100 max-w-md">
+                Thank you for your purchase. You're ready to create a beautiful memorial for your loved one.
+              </p>
+              <Button
+                variant="secondary"
+                className="mt-2 bg-white text-amber-600 hover:bg-amber-50"
+                onClick={() => setShowWelcome(false)}
+              >
+                Let's Get Started
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!showWelcome && !isFreePlan && orderData.orderId && (
+        <div className="bg-green-900/50 border-b border-green-800 py-3">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-2 text-green-400">
               <CheckCircle className="w-5 h-5" />
               <span className="font-semibold">Payment Confirmed!</span>
-              <span>Now create your digital memorial</span>
+              <span className="text-green-300">Now create your digital memorial</span>
             </div>
           </div>
         </div>
       )}
 
       {isFreePlan && (
-        <div className="bg-blue-50 border-b border-blue-200 py-3">
+        <div className="bg-blue-900/50 border-b border-blue-800 py-3">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-center gap-2 text-blue-700">
+            <div className="flex items-center justify-center gap-2 text-blue-400">
               <CheckCircle className="w-5 h-5" />
               <span className="font-semibold">Free Memorial</span>
-              <span>Create your memorial at no cost</span>
+              <span className="text-blue-300">Create your memorial at no cost</span>
             </div>
           </div>
         </div>
       )}
 
       {/* Progress Header */}
-      <section className="py-8 bg-white border-b">
+      <section className="py-8 bg-zinc-900 border-b border-zinc-800">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Your Digital Memorial</h1>
-              <p className="text-slate-600">
+              <h1 className="text-3xl font-bold text-white mb-2">Create Your Digital Memorial</h1>
+              <p className="text-zinc-400">
                 Step {currentStep} of {steps.length}: {steps[currentStep - 1].title}
               </p>
             </div>
 
-            <Progress value={progress} className="mb-8" />
+            <Progress value={progress} className="mb-8 bg-zinc-800" />
 
-            <div className="flex justify-between items-center">
+            <div className="hidden md:flex justify-between items-center">
               {steps.map((step) => {
                 const Icon = step.icon
                 const isActive = step.id === currentStep
@@ -325,16 +374,18 @@ export default function CreateMemorialPage() {
                       w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-colors
                       ${
                         isActive
-                          ? "bg-purple-600 text-white"
+                          ? "bg-amber-500 text-black"
                           : isCompleted
                             ? "bg-green-600 text-white"
-                            : "bg-gray-200 text-gray-500"
+                            : "bg-zinc-800 text-zinc-500"
                       }
                     `}
                     >
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className={`text-sm text-center ${isActive ? "font-semibold" : ""}`}>{step.title}</span>
+                    <span className={`text-sm text-center ${isActive ? "font-semibold text-white" : "text-zinc-500"}`}>
+                      {step.title}
+                    </span>
                   </div>
                 )
               })}
@@ -349,77 +400,92 @@ export default function CreateMemorialPage() {
           <div className="max-w-2xl mx-auto">
             {/* Step 1: Basic Information */}
             {currentStep === 1 && (
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <User className="w-5 h-5" />
                     Basic Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label className="text-base font-semibold mb-3 block">Memorial Theme</Label>
-                    <p className="text-sm text-slate-600 mb-4">
+                    <Label className="text-base font-semibold mb-3 block text-white">Memorial Theme</Label>
+                    <p className="text-sm text-zinc-400 mb-4">
                       Choose a theme that reflects your loved one's personality and life
                     </p>
                     <ThemeSelector value={formData.theme} onChange={(theme) => handleInputChange("theme", theme)} />
                   </div>
 
-                  <div className="border-t pt-6">
-                    <Label className="text-base font-semibold mb-3 block">Personal Details</Label>
+                  <div className="border-t border-zinc-800 pt-6">
+                    <Label className="text-base font-semibold mb-3 block text-white">Personal Details</Label>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-4">
                       <div>
-                        <Label htmlFor="firstName">First Name *</Label>
+                        <Label htmlFor="firstName" className="text-zinc-300">
+                          First Name *
+                        </Label>
                         <Input
                           id="firstName"
                           value={formData.firstName}
                           onChange={(e) => handleInputChange("firstName", e.target.value)}
                           required
+                          className="bg-zinc-800 border-zinc-700 text-white"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="lastName">Last Name *</Label>
+                        <Label htmlFor="lastName" className="text-zinc-300">
+                          Last Name *
+                        </Label>
                         <Input
                           id="lastName"
                           value={formData.lastName}
                           onChange={(e) => handleInputChange("lastName", e.target.value)}
                           required
+                          className="bg-zinc-800 border-zinc-700 text-white"
                         />
                       </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-4">
                       <div>
-                        <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                        <Label htmlFor="dateOfBirth" className="text-zinc-300">
+                          Date of Birth *
+                        </Label>
                         <Input
                           id="dateOfBirth"
                           type="date"
                           value={formData.dateOfBirth}
                           onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
                           required
+                          className="bg-zinc-800 border-zinc-700 text-white"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="dateOfDeath">Date of Passing *</Label>
+                        <Label htmlFor="dateOfDeath" className="text-zinc-300">
+                          Date of Passing *
+                        </Label>
                         <Input
                           id="dateOfDeath"
                           type="date"
                           value={formData.dateOfDeath}
                           onChange={(e) => handleInputChange("dateOfDeath", e.target.value)}
                           required
+                          className="bg-zinc-800 border-zinc-700 text-white"
                         />
                       </div>
                     </div>
 
                     <div className="mt-4">
-                      <Label htmlFor="location">Location *</Label>
+                      <Label htmlFor="location" className="text-zinc-300">
+                        Location *
+                      </Label>
                       <Input
                         id="location"
                         placeholder="City, State"
                         value={formData.location}
                         onChange={(e) => handleInputChange("location", e.target.value)}
                         required
+                        className="bg-zinc-800 border-zinc-700 text-white"
                       />
                     </div>
                   </div>
@@ -429,49 +495,61 @@ export default function CreateMemorialPage() {
 
             {/* Step 2: Life Details */}
             {currentStep === 2 && (
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <Calendar className="w-5 h-5" />
                     Life Details
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label htmlFor="occupation">Occupation</Label>
+                    <Label htmlFor="occupation" className="text-zinc-300">
+                      Occupation
+                    </Label>
                     <Input
                       id="occupation"
                       value={formData.occupation}
                       onChange={(e) => handleInputChange("occupation", e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="hobbies">Hobbies & Interests</Label>
+                    <Label htmlFor="hobbies" className="text-zinc-300">
+                      Hobbies & Interests
+                    </Label>
                     <Textarea
                       id="hobbies"
                       value={formData.hobbies}
                       onChange={(e) => handleInputChange("hobbies", e.target.value)}
                       rows={3}
+                      className="bg-zinc-800 border-zinc-700 text-white"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="achievements">Achievements & Accomplishments</Label>
+                    <Label htmlFor="achievements" className="text-zinc-300">
+                      Achievements & Accomplishments
+                    </Label>
                     <Textarea
                       id="achievements"
                       value={formData.achievements}
                       onChange={(e) => handleInputChange("achievements", e.target.value)}
                       rows={3}
+                      className="bg-zinc-800 border-zinc-700 text-white"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="favoriteQuote">Favorite Quote or Saying</Label>
+                    <Label htmlFor="favoriteQuote" className="text-zinc-300">
+                      Favorite Quote or Saying
+                    </Label>
                     <Input
                       id="favoriteQuote"
                       value={formData.favoriteQuote}
                       onChange={(e) => handleInputChange("favoriteQuote", e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white"
                     />
                   </div>
                 </CardContent>
@@ -480,35 +558,42 @@ export default function CreateMemorialPage() {
 
             {/* Step 3: Photos & Media */}
             {currentStep === 3 && (
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <Upload className="w-5 h-5" />
                     Photos & Media
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label htmlFor="profilePhoto">Profile Photo *</Label>
+                    <Label htmlFor="profilePhoto" className="text-zinc-300">
+                      Profile Photo *
+                    </Label>
                     <Input
                       id="profilePhoto"
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleFileUpload("profilePhoto", e.target.files)}
                       required
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
                     />
+                    <p className="text-sm text-zinc-500 mt-1">Upload a photo of your loved one</p>
                   </div>
 
                   <div>
-                    <Label htmlFor="additionalPhotos">Additional Photos</Label>
+                    <Label htmlFor="additionalPhotos" className="text-zinc-300">
+                      Additional Photos
+                    </Label>
                     <Input
                       id="additionalPhotos"
                       type="file"
                       accept="image/*"
                       multiple
                       onChange={(e) => handleFileUpload("additionalPhotos", e.target.files)}
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
                     />
-                    <p className="text-sm text-slate-500 mt-1">{formData.additionalPhotos.length} photos uploaded</p>
+                    <p className="text-sm text-zinc-500 mt-1">{formData.additionalPhotos.length} photos uploaded</p>
                   </div>
                 </CardContent>
               </Card>
@@ -516,16 +601,18 @@ export default function CreateMemorialPage() {
 
             {/* Step 4: Biography */}
             {currentStep === 4 && (
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <FileText className="w-5 h-5" />
                     Biography & Life Story
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label htmlFor="biography">Biography *</Label>
+                    <Label htmlFor="biography" className="text-zinc-300">
+                      Biography *
+                    </Label>
                     <Textarea
                       id="biography"
                       value={formData.biography}
@@ -533,17 +620,21 @@ export default function CreateMemorialPage() {
                       rows={6}
                       placeholder="Tell us about their life, personality, and what made them special..."
                       required
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="personalStory">Personal Story or Memory</Label>
+                    <Label htmlFor="personalStory" className="text-zinc-300">
+                      Personal Story or Memory
+                    </Label>
                     <Textarea
                       id="personalStory"
                       value={formData.personalStory}
                       onChange={(e) => handleInputChange("personalStory", e.target.value)}
                       rows={4}
                       placeholder="Share a special memory or story that captures who they were..."
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     />
                   </div>
                 </CardContent>
@@ -552,51 +643,63 @@ export default function CreateMemorialPage() {
 
             {/* Step 5: Family & Friends */}
             {currentStep === 5 && (
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <Users className="w-5 h-5" />
                     Family & Friends
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label htmlFor="spouse">Spouse/Partner</Label>
+                    <Label htmlFor="spouse" className="text-zinc-300">
+                      Spouse/Partner
+                    </Label>
                     <Input
                       id="spouse"
                       value={formData.spouse}
                       onChange={(e) => handleInputChange("spouse", e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="children">Children</Label>
+                    <Label htmlFor="children" className="text-zinc-300">
+                      Children
+                    </Label>
                     <Textarea
                       id="children"
                       value={formData.children}
                       onChange={(e) => handleInputChange("children", e.target.value)}
                       rows={2}
-                      placeholder="List children's names..."
+                      placeholder="Names of children..."
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="parents">Parents</Label>
+                    <Label htmlFor="parents" className="text-zinc-300">
+                      Parents
+                    </Label>
                     <Input
                       id="parents"
                       value={formData.parents}
                       onChange={(e) => handleInputChange("parents", e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="siblings">Siblings</Label>
+                    <Label htmlFor="siblings" className="text-zinc-300">
+                      Siblings
+                    </Label>
                     <Textarea
                       id="siblings"
                       value={formData.siblings}
                       onChange={(e) => handleInputChange("siblings", e.target.value)}
                       rows={2}
-                      placeholder="List siblings' names..."
+                      placeholder="Names of siblings..."
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     />
                   </div>
                 </CardContent>
@@ -605,43 +708,61 @@ export default function CreateMemorialPage() {
 
             {/* Step 6: Review & Submit */}
             {currentStep === 6 && (
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <CheckCircle className="w-5 h-5" />
                     Review & Submit
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="bg-slate-50 p-6 rounded-lg">
-                    <h3 className="font-semibold text-lg mb-4">Memorial Summary</h3>
-                    <div className="space-y-2 text-sm">
+                  <div className="bg-zinc-800 rounded-lg p-6 space-y-4">
+                    <h3 className="font-semibold text-lg text-white">Memorial Summary</h3>
+
+                    <div className="grid md:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <strong>Name:</strong> {formData.firstName} {formData.lastName}
+                        <span className="text-zinc-400">Name:</span>
+                        <p className="text-white font-medium">
+                          {formData.firstName} {formData.lastName}
+                        </p>
                       </div>
                       <div>
-                        <strong>Dates:</strong> {formData.dateOfBirth} - {formData.dateOfDeath}
+                        <span className="text-zinc-400">Dates:</span>
+                        <p className="text-white font-medium">
+                          {formData.dateOfBirth} - {formData.dateOfDeath}
+                        </p>
                       </div>
                       <div>
-                        <strong>Location:</strong> {formData.location}
+                        <span className="text-zinc-400">Location:</span>
+                        <p className="text-white font-medium">{formData.location || "Not specified"}</p>
                       </div>
                       <div>
-                        <strong>Photos:</strong> {formData.additionalPhotos.length + (formData.profilePhoto ? 1 : 0)}
+                        <span className="text-zinc-400">Theme:</span>
+                        <p className="text-white font-medium capitalize">{formData.theme}</p>
                       </div>
-                      <div>
-                        <strong>Order:</strong> #{orderId}
+                    </div>
+
+                    {formData.biography && (
+                      <div className="border-t border-zinc-700 pt-4">
+                        <span className="text-zinc-400 text-sm">Biography Preview:</span>
+                        <p className="text-white mt-1 line-clamp-3">{formData.biography}</p>
                       </div>
+                    )}
+
+                    <div className="border-t border-zinc-700 pt-4">
+                      <span className="text-zinc-400 text-sm">Photos:</span>
+                      <p className="text-white">
+                        {formData.profilePhoto ? "1 profile photo" : "No profile photo"},{" "}
+                        {formData.additionalPhotos.length} additional photos
+                      </p>
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-blue-900 mb-2">What happens next?</h4>
-                    <ul className="text-sm text-blue-800 space-y-1">
-                      <li>• Your digital memorial will be created and activated</li>
-                      <li>• Your physical memorial product will be manufactured</li>
-                      <li>• You'll receive a QR code linking to the digital memorial</li>
-                      <li>• Your memorial product will ship within 5-7 business days</li>
-                    </ul>
+                  <div className="bg-amber-900/30 border border-amber-800 rounded-lg p-4">
+                    <p className="text-amber-200 text-sm">
+                      By submitting, you confirm that you have the right to create this memorial and that all
+                      information is accurate to the best of your knowledge.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -653,31 +774,31 @@ export default function CreateMemorialPage() {
                 variant="outline"
                 onClick={prevStep}
                 disabled={currentStep === 1}
-                className="flex items-center gap-2 bg-transparent"
+                className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 mr-2" />
                 Previous
               </Button>
 
               {currentStep < steps.length ? (
-                <Button onClick={nextStep} className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2">
+                <Button onClick={nextStep} className="bg-amber-500 hover:bg-amber-600 text-black">
                   Next
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
+                  disabled={isSubmitting || !formData.firstName || !formData.lastName}
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                       Creating Memorial...
                     </>
                   ) : (
                     <>
-                      <CheckCircle className="w-4 h-4" />
+                      <CheckCircle className="w-4 h-4 mr-2" />
                       Create Memorial
                     </>
                   )}

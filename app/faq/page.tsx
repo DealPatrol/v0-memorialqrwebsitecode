@@ -5,6 +5,25 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
+import type { Metadata } from "next"
+import { JsonLd } from "@/components/json-ld"
+
+export const metadata: Metadata = {
+  title: "Memorial QR FAQ | Tombstone QR Codes Calgary Northeast | Common Questions",
+  description:
+    "Answers to frequently asked questions about Memorial QR codes for tombstones, headstones, and pet memorials. Calgary Northeast cemetery QR plaque installation, pricing, durability, and lifetime hosting explained.",
+  keywords:
+    "memorial QR FAQ Calgary, tombstone QR questions, headstone QR code durability, cemetery plaque Calgary Northeast, pet memorial QR answers, gravestone QR installation guide Alberta",
+  alternates: {
+    canonical: "/faq",
+  },
+  openGraph: {
+    title: "Memorial QR FAQ | Calgary Northeast Tombstone QR Code Questions",
+    description:
+      "Get answers about memorial QR codes for Calgary cemeteries. Durability, installation, pricing, and lifetime support.",
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/faq`,
+  },
+}
 
 const faqCategories = [
   {
@@ -175,8 +194,97 @@ const faqCategories = [
 ]
 
 export default function FAQPage() {
+  // Build FAQ schema from the faqCategories data
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How long do memorial QR codes last?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Memorial QR codes from MemorialsQR include lifetime hosting and are made from weather-resistant materials designed to last as long as the headstone itself.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Are memorial QR codes weather-resistant?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, our plaques are engineered for permanence using UV-resistant materials with sealed QR codes that withstand rain, extreme heat, and freezing temperatures.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I update the content on the QR code after it is installed?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, you can upload unlimited photos and videos and update the digital memorial page at any time without needing to change the physical QR plaque.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How do I create a memorial?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Creating a memorial is simple! Click 'Create Memorial' and fill out our guided form with your loved one's information, photos, and stories. The process takes about 15-20 minutes, and you can save your progress at any time.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Are there any monthly fees?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "No! Memorial QR is a one-time payment of $119.99 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you offer refunds?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, we offer a 30-day money-back guarantee. If you're not completely satisfied with your memorial for any reason, contact us within 30 days for a full refund.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How durable is the QR code plaque?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Our QR code plaques are made from weatherproof metal with UV-resistant coating and professional laser engraving. They're designed to withstand rain, snow, sun, and extreme temperatures for decades. We offer a 5-year durability guarantee.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I add more photos later?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "You can log into your account anytime to add more photos, update information, or make changes to the memorial. There's no limit to the number of photos you can upload.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can visitors leave messages?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes! Visitors can leave condolence messages, share memories, and express their thoughts. You can moderate these messages and choose which ones to display publicly.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What if someone can't scan the QR code?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Most smartphones can scan QR codes with their built-in camera app. For older phones, we recommend downloading a free QR code scanner app. We also provide a short URL as a backup that people can type in manually.",
+        },
+      },
+    ],
+  }
+
   return (
     <div className="min-h-screen bg-white">
+      <JsonLd data={faqSchema} />
       <Header />
 
       {/* Hero Section */}

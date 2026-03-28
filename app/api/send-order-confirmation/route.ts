@@ -5,16 +5,28 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, orderDetails, customerName } = await request.json()
+    const { email, orderDetails, customerName, orderId, orderNumber, productName, amount, monthlyFee, customerEmail } =
+      await request.json()
 
-    if (!email || !orderDetails) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    const finalEmail = email || customerEmail
+    const finalOrderDetails =
+      orderDetails ||
+      `
+      <p><strong>Order Number:</strong> ${orderNumber || "N/A"}</p>
+      <p><strong>Product:</strong> ${productName || "Memorial QR Product"}</p>
+      <p><strong>Amount Paid:</strong> $${amount || "0.00"}</p>
+      ${monthlyFee && Number.parseFloat(monthlyFee) > 0 ? `<p><strong>Monthly Hosting:</strong> $${monthlyFee}/month (starting next month)</p>` : ""}
+    `
+
+    if (!finalEmail) {
+      return NextResponse.json({ error: "Missing email address" }, { status: 400 })
     }
 
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "Memorial QR <orders@memorialqr.com>",
-      to: [email],
-      subject: "Order Confirmation - Memorial QR",
+      to: [finalEmail],
+      bcc: [process.env.ADMIN_EMAIL || "support@memorialqr.com"],
+      subject: `Order Confirmation - ${orderNumber || "Memorial QR"}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -37,7 +49,7 @@ export async function POST(request: NextRequest) {
               
               <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #8b5cf6;">
                 <h2 style="color: #8b5cf6; margin-top: 0;">Order Details</h2>
-                ${orderDetails}
+                ${finalOrderDetails}
               </div>
               
               <p style="font-size: 16px; margin-bottom: 20px;">
@@ -46,7 +58,7 @@ export async function POST(request: NextRequest) {
               <ol style="font-size: 16px; padding-left: 20px;">
                 <li style="margin-bottom: 10px;">You'll receive an email with your memorial dashboard login credentials within 24 hours</li>
                 <li style="margin-bottom: 10px;">Start uploading photos, videos, and memories to create your digital memorial</li>
-                <li style="margin-bottom: 10px;">Your physical memorial products will ship within 3-5 business days</li>
+                <li style="margin-bottom: 10px;">Your physical memorial products will be prepared and shipped to your address</li>
               </ol>
               
               <div style="background: #e0e7ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
@@ -74,13 +86,14 @@ export async function POST(request: NextRequest) {
     })
 
     if (error) {
-      console.error("Email send error:", error)
+      console.error("[v0] Email send error:", error)
       return NextResponse.json({ error: "Failed to send email" }, { status: 500 })
     }
 
+    console.log("[v0] Order confirmation email sent successfully to:", finalEmail)
     return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error("Order confirmation error:", error)
+    console.error("[v0] Order confirmation error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

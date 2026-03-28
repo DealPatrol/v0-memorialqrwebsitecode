@@ -7,29 +7,16 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
-// This would typically come from a CMS or database
-const blogPosts: Record<
+import { blogPosts } from "@/lib/blog-posts"
+
+// Full blog post content
+const blogPostsContent: Record<
   string,
   {
-    title: string
-    excerpt: string
     content: string
-    category: string
-    author: string
-    date: string
-    readTime: string
-    image: string
   }
 > = {
   "complete-guide-to-memorial-qr-codes": {
-    title: "The Complete Guide to Memorial QR Codes: Honoring Loved Ones in the Digital Age",
-    excerpt:
-      "Discover how QR code memorials are revolutionizing the way we remember and honor those we've lost. Learn everything about creating lasting digital tributes.",
-    category: "Guides",
-    author: "Sarah Mitchell",
-    date: "2024-12-15",
-    readTime: "8 min read",
-    image: "/images/92623621-9554-4f8b-a5be.jpeg",
     content: `
 # The Complete Guide to Memorial QR Codes
 
@@ -70,19 +57,12 @@ The process is beautifully simple:
 ## Choosing the Right Memorial QR Product
 
 ### Memorial Plaques
-Perfect for headstones, garden displays, or home memorials. Available in various sizes from 6x4" to 12x10" in premium aluminum with weather-resistant finishes.
-
-### Headstone Tags
-Discreet metal tags that attach directly to existing headstones, adding digital access without altering the original memorial.
+Perfect for headstones, garden displays, or home memorials. Available in Gold, Silver, and Black finishes with weather-resistant materials.
 
 ### Personal Keepsakes
 - **Necklaces and Pendants**: Keep memories close to your heart
 - **Keychains**: Carry remembrance with you daily
-- **Wallet Cards**: Portable memorial access
-- **Photo Frames**: Combine physical and digital memories
-
-### Garden Stones
-Natural-looking memorial stones perfect for gardens, patios, or special outdoor spaces where loved ones spent time.
+- **Slate Coasters**: Beautiful memorial keepsakes for the home
 
 ## Best Practices for Creating a Memorial QR Page
 
@@ -104,29 +84,6 @@ Natural-looking memorial stones perfect for gardens, patios, or special outdoor 
 - Add video messages for future generations
 - Capture their voice if recordings exist
 
-### Enable Guest Contributions
-Allow family and friends to:
-- Share their own memories and stories
-- Upload photos from their collections
-- Leave messages of remembrance
-- Add to the ongoing tribute
-
-## Privacy and Security
-
-Memorial QR platforms should offer:
-- Privacy controls to limit who can view content
-- Moderation tools for guest contributions
-- Secure lifetime hosting with backups
-- Options for public or private memorials
-
-## The Future of Digital Memorials
-
-As technology advances, memorial QR codes are becoming more sophisticated:
-- **Virtual Reality Experiences**: Immersive memorial visits
-- **AI-Powered Storytelling**: Automatically organizing and presenting memories
-- **Multi-Language Support**: Reaching global family members
-- **Integration with Genealogy**: Connecting memorials to family trees
-
 ## Getting Started
 
 Creating a memorial QR tribute is easier than you might think:
@@ -139,26 +96,12 @@ Creating a memorial QR tribute is easier than you might think:
 
 Memorial QR codes represent the perfect balance between honoring tradition and embracing innovation. They allow us to create rich, lasting tributes that can be shared across generations, ensuring that the memories of those we love never fade.
 
-## Conclusion
-
-Memorial QR codes are more than just technology—they're a new way to honor, remember, and celebrate lives lived. By combining physical memorials with digital storytelling, we create tributes that are as unique and multifaceted as the people they honor.
-
-Whether you're planning ahead, honoring a loved one, or updating an existing memorial, QR technology offers a meaningful way to ensure their story lives on forever.
-
 ---
 
 *Ready to create a lasting memorial? Explore our collection of memorial QR products and start building a beautiful digital tribute today.*
     `,
   },
   "pet-memorial-ideas-honoring-furry-friends": {
-    title: "25 Beautiful Pet Memorial Ideas to Honor Your Furry Friend",
-    excerpt:
-      "Losing a pet is heartbreaking. Explore creative and touching ways to memorialize your beloved companion and keep their memory alive forever.",
-    category: "Pet Memorials",
-    author: "Dr. Emily Rogers",
-    date: "2024-12-10",
-    readTime: "10 min read",
-    image: "/images/41730040-9590-452b-80df.jpeg",
     content: `
 # 25 Beautiful Pet Memorial Ideas to Honor Your Furry Friend
 
@@ -181,103 +124,24 @@ Create a peaceful garden memorial with a custom engraved stone. Add a QR code th
 ### 2. **Pet Memorial Plaque**
 Weather-resistant memorial plaques can be placed anywhere—in your yard, on your patio, or beside their favorite napping spot.
 
-### 3. **Custom Collar Tag Memorial**
-Keep their collar tag, or create a new memorial tag with a QR code linking to their digital tribute. Display it in a shadow box or frame.
-
-### 4. **Engraved Bench**
-Install a garden bench engraved with your pet's name where you can sit, remember, and feel close to them.
-
-### 5. **Memorial Tree or Plant**
-Plant a tree or their favorite flowers in their memory. As it grows and blooms each year, you'll be reminded of the beauty they brought to your life.
+### 3. **Slate Memorial Coaster**
+Beautiful slate coasters with personalized engravings and QR codes make touching keepsakes you can display in your home.
 
 ## Wearable Memorials
 
-### 6. **Memorial Pendant Necklace**
+### 4. **Memorial Pendant Necklace**
 Wear a pendant engraved with their name or paw print. Add a QR code to access their memorial page wherever you go.
 
-### 7. **Charm Bracelet**
-Create a bracelet with charms representing your pet—their breed, favorite toys, or activities they loved.
-
-### 8. **Custom Ring**
-Some jewelers can incorporate pet ashes into memorial jewelry, creating a truly personal keepsake.
-
-### 9. **Paw Print Pendant**
-Capture their actual paw print in clay or ink, then have it recreated as a wearable pendant.
+### 5. **Keychain Memorial**
+Keep their memory close with a custom keychain featuring their photo and a QR memorial link.
 
 ## Digital Memorial Ideas
 
-### 10. **QR Code Memorial Page**
+### 6. **QR Code Memorial Page**
 Create a comprehensive digital memorial with photos, videos, and stories. Share the QR code with family and friends.
 
-### 11. **Social Media Tribute Page**
+### 7. **Social Media Tribute Page**
 Create a dedicated memorial page or group where family and friends can share photos and memories.
-
-### 12. **Video Montage**
-Compile photos and video clips into a memorial video set to meaningful music.
-
-### 13. **Digital Photo Album**
-Create a cloud-based album accessible to all family members with unlimited photos and videos.
-
-## Creative Memorial Ideas
-
-### 14. **Custom Portrait**
-Commission an artist to paint or draw your pet from their favorite photo.
-
-### 15. **Paw Print Art**
-Create artistic impressions of their paw prints using paint, clay, or ink.
-
-### 16. **Memory Box**
-Collect their collar, favorite toys, photos, and veterinary records in a special keepsake box.
-
-### 17. **Quilt or Blanket**
-Have a custom blanket made featuring photos of your pet, or create a quilt from their favorite blankets.
-
-### 18. **Stepping Stones**
-Create decorative stepping stones with their name and paw prints for your garden path.
-
-## Memorial Rituals and Celebrations
-
-### 19. **Birthday or Adoption Day Remembrance**
-Honor their special days each year with a favorite treat, donation to animal shelter, or family gathering.
-
-### 20. **Memory Candle Lighting**
-Light a special candle in their memory on difficult days or during family gatherings.
-
-### 21. **Photo Display Wall**
-Create a dedicated wall or shelf displaying their photos throughout their life.
-
-### 22. **Memorial Service**
-Hold a small ceremony with family and friends to share memories and say goodbye.
-
-## Charitable Memorials
-
-### 23. **Shelter Donation**
-Make a donation to an animal shelter or rescue in your pet's name. Some organizations offer memorial plaques or certificates.
-
-### 24. **Sponsor a Rescue Animal**
-Sponsor the adoption fees for a shelter animal in your pet's memory, giving another pet a second chance.
-
-### 25. **Volunteer in Their Honor**
-Dedicate volunteer hours at an animal shelter or rescue organization in memory of your beloved companion.
-
-## Creating a QR Pet Memorial
-
-Modern QR pet memorials combine traditional keepsakes with digital tributes:
-
-### What to Include:
-- **Photo Gallery**: Capture every stage of their life from puppy/kitten to senior years
-- **Videos**: Those silly moments, tricks they knew, or just them being themselves
-- **Favorite Things**: Their toys, treats, and activities
-- **Personality Profile**: What made them unique and special
-- **Medical History**: For breeding records or future pet health considerations
-- **Rainbow Bridge Poem**: Include this comforting poem or other meaningful verses
-
-### QR Memorial Products for Pets:
-- **Collar Tags**: Attach to their collar display or create a new memorial tag
-- **Garden Stones**: Perfect for outdoor resting places
-- **Memorial Plaques**: For indoor or outdoor display
-- **Keychains**: Keep them close wherever you go
-- **Photo Frames**: Combine a favorite photo with QR access
 
 ## Coping with Pet Loss
 
@@ -285,32 +149,11 @@ Creating a memorial is part of the healing process, but grief takes time:
 
 - **Allow yourself to grieve**: Your pain is real and valid
 - **Talk about your feelings**: Share with understanding friends or pet loss support groups
-- **Keep their routine**: Maintain daily activities they were part of until you're ready to adjust
 - **Consider a memorial timeline**: You don't have to decide everything immediately
-- **Seek professional help**: Pet loss counselors and support groups can provide comfort
-
-## When to Create a Memorial
-
-There's no wrong time to create a pet memorial:
-- **Immediately after loss**: Some find comfort in taking action right away
-- **After the initial shock**: Others need time before they're ready
-- **On significant dates**: Birthdays, adoption days, or the anniversary of their passing
-- **When you're ready**: There's no deadline for honoring their memory
-
-## Including Children in Pet Memorials
-
-Helping children cope with pet loss through memorials:
-- Let them choose photos or write memories
-- Create art projects together (paw prints, drawings)
-- Read pet loss books together
-- Plant a memorial tree or flower they can care for
-- Explain the memorial process in age-appropriate ways
 
 ## Conclusion
 
 Your pet gave you years of unconditional love, loyalty, and companionship. They deserved nothing less than to be remembered and honored. Whether you choose a physical memorial, digital tribute, or charitable act, what matters most is that it feels right to you.
-
-A memorial isn't just about grief—it's about gratitude for the time you shared and the love that will never fade. Every time you visit their memorial, see their photo, or scan their QR code, you're reminded that love like theirs never truly leaves us.
 
 ---
 
@@ -320,7 +163,7 @@ A memorial isn't just about grief—it's about gratitude for the time you shared
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = blogPosts[params.slug]
+  const post = blogPosts.find((p) => p.slug === params.slug)
 
   if (!post) {
     return {
@@ -328,160 +171,211 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"
+
   return {
     title: `${post.title} | Memorial QR Blog`,
     description: post.excerpt,
+    keywords: `${post.category.toLowerCase()}, memorial QR, digital memorials, ${post.slug.replace(/-/g, " ")}`,
+    authors: [{ name: post.author }],
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: "article",
       publishedTime: post.date,
       authors: [post.author],
+      images: [
+        {
+          url: post.image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      url: `${siteUrl}/blog/${params.slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
       images: [post.image],
+    },
+    alternates: {
+      canonical: `/blog/${params.slug}`,
     },
   }
 }
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts[params.slug]
+  const post = blogPosts.find((p) => p.slug === params.slug)
+  const postContent = blogPostsContent[params.slug]
 
-  if (!post) {
+  if (!post || !postContent) {
     notFound()
   }
 
+  const articleStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    image: post.image,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      "@type": "Person",
+      name: post.author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Memorial QR",
+      logo: {
+        "@type": "ImageObject",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/images/41730040-9590-452b-80df.jpeg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/blog/${params.slug}`,
+    },
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <Header />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <Header />
 
-      {/* Back Button */}
-      <div className="container mx-auto px-4 py-6">
-        <Button asChild variant="ghost">
-          <Link href="/blog">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Blog
-          </Link>
-        </Button>
-      </div>
+        {/* Back Button */}
+        <div className="container mx-auto px-4 py-6">
+          <Button asChild variant="ghost">
+            <Link href="/blog">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Blog
+            </Link>
+          </Button>
+        </div>
 
-      {/* Article Header */}
-      <article className="container mx-auto px-4 pb-16">
-        <div className="max-w-4xl mx-auto">
-          {/* Featured Image */}
-          <div className="aspect-video relative bg-slate-200 rounded-lg overflow-hidden mb-8">
-            <img src={post.image || "/placeholder.svg"} alt={post.title} className="object-cover w-full h-full" />
-          </div>
-
-          {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-            <Badge variant="secondary" className="text-base">
-              {post.category}
-            </Badge>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              {new Date(post.date).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
+        {/* Article Header */}
+        <article className="container mx-auto px-4 pb-16">
+          <div className="max-w-4xl mx-auto">
+            {/* Featured Image */}
+            <div className="aspect-video relative bg-slate-200 rounded-lg overflow-hidden mb-8">
+              <img src={post.image || "/placeholder.svg"} alt={post.title} className="object-cover w-full h-full" />
             </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              {post.readTime}
+
+            {/* Meta Information */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
+              <Badge variant="secondary" className="text-base">
+                {post.category}
+              </Badge>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                {new Date(post.date).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                {post.readTime}
+              </div>
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                {post.author}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              {post.author}
+
+            {/* Title */}
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
+
+            {/* Share Buttons */}
+            <div className="flex items-center gap-3 mb-8 pb-8 border-b">
+              <span className="text-sm font-medium text-muted-foreground">Share:</span>
+              <Button variant="outline" size="sm">
+                <Facebook className="w-4 h-4 mr-2" />
+                Facebook
+              </Button>
+              <Button variant="outline" size="sm">
+                <Twitter className="w-4 h-4 mr-2" />
+                Twitter
+              </Button>
+              <Button variant="outline" size="sm">
+                <Mail className="w-4 h-4 mr-2" />
+                Email
+              </Button>
+              <Button variant="outline" size="sm">
+                <Share2 className="w-4 h-4 mr-2" />
+                Copy Link
+              </Button>
             </div>
-          </div>
 
-          {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
-
-          {/* Share Buttons */}
-          <div className="flex items-center gap-3 mb-8 pb-8 border-b">
-            <span className="text-sm font-medium text-muted-foreground">Share:</span>
-            <Button variant="outline" size="sm">
-              <Facebook className="w-4 h-4 mr-2" />
-              Facebook
-            </Button>
-            <Button variant="outline" size="sm">
-              <Twitter className="w-4 h-4 mr-2" />
-              Twitter
-            </Button>
-            <Button variant="outline" size="sm">
-              <Mail className="w-4 h-4 mr-2" />
-              Email
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share2 className="w-4 h-4 mr-2" />
-              Copy Link
-            </Button>
-          </div>
-
-          {/* Article Content */}
-          <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-blue-600 prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground">
-            {post.content.split("\n").map((paragraph, index) => {
-              if (paragraph.startsWith("# ")) {
+            {/* Article Content */}
+            <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-blue-600 prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground">
+              {postContent.content.split("\n").map((paragraph, index) => {
+                if (paragraph.startsWith("# ")) {
+                  return (
+                    <h1 key={index} className="text-4xl font-bold mt-8 mb-4">
+                      {paragraph.replace("# ", "")}
+                    </h1>
+                  )
+                }
+                if (paragraph.startsWith("## ")) {
+                  return (
+                    <h2 key={index} className="text-3xl font-bold mt-8 mb-4">
+                      {paragraph.replace("## ", "")}
+                    </h2>
+                  )
+                }
+                if (paragraph.startsWith("### ")) {
+                  return (
+                    <h3 key={index} className="text-2xl font-bold mt-6 mb-3">
+                      {paragraph.replace("### ", "")}
+                    </h3>
+                  )
+                }
+                if (paragraph.startsWith("---")) {
+                  return <hr key={index} className="my-8" />
+                }
+                if (paragraph.trim() === "") {
+                  return <br key={index} />
+                }
+                if (paragraph.startsWith("*") && paragraph.endsWith("*")) {
+                  return (
+                    <p key={index} className="italic text-muted-foreground my-6">
+                      {paragraph.replace(/\*/g, "")}
+                    </p>
+                  )
+                }
                 return (
-                  <h1 key={index} className="text-4xl font-bold mt-8 mb-4">
-                    {paragraph.replace("# ", "")}
-                  </h1>
-                )
-              }
-              if (paragraph.startsWith("## ")) {
-                return (
-                  <h2 key={index} className="text-3xl font-bold mt-8 mb-4">
-                    {paragraph.replace("## ", "")}
-                  </h2>
-                )
-              }
-              if (paragraph.startsWith("### ")) {
-                return (
-                  <h3 key={index} className="text-2xl font-bold mt-6 mb-3">
-                    {paragraph.replace("### ", "")}
-                  </h3>
-                )
-              }
-              if (paragraph.startsWith("---")) {
-                return <hr key={index} className="my-8" />
-              }
-              if (paragraph.trim() === "") {
-                return <br key={index} />
-              }
-              if (paragraph.startsWith("*") && paragraph.endsWith("*")) {
-                return (
-                  <p key={index} className="italic text-muted-foreground my-6">
-                    {paragraph.replace(/\*/g, "")}
+                  <p key={index} className="mb-4 leading-relaxed">
+                    {paragraph}
                   </p>
                 )
-              }
-              return (
-                <p key={index} className="mb-4 leading-relaxed">
-                  {paragraph}
-                </p>
-              )
-            })}
-          </div>
+              })}
+            </div>
 
-          {/* CTA Section */}
-          <Card className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-            <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold mb-4">Ready to Create a Lasting Memorial?</h3>
-              <p className="text-muted-foreground mb-6">
-                Honor your loved ones with a beautiful QR memorial that preserves their legacy forever.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  <Link href="/store">Browse Memorial Products</Link>
-                </Button>
-                <Button asChild variant="outline" size="lg">
-                  <Link href="/pricing">View Pricing</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </article>
-    </div>
+            {/* CTA Section */}
+            <Card className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <CardContent className="p-8 text-center">
+                <h3 className="text-2xl font-bold mb-4">Ready to Create a Lasting Memorial?</h3>
+                <p className="text-muted-foreground mb-6">
+                  Honor your loved ones with a beautiful QR memorial that preserves their legacy forever.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+                    <Link href="/store">Browse Memorial Products</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg">
+                    <Link href="/pricing">View Pricing</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </article>
+      </div>
+    </>
   )
 }

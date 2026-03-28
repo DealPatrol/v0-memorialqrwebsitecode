@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import type { Metadata } from "next"
 import {
   QrCode,
   Upload,
@@ -17,6 +18,23 @@ import {
   User,
   PawPrint,
 } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: "How Memorial QR Codes Work | Digital Tombstone Memorials Calgary Northeast",
+  description:
+    "Learn how Memorial QR codes work for tombstones and pet memorials. Step-by-step guide to creating digital cemetery memorials in Calgary Northeast, Airdrie, Chestermere. Weather-resistant QR plaques with lifetime hosting.",
+  keywords:
+    "how memorial QR works Calgary, QR code tombstone setup, headstone QR installation Calgary Northeast, cemetery QR plaque guide, pet memorial QR process Calgary, digital memorial creation Alberta",
+  alternates: {
+    canonical: "/how-it-works",
+  },
+  openGraph: {
+    title: "How Memorial QR Codes Work | Calgary Northeast Cemetery Memorials",
+    description:
+      "Complete guide to creating digital memorials with QR codes. Serve Calgary Northeast, Airdrie, and Alberta with weather-resistant tombstone plaques.",
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/how-it-works`,
+  },
+}
 
 export default function HowItWorksPage() {
   return (

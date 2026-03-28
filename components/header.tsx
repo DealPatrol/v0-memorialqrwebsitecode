@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,9 +11,19 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { Menu, User, PawPrint, ShoppingBag, BookOpen } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Menu, User, PawPrint, ShoppingBag, BookOpen, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
 
 const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWithoutRef<"a"> & { title: string }>(
   ({ className, title, children, ...props }, ref) => {
@@ -39,15 +49,51 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWit
 ListItem.displayName = "ListItem"
 
 export function Header() {
+  const [user, setUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
+  const [userName, setUserName] = useState<string | null>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = await createClient()
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser()
+
+      if (authUser) {
+        setUser(authUser)
+
+        const { data: profile } = await supabase.from("profiles").select("name").eq("id", authUser.id).single()
+
+        if (profile?.name) {
+          setUserName(profile.name)
+        } else {
+          // Fallback to email name if no profile name
+          setUserName(authUser.email?.split("@")[0] || "User")
+        }
+      }
+    }
+
+    getUser()
+  }, [])
+
+  const handleLogout = async () => {
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+    setUser(null)
+    setUserName(null)
+    router.push("/")
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Desktop Navigation */}
-        <div className="mr-4 hidden md:flex md:flex-1">
+        <div className="flex items-center flex-1">
           <Link href="/" className="mr-8 flex items-center">
             <span className="font-script text-3xl font-bold text-primary">Memorial QR</span>
           </Link>
-          <NavigationMenu>
+          <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Memorials</NavigationMenuTrigger>
@@ -76,37 +122,37 @@ export function Header() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href="/store" legacyBehavior passHref>
-                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                <NavigationMenuLink asChild>
+                  <Link href="/store" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
                     <ShoppingBag className="w-4 h-4 mr-2" />
                     Store
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href="/how-it-works" legacyBehavior passHref>
-                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                <NavigationMenuLink asChild>
+                  <Link href="/how-it-works" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
                     How It Works
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href="/blog" legacyBehavior passHref>
-                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                <NavigationMenuLink asChild>
+                  <Link href="/blog" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Blog
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href="/contact" legacyBehavior passHref>
-                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                <NavigationMenuLink asChild>
+                  <Link href="/contact" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
                     Contact
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
@@ -121,6 +167,7 @@ export function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <Link href="/" className="mb-6 flex items-center">
               <span className="font-script text-2xl font-bold text-primary">Memorial QR</span>
             </Link>
@@ -161,31 +208,54 @@ export function Header() {
               <Link href="/contact" className="text-muted-foreground hover:text-foreground">
                 Contact
               </Link>
-              <Link href="/auth/login" className="text-muted-foreground hover:text-foreground">
-                Sign In
-              </Link>
+              {!user && (
+                <Link href="/auth/login" className="text-muted-foreground hover:text-foreground">
+                  Sign In
+                </Link>
+              )}
             </nav>
           </SheetContent>
         </Sheet>
 
-        {/* Mobile Logo */}
-        <div className="flex flex-1 md:hidden">
-          <Link href="/" className="flex items-center">
-            <span className="font-script text-xl font-bold text-primary">Memorial QR</span>
-          </Link>
-        </div>
-
         {/* Right Side Actions */}
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
-            <Link href="/auth/login">Sign In</Link>
-          </Button>
-          <Button size="sm" asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link href="/store">
-              <ShoppingBag className="w-4 h-4 mr-2" />
-              Store
-            </Link>
-          </Button>
+        <div className="flex items-center gap-2 ml-auto">
+          {user && userName ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline text-sm">{userName}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{userName}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/account">Account Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
+                <Link href="/auth/login">Sign In</Link>
+              </Button>
+              <Button size="sm" asChild className="bg-blue-600 hover:bg-blue-700">
+                <Link href="/store">
+                  <ShoppingBag className="w-4 h-4 mr-2" />
+                  Store
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

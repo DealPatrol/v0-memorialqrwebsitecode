@@ -1,19 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     
-    let supabase
-    try {
-      supabase = await createClient()
-    } catch (clientError) {
-      return NextResponse.json(
-        { error: "Database connection failed. Please check environment variables." },
-        { status: 500 },
-      )
-    }
+    const supabase = createServiceRoleClient()
 
     const identifier = id
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)
