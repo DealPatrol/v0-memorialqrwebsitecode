@@ -1,0 +1,27 @@
+We want them to feel like they are building a legacy, not just "filling out a form."
+📱 Phase 1: The "Welcome Home" Screen
+This is the first thing they see after scanning their new medallion or logging in to the web app.
+Headline: Welcome to the Memorials QR Family.
+Sub-headline: You’re about to build a digital home for a story that deserves to be told. It only takes a few minutes to start a legacy that lasts forever.
+The Button: [Begin Their Story]
+📝 Phase 2: The "Simple 3-Step" Setup
+Break the work down so it feels manageable. Don't ask for everything at once.
+Step 1: The Essentials
+Label: Who are we honoring?
+Field Hints: * Full Name
+• Dates of Life (Birth – Resting)
+• A "Hero" Photo (The one that captures their spirit)
+Reassurance Text: "Don't worry, you can update this photo anytime from your phone."
+Step 2: The Gallery of Memories
+Label: Add Photos & Videos
+Instruction: "Upload the moments that matter most. Whether it’s a favorite vacation photo or a video of their laugh, these are the treasures family members will see when they scan the medallion at the gravesite."
+Action: [📤 Upload Media]
+Step 3: The Life Story (The "Legacy" Section)
+Label: Share Their Journey
+Instruction: "Write a few paragraphs about who they were—their passions, their wisdom, and the impact they left on the world. This is where their voice lives on."
+Prompt for the user: "Need help? Think about their favorite phrase or their proudest achievement."
+✅ Phase 3: The "Launch" Confirmation
+This is the 'Aha!' moment where they realize the tech works.
+Headline: Their Legacy is Live.
+Body: "Your Memorials QR profile is now active. Anyone who scans the medallion at [Cemetery Name/Location] will now be connected to these beautiful memories. You’ve done a wonderful thing today."
+Action: [👁️ View Live Profile] | [🔗 Share Link with Family]
