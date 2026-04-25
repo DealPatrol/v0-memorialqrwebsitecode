@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next"
-import { createServerClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { BLOG_POSTS } from "@/lib/blog-posts"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -123,7 +123,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let memorialPages: MetadataRoute.Sitemap = []
 
   try {
-    const supabase = await createServerClient()
+    const hasSupabaseServiceRole = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
+
+    if (!hasSupabaseServiceRole) {
+      return [...staticPages, ...blogPages]
+    }
+
+    const supabase = createServiceRoleClient()
     const { data: memorials } = await supabase
       .from("memorials")
       .select("id, slug, updated_at, created_at")

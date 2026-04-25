@@ -121,7 +121,7 @@ export default function SimpleCheckoutPage() {
         description: "Redirecting you to customize your memorial...",
       })
 
-      router.push(`/checkout/customize?order=${result.order.orderNumber}`)
+      router.push(`/checkout/customize?order=${result.order.orderNumber}&package=${packageId}`)
     } catch (error: any) {
       toast({
         title: "Payment Failed",

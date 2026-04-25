@@ -6,7 +6,8 @@ import { loadStripe } from "@stripe/stripe-js"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Lock, Shield, CreditCard, Award } from "lucide-react"
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null
 
 interface StripeCheckoutProps {
   fetchClientSecret: () => Promise<string>
@@ -21,6 +22,23 @@ export function StripeCheckout({ fetchClientSecret, onComplete }: StripeCheckout
     setIsLoading(false)
     return secret
   }, [fetchClientSecret])
+
+  if (!stripePromise) {
+    return (
+      <Card>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            Secure Payment
+          </CardTitle>
+          <CardDescription>Stripe checkout is not configured yet.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-6 text-sm text-muted-foreground">
+          Add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to enable embedded card checkout.
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card>

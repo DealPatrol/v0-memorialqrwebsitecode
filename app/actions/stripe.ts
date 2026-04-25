@@ -1,6 +1,6 @@
 "use server"
 
-import { stripe } from "@/lib/stripe"
+import { getStripe } from "@/lib/stripe"
 import { PACKAGES, ADDONS } from "@/lib/products"
 
 interface CheckoutData {
@@ -21,6 +21,7 @@ interface CheckoutData {
 }
 
 export async function createCheckoutSession(data: CheckoutData) {
+  const stripe = getStripe()
   const pkg = PACKAGES[data.packageId]
   if (!pkg) {
     throw new Error(`Package "${data.packageId}" not found`)
@@ -100,6 +101,7 @@ export async function createCheckoutSession(data: CheckoutData) {
 }
 
 export async function getCheckoutSession(sessionId: string) {
+  const stripe = getStripe()
   const session = await stripe.checkout.sessions.retrieve(sessionId)
   return {
     status: session.status,

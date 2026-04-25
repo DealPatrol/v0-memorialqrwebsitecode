@@ -1,13 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
-import Stripe from "stripe"
 import { getProductById } from "@/lib/products"
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-11-20.acacia",
-})
+import { getStripe } from "@/lib/stripe"
 
 export async function POST(req: NextRequest) {
   try {
+    const stripe = getStripe()
     const { items } = await req.json()
 
     if (!items || items.length === 0) {
@@ -68,7 +65,7 @@ export async function POST(req: NextRequest) {
       ],
     })
 
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json({ url: session.url, sessionId: session.id })
   } catch (error) {
     console.error("Stripe checkout error:", error)
     return NextResponse.json(

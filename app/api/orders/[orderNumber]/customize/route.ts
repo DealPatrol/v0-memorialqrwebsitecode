@@ -10,7 +10,8 @@ export async function PATCH(
     const body = await request.json()
     const { plaqueColor, boxPersonalization, addons } = body
 
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
+    const addonList = Array.isArray(addons) ? addons : []
 
     // Update order with customization
     const { data: order, error } = await supabase
@@ -18,9 +19,9 @@ export async function PATCH(
       .update({
         plaque_color: plaqueColor,
         box_personalization: boxPersonalization,
-        addon_wooden_qr: addons.includes("wooden_qr"),
-        addon_picture_plaque: addons.includes("picture_plaque"),
-        addon_stone_qr: addons.includes("stone_qr"),
+        addon_wooden_qr: addonList.includes("wooden_qr"),
+        addon_picture_plaque: addonList.includes("picture_plaque"),
+        addon_stone_qr: addonList.includes("stone_qr"),
         updated_at: new Date().toISOString(),
       })
       .eq("order_number", orderNumber)

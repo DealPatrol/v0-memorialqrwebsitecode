@@ -6,7 +6,8 @@ export async function POST(req: Request) {
     const body = await req.json()
 
     const {
-      package: packageTier,
+      package: packageTierFromBody,
+      packageType,
       plaqueColor,
       boxPersonalization,
       customerName,
@@ -24,6 +25,8 @@ export async function POST(req: Request) {
       stoneEngravingText,
       picturePlaqueUrl,
     } = body
+
+    const packageTier = packageTierFromBody || packageType || "standard"
 
     if (!customerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId) {
       const missing = []
@@ -48,7 +51,7 @@ export async function POST(req: Request) {
       standard: 12989,
       premium: 19989,
     }
-    const baseAmount = packagePrices[packageTier as string] || packagePrices.standard
+    const baseAmount = packagePrices[packageTier as keyof typeof packagePrices] || packagePrices.standard
 
     let addonAmount = 0
     if (addonWoodenQr) addonAmount += 1989
@@ -74,7 +77,7 @@ export async function POST(req: Request) {
       amount_cents: totalAmountCents,
       currency: "USD",
       product_type: "memorial_package",
-      product_name: `Memorial QR ${packageTier || "standard"} Package${plaqueColor ? ` - ${plaqueColor} plaque` : ""}`,
+      product_name: `Memorial QR ${packageTier} Package${plaqueColor ? ` - ${plaqueColor} plaque` : ""}`,
       quantity: 1,
       status: "processing",
       special_instructions: boxPersonalization || null,

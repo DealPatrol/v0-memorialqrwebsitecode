@@ -28,3 +28,15 @@ Continue building your app on:
 2. Deploy your chats from the v0 interface
 3. Changes are automatically pushed to this repository
 4. Vercel deploys the latest version from this repository
+
+## Local setup
+
+1. Copy `.env.example` to `.env.local`
+2. Fill in the Supabase, Stripe, Square, and Resend keys you actually use
+3. Install deps with `corepack pnpm install`
+4. Start dev with `NODE_ENV=development corepack pnpm dev`
+
+### Notes
+
+- `pnpm build` now succeeds even if email credentials are missing, but checkout and data-backed flows still need their real environment variables at runtime.
+- Keep Stripe and Square in test or sandbox mode while validating checkout locally.

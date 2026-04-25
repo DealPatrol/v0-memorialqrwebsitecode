@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { BrowseMemorialsClient } from "./BrowseMemorialsClient"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/server"
 import Script from "next/script"
 import { BreadcrumbSchema } from "@/components/seo/structured-data"
 
@@ -92,10 +92,30 @@ function CollectionPageSchema({ memorials }: { memorials: Memorial[] }) {
 }
 
 export default async function BrowseMemorials() {
-  const supabase = createClient()
   let memorials: Memorial[] = []
 
   try {
+    const hasSupabaseConfig = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) && Boolean(
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY,
+    )
+
+    if (!hasSupabaseConfig) {
+      console.warn("Skipping memorial fetch for /browse-memorials because Supabase env vars are not configured.")
+      return (
+        <>
+          <CollectionPageSchema memorials={memorials} />
+          <BreadcrumbSchema
+            items={[
+              { name: "Home", url: "https://memorialsqr.com" },
+              { name: "Browse Memorials", url: "https://memorialsqr.com/browse-memorials" },
+            ]}
+          />
+          <BrowseMemorialsClient memorials={memorials} />
+        </>
+      )
+    }
+
+    const supabase = await createClient()
     const { data, error } = await supabase.from("memorials").select("*").order("created_at", { ascending: false })
 
     if (error) {

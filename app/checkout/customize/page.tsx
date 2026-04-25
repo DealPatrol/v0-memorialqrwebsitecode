@@ -63,6 +63,7 @@ export default function CustomizePage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
   const orderNumber = searchParams.get("order")
+  const packageType = searchParams.get("package") || "standard"
 
   const [plaqueType, setPlaqueType] = useState<"silver" | "gold" | "black">("black")
   const [boxPersonalization, setBoxPersonalization] = useState("")
@@ -134,6 +135,7 @@ export default function CustomizePage() {
           customerEmail: order?.customer_email,
           customerName: order?.customer_name,
           plaqueColor: plaqueType,
+          packageType,
         })
       )
 
@@ -152,14 +154,15 @@ export default function CustomizePage() {
     // Set defaults and continue
     sessionStorage.setItem(
       "pendingOrder",
-      JSON.stringify({
-        orderNumber: orderNumber,
-        orderId: order?.id,
-        customerEmail: order?.customer_email,
-        customerName: order?.customer_name,
-        plaqueColor: "black",
-      })
-    )
+        JSON.stringify({
+          orderNumber: orderNumber,
+          orderId: order?.id,
+          customerEmail: order?.customer_email,
+          customerName: order?.customer_name,
+          plaqueColor: "black",
+          packageType,
+        })
+      )
     router.push(`/create-memorial?order=${orderNumber}`)
   }
 
