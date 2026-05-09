@@ -14,7 +14,7 @@ Any changes you make to your deployed app will be automatically pushed to this r
 
 Your project is live at:
 
-**[https://vercel.com/coles-projects-9e3181f8/v0-memorialqrwebsitecode-90](https://vercel.com/coles-projects-9e3181f8/v0-memorialqrwebsitecode-90)**
+**[https://vercel.com/coles-projects-9e3181f8/v0-memorialqrwebsitecode-90](https://vercel.com/coles-projects-9e3181f8/v0-memorialqrwebsitecode-90)(https://memorialsqr.com)**
 
 ## Build your app
 
