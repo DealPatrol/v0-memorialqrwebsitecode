@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import type Stripe from "stripe"
 import { getProductById } from "@/lib/products"
 import { getStripe } from "@/lib/stripe"
 

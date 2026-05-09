@@ -4,13 +4,35 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { CheckCircle, Package, Smartphone, Mail } from "lucide-react"
 import type { Metadata } from "next"
+import { getStripe } from "@/lib/stripe"
 
 export const metadata: Metadata = {
   title: "Order Confirmed - Memorial QR",
   description: "Thank you for your order. Your memorial plaque is on its way.",
 }
 
-export default function StoreSuccessPage() {
+export default async function StoreSuccessPage({
+  searchParams,
+}: {
+  searchParams: { session_id?: string }
+}) {
+  let customerName: string | null = null
+  let customerEmail: string | null = null
+  let orderAmount: string | null = null
+
+  const sessionId = searchParams.session_id
+  if (sessionId) {
+    try {
+      const stripe = getStripe()
+      const session = await stripe.checkout.sessions.retrieve(sessionId)
+      customerName = session.customer_details?.name ?? null
+      customerEmail = session.customer_details?.email ?? null
+      orderAmount = session.amount_total != null ? `$${(session.amount_total / 100).toFixed(2)}` : null
+    } catch (error) {
+      console.error("[stripe] Failed to retrieve session for success page:", error)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -24,9 +46,17 @@ export default function StoreSuccessPage() {
               </div>
 
               <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
-              <p className="text-slate-600 text-lg mb-8">
-                Thank you for your purchase. Your memorial plaque is being prepared.
+              <p className="text-slate-600 text-lg mb-2">
+                {customerName ? `Thank you, ${customerName}!` : "Thank you for your purchase."}{" "}
+                {orderAmount && `Your order total was ${orderAmount}.`}
               </p>
+
+              {customerEmail && (
+                <div className="flex items-center justify-center gap-2 text-sm text-slate-500 mb-6">
+                  <Mail className="w-4 h-4" />
+                  <span>Confirmation sent to {customerEmail}</span>
+                </div>
+              )}
 
               <div className="bg-slate-50 rounded-lg p-6 mb-8 text-left">
                 <h2 className="font-bold text-lg mb-4">What happens next?</h2>

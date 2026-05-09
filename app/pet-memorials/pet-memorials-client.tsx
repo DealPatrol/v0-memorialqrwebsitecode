@@ -9,10 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
 import { PRODUCTS, SUBSCRIPTION_PRICE_CENTS, formatPrice, type Product } from "@/lib/products"
 import { Heart, PawPrint, Frame, ShoppingCart, Plus, Minus, X, CreditCard, Check } from "lucide-react"
-import { loadStripe } from "@stripe/stripe-js"
-
-const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null
 
 interface CartItem {
   product: Product
@@ -68,17 +64,11 @@ export function PetMemorialsClient() {
           })),
         }),
       })
-      const { url, sessionId, error } = await response.json()
+      const { url, error } = await response.json()
       if (error) throw new Error(error)
 
       if (url) {
         window.location.href = url
-        return
-      }
-
-      const stripe = stripePromise ? await stripePromise : null
-      if (stripe && sessionId) {
-        await stripe.redirectToCheckout({ sessionId })
         return
       }
 
