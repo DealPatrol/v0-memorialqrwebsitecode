@@ -54,7 +54,7 @@ const quickLinks = [
     title: "Video Tutorials",
     description: "Step-by-step video guides",
     icon: Video,
-    href: "#",
+    href: "/how-it-works",
   },
   {
     title: "Phone Support",
@@ -141,7 +141,7 @@ export default function HelpPage() {
                     {category.articles.map((article, articleIndex) => (
                       <li key={articleIndex}>
                         <Link
-                          href="#"
+                          href="/faq"
                           className="text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-2"
                         >
                           <span className="w-2 h-2 bg-orange-600 rounded-full" />
