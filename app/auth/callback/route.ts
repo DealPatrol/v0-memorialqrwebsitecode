@@ -11,6 +11,9 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
+      if (next === "/auth/reset-password") {
+        return NextResponse.redirect(new URL("/auth/reset-password", requestUrl.origin))
+      }
       // Check if there's a pending order in the redirect
       if (next === "/create-memorial") {
         return NextResponse.redirect(new URL("/create-memorial", requestUrl.origin))
