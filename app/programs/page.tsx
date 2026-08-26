@@ -4,9 +4,8 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Star, Heart, Users, Music, ImageIcon, MessageCircle, Share2, Download, Smartphone } from "lucide-react"
+import { Check, Heart, Users, Music, ImageIcon, MessageCircle, Share2, Download, Smartphone } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import { useState } from "react"
 
 export default function Programs() {
@@ -26,17 +25,17 @@ export default function Programs() {
   const colorOptions = [
     {
       name: "Classic Black",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/black-uzcKSInG8bp4K2tta5njv5Mb0s2QMN.jpg",
+      image: "/images/black.jpg",
       description: "Elegant black finish with white QR code",
     },
     {
       name: "Premium Gold",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gold-YKcMRbRzoprn4nOPSLASZgVAG0oK7f.jpg",
+      image: "/images/gold.jpg",
       description: "Luxurious gold finish with black QR code",
     },
     {
       name: "Modern Silver",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/silver-5qPRpDXC2vLxCx2OV9fu8LHUeo1y0y.jpg",
+      image: "/images/silver.jpg",
       description: "Sleek silver finish with black QR code",
     },
   ]
@@ -58,7 +57,7 @@ export default function Programs() {
       name: "Stone QR Code",
       description: "Durable stone memorial with engraved QR code",
       price: 56.99,
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/e4de3d0a-3087-4815-924d-3bcb93c7a20d.jpg",
+      image: "/images/e4de3d0a-3087-4815-924d.jpg",
     },
   ]
 
@@ -79,140 +78,126 @@ export default function Programs() {
 
       {/* Main Package - Reduced spacing */}
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-6">
-            <Badge className="bg-blue-500 text-white px-4 py-2 text-sm mb-3">
-              <Star className="h-4 w-4 mr-2" />
-              Most Popular
-            </Badge>
-            <h2 className="text-3xl font-bold mb-3">Complete Memorial Package</h2>
-            <p className="text-gray-600 text-lg">Everything you need to create a beautiful digital memorial</p>
-          </div>
+        <div className="max-w-6xl mx-auto text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4">Choose Your Memorial Package</h2>
+          <p className="text-xl text-gray-600">Select the package that best honors your loved one's memory</p>
+        </div>
 
-          <Card className="border-2 border-blue-200 shadow-xl mb-8">
-            <CardHeader className="text-center bg-gradient-to-r from-blue-50 to-slate-50 pb-6">
-              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$2.00</CardTitle>
-              <p className="text-gray-600">One-time payment • Lifetime access</p>
-              <p className="text-sm text-blue-600 font-semibold mt-2">
-                Includes your choice of Gold, Black, or Silver memorial plaque
-              </p>
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
+          <Card className="border-2 border-gray-200">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl mb-2">Basic</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$89.89</CardTitle>
+              <p className="text-sm text-gray-600">Perfect for simple memorials</p>
             </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">What's Included:</h3>
-                  <div className="space-y-3">
-                    {features.map((feature, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <Check className="h-4 w-4 text-green-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-slate-900">{feature.title}</h4>
-                          <p className="text-sm text-gray-600">{feature.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <h3 className="text-xl font-semibold mb-3">Perfect For:</h3>
-                  <ul className="space-y-2 text-gray-700 text-sm">
-                    <li className="flex items-center gap-2">
-                      <Heart className="h-4 w-4 text-red-500" />
-                      Families wanting to honor a loved one
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-blue-500" />
-                      Sharing memories with distant relatives
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Share2 className="h-4 w-4 text-green-500" />
-                      Creating a lasting digital legacy
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Smartphone className="h-4 w-4 text-purple-500" />
-                      Easy access via QR codes
-                    </li>
-                  </ul>
-
-                  <div className="mt-4 p-3 bg-white rounded-lg border">
-                    <h4 className="font-medium text-slate-900 mb-2 text-sm">Lifetime Benefits:</h4>
-                    <ul className="text-xs text-gray-600 space-y-1">
-                      <li>• No monthly fees or subscriptions</li>
-                      <li>• Unlimited photo and story uploads</li>
-                      <li>• 24/7 access from anywhere</li>
-                      <li>• Mobile-friendly design</li>
-                      <li>• Secure and private</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 text-center">
-                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
-                  <Link href="/checkout">Get Started - $2.00</Link>
-                </Button>
-                <p className="text-sm text-gray-500 mt-2">30-day money-back guarantee • Secure payment processing</p>
-              </div>
+            <CardContent>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />3 videos
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  10 voicemails/audio
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  30 photos
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Unlimited guest messages
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Custom QR code
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />1 memorial plaque
+                </li>
+              </ul>
+              <Button asChild className="w-full">
+                <Link href="/checkout?package=basic">Get Started</Link>
+              </Button>
             </CardContent>
           </Card>
 
-          <div className="mb-8">
-            <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold mb-2">Choose Your Memorial Plaque</h2>
-              <p className="text-gray-600">
-                Every order includes one premium aluminum plaque (weatherproof & built to last)
-              </p>
+          <Card className="border-4 border-blue-500 shadow-2xl scale-105">
+            <div className="text-center pt-4">
+              <Badge className="bg-blue-500 text-white">Most Popular</Badge>
             </div>
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl mb-2">Standard</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$129.89</CardTitle>
+              <p className="text-sm text-gray-600">Best value for families</p>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />5 videos
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  15 voicemails/audio
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  50 photos
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Unlimited guest messages
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Custom QR code
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />1 memorial plaque
+                </li>
+              </ul>
+              <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                <Link href="/checkout?package=standard">Get Started</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-            <div className="grid md:grid-cols-3 gap-4">
-              {colorOptions.map((option, index) => (
-                <Card key={index} className="border-2 hover:border-blue-400 transition-colors">
-                  <CardContent className="p-4">
-                    <div className="aspect-[4/3] relative mb-3 bg-gray-50 rounded-lg overflow-hidden">
-                      <Image
-                        src={option.image || "/placeholder.svg"}
-                        alt={option.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-center mb-1">{option.name}</h3>
-                    <p className="text-sm text-gray-600 text-center">{option.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold mb-2">Additional Products</h2>
-              <p className="text-gray-600">Enhance your memorial with these optional add-ons</p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-4">
-              {additionalProducts.map((product, index) => (
-                <Card key={index} className="border-2 hover:border-blue-400 transition-colors">
-                  <CardContent className="p-4">
-                    <div className="aspect-[4/3] relative mb-3 bg-gray-50 rounded-lg overflow-hidden">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-center mb-1">{product.name}</h3>
-                    <p className="text-sm text-gray-600 text-center mb-2">{product.description}</p>
-                    <p className="text-xl font-bold text-center text-blue-600">${product.price}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+          <Card className="border-2 border-purple-200">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl mb-2">Premium</CardTitle>
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$199.89</CardTitle>
+              <p className="text-sm text-gray-600">Complete memorial experience</p>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  10 videos
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  30 voicemails/audio
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  100 photos
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />3 plaques OR wooden keychain
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Unlimited guest messages
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Custom QR code
+                </li>
+              </ul>
+              <Button asChild className="w-full bg-purple-600 hover:bg-purple-700">
+                <Link href="/checkout?package=premium">Get Started</Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -224,7 +209,7 @@ export default function Programs() {
             Create a beautiful, lasting memorial that celebrates their life and keeps their memory alive forever.
           </p>
           <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-            <Link href="/checkout">Start Creating Memorial - $2.00</Link>
+            <Link href="/checkout">Start Creating Memorial - $89.89</Link>
           </Button>
         </div>
       </div>

@@ -12,13 +12,23 @@ export function CountdownTimer() {
   })
 
   useEffect(() => {
-    // Set target date to 30 days from now
-    const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() + 30)
+    // Check if we have a saved end date in localStorage
+    let endDate: Date
+    const savedEndDate = localStorage.getItem("countdown_end_date")
+
+    if (savedEndDate) {
+      // Use existing end date
+      endDate = new Date(savedEndDate)
+    } else {
+      // Set new end date to 7 days from now and save it
+      endDate = new Date()
+      endDate.setDate(endDate.getDate() + 7)
+      localStorage.setItem("countdown_end_date", endDate.toISOString())
+    }
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
-      const distance = targetDate.getTime() - now
+      const distance = endDate.getTime() - now
 
       if (distance > 0) {
         setTimeLeft({
@@ -27,6 +37,11 @@ export function CountdownTimer() {
           minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((distance % (1000 * 60)) / 1000),
         })
+      } else {
+        const newEndDate = new Date()
+        newEndDate.setDate(newEndDate.getDate() + 7)
+        localStorage.setItem("countdown_end_date", newEndDate.toISOString())
+        endDate = newEndDate
       }
     }, 1000)
 

@@ -158,16 +158,15 @@ export function QRColorSelector() {
               </div>
 
               <div className="bg-white rounded-lg p-6 mb-6">
+                <p className="text-sm text-gray-600 mb-3">Starting at:</p>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-4xl font-bold text-slate-900">$2</span>
-                  <span className="text-gray-500 line-through">$199</span>
-                  <Badge className="bg-red-500 text-white">Save $197</Badge>
+                  <span className="text-4xl font-bold text-slate-900">$89.89</span>
                 </div>
-                <p className="text-sm text-gray-600">One-time payment • Lifetime access • 30-day guarantee</p>
+                <p className="text-sm text-gray-600">Choose from 3 package tiers</p>
               </div>
 
               <Button asChild size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6">
-                <Link href="/checkout">Get Started with {selectedOption?.name} - $2</Link>
+                <Link href="/pricing">View Packages</Link>
               </Button>
 
               <p className="text-center text-sm text-gray-500 mt-4">

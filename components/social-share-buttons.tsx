@@ -27,7 +27,6 @@ export function SocialShareButtons({ url, title, description, className = "" }: 
         description: "Memorial link has been copied to your clipboard.",
       })
     } catch (error) {
-      console.error("Error copying to clipboard:", error)
       toast({
         title: "Error",
         description: "Failed to copy link. Please try again.",
@@ -40,7 +39,7 @@ export function SocialShareButtons({ url, title, description, className = "" }: 
     {
       name: "Facebook",
       icon: Facebook,
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      url: `https://www.facebook.com/dialog/share?app_id=&href=${encodedUrl}&redirect_uri=${encodedUrl}`,
       color: "hover:bg-blue-600 hover:text-white",
     },
     {
@@ -69,6 +68,14 @@ export function SocialShareButtons({ url, title, description, className = "" }: 
     },
   ]
 
+  const handleShare = (link: (typeof shareLinks)[0]) => {
+    if (link.name === "Facebook" || link.name === "Twitter" || link.name === "LinkedIn") {
+      window.open(link.url, "_blank", "noopener,noreferrer,width=600,height=600")
+    } else {
+      window.location.href = link.url
+    }
+  }
+
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
       {shareLinks.map((link) => (
@@ -77,7 +84,7 @@ export function SocialShareButtons({ url, title, description, className = "" }: 
           variant="outline"
           size="sm"
           className={`transition-colors ${link.color}`}
-          onClick={() => window.open(link.url, "_blank", "noopener,noreferrer,width=600,height=400")}
+          onClick={() => handleShare(link)}
         >
           <link.icon className="w-4 h-4 mr-2" />
           {link.name}

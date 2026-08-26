@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ order: result.order }, { status: 201 })
   } catch (error: any) {
-    console.error("[v0] Exception creating order:", error)
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 })
   }
 }

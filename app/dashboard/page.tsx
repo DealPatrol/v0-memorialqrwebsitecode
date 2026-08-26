@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect("/auth/signin")
   }
 
   // Fetch user's memorials
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
               "use server"
               const supabase = await createClient()
               await supabase.auth.signOut()
-              redirect("/auth/login")
+              redirect("/auth/signin")
             }}
           >
             <Button type="submit" variant="outline">

@@ -10,9 +10,10 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
-import { User, Calendar, Upload, FileText, Users, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
+import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
+import { ThemeSelector } from "@/components/theme-selector"
 
 const steps = [
   { id: 1, title: "Basic Information", icon: User },
@@ -33,7 +34,8 @@ export default function CreateMemorialPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderData, setOrderData] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
-  const [isCheckingAuth, setIsCheckingAuth] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isFreePlan, setIsFreePlan] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,56 +45,72 @@ export default function CreateMemorialPage() {
       } = await supabase.auth.getUser()
 
       setUser(user)
+
+      const planParam = searchParams.get("plan")
+
+      if (planParam === "free") {
+        setIsFreePlan(true)
+        setOrderData({
+          customerEmail: "",
+          customerName: "",
+          orderId: null,
+          packageType: "free",
+        })
+        setOrderId(`FREE-${Date.now()}`)
+        setIsCheckingAuth(false)
+        return
+      }
+
+      const pendingOrderData = sessionStorage.getItem("pendingOrder")
+
+      if (!pendingOrderData) {
+        setOrderData({
+          customerEmail: "",
+          customerName: "",
+          orderId: null,
+          packageType: "basic",
+        })
+        setOrderId(`ANON-${Date.now()}`)
+        setIsCheckingAuth(false)
+        return
+      }
+
+      try {
+        const parsedOrderData = JSON.parse(pendingOrderData)
+        setOrderData(parsedOrderData)
+        setOrderId(`ORDER-${parsedOrderData.orderId || Date.now()}`)
+      } catch (error) {
+        console.error("Error parsing order data:", error)
+        setOrderData({
+          customerEmail: "",
+          customerName: "",
+          orderId: null,
+          packageType: "basic",
+        })
+        setOrderId(`ANON-${Date.now()}`)
+      }
+
       setIsCheckingAuth(false)
     }
 
     checkAuth()
-
-    const pendingOrderData = sessionStorage.getItem("pendingOrder")
-
-    if (!pendingOrderData) {
-      toast({
-        title: "Access Denied",
-        description: "Please complete your purchase first to create your memorial.",
-        variant: "destructive",
-      })
-      router.push("/checkout")
-      return
-    }
-
-    try {
-      const parsedOrderData = JSON.parse(pendingOrderData)
-      setOrderData(parsedOrderData)
-      setOrderId(`PENDING-${Date.now()}`)
-    } catch (error) {
-      console.error("[v0] Error parsing order data:", error)
-      router.push("/checkout")
-    }
-  }, [router, toast])
+  }, [router, toast, searchParams])
 
   const [formData, setFormData] = useState({
-    // Step 1: Basic Information
     firstName: "",
     lastName: "",
     dateOfBirth: "",
     dateOfDeath: "",
     location: "",
-
-    // Step 2: Life Details
+    theme: "classic",
     occupation: "",
     hobbies: "",
     achievements: "",
     favoriteQuote: "",
-
-    // Step 3: Photos & Media
     profilePhoto: null as File | null,
     additionalPhotos: [] as File[],
-
-    // Step 4: Biography
     biography: "",
     personalStory: "",
-
-    // Step 5: Family & Friends
     spouse: "",
     children: "",
     parents: "",
@@ -133,15 +151,22 @@ export default function CreateMemorialPage() {
     setIsSubmitting(true)
 
     try {
-      console.log("[v0] Starting memorial creation with data:", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        dateOfBirth: formData.dateOfBirth,
-        dateOfDeath: formData.dateOfDeath,
-        location: formData.location,
-        biography: formData.biography,
-        userId: user?.id || null,
-      })
+      let profileImageUrl = null
+
+      if (formData.profilePhoto) {
+        const formDataBlob = new FormData()
+        formDataBlob.append("file", formData.profilePhoto)
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formDataBlob,
+        })
+
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json()
+          profileImageUrl = uploadData.url
+        }
+      }
 
       const memorialResponse = await fetch("/api/memorials", {
         method: "POST",
@@ -153,48 +178,65 @@ export default function CreateMemorialPage() {
           dateOfDeath: formData.dateOfDeath,
           location: formData.location,
           biography: formData.biography,
-          customerEmail: orderData.customerEmail,
-          customerName: orderData.customerName,
+          customerEmail: user?.email || orderData?.customerEmail || formData.firstName + "@memorial.temp",
+          customerName:
+            user?.user_metadata?.full_name || orderData?.customerName || `${formData.firstName} ${formData.lastName}`,
           userId: user?.id || null,
+          profileImageUrl: profileImageUrl,
+          theme: formData.theme,
+          packageType: isFreePlan ? "free" : orderData?.packageType || "basic",
         }),
       })
 
       if (!memorialResponse.ok) {
         const errorData = await memorialResponse.json()
-        console.error("[v0] Memorial creation failed:", errorData)
         throw new Error(errorData.error || "Failed to create memorial")
       }
 
       const { memorial } = await memorialResponse.json()
-      console.log("[v0] Memorial created successfully:", memorial.id)
 
-      console.log("[v0] Linking memorial to order:", orderData.orderId)
+      if (formData.additionalPhotos.length > 0) {
+        for (const photo of formData.additionalPhotos) {
+          try {
+            const photoFormData = new FormData()
+            photoFormData.append("file", photo)
+            photoFormData.append("memorialId", memorial.id)
+            photoFormData.append("caption", photo.name)
+            photoFormData.append("uploaderName", orderData?.customerName || "Memorial Creator")
 
-      const linkResponse = await fetch("/api/orders/link-memorial", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: orderData.orderId,
-          memorialId: memorial.id,
-        }),
-      })
+            await fetch("/api/photos/upload", {
+              method: "POST",
+              body: photoFormData,
+            })
+          } catch (photoError) {
+            console.error("Error uploading photo:", photoError)
+          }
+        }
+      }
 
-      if (!linkResponse.ok) {
-        const errorData = await linkResponse.json()
-        console.error("[v0] Failed to link memorial to order:", errorData)
-        // Don't throw error - memorial was created successfully
+      if (orderData?.orderId && !isFreePlan) {
+        await fetch("/api/orders/link-memorial", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: orderData.orderId,
+            memorialId: memorial.id,
+          }),
+        })
       }
 
       sessionStorage.removeItem("pendingOrder")
 
       toast({
         title: "Memorial Created Successfully!",
-        description: `Your memorial has been created and linked to order ${orderData.orderNumber}.`,
+        description: isFreePlan
+          ? "Your free memorial is now live! Upgrade anytime to unlock more features."
+          : "Your memorial is now live and ready to share.",
       })
 
-      router.push(`/checkout/confirmation?order=${orderData.orderNumber}`)
+      router.push(`/memorial/${memorial.id}`)
     } catch (error: any) {
-      console.error("[v0] Error creating memorial:", error)
+      console.error("Error creating memorial:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to create memorial. Please contact support.",
@@ -207,39 +249,50 @@ export default function CreateMemorialPage() {
 
   const progress = (currentStep / steps.length) * 100
 
-  if (!orderData) {
+  if (isCheckingAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
         <Card className="max-w-md mx-auto text-center">
           <CardContent className="p-8">
-            <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Purchase Required</h2>
-            <p className="text-gray-600 mb-6">
-              Please purchase a memorial product first to access the memorial creation form.
-            </p>
-            <Button asChild className="bg-purple-600 hover:bg-purple-700">
-              <Link href="/checkout">Go to Checkout</Link>
-            </Button>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading...</p>
           </CardContent>
         </Card>
       </div>
     )
   }
 
+  if (!orderData) {
+    return null // This shouldn't happen now, but safety check
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100">
       <Header />
 
-      {/* Order Confirmation Banner */}
-      <div className="bg-green-50 border-b border-green-200 py-3">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 text-green-700">
-            <CheckCircle className="w-5 h-5" />
-            <span className="font-semibold">Payment Confirmed!</span>
-            <span>Now create your digital memorial</span>
+      {!isFreePlan && orderData.orderId && (
+        <div className="bg-green-50 border-b border-green-200 py-3">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-2 text-green-700">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-semibold">Payment Confirmed!</span>
+              <span>Now create your digital memorial</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {isFreePlan && (
+        <div className="bg-blue-50 border-b border-blue-200 py-3">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-2 text-blue-700">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-semibold">Free Memorial</span>
+              <span>Create your memorial at no cost</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Progress Header */}
       <section className="py-8 bg-white border-b">
@@ -299,59 +352,71 @@ export default function CreateMemorialPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="firstName">First Name *</Label>
-                      <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => handleInputChange("firstName", e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName">Last Name *</Label>
-                      <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => handleInputChange("lastName", e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                      <Input
-                        id="dateOfBirth"
-                        type="date"
-                        value={formData.dateOfBirth}
-                        onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="dateOfDeath">Date of Passing *</Label>
-                      <Input
-                        id="dateOfDeath"
-                        type="date"
-                        value={formData.dateOfDeath}
-                        onChange={(e) => handleInputChange("dateOfDeath", e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-
                   <div>
-                    <Label htmlFor="location">Location *</Label>
-                    <Input
-                      id="location"
-                      placeholder="City, State"
-                      value={formData.location}
-                      onChange={(e) => handleInputChange("location", e.target.value)}
-                      required
-                    />
+                    <Label className="text-base font-semibold mb-3 block">Memorial Theme</Label>
+                    <p className="text-sm text-slate-600 mb-4">
+                      Choose a theme that reflects your loved one's personality and life
+                    </p>
+                    <ThemeSelector value={formData.theme} onChange={(theme) => handleInputChange("theme", theme)} />
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <Label className="text-base font-semibold mb-3 block">Personal Details</Label>
+
+                    <div className="grid md:grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <Label htmlFor="firstName">First Name *</Label>
+                        <Input
+                          id="firstName"
+                          value={formData.firstName}
+                          onChange={(e) => handleInputChange("firstName", e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lastName">Last Name *</Label>
+                        <Input
+                          id="lastName"
+                          value={formData.lastName}
+                          onChange={(e) => handleInputChange("lastName", e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                        <Input
+                          id="dateOfBirth"
+                          type="date"
+                          value={formData.dateOfBirth}
+                          onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="dateOfDeath">Date of Passing *</Label>
+                        <Input
+                          id="dateOfDeath"
+                          type="date"
+                          value={formData.dateOfDeath}
+                          onChange={(e) => handleInputChange("dateOfDeath", e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <Label htmlFor="location">Location *</Label>
+                      <Input
+                        id="location"
+                        placeholder="City, State"
+                        value={formData.location}
+                        onChange={(e) => handleInputChange("location", e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>

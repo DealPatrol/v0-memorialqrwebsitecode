@@ -2,10 +2,9 @@
 
 import { useState } from "react"
 import { CreditCard, PaymentForm } from "react-square-web-payments-sdk"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2 } from "lucide-react"
+import { Loader2 } from 'lucide-react'
 
 interface SquarePaymentFormProps {
   amount: number
@@ -35,8 +34,11 @@ export function SquarePaymentForm({
     setIsProcessing(true)
 
     try {
-      console.log("[v0] Starting payment with token:", token)
-      console.log("[v0] Payment details:", { amount, orderId })
+      if (!token || !token.token) {
+        throw new Error("Invalid payment token received from Square")
+      }
+
+      console.log("[v0] Processing payment for order:", orderId, "Amount:", amount)
 
       const response = await fetch("/api/square/create-payment", {
         method: "POST",
@@ -50,20 +52,16 @@ export function SquarePaymentForm({
         }),
       })
 
-      console.log("[v0] Response status:", response.status)
-      console.log("[v0] Response headers:", Object.fromEntries(response.headers.entries()))
+      console.log("[v0] Payment response status:", response.status)
 
-      const contentType = response.headers.get("content-type")
-      console.log("[v0] Content-Type:", contentType)
-
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text()
-        console.log("[v0] Non-JSON response body:", text)
-        throw new Error("Server returned an invalid response. Please try again.")
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.log("[v0] Payment error response:", errorData)
+        throw new Error(errorData.error || "Payment processing failed. Please try again.")
       }
 
       const data = await response.json()
-      console.log("[v0] Response data:", data)
+      console.log("[v0] Payment data:", data)
 
       if (data.success) {
         toast({
@@ -82,11 +80,42 @@ export function SquarePaymentForm({
         variant: "destructive",
       })
       onError?.(error.message)
+    } finally {
       setIsProcessing(false)
     }
   }
 
-  if (!process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || !process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID) {
+  const handlePaymentError = (errors: any) => {
+    console.error("[v0] Square tokenization error:", errors)
+
+    let errorMessage = "Unable to process card information. Please try again."
+
+    if (errors && Array.isArray(errors) && errors.length > 0) {
+      const error = errors[0]
+      console.log("[v0] First error:", error)
+      if (error.type === "VALIDATION_ERROR") {
+        errorMessage = "Please check your card details and try again."
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+    }
+
+    toast({
+      title: "Payment Error",
+      description: errorMessage,
+      variant: "destructive",
+    })
+
+    onError?.(errorMessage)
+    setIsProcessing(false)
+  }
+
+  const appId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID
+  const locId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
+
+  console.log("[v0] Square config check - AppId exists:", !!appId, "LocationId exists:", !!locId)
+
+  if (!appId || !locId) {
     return (
       <Card>
         <CardHeader>
@@ -110,22 +139,30 @@ export function SquarePaymentForm({
       </CardHeader>
       <CardContent>
         <PaymentForm
-          applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID}
-          locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID}
+          applicationId={appId}
+          locationId={locId}
           cardTokenizeResponseReceived={handlePayment}
+          createPaymentRequest={() => ({
+            countryCode: "US",
+            currencyCode: "USD",
+            total: {
+              amount: amount.toString(),
+              label: "Total",
+            },
+          })}
         >
-          <CreditCard />
-          <Button type="submit" className="w-full mt-4" disabled={isProcessing || disabled}>
-            {isProcessing || disabled ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              `Pay $${amount.toFixed(2)}`
-            )}
-          </Button>
+          <CreditCard
+            buttonProps={{
+              isLoading: isProcessing || disabled,
+            }}
+          />
         </PaymentForm>
+        {(isProcessing || disabled) && (
+          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Processing...</span>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

@@ -41,16 +41,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Uploader name required" }, { status: 400 })
     }
 
-    console.log("[v0] Uploading video to Vercel Blob...")
-
-    let blob
+    let videoUrl
     try {
-      blob = await put(`memorials/${memorialId}/videos/${Date.now()}-${file.name}`, file, {
+      const timestamp = Date.now()
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
+      const blobPath = `memorials/${memorialId}/videos/${timestamp}-${sanitizedFileName}`
+
+      const blob = await put(blobPath, file, {
         access: "public",
+        addRandomSuffix: false,
       })
-      console.log("[v0] Video uploaded to Blob:", blob.url)
-    } catch (blobError: any) {
-      console.error("[v0] Blob upload failed")
+
+      videoUrl = blob.url
+    } catch (uploadError: any) {
       return NextResponse.json(
         {
           error:
@@ -60,33 +63,45 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data: memorial, error: memorialError } = await supabase
-      .from("memorials")
-      .select("id")
-      .eq("slug", memorialId)
-      .maybeSingle()
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
 
-    if (memorialError) {
-      console.error("[v0] Error fetching memorial:", memorialError)
-      return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
+    let memorial
+    if (isUUID) {
+      const { data, error: memorialError } = await supabase
+        .from("memorials")
+        .select("id")
+        .eq("id", memorialId)
+        .maybeSingle()
+
+      if (memorialError) {
+        return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
+      }
+      memorial = data
+    } else {
+      const { data, error: memorialError } = await supabase
+        .from("memorials")
+        .select("id")
+        .eq("slug", memorialId)
+        .maybeSingle()
+
+      if (memorialError) {
+        return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
+      }
+      memorial = data
     }
 
     if (!memorial) {
-      console.error("[v0] Memorial not found:", memorialId)
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 
-    console.log("[v0] Found memorial UUID:", memorial.id)
-
     const userId = user?.id || null
-    console.log("[v0] User ID:", userId)
 
     const { data: video, error: dbError } = await supabase
       .from("videos")
       .insert({
         memorial_id: memorial.id,
         user_id: userId,
-        video_url: blob.url,
+        video_url: videoUrl,
         title: title,
         uploaded_by: uploadedBy,
       })
@@ -94,20 +109,23 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (dbError) {
-      console.error("[v0] Database error:", dbError)
-      console.error("[v0] Error details:", JSON.stringify(dbError, null, 2))
       return NextResponse.json({ error: `Database error: ${dbError.message}` }, { status: 500 })
     }
-
-    console.log("[v0] Video saved to database:", video)
 
     return NextResponse.json({
       success: true,
       video,
-      url: blob.url,
+      url: videoUrl,
     })
-  } catch (error) {
-    console.error("[v0] Upload error:", error)
-    return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 500 })
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        error: error?.message || "Upload failed. Please try again.",
+      },
+      { status: 500 },
+    )
   }
 }
+
+export const runtime = "edge"
+export const maxDuration = 60

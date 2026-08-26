@@ -16,21 +16,30 @@ export default function OrderConfirmationPage() {
 
   useEffect(() => {
     if (!orderNumber) {
+      console.log("[v0] Confirmation - No order number in URL, redirecting to home")
       router.push("/")
       return
     }
 
+    console.log("[v0] Confirmation - Fetching order details for:", orderNumber)
+
     // Fetch order details
     fetch(`/api/orders/${orderNumber}`)
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("[v0] Confirmation - Order fetch response status:", res.status)
+        return res.json()
+      })
       .then((data) => {
+        console.log("[v0] Confirmation - Order fetch response data:", data)
         if (data.success) {
           setOrder(data.order)
+        } else {
+          console.error("[v0] Confirmation - Order fetch failed:", data.error)
         }
         setLoading(false)
       })
       .catch((error) => {
-        console.error("[v0] Error fetching order:", error)
+        console.error("[v0] Confirmation - Error fetching order:", error)
         setLoading(false)
       })
   }, [orderNumber, router])
@@ -225,7 +234,7 @@ export default function OrderConfirmationPage() {
               </div>
               <p className="text-sm text-muted-foreground mt-4">
                 Want to manage your memorial later?{" "}
-                <Link href="/auth/sign-up" className="text-primary hover:underline font-medium">
+                <Link href="/auth/signup" className="text-primary hover:underline font-medium">
                   Create a free account
                 </Link>
               </p>
@@ -242,7 +251,7 @@ export default function OrderConfirmationPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button variant="outline" asChild>
-                  <Link href="/auth/sign-up">Create Free Account</Link>
+                  <Link href="/auth/signup">Create Free Account</Link>
                 </Button>
                 <Button variant="ghost" asChild>
                   <Link href="/">Return Home</Link>

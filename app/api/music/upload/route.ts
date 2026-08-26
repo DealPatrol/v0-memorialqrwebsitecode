@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       })
       console.log("[v0] Music uploaded to Blob:", blob.url)
     } catch (blobError) {
-      console.error("[v0] Blob upload error:", blobError)
+      console.error("Blob upload error:", blobError)
       return NextResponse.json(
         { error: "Failed to upload audio file. The file may be too large or there may be a storage issue." },
         { status: 500 },
@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (dbError) {
-      console.error("[v0] Database error:", dbError)
+      console.error("Database error:", dbError)
       return NextResponse.json({ error: "Failed to save music" }, { status: 500 })
     }
 
     console.log("[v0] Music uploaded successfully:", music.id)
     return NextResponse.json({ music })
   } catch (error) {
-    console.error("[v0] Upload error:", error)
+    console.error("Upload error:", error)
     return NextResponse.json({ error: "Failed to upload music" }, { status: 500 })
   }
 }

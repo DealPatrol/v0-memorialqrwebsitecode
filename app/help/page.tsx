@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
-import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from "lucide-react"
+import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from 'lucide-react'
 
 const helpCategories = [
   {
@@ -54,7 +54,7 @@ const quickLinks = [
     title: "Video Tutorials",
     description: "Step-by-step video guides",
     icon: Video,
-    href: "#",
+    href: "/how-it-works",
   },
   {
     title: "Phone Support",
@@ -66,7 +66,7 @@ const quickLinks = [
     title: "Email Support",
     description: "Send us your questions",
     icon: Mail,
-    href: "mailto:support@memorialqr.com",
+    href: "mailto:support@memorialsQR.com",
   },
 ]
 
@@ -141,7 +141,7 @@ export default function HelpPage() {
                     {category.articles.map((article, articleIndex) => (
                       <li key={articleIndex}>
                         <Link
-                          href="#"
+                          href="/faq"
                           className="text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-2"
                         >
                           <span className="w-2 h-2 bg-orange-600 rounded-full" />

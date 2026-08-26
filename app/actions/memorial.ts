@@ -17,19 +17,15 @@ export async function createMemorialFromOrder(
   try {
     const supabase = await createClient()
 
-    // Generate slug from full name
     const slug = memorialData.fullName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "")
 
-    // Check if slug already exists
     const { data: existing } = await supabase.from("memorials").select("id").eq("slug", slug).single()
 
-    // If slug exists, append a number
     const finalSlug = existing ? `${slug}-${Date.now()}` : slug
 
-    // Create memorial
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .insert({
@@ -45,22 +41,13 @@ export async function createMemorialFromOrder(
       .single()
 
     if (memorialError) {
-      console.error("[v0] Error creating memorial:", memorialError)
       return { success: false, error: memorialError.message }
     }
 
-    // Link memorial to order
     const { error: linkError } = await supabase.from("orders").update({ memorial_id: memorial.id }).eq("id", orderId)
 
-    if (linkError) {
-      console.error("[v0] Error linking memorial to order:", linkError)
-      // Memorial was created but linking failed - not critical
-    }
-
-    console.log("[v0] Memorial created and linked to order:", memorial.id)
     return { success: true, memorial }
   } catch (error: any) {
-    console.error("[v0] Exception creating memorial:", error)
     return { success: false, error: error.message }
   }
 }

@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
                   Click the link in the email to reset your password. The link will expire in 1 hour.
                 </p>
                 <Button asChild className="w-full bg-transparent" variant="outline">
-                  <Link href="/auth/login">
+                  <Link href="/auth/signin">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Login
                   </Link>
@@ -115,7 +115,7 @@ export default function ForgotPasswordPage() {
               </div>
               <div className="mt-4 text-center text-sm">
                 Remember your password?{" "}
-                <Link href="/auth/login" className="underline underline-offset-4 text-purple-600">
+                <Link href="/auth/signin" className="underline underline-offset-4 text-purple-600">
                   Sign in
                 </Link>
               </div>

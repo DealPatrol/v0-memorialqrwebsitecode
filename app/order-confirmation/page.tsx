@@ -157,7 +157,7 @@ export default function OrderConfirmationPage() {
                     Create a free account to edit your memorial, add more photos and stories, and track your order
                     anytime.
                   </p>
-                  <Link href="/auth/sign-up">
+                  <Link href="/auth/signup">
                     <Button variant="outline" className="bg-white">
                       Create Free Account
                     </Button>

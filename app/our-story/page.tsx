@@ -4,6 +4,39 @@ import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
 import { Heart, Star, Users, ArrowRight } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Our Story - Built with Love for Grandma Glenda | Memorial QR",
+  description:
+    "The personal story behind Memorial QR. Founded by Cole Collins to honor his grandmother Glenda Kelso and help families preserve precious memories forever.",
+  keywords:
+    "memorial QR story, founder story, why memorial QR, Glenda Kelso, Cole Collins, memorial inspiration, family memorial",
+  openGraph: {
+    title: "Our Story - Why We Built Memorial QR",
+    description:
+      "Founded by Cole Collins to honor his grandmother Glenda Kelso. Learn the personal story behind our mission to preserve memories forever.",
+    type: "website",
+    url: "https://memorialsqr.com/our-story",
+    images: [
+      {
+        url: "https://memorialsqr.com/glenda-memorial-portrait.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Glenda Kelso - The inspiration behind Memorial QR",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Story Behind Memorial QR - Built for Grandma Glenda",
+    description: "A personal mission to ensure no family's stories are ever forgotten",
+    images: ["https://memorialsqr.com/glenda-memorial-portrait.jpeg"],
+  },
+  alternates: {
+    canonical: "https://memorialsqr.com/our-story",
+  },
+}
 
 export default function OurStoryPage() {
   return (

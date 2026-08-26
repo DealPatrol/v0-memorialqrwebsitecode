@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
+import type { Metadata } from "next"
+import { FAQSchema, BreadcrumbSchema } from "@/components/seo/structured-data"
 
 const faqCategories = [
   {
@@ -38,10 +40,10 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "No! Memorial QR is a one-time payment of $119.99 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
+          "No! Memorial QR is a one-time payment starting at $39.89 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
       },
       {
-        question: "What's included in the $119.99 price?",
+        question: "What's included in the price?",
         answer:
           "Everything! You get a complete digital memorial website, unlimited photo uploads, guest message board, a weatherproof QR code plaque with professional engraving, free shipping, and lifetime hosting. No additional costs.",
       },
@@ -144,9 +146,51 @@ const faqCategories = [
   },
 ]
 
+const allFaqs = faqCategories.flatMap((category) => category.faqs)
+
+export const metadata: Metadata = {
+  title: "FAQ - Frequently Asked Questions About QR Memorial Plaques",
+  description:
+    "Get answers about Memorial QR: pricing ($39.89+), QR code plaques, digital memorials, lifetime hosting, free shipping, 30-day guarantee, and 24/7 support.",
+  keywords:
+    "memorial FAQ, QR code plaque questions, digital memorial help, memorial pricing, memorial support, QR memorial answers, cemetery QR code FAQ",
+  openGraph: {
+    title: "Memorial QR FAQ - Your Questions Answered",
+    description:
+      "Find answers about creating digital memorials, QR code plaques, pricing, shipping, and our lifetime hosting guarantee.",
+    type: "website",
+    url: "https://memorialsqr.com/faq",
+    images: [
+      {
+        url: "https://memorialsqr.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Memorial QR FAQ",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Memorial QR FAQ - Your Questions Answered",
+    description: "Get answers about pricing, setup, QR plaques, and our lifetime guarantee",
+    images: ["https://memorialsqr.com/og-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://memorialsqr.com/faq",
+  },
+}
+
 export default function FAQPage() {
   return (
     <div className="min-h-screen bg-white">
+      <FAQSchema faqs={allFaqs} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://memorialsqr.com" },
+          { name: "FAQ", url: "https://memorialsqr.com/faq" },
+        ]}
+      />
+
       <Header />
 
       {/* Hero Section */}
@@ -233,7 +277,7 @@ export default function FAQPage() {
                     variant="outline"
                     className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
                   >
-                    <Link href="mailto:support@memorialqr.com">Email Us</Link>
+                    <Link href="mailto:support@memorialsQR.com">Email Us</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -246,7 +290,7 @@ export default function FAQPage() {
                   <Button
                     asChild
                     variant="outline"
-                    className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
+                    className="border-orange-600 text-orange-600 hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
                   >
                     <Link href="/help">Visit Help Center</Link>
                   </Button>
@@ -272,7 +316,7 @@ export default function FAQPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/create-profile">Create Memorial - $119.99</Link>
+              <Link href="/create-profile">Create Memorial - $39.89</Link>
             </Button>
 
             <Button
@@ -356,7 +400,7 @@ export default function FAQPage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
+            <p>&copy; 2025 Memorial QR. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -6,21 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, XCircle } from "lucide-react"
 import { generateOrderId } from "@/lib/utils"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function TestSquarePage() {
-  const [testAmount, setTestAmount] = useState(100) // $1.00 in cents
-  const [paymentResult, setPaymentResult] = useState<{
-    success: boolean
-    message: string
-  } | null>(null)
+  const router = useRouter()
 
-  const handlePaymentSuccess = (result: any) => {
-    console.log("[v0] Payment successful:", result)
-    setPaymentResult({
-      success: true,
-      message: `Payment successful! Transaction ID: ${result.payment?.id || "N/A"}`,
-    })
-  }
+  useEffect(() => {
+    // Redirect to homepage - test page disabled in production
+    router.push("/")
+  }, [router])
 
   const handlePaymentError = (error: string) => {
     console.log("[v0] Payment error:", error)
@@ -128,4 +123,5 @@ export default function TestSquarePage() {
       </div>
     </div>
   )
+  return null
 }
