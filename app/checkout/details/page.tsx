@@ -12,6 +12,7 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
+import { generateOrderId } from "@/lib/utils"
 import { useSearchParams } from "next/navigation"
 
 const PRODUCTS = {
@@ -471,7 +472,7 @@ export default function CheckoutDetailsPage() {
                 <CardContent>
                   <SquarePaymentForm
                     amount={calculateTotal()}
-                    orderId={`order_${Date.now()}`}
+                    orderId={generateOrderId()}
                     onSuccess={handlePaymentSuccess}
                     onError={(error) => {
                       console.error("Payment error:", error)
