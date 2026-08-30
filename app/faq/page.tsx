@@ -11,7 +11,7 @@ import { JsonLd } from "@/components/json-ld"
 export const metadata: Metadata = {
   title: "Memorial QR FAQ | Tombstone QR Codes Calgary Northeast | Common Questions",
   description:
-    "Answers to frequently asked questions about Memorial QR codes for tombstones, headstones, and pet memorials. Calgary Northeast cemetery QR plaque installation, pricing, durability, and lifetime hosting explained.",
+    "Answers to frequently asked questions about Memorial QR products, installation, pricing, durability, and $4.99 monthly digital hosting.",
   keywords:
     "memorial QR FAQ Calgary, tombstone QR questions, headstone QR code durability, cemetery plaque Calgary Northeast, pet memorial QR answers, gravestone QR installation guide Alberta",
   alternates: {
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Memorial QR FAQ | Calgary Northeast Tombstone QR Code Questions",
     description:
-      "Get answers about memorial QR codes for Calgary cemeteries. Durability, installation, pricing, and lifetime support.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/faq`,
+      "Get answers about memorial QR codes, installation, product pricing, and monthly digital hosting.",
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/faq`,
   },
 }
 
@@ -57,12 +57,17 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "No! Memorial QR is a one-time payment of $119.99 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
+          "Physical products are one-time purchases. Digital memorial hosting is billed separately at $4.99 per month per memorial.",
       },
       {
-        question: "What's included in the $119.99 price?",
+        question: "What's included in the product price?",
         answer:
-          "Everything! You get a complete digital memorial website, unlimited photo uploads, guest message board, a weatherproof QR code plaque with professional engraving, free shipping, and lifetime hosting. No additional costs.",
+          "The price shown in the store covers the physical product in your cart. Digital memorial hosting is a separate $4.99 monthly charge per memorial.",
+      },
+      {
+        question: "What happens if I cancel my hosting subscription?",
+        answer:
+          "You will not be charged for another billing period. The physical product remains yours, but the hosted memorial may become unavailable after the paid period ends. Contact support before canceling if you need help preserving a copy of your content.",
       },
       {
         question: "Do you offer refunds?",
@@ -97,7 +102,7 @@ const faqCategories = [
       {
         question: "What if the QR code stops working?",
         answer:
-          "QR codes don't 'expire' or stop working. As long as our service is running (which is guaranteed for life), the QR code will always link to the memorial. If there are ever technical issues, we'll resolve them immediately at no cost.",
+          "The printed QR code does not expire, but it links to the hosted memorial and needs an active hosting plan. Contact support if an active memorial is not loading.",
       },
       {
         question: "How long does shipping take?",
@@ -194,92 +199,18 @@ const faqCategories = [
 ]
 
 export default function FAQPage() {
-  // Build FAQ schema from the faqCategories data
+  const allFaqs = faqCategories.flatMap((category) => category.faqs)
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "How long do memorial QR codes last?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Memorial QR codes from MemorialsQR include lifetime hosting and are made from weather-resistant materials designed to last as long as the headstone itself.",
-        },
+    mainEntity: allFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
       },
-      {
-        "@type": "Question",
-        name: "Are memorial QR codes weather-resistant?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes, our plaques are engineered for permanence using UV-resistant materials with sealed QR codes that withstand rain, extreme heat, and freezing temperatures.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Can I update the content on the QR code after it is installed?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes, you can upload unlimited photos and videos and update the digital memorial page at any time without needing to change the physical QR plaque.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "How do I create a memorial?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Creating a memorial is simple! Click 'Create Memorial' and fill out our guided form with your loved one's information, photos, and stories. The process takes about 15-20 minutes, and you can save your progress at any time.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Are there any monthly fees?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "No! Memorial QR is a one-time payment of $119.99 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Do you offer refunds?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes, we offer a 30-day money-back guarantee. If you're not completely satisfied with your memorial for any reason, contact us within 30 days for a full refund.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "How durable is the QR code plaque?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Our QR code plaques are made from weatherproof metal with UV-resistant coating and professional laser engraving. They're designed to withstand rain, snow, sun, and extreme temperatures for decades. We offer a 5-year durability guarantee.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Can I add more photos later?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "You can log into your account anytime to add more photos, update information, or make changes to the memorial. There's no limit to the number of photos you can upload.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Can visitors leave messages?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes! Visitors can leave condolence messages, share memories, and express their thoughts. You can moderate these messages and choose which ones to display publicly.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What if someone can't scan the QR code?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Most smartphones can scan QR codes with their built-in camera app. For older phones, we recommend downloading a free QR code scanner app. We also provide a short URL as a backup that people can type in manually.",
-        },
-      },
-    ],
+    })),
   }
 
   return (
@@ -299,7 +230,7 @@ export default function FAQPage() {
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Find answers to common questions about creating digital memorials, QR code plaques, pricing, and more. Can't
-            find what you're looking for? Our support team is here to help 24/7.
+            find what you're looking for? Contact our support team for help.
           </p>
 
           <Button asChild size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
@@ -346,7 +277,7 @@ export default function FAQPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Still Need Help?</h2>
             <p className="text-xl text-gray-600 mb-12">
-              Our friendly support team is available 24/7 to help you create the perfect memorial for your loved one.
+              Our support team can help you create a memorial for your loved one.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -365,7 +296,7 @@ export default function FAQPage() {
                 <CardContent className="p-8 text-center">
                   <Mail className="w-12 h-12 text-orange-600 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h3>
-                  <p className="text-gray-600 mb-4">Send us your questions and we'll respond within 2 hours.</p>
+                  <p className="text-gray-600 mb-4">Send us your questions and we'll respond as soon as we can.</p>
                   <Button
                     asChild
                     variant="outline"
@@ -410,7 +341,7 @@ export default function FAQPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/create-profile">Create Memorial - $119.99</Link>
+              <Link href="/store">Shop Memorial Products</Link>
             </Button>
 
             <Button

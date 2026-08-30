@@ -2,8 +2,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
-import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
-import { CustomerTestimonials } from "@/components/customer-testimonials"
 import { ProductSelector } from "@/components/product-selector"
 import { ScrollProgressBar } from "@/components/scroll-progress-bar"
 import { QuickLinksBar } from "@/components/quick-links-bar"
@@ -12,8 +10,6 @@ import { TrustBadges } from "@/components/trust-badges"
 import { FAQPreview } from "@/components/faq-preview"
 import { RelatedContentLinks } from "@/components/related-content-links"
 import { EmailCollectionPopup } from "@/components/email-collection-popup"
-import { ExpertEndorsements } from "@/components/expert-endorsements"
-import { CaseStudies } from "@/components/case-studies"
 import {
   Heart,
   QrCode,
@@ -58,7 +54,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">Lifetime Access</span>
+                <span className="text-sm font-medium text-foreground">$4.99/month Hosting</span>
               </div>
             </div>
           </div>
@@ -141,7 +137,7 @@ export default function HomePage() {
                 memorial gardens, our plaques maintain perfect scan-ability for decades.
               </p>
 
-              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Easy Setup, Lifetime Access</h3>
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Easy Setup, Ongoing Access</h3>
               <p className="text-base leading-relaxed text-foreground">
                 Creating a memorial QR code is simple. Choose your plaque style (Gold, Silver, or Black finish), create
                 your digital memorial page by uploading photos and stories, and receive your custom QR plaque ready to
@@ -170,9 +166,8 @@ export default function HomePage() {
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
                 Our memorial QR codes start at just $14.99 for keychains and coasters, $29.99 for premium plaques, and
-                $49.99 for photo frames. All products include lifetime digital hosting for just $4.99 per month per
-                memorial (not per product). Order multiple items for the same loved one and pay only one monthly hosting
-                fee.
+                $49.99 for photo frames. Digital memorial hosting is a separate $4.99 monthly charge per memorial, not
+                per physical product. Order multiple items for the same loved one and pay only one monthly hosting fee.
               </p>
             </div>
           </div>
@@ -281,22 +276,15 @@ export default function HomePage() {
             <Card className="bg-white border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <Shield className="w-10 h-10 text-primary mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Lifetime Hosting</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Digital Memorial Hosting</h3>
                 <p className="text-muted-foreground text-sm">
-                  Your memorial page will be hosted forever, ensuring lasting access for generations.
+                  Keep the memorial page available with hosting billed at $4.99 per month per memorial.
                 </p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
-
-      {/* Customer Testimonials Section */}
-      <CustomerTestimonials />
-
-      <ExpertEndorsements />
-
-      <CaseStudies />
 
       <FAQPreview />
 
@@ -432,9 +420,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-
-      {/* Sticky CTA */}
-      <HomepageStickyCTA />
 
       {/* Email Collection Popup */}
       <EmailCollectionPopup />

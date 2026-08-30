@@ -283,7 +283,7 @@ export default function ContactPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/create-profile">Create Memorial - $119.99</Link>
+              <Link href="/store">Shop Memorial Products</Link>
             </Button>
 
             <Button

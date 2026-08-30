@@ -1,6 +1,4 @@
-import { Resend } from "resend"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResend } from "@/lib/resend"
 
 interface OrderEmailData {
   customerName: string
@@ -71,7 +69,7 @@ The Memorial QR Team
 Memorial QR - Creating Lasting Digital Memorials
     `.trim()
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR Orders <orders@memorialsqr.com>",
       to: data.customerEmail,
       replyTo: "support@memorialsqr.com",
@@ -249,7 +247,7 @@ export async function sendAdminOrderNotification(data: OrderEmailData) {
   }
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR System <system@memorialsqr.com>",
       to: adminEmail,
       subject: `New Order: ${data.orderNumber}`,
@@ -284,7 +282,7 @@ export async function sendAdminOrderNotification(data: OrderEmailData) {
 
 export async function sendWelcomeEmail(data: WelcomeEmailData) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR <noreply@memorialsqr.com>",
       to: data.customerEmail,
       subject: `Welcome to Your Memorial - ${data.memorialName}`,
@@ -381,7 +379,7 @@ Memorial QR - Creating Lasting Digital Memorials
 Need help? Contact us at support@memorialsQR.com
     `.trim()
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR Support <support@memorialsQR.com>",
       to: data.email,
       replyTo: "support@memorialsQR.com",
@@ -500,7 +498,7 @@ Hi ${data.recipientName},
 ${data.senderName} has sent you a thoughtful gift from Memorial QR: ${data.productName}
 
 ${data.giftMessage ? `PERSONAL MESSAGE:\n"${data.giftMessage}"\n\n` : ""}WHAT'S INCLUDED
-- Digital Memorial Website with lifetime hosting
+- Digital Memorial Website with $4.99/month hosting
 - Beautiful QR code memorial plaque
 - Luxury presentation box
 - Free shipping to your address
@@ -518,7 +516,7 @@ The Memorial QR Team
 Memorial QR - Creating Lasting Digital Memorials
     `.trim()
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Memorial QR Gifts <gifts@memorialsqr.com>",
       to: data.recipientEmail,
       replyTo: "support@memorialsQR.com",
@@ -582,7 +580,7 @@ Memorial QR - Creating Lasting Digital Memorials
                             <td style="padding: 20px;">
                               <h2 style="color: #667eea; margin: 0 0 15px 0; font-size: 18px;">What's Included</h2>
                               <ul style="margin: 0; padding-left: 20px; color: #333; font-size: 14px; line-height: 1.8;">
-                                <li>Digital Memorial Website with lifetime hosting</li>
+                                <li>Digital Memorial Website with $4.99/month hosting</li>
                                 <li>Beautiful QR code memorial plaque</li>
                                 <li>Luxury presentation box</li>
                               </ul>
@@ -654,7 +652,7 @@ export async function sendEmail(options: {
   replyTo?: string
 }) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: options.from || "Memorial QR <noreply@memorialsqr.com>",
       to: options.to,
       replyTo: options.replyTo,

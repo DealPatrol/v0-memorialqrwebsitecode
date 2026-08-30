@@ -149,7 +149,7 @@ export function QRColorSelector() {
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="h-5 w-5 text-green-600 mt-1 flex-shrink-0" />
-                  <p className="text-gray-700">Lifetime access with no monthly fees</p>
+                  <p className="text-gray-700">Digital hosting is $4.99/month per memorial</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="h-5 w-5 text-green-600 mt-1 flex-shrink-0" />

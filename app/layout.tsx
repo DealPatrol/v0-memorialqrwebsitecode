@@ -4,11 +4,8 @@ import { Inter, Dancing_Script, Great_Vibes } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ExitIntentPopup } from "@/components/exit-intent-popup"
 import { LiveChatButton } from "@/components/live-chat-button"
-import { SocialProofTicker } from "@/components/social-proof-ticker"
 import { Footer } from "@/components/footer"
 
 const inter = Inter({
@@ -35,9 +32,9 @@ const greatVibes = Great_Vibes({
 })
 
 export const metadata: Metadata = {
-  title: "Memorial QR Codes | Digital Tombstone & Pet Memorials with Lifetime Hosting",
+  title: "Memorial QR Codes | Digital Tombstone & Pet Memorials",
   description:
-    "Transform cemetery tombstones and pet memorials with weather-resistant QR plaques. Create interactive digital tributes with photos, videos & lifetime hosting. Trusted by 10,000+ families.",
+    "Transform cemetery tombstones and pet memorials with weather-resistant QR plaques and digital hosting for $4.99 per month per memorial.",
   keywords:
     "memorial QR codes, QR code tombstones, headstone memorial tags, cemetery QR codes, gravestone QR plaque, digital memorial, pet memorial QR, tombstone QR code, headstone memorial, memorial services",
   authors: [{ name: "Memorial QR" }],
@@ -48,24 +45,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Memorial QR Codes | Digital Cemetery & Pet Memorials",
     description:
-      "Transform traditional tombstone memorials with weather-resistant QR codes. Create lifetime digital tributes with photos, videos & stories. Trusted by 10,000+ families.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com",
+      "Transform traditional memorials with weather-resistant QR products and digital hosting for $4.99 per month.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
     siteName: "Memorial QR",
-    images: [
-      {
-        url: "/images/41730040-9590-452b-80df.jpeg",
-        width: 1200,
-        height: 630,
-        alt: "Memorial QR Codes for Tombstones & Pet Memorials - Digital Gravestone Tributes with Lifetime Hosting",
-      },
-    ],
     locale: "en_CA",
     type: "website",
   },
@@ -74,10 +63,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Memorial QR Codes | Digital Memorials with Lifetime Hosting",
+    title: "Memorial QR Codes | Digital Memorials",
     description:
-      "Weather-resistant QR plaques for cemetery headstones and pet memorials. Create lasting digital tributes.",
-    images: ["/images/41730040-9590-452b-80df.jpeg"],
+      "Weather-resistant QR products for cemetery headstones and pet memorials with optional digital hosting.",
   },
   robots: {
     index: true,
@@ -91,7 +79,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "your-google-verification-code",
+    google: process.env.GOOGLE_SITE_VERIFICATION,
   },
   generator: "v0.app",
 }
@@ -109,19 +97,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@type": "LocalBusiness",
     name: "Memorial QR",
     description: "Premium memorial QR code service providing digital tombstone memorials and cemetery tributes",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
     telephone: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
     email: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
     priceRange: "$$",
     servesCuisine: null,
     paymentAccepted: ["Credit Card", "Debit Card"],
     openingHours: "Mo-Su 00:00-23:59",
-    image: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/images/41730040-9590-452b-80df.jpeg`,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "10000",
-    },
     sameAs: [],
   }
 
@@ -137,15 +119,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     },
     offers: {
       "@type": "AggregateOffer",
-      priceCurrency: "CAD",
+      priceCurrency: "USD",
       lowPrice: "14.99",
       highPrice: "89.99",
       availability: "https://schema.org/InStock",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "10000",
     },
   }
 
@@ -175,11 +152,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Footer />
           <Toaster />
-          <Analytics />
-          <SpeedInsights />
           <ExitIntentPopup />
           <LiveChatButton />
-          <SocialProofTicker />
         </ThemeProvider>
       </body>
     </html>

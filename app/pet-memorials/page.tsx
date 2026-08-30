@@ -65,7 +65,7 @@ export default function PetMemorialsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-amber-600" />
-              <span>Lifetime Hosting Included</span>
+              <span>Hosting $4.99/month per memorial</span>
             </div>
             <div className="flex items-center gap-2">
               <PawPrint className="w-5 h-5 text-orange-600" />

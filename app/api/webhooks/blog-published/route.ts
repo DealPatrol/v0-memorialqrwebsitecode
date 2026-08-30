@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server"
-import { Resend } from "resend"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResend } from "@/lib/resend"
 
 export async function POST(request: Request) {
   try {
+    const resend = getResend()
     const { slug, title, excerpt, url, image } = await request.json()
 
     // Send to Zapier for email newsletter

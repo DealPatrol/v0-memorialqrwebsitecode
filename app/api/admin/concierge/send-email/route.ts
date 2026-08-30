@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResend } from '@/lib/resend'
 
 export async function POST(request: Request) {
   try {
     const { conciergeRequestId, subject, body, recipientEmail } = await request.json()
+    const resend = getResend()
 
     // Send email via Resend
     const result = await resend.emails.send({

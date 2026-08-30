@@ -105,9 +105,9 @@ export default function SecurityPage() {
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-black mb-2">Lifetime Commitment</h3>
+              <h3 className="font-bold text-black mb-2">Hosting Access</h3>
               <p>
-                Even if Memorial QR closes, your memorial will be preserved. We maintain continuity agreements ensuring data migration to trusted archives if needed.
+                Digital memorial access is provided while the $4.99 monthly hosting plan remains active. Contact support before cancellation if you need help preserving a copy of your content.
               </p>
             </div>
           </div>

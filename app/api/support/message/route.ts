@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server"
-import { Resend } from "resend"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResend } from "@/lib/resend"
 
 export async function POST(request: Request) {
   try {
+    const resend = getResend()
     const { name, email, message } = await request.json()
 
     const result = await resend.emails.send({
