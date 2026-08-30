@@ -1,13 +1,5 @@
 import { NextResponse } from 'next/server'
-import { Resend } from 'resend'
-
-function getResend() {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY is not configured')
-  }
-
-  return new Resend(process.env.RESEND_API_KEY)
-}
+import { getResend } from '@/lib/resend'
 
 export async function POST(request: Request) {
   try {

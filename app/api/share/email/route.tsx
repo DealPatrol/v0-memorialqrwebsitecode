@@ -1,10 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { Resend } from "resend"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResend } from "@/lib/resend"
 
 export async function POST(request: NextRequest) {
   try {
+    const resend = getResend()
     const body = await request.json()
     const { memorialId, memorialName, memorialUrl, recipientEmail } = body
 

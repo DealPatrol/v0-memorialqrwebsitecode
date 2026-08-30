@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { Resend } from "resend"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResend } from "@/lib/resend"
 
 export async function POST(request: Request) {
   try {
+    const resend = getResend()
     const { slug, title, excerpt, imageUrl } = await request.json()
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"
     const postUrl = `${siteUrl}/blog/${slug}`
