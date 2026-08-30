@@ -26,6 +26,19 @@ type Memorial = {
   memorial_type?: "human" | "pet"
 }
 
+const glendaMemorial: Memorial = {
+  id: "glenda-kelso",
+  full_name: "Glenda Jane Kelso",
+  birth_date: "1952-07-27",
+  death_date: "2025-08-27",
+  location: null,
+  biography: "The memorial that inspired Cole Collins to create Memorial QR.",
+  profile_image_url: null,
+  slug: "glenda-kelso",
+  created_at: "2025-08-27T00:00:00.000Z",
+  memorial_type: "human",
+}
+
 function BrowseMemorialsContent() {
   const searchParams = useSearchParams()
   const initialType = searchParams.get("type") || "all"
@@ -34,7 +47,7 @@ function BrowseMemorialsContent() {
   const [sortBy, setSortBy] = useState("recent")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [memorialType, setMemorialType] = useState<"all" | "human" | "pet">(initialType as "all" | "human" | "pet")
-  const [memorials, setMemorials] = useState<Memorial[]>([])
+  const [memorials, setMemorials] = useState<Memorial[]>([glendaMemorial])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -46,7 +59,12 @@ function BrowseMemorialsContent() {
         if (error) {
           console.error("Error fetching memorials:", error)
         } else {
-          setMemorials(data || [])
+          const fetchedMemorials = data || []
+          setMemorials(
+            fetchedMemorials.some((memorial) => memorial.slug === glendaMemorial.slug)
+              ? fetchedMemorials
+              : [glendaMemorial, ...fetchedMemorials],
+          )
         }
       } catch (error) {
         console.error("Error:", error)

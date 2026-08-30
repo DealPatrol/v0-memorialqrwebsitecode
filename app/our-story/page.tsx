@@ -2,7 +2,6 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import Image from "next/image"
 import { Heart, Star, Users, ArrowRight } from "lucide-react"
 
 export default function OurStoryPage() {
@@ -28,14 +27,13 @@ export default function OurStoryPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-              <div>
-                <Image
-                  src="/glenda-memorial-portrait.jpeg"
-                  alt="Glenda Kelso - The inspiration behind Memorial QR"
-                  width={400}
-                  height={500}
-                  className="rounded-lg shadow-lg"
-                />
+              <div className="flex min-h-80 items-center justify-center rounded-lg bg-gradient-to-br from-purple-100 to-blue-100 shadow-lg">
+                <div className="text-center">
+                  <Heart className="mx-auto mb-4 size-16 text-purple-600" />
+                  <p className="text-2xl font-semibold text-slate-900">In memory of</p>
+                  <p className="mt-2 text-xl text-slate-700">Glenda Jane Kelso</p>
+                  <p className="mt-2 text-sm text-slate-600">July 27, 1952 – August 27, 2025</p>
+                </div>
               </div>
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">The Reason I Started This</h2>
@@ -43,7 +41,7 @@ export default function OurStoryPage() {
                   Hey, I'm <strong>Cole Collins</strong>.
                 </p>
                 <p className="text-lg text-gray-700 mb-6">
-                  I built Memorial Star QR for my grandma, <strong>Glenda Kelso</strong>.
+                  I built Memorial QR for my grandma, <strong>Glenda Jane Kelso</strong>.
                 </p>
                 <div className="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-600">
                   <p className="text-gray-800 italic">
@@ -117,7 +115,7 @@ export default function OurStoryPage() {
               <div className="text-center my-12">
                 <p className="text-lg text-gray-700 mb-2">Thanks for listening,</p>
                 <p className="text-xl font-bold text-gray-900">Cole Collins</p>
-                <p className="text-gray-600">Founder, Memorial Star QR & Glenda's Grandson</p>
+                <p className="text-gray-600">Founder, Memorial QR & Glenda's Grandson</p>
               </div>
             </div>
           </div>

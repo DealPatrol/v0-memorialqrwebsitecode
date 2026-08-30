@@ -4,8 +4,7 @@ import Image from "next/image"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Star, ShoppingCart, Check, Info } from "lucide-react"
+import { ShoppingCart, Check, Info } from "lucide-react"
 
 const products = [
   {
@@ -13,8 +12,6 @@ const products = [
     name: "Vintage Flower of Life Urn Necklace with Mini Jar Cremation Locket",
     price: 39.99,
     monthlyFee: 4.99,
-    rating: 5.0,
-    reviews: 89,
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/04933625-2735-47aa-b480-d34dc7292a74.jpeg",
     badge: "Most Popular",
     category: "Human",
@@ -32,8 +29,6 @@ const products = [
     name: "Memorial QR Code Wooden Keychain or Necklace",
     price: 14.99,
     monthlyFee: 4.99,
-    rating: 4.9,
-    reviews: 487,
     image: "/images/17c80bbb-d33f-4068-8656.jpeg",
     badge: "Best Seller",
     category: "Human",
@@ -51,8 +46,6 @@ const products = [
     name: "Memorial Slate Coaster with QR Code",
     price: 24.99,
     monthlyFee: 4.99,
-    rating: 4.8,
-    reviews: 203,
     image: "/images/slate-memorial-coaster.jpeg",
     badge: "Popular",
     category: "Human",
@@ -70,8 +63,6 @@ const products = [
     name: "Memorial Photo Frame with QR Code",
     price: 49.99,
     monthlyFee: 4.99,
-    rating: 4.9,
-    reviews: 156,
     image: "/images/0d120a50-1c8d-4a75-a564.jpeg",
     badge: "Premium",
     category: "Human",
@@ -89,8 +80,6 @@ const products = [
     name: "Wooden Cremation Urn with QR Memorial Plaque",
     price: 89.99,
     monthlyFee: 4.99,
-    rating: 4.9,
-    reviews: 312,
     image: "/images/human-cremation-urn-wood.jpg",
     badge: "Premium",
     category: "Human",
@@ -108,8 +97,6 @@ const products = [
     name: "Pet Memorial Collar with QR Code Tag",
     price: 19.99,
     monthlyFee: 4.99,
-    rating: 4.8,
-    reviews: 421,
     image: "/images/pet-collar-memorial.jpg",
     badge: "Pet",
     category: "Pet",
@@ -127,8 +114,6 @@ const products = [
     name: "Pet Memorial Garden Stone with QR Code",
     price: 44.99,
     monthlyFee: 4.99,
-    rating: 4.9,
-    reviews: 287,
     image: "/images/pet-tombstone-garden.jpg",
     badge: "Pet",
     category: "Pet",
@@ -146,8 +131,6 @@ const products = [
     name: "Wooden Pet Cremation Urn with QR Code",
     price: 34.99,
     monthlyFee: 4.99,
-    rating: 4.9,
-    reviews: 534,
     image: "/images/pet-cremation-urn-wood.jpg",
     badge: "Best Seller",
     category: "Pet",
@@ -165,8 +148,6 @@ const products = [
     name: "Ceramic Pet Cremation Urn with QR Memorial",
     price: 39.99,
     monthlyFee: 4.99,
-    rating: 4.8,
-    reviews: 198,
     image: "/images/pet-urn-ceramic.jpg",
     badge: "Pet",
     category: "Pet",
@@ -184,8 +165,6 @@ const products = [
     name: "Pet Memorial Photo Frame with QR Code",
     price: 29.99,
     monthlyFee: 4.99,
-    rating: 4.9,
-    reviews: 412,
     image: "/images/pet-frame-dog-photo.jpg",
     badge: "Pet",
     category: "Pet",
@@ -203,8 +182,6 @@ const products = [
     name: "Custom Pet Portrait Drawing with QR Code",
     price: 54.99,
     monthlyFee: 4.99,
-    rating: 5.0,
-    reviews: 167,
     image: "/images/custom-dog-portrait-drawing.jpg",
     badge: "Premium",
     category: "Pet",
@@ -222,8 +199,6 @@ const products = [
     name: "Pet Memorial Shadow Box with Collar Display",
     price: 64.99,
     monthlyFee: 4.99,
-    rating: 4.9,
-    reviews: 203,
     image: "/images/pet-shadow-box-collar.jpg",
     badge: "Premium",
     category: "Pet",
@@ -291,9 +266,6 @@ export default function StorePage() {
                     loading="lazy"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
-                  {product.badge && (
-                    <Badge className="absolute top-3 left-3 bg-orange-500 text-white">{product.badge}</Badge>
-                  )}
                 </div>
 
                 <CardHeader className="pb-3">
@@ -301,20 +273,6 @@ export default function StorePage() {
                 </CardHeader>
 
                 <CardContent className="pb-3 flex-1">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">({product.reviews} reviews)</span>
-                  </div>
-
                   <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{product.description}</p>
 
                   <ul className="space-y-1.5 mb-4">
@@ -366,9 +324,6 @@ export default function StorePage() {
                     loading="lazy"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
-                  {product.badge && (
-                    <Badge className="absolute top-3 left-3 bg-purple-500 text-white">{product.badge}</Badge>
-                  )}
                 </div>
 
                 <CardHeader className="pb-3">
@@ -376,20 +331,6 @@ export default function StorePage() {
                 </CardHeader>
 
                 <CardContent className="pb-3 flex-1">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">({product.reviews} reviews)</span>
-                  </div>
-
                   <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{product.description}</p>
 
                   <ul className="space-y-1.5 mb-4">

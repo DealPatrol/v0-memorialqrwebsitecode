@@ -9,7 +9,7 @@ const faqs = [
   {
     question: "How long does a memorial QR code last?",
     answer:
-      "Our QR codes are designed to last a lifetime. The physical plaques are weather-resistant and UV-protected, while digital memorial pages are hosted indefinitely with our monthly hosting plan.",
+      "The physical QR product is designed for long-term use. The linked digital memorial remains available while its $4.99 monthly hosting plan is active.",
   },
   {
     question: "Can multiple family members contribute to a memorial?",
@@ -19,7 +19,7 @@ const faqs = [
   {
     question: "What happens if I cancel my hosting subscription?",
     answer:
-      "Your memorial page remains accessible for 90 days after cancellation, giving you time to download all content. You can reactivate anytime to restore full access.",
+      "Future renewals stop. The physical product remains yours, but the hosted page may become unavailable after the paid period ends. Contact support before canceling if you need help preserving your content.",
   },
 ]
 

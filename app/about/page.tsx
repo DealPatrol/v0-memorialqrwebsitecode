@@ -1,13 +1,11 @@
 import { Header } from "@/components/header"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Shield, Lock, Award, Users, Heart, CheckCircle2 } from "lucide-react"
-import Image from "next/image"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "About Memorial QR | Our Mission & Team",
-  description: "Learn about Memorial QR's mission to preserve legacies through digital memorials. Meet our team of experts committed to honoring memories.",
+  description: "Learn about Memorial QR's mission and Cole Collins' reason for creating digital memorials.",
   openGraph: {
     title: "About Memorial QR",
     description: "Our mission to preserve legacies with digital memorials",
@@ -15,27 +13,6 @@ export const metadata: Metadata = {
 }
 
 export default function AboutPage() {
-  const team = [
-    {
-      name: "Alex Rivera",
-      role: "Founder & CEO",
-      bio: "Built Memorial QR after losing a family member and wanting a better way to preserve their story.",
-      image: "/founder-alex.jpg",
-    },
-    {
-      name: "Dr. Sarah Chen",
-      role: "Chief Experience Officer",
-      bio: "Grief counselor and memorial designer ensuring every memorial honors its subject meaningfully.",
-      image: "/cxo-sarah.jpg",
-    },
-    {
-      name: "James Thompson",
-      role: "Director of Operations",
-      bio: "20+ years in cemetery management, bringing industry expertise to product development.",
-      image: "/ops-james.jpg",
-    },
-  ]
-
   const values = [
     {
       icon: Heart,
@@ -49,8 +26,8 @@ export default function AboutPage() {
     },
     {
       icon: Award,
-      title: "Preserve Forever",
-      description: "Lifetime hosting guarantees memorials remain accessible for future generations.",
+      title: "Clear Commitments",
+      description: "Physical product prices and monthly digital hosting are presented separately.",
     },
     {
       icon: Users,
@@ -62,10 +39,8 @@ export default function AboutPage() {
   const credentials = [
     "30-Day Money-Back Guarantee",
     "SSL Encryption for All Data",
-    "GDPR Compliant Privacy Policy",
     "PCI-DSS Payment Security",
-    "Regular Security Audits",
-    "Lifetime Content Preservation",
+    "$4.99 Monthly Digital Hosting",
   ]
 
   return (
@@ -121,32 +96,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* Founder Section */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-4 text-center text-black">Meet Our Team</h2>
-          <p className="text-lg text-zinc-600 text-center mb-12 max-w-3xl mx-auto">
-            Our team brings together experts in grief counseling, memorial design, cemetery management, and digital preservation.
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold mb-4 text-black">Founded by Cole Collins</h2>
+          <p className="text-lg text-zinc-600">
+            Cole created Memorial QR after building a memorial for his grandmother, Glenda Jane Kelso. Read the
+            personal story behind the product on our{" "}
+            <a href="/our-story" className="font-semibold text-purple-700 underline">
+              Our Story
+            </a>{" "}
+            page.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member, idx) => (
-              <Card key={idx} className="border-zinc-200 overflow-hidden">
-                <div className="relative h-64 bg-zinc-100">
-                  <Image
-                    src={member.image || "/placeholder.svg"}
-                    alt={member.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-bold text-black mb-1">{member.name}</h3>
-                  <p className="text-amber-600 font-semibold text-sm mb-3">{member.role}</p>
-                  <p className="text-zinc-600 text-sm">{member.bio}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -167,8 +128,8 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <Award className="w-12 h-12 text-green-500 mx-auto mb-4" />
-              <h3 className="font-bold text-lg mb-2">Lifetime Promise</h3>
-              <p className="text-zinc-400">We guarantee your memorials last as long as you do.</p>
+              <h3 className="font-bold text-lg mb-2">Ongoing Hosting</h3>
+              <p className="text-zinc-400">Digital memorial hosting is $4.99 per month per memorial.</p>
             </div>
           </div>
 

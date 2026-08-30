@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link"
-import { Shield, Lock, Award, Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, CheckCircle2 } from "lucide-react"
+import { Shield, Lock, Award, Clock, Mail, MapPin } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 
 export function Footer() {
@@ -27,9 +27,9 @@ export function Footer() {
               <p className="text-sm text-zinc-400">Full refund if not satisfied</p>
             </div>
             <div className="text-center">
-              <Heart className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-bold mb-1">Lifetime Hosting</h3>
-              <p className="text-sm text-zinc-400">Your memorial lasts forever</p>
+              <Clock className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <h3 className="font-bold mb-1">Digital Hosting</h3>
+              <p className="text-sm text-zinc-400">$4.99/month per memorial</p>
             </div>
           </div>
         </div>
@@ -66,7 +66,6 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-zinc-400">
               <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><a href="mailto:support@memorialqr.com" className="hover:text-white transition-colors flex items-center gap-2"><Mail className="w-4 h-4" />Email Support</a></li>
-              <li><a href="tel:+1-800-MEMORIAL" className="hover:text-white transition-colors flex items-center gap-2"><Phone className="w-4 h-4" />+1-800-MEMORIAL</a></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
             </ul>
           </div>
@@ -88,17 +87,13 @@ export function Footer() {
         {/* Bottom Section */}
         <div className="py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            {/* Trust Indicators */}
+            {/* Service details */}
             <div>
-              <h4 className="font-semibold mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
-                Trusted & Verified
-              </h4>
+              <h4 className="font-semibold mb-3">Simple, transparent service</h4>
               <div className="space-y-2 text-xs text-zinc-400">
-                <p>✓ 5,000+ families trust us</p>
-                <p>✓ 50,000+ memorials created</p>
-                <p>✓ 1M+ QR code scans annually</p>
-                <p>✓ 98% customer satisfaction</p>
+                <p>Physical products are charged once.</p>
+                <p>Digital hosting is $4.99/month per memorial.</p>
+                <p>Secure online payments are processed by Square.</p>
               </div>
             </div>
 
@@ -125,17 +120,6 @@ export function Footer() {
             <p className="text-sm text-zinc-500">
               © {new Date().getFullYear()} Memorial QR. All rights reserved. Created with care to honor memories.
             </p>
-            <div className="flex gap-4">
-              <a href="https://facebook.com" className="text-zinc-400 hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="https://twitter.com" className="text-zinc-400 hover:text-white transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="https://instagram.com" className="text-zinc-400 hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-            </div>
           </div>
         </div>
       </div>

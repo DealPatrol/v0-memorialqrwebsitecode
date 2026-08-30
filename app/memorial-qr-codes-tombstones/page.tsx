@@ -10,14 +10,13 @@ import { Check, Star, Shield, Smartphone, Heart, Clock, ArrowRight } from "lucid
 export const metadata: Metadata = {
   title: "Memorial QR Codes for Tombstones & Headstones | Digital Gravestone Tributes",
   description:
-    "Premium memorial QR codes for tombstones, headstones, and gravestones. Transform cemetery memorials into interactive digital tributes with QR code plaques. Weather-resistant, lifetime hosting, free shipping.",
+    "Memorial QR products for tombstones and headstones with weather-resistant plaques and $4.99 monthly digital hosting.",
   keywords:
     "memorial QR codes for tombstones, QR code for headstone, gravestone QR code, cemetery memorial QR, tombstone QR plaque, headstone memorial tag, QR code cemetery marker, digital gravestone memorial, interactive tombstone, memorial QR tag",
   openGraph: {
     title: "Memorial QR Codes for Tombstones & Headstones | Digital Cemetery Memorials",
     description:
-      "Transform traditional tombstone memorials with QR codes. Visitors scan the gravestone QR tag to access photos, videos, and life stories. Weather-resistant plaques with lifetime hosting.",
-    images: ["/images/41730040-9590-452b-80df.jpeg"],
+      "Transform traditional tombstone memorials with QR codes and separately billed monthly digital hosting.",
   },
 }
 
@@ -31,7 +30,7 @@ export default function MemorialQRCodesTombstonesPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-white/20 backdrop-blur text-white px-4 py-2 text-lg border-white/30">
-              #1 Memorial QR Solution
+              Memorial QR Products
             </Badge>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Memorial QR Codes for Tombstones & Headstones
@@ -66,7 +65,7 @@ export default function MemorialQRCodesTombstonesPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5" />
-                <span>Lifetime Hosting</span>
+                <span>Hosting $4.99/month</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5" />
@@ -109,8 +108,7 @@ export default function MemorialQRCodesTombstonesPage() {
                 </p>
                 <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
                   <p className="text-blue-900 font-medium">
-                    Over 10,000 families have chosen our memorial QR codes to honor their loved ones with lasting
-                    digital tributes on tombstones and headstones.
+                    Connect a physical headstone plaque to photos, videos, and stories in one digital memorial.
                   </p>
                 </div>
               </div>
@@ -209,12 +207,12 @@ export default function MemorialQRCodesTombstonesPage() {
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                     <Check className="w-6 h-6 text-blue-600" />
                   </div>
-                  <CardTitle className="text-xl">Lifetime Guarantee</CardTitle>
+                  <CardTitle className="text-xl">Digital Memorial Hosting</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">
-                    Your memorial website is hosted forever. No monthly fees, no hidden costs. Your tombstone QR code
-                    will work for generations, preserving your loved one's legacy permanently.
+                    Digital memorial hosting is billed separately at $4.99 per month per memorial. The printed QR code
+                    remains on your physical product.
                   </p>
                 </CardContent>
               </Card>
@@ -483,8 +481,7 @@ export default function MemorialQRCodesTombstonesPage() {
             <div className="bg-blue-50 border-l-4 border-blue-600 p-6 rounded my-8">
               <h4 className="text-xl font-bold text-blue-900 mb-3">Ready to Honor Your Loved One?</h4>
               <p className="text-blue-900 mb-4">
-                Join over 10,000 families who have chosen memorial QR codes for their loved ones' tombstones. Create a
-                lasting digital tribute that preserves their memory for generations.
+                Create a digital tribute that connects visitors to your loved one&apos;s photos, videos, and stories.
               </p>
               <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Link href="/store">Shop Memorial QR Products Now</Link>
@@ -496,8 +493,8 @@ export default function MemorialQRCodesTombstonesPage() {
             <h4 className="text-lg font-bold mt-6 mb-2">How long do memorial QR codes for tombstones last?</h4>
             <p className="text-gray-700 leading-relaxed">
               Our <strong>headstone QR tags</strong> are laser-engraved on weather-resistant materials with a minimum
-              5-year durability guarantee. Most customers report their <strong>tombstone QR codes</strong> remain
-              perfectly scannable for 10+ years. The digital memorial website is hosted for life with no expiration.
+              5-year durability guarantee. The linked digital memorial remains available while its $4.99 monthly
+              hosting plan is active.
             </p>
 
             <h4 className="text-lg font-bold mt-6 mb-2">Will the QR code work in all weather conditions?</h4>
@@ -552,7 +549,7 @@ export default function MemorialQRCodesTombstonesPage() {
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-6 h-6" />
-              <span>Lifetime Hosting</span>
+              <span>Hosting $4.99/month</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-6 h-6" />

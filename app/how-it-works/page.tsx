@@ -22,7 +22,7 @@ import {
 export const metadata: Metadata = {
   title: "How Memorial QR Codes Work | Digital Tombstone Memorials Calgary Northeast",
   description:
-    "Learn how Memorial QR codes work for tombstones and pet memorials. Step-by-step guide to creating digital cemetery memorials in Calgary Northeast, Airdrie, Chestermere. Weather-resistant QR plaques with lifetime hosting.",
+    "Learn how Memorial QR products and $4.99 monthly digital memorial hosting work for human and pet memorials.",
   keywords:
     "how memorial QR works Calgary, QR code tombstone setup, headstone QR installation Calgary Northeast, cemetery QR plaque guide, pet memorial QR process Calgary, digital memorial creation Alberta",
   alternates: {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "How Memorial QR Codes Work | Calgary Northeast Cemetery Memorials",
     description:
       "Complete guide to creating digital memorials with QR codes. Serve Calgary Northeast, Airdrie, and Alberta with weather-resistant tombstone plaques.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/how-it-works`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/how-it-works`,
   },
 }
 
@@ -288,8 +288,8 @@ export default function HowItWorksPage() {
             <Card className="text-center p-6">
               <CardContent className="p-0">
                 <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Lifetime Hosting</h3>
-                <p className="text-sm text-gray-600">Your memorial will be hosted forever</p>
+                <h3 className="font-semibold text-gray-900 mb-2">Digital Memorial Hosting</h3>
+                <p className="text-sm text-gray-600">$4.99 per month for each hosted memorial</p>
               </CardContent>
             </Card>
 
