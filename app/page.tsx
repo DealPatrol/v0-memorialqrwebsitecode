@@ -44,7 +44,8 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
-              Weather-resistant QR plaques transform cemetery headstones into interactive digital tributes. Share photos, videos, and memories—one scan away.
+              Personalized QR keepsakes connect family and friends to an online memorial filled with photos, videos, and
+              memories—one scan away.
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -76,23 +77,21 @@ export default function HomePage() {
                 Why Choose Memorial QR Codes?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Preserve memories beyond what stone can hold
+                Preserve and share a lifetime of memories
               </p>
             </div>
 
             <div className="prose prose-lg max-w-none text-muted-foreground space-y-8">
               <p className="text-base leading-relaxed text-foreground">
-                Memorial QR codes are revolutionizing how we honor and remember loved ones. Our weather-resistant
-                plaques attach securely to headstones, grave markers, and pet memorials, providing instant access to
-                rich digital tributes that traditional engraved memorials cannot offer.
+                Memorial QR codes offer a simple way to honor and remember loved ones. Each of our print-on-demand
+                keepsakes links directly to a rich digital tribute that family and friends can visit from a phone.
               </p>
 
-              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">The Future of Cemetery Memorials</h3>
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">More Room for Every Memory</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Traditional headstones are limited by physical space—typically just a name, dates, and a brief
-                inscription. Memorial QR codes break these boundaries by linking to comprehensive digital memorial pages
-                containing unlimited photos, videos, life stories, military service records, family trees, and cherished
-                memories shared by friends and family.
+                A printed keepsake has limited space, but its QR code can link to a comprehensive digital memorial page
+                containing photos, videos, life stories, military service records, family trees, and cherished memories
+                shared by friends and family.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 my-10">
@@ -129,20 +128,18 @@ export default function HomePage() {
                 </Card>
               </div>
 
-              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Durable, Weather-Resistant Technology</h3>
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Made to Order with a Unique QR Code</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Our memorial QR plaques are engineered for permanence. Made from UV-resistant materials with sealed QR
-                codes, they withstand harsh weather conditions including snow, rain, extreme heat, and freezing
-                temperatures. Whether mounted on granite headstones in outdoor cemeteries or displayed indoors at
-                memorial gardens, our plaques maintain perfect scan-ability for decades.
+                Every physical product is prepared with a custom print file for one memorial and fulfilled through
+                Printful or Printify. Stickers and indoor display products are intended for the uses described in each
+                product listing; they are not sold as cemetery-grade outdoor markers.
               </p>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Easy Setup, Ongoing Access</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Creating a memorial QR code is simple. Choose your plaque style (Gold, Silver, or Black finish), create
-                your digital memorial page by uploading photos and stories, and receive your custom QR plaque ready to
-                install. Family members can scan the QR code with any smartphone camera—no special apps required—to
-                instantly view the memorial page and contribute their own memories.
+                Creating a memorial QR code is simple. Choose a sticker, coaster, acrylic keyring, indoor desk plaque,
+                pet tag, or photo block, then create the digital memorial with photos and stories. Family members can
+                scan the printed QR code with any smartphone camera—no special app required.
               </p>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Privacy Controls & Family Collaboration</h3>
@@ -154,20 +151,18 @@ export default function HomePage() {
               </p>
 
               <div className="bg-secondary/50 border border-border rounded-lg p-6 my-10">
-                <h4 className="font-semibold text-lg mb-3 text-foreground">Perfect for All Memorial Types</h4>
+                <h4 className="font-semibold text-lg mb-3 text-foreground">Six Print-on-Demand Options</h4>
                 <p className="text-muted-foreground mb-4">
-                  Memorial QR codes work beautifully for traditional cemetery headstones, cremation urns, memorial
-                  benches, pet grave markers, military veteran memorials, roadside memorials, and memorial gardens.
-                  They're also ideal for memorial jewelry, keychains, photo frames, and coasters that keep memories
-                  close to your heart.
+                  Choose a Keep Card sticker, cork-backed coaster, acrylic keyring, indoor slate desk plaque, pet QR tag,
+                  or memorial photo block. Every product includes a link to the same digital memorial.
                 </p>
               </div>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Our memorial QR codes start at just $14.99 for keychains and coasters, $29.99 for premium plaques, and
-                $49.99 for photo frames. Digital memorial hosting is a separate $4.99 monthly charge per memorial, not
-                per physical product. Order multiple items for the same loved one and pay only one monthly hosting fee.
+                Physical products start at $19.99. Digital memorial hosting is a separate $4.99 monthly charge per
+                memorial, not per physical product. Order multiple items for the same loved one and pay only one monthly
+                hosting fee.
               </p>
             </div>
           </div>
@@ -201,7 +196,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-3">2. Get Your Memorial</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Receive a custom QR code plaque that links directly to their memorial page.
+                Receive a made-to-order product with a custom QR code linked directly to the memorial page.
               </p>
             </div>
 
@@ -302,7 +297,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
               <Link href="/store">
-                Shop Plaques
+                Shop Memorial Products
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

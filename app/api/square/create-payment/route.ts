@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
+import { getCheckoutTotalCents, resolveCheckoutItems } from "@/lib/checkout-products"
 
 export async function POST(req: Request) {
   try {
-    const { sourceId, amount, orderId, verificationToken, customerEmail, customerName } = await req.json()
+    const { sourceId, amount, lineItems, orderId, verificationToken, customerEmail, customerName } = await req.json()
 
     // Validate inputs
     if (!sourceId || !amount || !orderId) {
@@ -20,7 +21,14 @@ export async function POST(req: Request) {
     }
 
     const idempotencyKey = randomUUID()
-    const amountInCents = Math.round(Number.parseFloat(amount) * 100)
+    const resolvedItems = lineItems === undefined ? null : resolveCheckoutItems(lineItems)
+    if (lineItems !== undefined && !resolvedItems) {
+      return NextResponse.json({ success: false, error: "Cart contains an unsupported product" }, { status: 400 })
+    }
+
+    const amountInCents = resolvedItems
+      ? getCheckoutTotalCents(resolvedItems)
+      : Math.round(Number.parseFloat(amount) * 100)
 
     if (amountInCents <= 0 || !Number.isFinite(amountInCents)) {
       return NextResponse.json({ success: false, error: "Invalid payment amount" }, { status: 400 })
@@ -105,6 +113,9 @@ export async function POST(req: Request) {
         },
         location_id: locationId,
         reference_id: orderId,
+        ...(resolvedItems && {
+          note: resolvedItems.map((item) => `${item.id} x${item.quantity}`).join(", "),
+        }),
         ...(customerId && { customer_id: customerId }),
       }),
     })

@@ -20,18 +20,18 @@ import {
 } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "How Memorial QR Codes Work | Digital Tombstone Memorials Calgary Northeast",
+  title: "How Memorial QR Codes Work | Print-on-Demand Keepsakes",
   description:
     "Learn how Memorial QR products and $4.99 monthly digital memorial hosting work for human and pet memorials.",
   keywords:
-    "how memorial QR works Calgary, QR code tombstone setup, headstone QR installation Calgary Northeast, cemetery QR plaque guide, pet memorial QR process Calgary, digital memorial creation Alberta",
+    "how memorial QR works Calgary, custom QR keepsakes, print-on-demand memorial products, pet memorial QR process, digital memorial creation Alberta",
   alternates: {
     canonical: "/how-it-works",
   },
   openGraph: {
-    title: "How Memorial QR Codes Work | Calgary Northeast Cemetery Memorials",
+    title: "How Memorial QR Codes Work | Calgary Northeast",
     description:
-      "Complete guide to creating digital memorials with QR codes. Serve Calgary Northeast, Airdrie, and Alberta with weather-resistant tombstone plaques.",
+      "Create a digital memorial and order a personalized QR keepsake fulfilled through Printful or Printify.",
     url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/how-it-works`,
   },
 }
@@ -101,17 +101,17 @@ export default function HowItWorksPage() {
                   <h2 className="text-3xl font-bold text-gray-900">Choose Your Memorial</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  Select the type of memorial you want to create — for a loved one or a beloved pet. Choose from
-                  headstone plaques, wall displays, collar tags, garden stones, or keepsake boxes.
+                  Select a memorial product for a loved one or a beloved pet. Choose from stickers, coasters, acrylic
+                  keyrings, indoor desk plaques, pet tags, or photo blocks.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Human memorials with dignified plaques</span>
+                    <span>Indoor displays and portable keepsakes</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Pet memorials with collar tags or garden stones</span>
+                    <span>Personalized pet QR tags and photo products</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
@@ -183,17 +183,17 @@ export default function HowItWorksPage() {
                   <h2 className="text-3xl font-bold text-gray-900">Receive Your Memorial</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  We'll ship your custom engraved QR plaque or tag. Our products are designed to withstand outdoor
-                  conditions for headstones, gardens, or wherever you choose to place them.
+                  Printful or Printify produces and ships your selected product from its custom QR print file. Follow the
+                  intended indoor or keepsake use described on the product listing.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Custom QR code engraved on plaque or tag</span>
+                    <span>Unique QR code printed for your memorial</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Weather-resistant and durable materials</span>
+                    <span>Print-on-demand production and fulfillment</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />

@@ -14,65 +14,51 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
+import { CHECKOUT_PRODUCTS, resolveCheckoutItems } from "@/lib/checkout-products"
+import type { CheckoutProduct } from "@/lib/checkout-products"
 
-const STORE_PRODUCTS: Record<string, { name: string; price: number; monthlyFee: number }> = {
-  // Standard Plaques
-  "gold-plaque": { name: "Gold Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-  "silver-plaque": { name: "Silver Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-  "black-plaque": { name: "Black Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-
-  // Human Memorial Products
-  "wooden-keychain": { name: "Memorial QR Code Wooden Keychain or Necklace", price: 14.99, monthlyFee: 4.99 },
-  "wooden-keychain-necklace": { name: "Memorial QR Code Wooden Keychain or Necklace", price: 14.99, monthlyFee: 4.99 },
-  "slate-coaster": { name: "Memorial Slate Coaster with QR Code", price: 46.99, monthlyFee: 4.99 },
-  "slate-memorial-coaster": { name: "Memorial Slate Coaster with QR Code", price: 24.99, monthlyFee: 4.99 },
-  "photo-frame": { name: "Memorial Photo Frame with QR Code", price: 49.99, monthlyFee: 4.99 },
-  "memorial-photo-frame": { name: "Memorial Photo Frame with QR Code", price: 49.99, monthlyFee: 4.99 },
-  "human-cremation-urn-wood": { name: "Wooden Cremation Urn with QR Memorial Plaque", price: 89.99, monthlyFee: 4.99 },
-
-  // Pet Memorial Products
-  "pet-collar-memorial-tag": { name: "Pet Memorial Collar with QR Code Tag", price: 19.99, monthlyFee: 4.99 },
-  "pet-garden-tombstone": { name: "Pet Memorial Garden Stone with QR Code", price: 44.99, monthlyFee: 4.99 },
-  "pet-cremation-urn-wood": { name: "Wooden Pet Cremation Urn with QR Code", price: 34.99, monthlyFee: 4.99 },
-  "pet-cremation-urn-ceramic": { name: "Ceramic Pet Cremation Urn with QR Memorial", price: 39.99, monthlyFee: 4.99 },
-  "pet-photo-frame-qr": { name: "Pet Memorial Photo Frame with QR Code", price: 29.99, monthlyFee: 4.99 },
-  "custom-pet-portrait-drawing": { name: "Custom Pet Portrait Drawing with QR Code", price: 54.99, monthlyFee: 4.99 },
-  "pet-shadow-box-collar": { name: "Pet Memorial Shadow Box with Collar Display", price: 64.99, monthlyFee: 4.99 },
-
-  // Concierge Service
-  "concierge-service": { name: "Concierge Memorial Service", price: 299.99, monthlyFee: 4.99 },
-  "concierge-digital": { name: "Concierge Service - Digital Link", price: 299.99, monthlyFee: 4.99 },
-  "concierge-plaque": { name: "Concierge Service - Physical Plaque", price: 329.99, monthlyFee: 4.99 },
-}
+type CheckoutItem = CheckoutProduct & { id: string; quantity: number }
 
 function CheckoutForm() {
   const router = useRouter()
   const { toast } = useToast()
   const searchParams = useSearchParams()
 
-  const [cartItems, setCartItems] = useState<any[]>([])
+  const [cartItems, setCartItems] = useState<CheckoutItem[]>([])
   const [orderTotal, setOrderTotal] = useState(0)
 
   useEffect(() => {
     const storedItems = localStorage.getItem("checkoutItems")
     if (storedItems) {
-      const items = JSON.parse(storedItems)
-      setCartItems(items)
-      const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0)
-      setOrderTotal(total)
-    } else {
-      // Fallback to URL params for single product
-      const productId = searchParams.get("product") || "gold-plaque"
-      const product = STORE_PRODUCTS[productId as keyof typeof STORE_PRODUCTS]
-      if (product) {
-        setCartItems([{ id: productId, name: product.name, price: product.price, quantity: 1 }])
-        setOrderTotal(product.price)
+      try {
+        const storedItemsValue: unknown = JSON.parse(storedItems)
+        const items = resolveCheckoutItems(storedItemsValue) ?? []
+
+        if (items.length > 0) {
+          setCartItems(items)
+          setOrderTotal(items.reduce((sum, item) => sum + item.price * item.quantity, 0))
+          return
+        }
+      } catch {
+        localStorage.removeItem("checkoutItems")
       }
+    }
+
+    // Fallback to a single product selected from the store.
+    const productId = searchParams.get("product") || "keep-card"
+    const product = CHECKOUT_PRODUCTS[productId]
+    if (product) {
+      setCartItems([{ id: productId, name: product.name, price: product.price, monthlyFee: product.monthlyFee, quantity: 1 }])
+      setOrderTotal(product.price)
+    } else {
+      setCartItems([])
+      setOrderTotal(0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Run only once on mount
 
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     phone: "",
     address: "",
@@ -94,6 +80,8 @@ function CheckoutForm() {
 
   const validateForm = () => {
     if (
+      !formData.name ||
+      !formData.email ||
       !formData.address ||
       !formData.city ||
       !formData.state ||
@@ -101,7 +89,7 @@ function CheckoutForm() {
     ) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required address fields before proceeding with payment.",
+        description: "Please fill in all required contact and address fields before proceeding with payment.",
         variant: "destructive",
       })
       return false
@@ -132,7 +120,8 @@ function CheckoutForm() {
         items: cartItems,
         totalAmount: orderTotal,
         monthlyFee: 4.99,
-        customerEmail: formData.email || "",
+        customerName: formData.name,
+        customerEmail: formData.email,
         customerPhone: formData.phone || "",
         addressLine1: formData.address,
         addressLine2: formData.address2 || "",
@@ -162,6 +151,7 @@ function CheckoutForm() {
       // Store payment data in session storage for account creation
       sessionStorage.setItem("postPaymentData", JSON.stringify({
         email: formData.email,
+        name: formData.name,
         phone: formData.phone,
         address: formData.address,
         address2: formData.address2,
@@ -281,15 +271,32 @@ function CheckoutForm() {
                 <CardTitle>Shipping & Contact Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address (Optional)</Label>
+                    <Label htmlFor="name">
+                      Full Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Full name"
+                      autoComplete="name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">
+                      Email Address <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="email"
                       name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      required
                       placeholder="john.doe@example.com"
                       autoComplete="email"
                     />
@@ -396,7 +403,7 @@ function CheckoutForm() {
                     name="customization"
                     value={formData.customization}
                     onChange={handleInputChange}
-                    placeholder="For keychain/necklace: specify which you prefer. For slate coaster or photo frame: provide name, dates, and any special text..."
+                    placeholder="Provide the memorial name, dates, preferred photo, and any special text for the print file..."
                     rows={4}
                   />
                   <p className="text-xs text-muted-foreground">
@@ -432,6 +439,7 @@ function CheckoutForm() {
               <CardContent>
                 <SquarePaymentForm
                   amount={orderTotal}
+                  lineItems={cartItems.map(({ id, quantity }) => ({ id, quantity }))}
                   orderId={`order_${Date.now()}`}
                   onSuccess={handlePaymentSuccess}
                   onError={(error) => {
@@ -440,7 +448,7 @@ function CheckoutForm() {
                   onBeforePayment={validateForm}
                   disabled={isSubmitting}
                   customerEmail={formData.email}
-                  customerName=""
+                  customerName={formData.name}
                 />
               </CardContent>
             </Card>

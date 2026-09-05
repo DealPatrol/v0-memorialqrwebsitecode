@@ -9,16 +9,16 @@ import type { Metadata } from "next"
 import { JsonLd } from "@/components/json-ld"
 
 export const metadata: Metadata = {
-  title: "Memorial QR FAQ | Tombstone QR Codes Calgary Northeast | Common Questions",
+  title: "Memorial QR FAQ | Print-on-Demand Keepsakes | Common Questions",
   description:
-    "Answers to frequently asked questions about Memorial QR products, installation, pricing, durability, and $4.99 monthly digital hosting.",
+    "Answers to frequently asked questions about Memorial QR products, fulfillment, pricing, and $4.99 monthly digital hosting.",
   keywords:
-    "memorial QR FAQ Calgary, tombstone QR questions, headstone QR code durability, cemetery plaque Calgary Northeast, pet memorial QR answers, gravestone QR installation guide Alberta",
+    "memorial QR FAQ Calgary, print-on-demand memorial products, pet memorial QR answers, digital memorial hosting Alberta",
   alternates: {
     canonical: "/faq",
   },
   openGraph: {
-    title: "Memorial QR FAQ | Calgary Northeast Tombstone QR Code Questions",
+    title: "Memorial QR FAQ | Calgary Northeast",
     description:
       "Get answers about memorial QR codes, installation, product pricing, and monthly digital hosting.",
     url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/faq`,
@@ -47,7 +47,7 @@ const faqCategories = [
       {
         question: "How long does it take to set up?",
         answer:
-          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, your digital memorial is live immediately, and your QR code plaque ships within 3-5 business days.",
+          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, the digital memorial can go live while the selected product is prepared for print-on-demand fulfillment.",
       },
     ],
   },
@@ -82,22 +82,22 @@ const faqCategories = [
     ],
   },
   {
-    title: "QR Code & Plaque",
+    title: "QR Products & Fulfillment",
     faqs: [
       {
-        question: "How durable is the QR code plaque?",
+        question: "Which physical products are available?",
         answer:
-          "Our QR code plaques are made from weatherproof metal with UV-resistant coating and professional laser engraving. They're designed to withstand rain, snow, sun, and extreme temperatures for decades. We offer a 5-year durability guarantee.",
+          "The store offers a Keep Card sticker, cork memorial coaster, acrylic QR keyring, indoor slate desk plaque, pet QR tag, and memorial photo block.",
       },
       {
-        question: "What size is the QR code plaque?",
+        question: "Are the products made to order?",
         answer:
-          "The standard plaque is 4 inches by 6 inches, perfect for mounting on headstones, memorial benches, or display stands. The QR code is large enough to scan easily from 2-3 feet away.",
+          "Yes. Each product uses a unique print file containing the memorial's QR code and is fulfilled through Printful or Printify.",
       },
       {
-        question: "How do I mount the plaque?",
+        question: "Can I use these products as permanent outdoor cemetery markers?",
         answer:
-          "Each plaque comes with multiple mounting options including adhesive backing, screw holes, and magnetic backing. We include detailed instructions and all necessary hardware for secure installation.",
+          "No. The sticker and display products are not sold as cemetery-grade outdoor markers. Follow the intended use shown on each product listing.",
       },
       {
         question: "What if the QR code stops working?",
@@ -107,7 +107,7 @@ const faqCategories = [
       {
         question: "How long does shipping take?",
         answer:
-          "QR code plaques ship within 3-5 business days via USPS Priority Mail (2-3 day delivery). Rush shipping options are available for an additional fee if you need it faster.",
+          "Production and shipping times depend on the selected product and fulfillment provider. Tracking details are sent when the order ships.",
       },
     ],
   },
@@ -167,32 +167,32 @@ const faqCategories = [
     ],
   },
   {
-    title: "Memorial QR Codes for Tombstones",
+    title: "Using Your Memorial QR Code",
     faqs: [
       {
-        question: "What is a memorial QR code for tombstones?",
+        question: "What does the printed QR code open?",
         answer:
-          "A memorial QR code for tombstones is a weather-resistant plaque or tag that attaches to a headstone or gravestone. When scanned with a smartphone, it links to a digital memorial website with photos, videos, life stories, and guest messages. It transforms traditional cemetery markers into interactive tributes.",
+          "It opens the linked digital memorial website with photos, videos, life stories, and guest messages.",
       },
       {
-        question: "How durable are headstone QR code tags for cemetery use?",
+        question: "Does every physical product use a unique QR code?",
         answer:
-          "Our tombstone QR code plaques are laser-engraved on premium metal with UV-resistant coating. They're specifically designed for outdoor cemetery use and withstand rain, snow, extreme temperatures, and direct sunlight. We offer a 5-year durability guarantee, and most remain perfectly scannable for 10+ years.",
+          "Yes. A custom print file is generated for the memorial associated with the order.",
       },
       {
-        question: "Will the QR code work in all weather conditions at the cemetery?",
+        question: "Can family members scan it without an app?",
         answer:
-          "Yes! Our memorial QR codes for headstones are engineered for permanent outdoor installation. The laser engraving won't fade, the protective coating prevents weather damage, and they remain scannable in rain, snow, heat, and cold. Cemetery visitors can scan the gravestone QR tag year-round.",
+          "Yes. Most current smartphone camera apps recognize QR codes without a separate app.",
       },
       {
-        question: "Do cemeteries allow QR codes on tombstones and headstones?",
+        question: "Can I order more than one product for the same memorial?",
         answer:
-          "Most modern cemeteries and memorial parks permit memorial QR code tags on headstones. Our discreet, professional designs comply with typical cemetery regulations. We recommend checking with your specific cemetery, but the vast majority approve our products for gravestone installation.",
+          "Yes. Multiple products can link to the same digital memorial, and the site charges one hosting fee per memorial rather than per physical product.",
       },
       {
-        question: "How do I attach the QR code plaque to a tombstone?",
+        question: "Can I update the memorial after the product is printed?",
         answer:
-          "Each headstone QR tag includes multiple mounting options: industrial-strength adhesive for permanent attachment, screw holes for bolt-mounting on stone, or magnetic backing for temporary placement. Detailed instructions are included. Most families complete cemetery installation in under 10 minutes.",
+          "Yes. The QR destination stays the same while authorized family members update the hosted memorial content.",
       },
     ],
   },
@@ -229,8 +229,8 @@ export default function FAQPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Find answers to common questions about creating digital memorials, QR code plaques, pricing, and more. Can't
-            find what you're looking for? Contact our support team for help.
+            Find answers to common questions about creating digital memorials, personalized QR products, pricing, and
+            more. Can't find what you're looking for? Contact our support team for help.
           </p>
 
           <Button asChild size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">

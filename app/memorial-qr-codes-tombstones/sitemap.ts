@@ -5,12 +5,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: `${baseUrl}/memorial-qr-codes-tombstones`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1.0,
-    },
-    {
       url: `${baseUrl}/store`,
       lastModified: new Date(),
       changeFrequency: "daily",
