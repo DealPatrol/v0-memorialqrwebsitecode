@@ -10,7 +10,9 @@ export type StoreProduct = {
   features: string[]
   fulfillment: {
     provider: "Printify"
-    product: "Acrylic Keychain"
+    product: "Acrylic Keyring Tag"
+    catalogId: 674
+    catalogUrl: "https://printify.com/app/products/674/generic-brand/keyring-tag/"
   }
   memorialType: "voice-keychain"
 }
@@ -33,7 +35,9 @@ export const VOICE_KEYCHAIN_PRODUCT: StoreProduct = {
   ],
   fulfillment: {
     provider: "Printify",
-    product: "Acrylic Keychain",
+    product: "Acrylic Keyring Tag",
+    catalogId: 674,
+    catalogUrl: "https://printify.com/app/products/674/generic-brand/keyring-tag/",
   },
   memorialType: "voice-keychain",
 }

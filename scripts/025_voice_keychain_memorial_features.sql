@@ -10,6 +10,11 @@ ALTER TABLE public.videos
   ADD COLUMN IF NOT EXISTS embed_provider TEXT,
   ADD COLUMN IF NOT EXISTS embed_id TEXT;
 
+ALTER TABLE public.orders
+  ADD COLUMN IF NOT EXISTS fulfillment_provider TEXT,
+  ADD COLUMN IF NOT EXISTS fulfillment_id TEXT,
+  ADD COLUMN IF NOT EXISTS fulfillment_status TEXT NOT NULL DEFAULT 'pending';
+
 CREATE TABLE IF NOT EXISTS public.external_links (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   memorial_id UUID NOT NULL REFERENCES public.memorials(id) ON DELETE CASCADE,

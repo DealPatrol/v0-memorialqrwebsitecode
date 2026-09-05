@@ -4,6 +4,7 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
 import { generateQRCodeBuffer } from "@/lib/qr-code"
 import { getStoreProduct } from "@/lib/store-products"
+import { fulfillVoiceKeychain } from "@/lib/printify"
 
 export async function POST(req: Request) {
   try {
@@ -215,6 +216,7 @@ export async function POST(req: Request) {
 
     const primaryProduct = purchasedItems[0]?.product
     let memorial = null
+    let qrCodeUrl: string | null = null
 
     if (primaryProduct) {
       const slug = `memorial-${order.order_number.toLowerCase()}`
@@ -249,6 +251,7 @@ export async function POST(req: Request) {
           contentType: "image/png",
           addRandomSuffix: false,
         })
+        qrCodeUrl = qrBlob.url
         await supabase.from("memorials").update({ qr_code_url: qrBlob.url }).eq("id", createdMemorial.id)
       } catch (qrError) {
         console.error("[v0] QR generation failed:", qrError)
@@ -258,6 +261,41 @@ export async function POST(req: Request) {
         .from("orders")
         .update({ memorial_id: createdMemorial.id })
         .eq("id", order.id)
+
+      if (qrCodeUrl && primaryProduct.memorialType === "voice-keychain") {
+        try {
+          const fulfillment = await fulfillVoiceKeychain({
+            orderNumber: order.order_number,
+            quantity: orderData.quantity,
+            qrCodeUrl,
+            address: {
+              name: customerName,
+              email: customerEmail,
+              phone: customerPhone,
+              address1: addressLine1,
+              address2: addressLine2,
+              city,
+              region: state,
+              zip,
+              country: "CA",
+            },
+          })
+          await supabase
+            .from("orders")
+            .update({
+              fulfillment_provider: "printify",
+              fulfillment_id: fulfillment.fulfillmentId,
+              fulfillment_status: fulfillment.status,
+            })
+            .eq("id", order.id)
+        } catch (fulfillmentError) {
+          console.error("[v0] Printify fulfillment failed:", fulfillmentError)
+          await supabase
+            .from("orders")
+            .update({ fulfillment_provider: "printify", fulfillment_status: "failed" })
+            .eq("id", order.id)
+        }
+      }
     }
 
     try {

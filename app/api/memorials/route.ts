@@ -13,6 +13,15 @@ function getVideoEmbed(url: string) {
   return null
 }
 
+function isSafeExternalUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return url.protocol === "https:" || url.protocol === "http:"
+  } catch {
+    return false
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -105,7 +114,9 @@ export async function POST(request: NextRequest) {
       ? body.familyMembers.filter((member: { name?: string; relationship?: string }) => member.name && member.relationship)
       : []
     const externalLinks = Array.isArray(body.externalLinks)
-      ? body.externalLinks.filter((link: { label?: string; url?: string }) => link.label && link.url)
+      ? body.externalLinks.filter(
+          (link: { label?: string; url?: string }) => link.label && link.url && isSafeExternalUrl(link.url),
+        )
       : []
     const videoEmbeds = Array.isArray(body.videoEmbeds)
       ? body.videoEmbeds

@@ -8,6 +8,15 @@ type Pair = {
   url?: string
 }
 
+function isSafeExternalUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return url.protocol === "https:" || url.protocol === "http:"
+  } catch {
+    return false
+  }
+}
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
@@ -48,7 +57,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   const familyMembers = (body.familyMembers || []).filter((item: Pair) => item.name && item.relationship)
-  const externalLinks = (body.externalLinks || []).filter((item: Pair) => item.label && item.url)
+  const externalLinks = (body.externalLinks || []).filter(
+    (item: Pair) => item.label && item.url && isSafeExternalUrl(item.url),
+  )
 
   const [{ error: familyDeleteError }, { error: linksDeleteError }] = await Promise.all([
     supabase.from("family_members").delete().eq("memorial_id", id),
