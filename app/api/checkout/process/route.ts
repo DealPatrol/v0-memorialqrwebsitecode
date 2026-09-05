@@ -31,6 +31,8 @@ export async function POST(req: Request) {
       customization,
       cardId,
       squareCustomerId,
+      memorialReservationId,
+      reserveOnly,
 
       // Old package fields (keep for backwards compatibility)
       plaqueColor,
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
     } = body
 
     // Validate required fields
-    if (!customerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId) {
+    if (!reserveOnly && (!customerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId)) {
       const missing = []
       if (!customerName) missing.push("customerName")
       if (!customerEmail) missing.push("customerEmail")
@@ -70,6 +72,71 @@ export async function POST(req: Request) {
           })
           .filter(Boolean)
       : []
+
+    if (
+      planType === "individual-product" &&
+      (!Array.isArray(items) || items.length === 0 || purchasedItems.length !== items.length)
+    ) {
+      return NextResponse.json(
+        { success: false, error: "One or more products are no longer available. Please update your cart." },
+        { status: 400 },
+      )
+    }
+
+    const supabaseAuth = await createClient()
+    const {
+      data: { user },
+    } = await supabaseAuth.auth.getUser()
+
+    const userId = user?.id || null
+    const supabase = createServiceRoleClient()
+    const primaryProduct = purchasedItems[0]?.product
+
+    if (reserveOnly) {
+      if (planType !== "individual-product" || !primaryProduct) {
+        return NextResponse.json({ success: false, error: "A valid product is required." }, { status: 400 })
+      }
+
+      const slug = `memorial-${crypto.randomUUID()}`
+      const { data: memorial, error: memorialError } = await supabase
+        .from("memorials")
+        .insert({
+          slug,
+          full_name: "Memorial setup in progress",
+          user_id: userId,
+          package_type: primaryProduct.memorialType,
+          product_type: primaryProduct.memorialType,
+          theme: "classic",
+        })
+        .select("id, slug")
+        .single()
+
+      if (memorialError || !memorial) {
+        console.error("[v0] Failed to reserve memorial:", memorialError)
+        return NextResponse.json({ success: false, error: "Could not reserve your memorial." }, { status: 500 })
+      }
+
+      try {
+        const memorialUrl = `https://www.memorialsqr.com/memorial/${memorial.slug}`
+        const qrCode = await generateQRCodeBuffer(memorialUrl)
+        const qrBlob = await put(`qr-codes/${memorial.slug}.png`, qrCode, {
+          access: "public",
+          contentType: "image/png",
+          addRandomSuffix: false,
+        })
+        const { error: qrUpdateError } = await supabase
+          .from("memorials")
+          .update({ qr_code_url: qrBlob.url })
+          .eq("id", memorial.id)
+        if (qrUpdateError) throw qrUpdateError
+      } catch (qrError) {
+        console.error("[v0] QR reservation failed:", qrError)
+        await supabase.from("memorials").delete().eq("id", memorial.id)
+        return NextResponse.json({ success: false, error: "Could not reserve your memorial QR." }, { status: 500 })
+      }
+
+      return NextResponse.json({ success: true, reservation: memorial })
+    }
 
     let totalAmountCents = 0
     let monthlyAmountCents = 0
@@ -102,17 +169,31 @@ export async function POST(req: Request) {
       finalPlanType = "package"
     }
 
-    const supabaseAuth = await createClient()
-    const {
-      data: { user },
-    } = await supabaseAuth.auth.getUser()
-
-    const userId = user?.id || null
     const finalSquareCustomerId = squareCustomerId || user?.user_metadata?.square_customer_id || null
 
     console.log("[v0] Processing checkout - User ID:", userId, "Square Customer ID:", finalSquareCustomerId)
 
-    const supabase = createServiceRoleClient()
+    let reservedMemorial = null
+    if (planType === "individual-product") {
+      if (!memorialReservationId || !primaryProduct) {
+        return NextResponse.json(
+          { success: false, error: "The memorial was not reserved before payment." },
+          { status: 400 },
+        )
+      }
+
+      const { data } = await supabase
+        .from("memorials")
+        .select("id, slug, product_type")
+        .eq("id", memorialReservationId)
+        .eq("full_name", "Memorial setup in progress")
+        .maybeSingle()
+
+      if (!data || data.product_type !== primaryProduct.memorialType) {
+        return NextResponse.json({ success: false, error: "The memorial reservation is invalid." }, { status: 400 })
+      }
+      reservedMemorial = data
+    }
 
     let subscriptionId = null
     let subscriptionStatus = null
@@ -189,6 +270,7 @@ export async function POST(req: Request) {
 
       user_id: userId,
       square_customer_id: finalSquareCustomerId,
+      memorial_id: reservedMemorial?.id || null,
     }
 
     const { data: order, error } = await supabase.from("orders").insert(orderData).select().single()
@@ -212,53 +294,6 @@ export async function POST(req: Request) {
     }
 
     console.log("[v0] Order created successfully:", order.order_number)
-
-    const primaryProduct = purchasedItems[0]?.product
-    let memorial = null
-
-    if (primaryProduct) {
-      const slug = `memorial-${order.order_number.toLowerCase()}`
-      const { data: createdMemorial, error: memorialError } = await supabase
-        .from("memorials")
-        .insert({
-          slug,
-          full_name: "Memorial setup in progress",
-          user_id: userId,
-          package_type: primaryProduct.memorialType,
-          product_type: primaryProduct.memorialType,
-          theme: "classic",
-        })
-        .select()
-        .single()
-
-      if (memorialError || !createdMemorial) {
-        console.error("[v0] Failed to reserve memorial:", memorialError)
-        return NextResponse.json(
-          { success: false, error: "Payment succeeded, but memorial setup could not be reserved. Contact support." },
-          { status: 500 },
-        )
-      }
-
-      memorial = createdMemorial
-      const memorialUrl = `https://www.memorialsqr.com/memorial/${createdMemorial.slug}`
-
-      try {
-        const qrCode = await generateQRCodeBuffer(memorialUrl)
-        const qrBlob = await put(`qr-codes/${createdMemorial.slug}.png`, qrCode, {
-          access: "public",
-          contentType: "image/png",
-          addRandomSuffix: false,
-        })
-        await supabase.from("memorials").update({ qr_code_url: qrBlob.url }).eq("id", createdMemorial.id)
-      } catch (qrError) {
-        console.error("[v0] QR generation failed:", qrError)
-      }
-
-      await supabase
-        .from("orders")
-        .update({ memorial_id: createdMemorial.id })
-        .eq("id", order.id)
-    }
 
     try {
       await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/send-order-confirmation`, {
@@ -285,8 +320,8 @@ export async function POST(req: Request) {
         id: order.id,
         orderNumber: order.order_number,
         status: order.status,
-        memorialId: memorial?.id || null,
-        memorialSlug: memorial?.slug || null,
+        memorialId: reservedMemorial?.id || null,
+        memorialSlug: reservedMemorial?.slug || null,
         memorialType: primaryProduct?.memorialType || "standard",
       },
     })

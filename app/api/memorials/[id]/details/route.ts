@@ -8,6 +8,30 @@ type Pair = {
   url?: string
 }
 
+async function replaceRows(client: any, table: string, memorialId: string, rows: Record<string, unknown>[]) {
+  const { data: existing, error: readError } = await client.from(table).select("id").eq("memorial_id", memorialId)
+  if (readError) return readError
+
+  let inserted: { id: string }[] = []
+  if (rows.length > 0) {
+    const result = await client.from(table).insert(rows).select("id")
+    if (result.error) return result.error
+    inserted = result.data || []
+  }
+
+  const existingIds = (existing || []).map((row: { id: string }) => row.id)
+  if (existingIds.length > 0) {
+    const { error: deleteError } = await client.from(table).delete().in("id", existingIds)
+    if (deleteError) {
+      const insertedIds = inserted.map((row) => row.id)
+      if (insertedIds.length > 0) await client.from(table).delete().in("id", insertedIds)
+      return deleteError
+    }
+  }
+
+  return null
+}
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
@@ -50,41 +74,29 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const familyMembers = (body.familyMembers || []).filter((item: Pair) => item.name && item.relationship)
   const externalLinks = (body.externalLinks || []).filter((item: Pair) => item.label && item.url)
 
-  const [{ error: familyDeleteError }, { error: linksDeleteError }] = await Promise.all([
-    supabase.from("family_members").delete().eq("memorial_id", id),
-    supabase.from("external_links").delete().eq("memorial_id", id),
+  const replacementErrors = await Promise.all([
+    replaceRows(
+      supabase,
+      "family_members",
+      id,
+      familyMembers.map((item: Pair) => ({
+        memorial_id: id,
+        name: item.name,
+        relationship: item.relationship,
+      })),
+    ),
+    replaceRows(
+      supabase,
+      "external_links",
+      id,
+      externalLinks.map((item: Pair) => ({
+        memorial_id: id,
+        label: item.label,
+        url: item.url,
+      })),
+    ),
   ])
-
-  if (familyDeleteError || linksDeleteError) {
-    return NextResponse.json({ error: "Could not update family or links" }, { status: 500 })
-  }
-
-  const writes = []
-  if (familyMembers.length > 0) {
-    writes.push(
-      supabase.from("family_members").insert(
-        familyMembers.map((item: Pair) => ({
-          memorial_id: id,
-          name: item.name,
-          relationship: item.relationship,
-        })),
-      ),
-    )
-  }
-  if (externalLinks.length > 0) {
-    writes.push(
-      supabase.from("external_links").insert(
-        externalLinks.map((item: Pair) => ({
-          memorial_id: id,
-          label: item.label,
-          url: item.url,
-        })),
-      ),
-    )
-  }
-
-  const results = await Promise.all(writes)
-  const writeError = results.find((result) => result.error)?.error
+  const writeError = replacementErrors.find(Boolean)
   if (writeError) {
     return NextResponse.json({ error: writeError.message }, { status: 500 })
   }

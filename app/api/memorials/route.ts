@@ -13,6 +13,38 @@ function getVideoEmbed(url: string) {
   return null
 }
 
+async function replaceRows(
+  client: any,
+  table: string,
+  memorialId: string,
+  rows: Record<string, unknown>[],
+  onlyEmbeds = false,
+) {
+  let existingQuery = client.from(table).select("id").eq("memorial_id", memorialId)
+  if (onlyEmbeds) existingQuery = existingQuery.not("embed_provider", "is", null)
+  const { data: existing, error: readError } = await existingQuery
+  if (readError) return readError
+
+  let inserted: { id: string }[] = []
+  if (rows.length > 0) {
+    const result = await client.from(table).insert(rows).select("id")
+    if (result.error) return result.error
+    inserted = result.data || []
+  }
+
+  const existingIds = (existing || []).map((row: { id: string }) => row.id)
+  if (existingIds.length > 0) {
+    const { error: deleteError } = await client.from(table).delete().in("id", existingIds)
+    if (deleteError) {
+      const insertedIds = inserted.map((row) => row.id)
+      if (insertedIds.length > 0) await client.from(table).delete().in("id", insertedIds)
+      return deleteError
+    }
+  }
+
+  return null
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -29,6 +61,9 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
     const serviceRole = createServiceRoleClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     // Generate unique memorial slug
     const slug = `${body.firstName}-${body.lastName}-${Date.now()}`.toLowerCase().replace(/[^a-z0-9]+/g, "-")
@@ -39,40 +74,46 @@ export async function POST(request: NextRequest) {
     const packageType = body.packageType || "basic"
 
     const memorialValues = {
-        full_name: `${body.firstName} ${body.lastName}`,
-        birth_date: birthDate,
-        death_date: deathDate,
-        location: body.location || null,
-        biography: body.biography || null,
-        slug,
-        user_id: body.userId || null,
-        profile_image_url: body.profileImageUrl || null, // Store the profile image URL
-        theme: body.theme || "classic", // Store theme selection
-        package_type: packageType, // Store package type
-        product_type: body.productType || packageType,
-      }
+      full_name: `${body.firstName} ${body.lastName}`,
+      birth_date: birthDate,
+      death_date: deathDate,
+      location: body.location || null,
+      biography: body.biography || null,
+      slug,
+      user_id: user?.id || null,
+      profile_image_url: body.profileImageUrl || null, // Store the profile image URL
+      theme: body.theme || "classic", // Store theme selection
+      package_type: packageType, // Store package type
+      product_type: body.productType || packageType,
+    }
 
     let memorial
     let error
+    let customerEmail = body.customerEmail
+    let customerName = body.customerName
 
     if (body.orderId) {
       const { data: order } = await serviceRole
         .from("orders")
-        .select("id, memorial_id, customer_email")
+        .select("id, memorial_id, customer_email, customer_name")
         .eq("id", body.orderId)
-        .eq("customer_email", body.customerEmail)
         .maybeSingle()
 
       if (!order?.memorial_id) {
         return NextResponse.json({ error: "This order does not have a memorial reserved for setup." }, { status: 404 })
       }
+      if (user?.email && user.email.toLowerCase() !== order.customer_email.toLowerCase()) {
+        return NextResponse.json({ error: "This order belongs to a different account." }, { status: 403 })
+      }
 
-      const { slug: _reservedSlug, ...updates } = memorialValues
+      customerEmail = order.customer_email
+      customerName = order.customer_name
+      const { slug: _reservedSlug, package_type: _packageType, product_type: _productType, ...updates } = memorialValues
       const result = await serviceRole
         .from("memorials")
         .update({
           ...updates,
-          ...(body.userId ? { user_id: body.userId } : {}),
+          ...(user ? { user_id: user.id } : {}),
         })
         .eq("id", order.memorial_id)
         .select()
@@ -116,46 +157,44 @@ export async function POST(request: NextRequest) {
           .filter((video: { title?: string; embed: unknown }) => video.title && video.embed)
       : []
 
-    const contentWrites = []
-    if (familyMembers.length > 0) {
-      contentWrites.push(
-        serviceRole.from("family_members").insert(
-          familyMembers.map((member: { name: string; relationship: string }) => ({
-            memorial_id: memorial.id,
-            name: member.name,
-            relationship: member.relationship,
-          })),
-        ),
-      )
-    }
-    if (externalLinks.length > 0) {
-      contentWrites.push(
-        serviceRole.from("external_links").insert(
-          externalLinks.map((link: { label: string; url: string }) => ({
-            memorial_id: memorial.id,
-            label: link.label,
-            url: link.url,
-          })),
-        ),
-      )
-    }
-    if (videoEmbeds.length > 0) {
-      contentWrites.push(
-        serviceRole.from("videos").insert(
-          videoEmbeds.map((video: { title: string; url: string; embed: { provider: string; id: string } }) => ({
-            memorial_id: memorial.id,
-            title: video.title,
-            video_url: video.url,
-            uploaded_by: body.customerName || "Memorial creator",
-            user_id: body.userId || null,
-            embed_provider: video.embed.provider,
-            embed_id: video.embed.id,
-          })),
-        ),
-      )
-    }
-    const contentResults = await Promise.all(contentWrites)
-    const contentError = contentResults.find((result) => result.error)?.error
+    const contentErrors = await Promise.all([
+      replaceRows(
+        serviceRole,
+        "family_members",
+        memorial.id,
+        familyMembers.map((member: { name: string; relationship: string }) => ({
+          memorial_id: memorial.id,
+          name: member.name,
+          relationship: member.relationship,
+        })),
+      ),
+      replaceRows(
+        serviceRole,
+        "external_links",
+        memorial.id,
+        externalLinks.map((link: { label: string; url: string }) => ({
+          memorial_id: memorial.id,
+          label: link.label,
+          url: link.url,
+        })),
+      ),
+      replaceRows(
+        serviceRole,
+        "videos",
+        memorial.id,
+        videoEmbeds.map((video: { title: string; url: string; embed: { provider: string; id: string } }) => ({
+          memorial_id: memorial.id,
+          title: video.title,
+          video_url: video.url,
+          uploaded_by: customerName || "Memorial creator",
+          user_id: user?.id || null,
+          embed_provider: video.embed.provider,
+          embed_id: video.embed.id,
+        })),
+        true,
+      ),
+    ])
+    const contentError = contentErrors.find(Boolean)
     if (contentError) {
       console.error("Failed to save memorial details:", contentError)
       return NextResponse.json({ error: `Memorial created, but some details failed: ${contentError.message}` }, { status: 500 })
@@ -194,13 +233,13 @@ export async function POST(request: NextRequest) {
       console.error("Exception generating QR code:", qrError)
     }
 
-    if (body.customerEmail) {
+    if (customerEmail) {
       try {
         const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/dashboard`
 
         await sendWelcomeEmail({
-          customerName: body.customerName || `${body.firstName} ${body.lastName}`,
-          customerEmail: body.customerEmail,
+          customerName: customerName || `${body.firstName} ${body.lastName}`,
+          customerEmail,
           memorialName: memorial.full_name,
           memorialUrl,
           dashboardUrl,

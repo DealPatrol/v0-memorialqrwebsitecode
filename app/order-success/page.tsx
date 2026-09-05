@@ -23,6 +23,7 @@ function OrderSuccessContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAccountPrompt, setShowAccountPrompt] = useState(false)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
+  const [accountName, setAccountName] = useState("")
   const [accountEmail, setAccountEmail] = useState("")
   const [accountPassword, setAccountPassword] = useState("")
 
@@ -50,17 +51,23 @@ function OrderSuccessContent() {
     setIsCreatingAccount(true)
 
     try {
-      const supabase = createClient()
-
-      const { data, error } = await supabase.auth.signUp({
-        email: accountEmail,
-        password: accountPassword,
-        options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
-        },
+      const [firstName, ...lastNameParts] = accountName.trim().split(/\s+/)
+      const response = await fetch("/api/auth/create-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: accountEmail,
+          password: accountPassword,
+          firstName,
+          lastName: lastNameParts.join(" ") || firstName,
+          orderId,
+        }),
       })
+      const result = await response.json()
 
-      if (error) throw error
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to create account")
+      }
 
       toast({
         title: "Account Created!",
@@ -115,6 +122,17 @@ function OrderSuccessContent() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleCreateAccount} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="account-name">Full Name</Label>
+                    <Input
+                      id="account-name"
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                      placeholder="Your full name"
+                      required
+                      disabled={isCreatingAccount}
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="account-email">Email Address</Label>
                     <Input

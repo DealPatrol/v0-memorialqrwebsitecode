@@ -2,7 +2,7 @@
 
 import { Suspense } from "react"
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,14 +23,28 @@ function CheckoutForm() {
 
   const [cartItems, setCartItems] = useState<any[]>([])
   const [orderTotal, setOrderTotal] = useState(0)
+  const memorialReservationId = useRef<string | null>(null)
 
   useEffect(() => {
     const storedItems = localStorage.getItem("checkoutItems")
     if (storedItems) {
-      const items = JSON.parse(storedItems)
-      setCartItems(items)
-      const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0)
-      setOrderTotal(total)
+      try {
+        const storedCart = JSON.parse(storedItems)
+        const items = Array.isArray(storedCart)
+          ? storedCart.map((item: any) => {
+              const product = getStoreProduct(String(item.id))
+              const quantity = Math.max(1, Math.min(10, Number(item.quantity) || 1))
+              return product
+                ? { id: product.id, name: product.name, price: product.price, quantity }
+                : { id: item.id, name: "Unavailable product", price: 0, quantity }
+            })
+          : []
+        setCartItems(items)
+        setOrderTotal(items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0))
+      } catch {
+        setCartItems([])
+        setOrderTotal(0)
+      }
     } else {
       // Fallback to URL params for single product
       const productId = searchParams.get("product") || VOICE_KEYCHAIN_PRODUCT.id
@@ -94,6 +108,36 @@ function CheckoutForm() {
     return true
   }
 
+  const reserveMemorial = async () => {
+    if (!validateForm()) return false
+    if (memorialReservationId.current) return true
+
+    try {
+      const response = await fetch("/api/checkout/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reserveOnly: true,
+          planType: "individual-product",
+          items: cartItems,
+        }),
+      })
+      const result = await response.json()
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Could not reserve memorial")
+      }
+      memorialReservationId.current = result.reservation.id
+      return true
+    } catch (error: any) {
+      toast({
+        title: "Checkout Unavailable",
+        description: error.message || "Could not reserve your memorial. Please try again.",
+        variant: "destructive",
+      })
+      return false
+    }
+  }
+
   const handlePaymentSuccess = async (paymentId: string, cardId?: string, customerId?: string) => {
     if (isSubmitting) return
     setIsSubmitting(true)
@@ -116,6 +160,7 @@ function CheckoutForm() {
         customization: formData.customization || "",
         cardId: cardId,
         squareCustomerId: customerId,
+        memorialReservationId: memorialReservationId.current,
       }
 
       const response = await fetch("/api/checkout/process", {
@@ -429,7 +474,7 @@ function CheckoutForm() {
                   onError={(error) => {
                     console.error("[v0] Payment error:", error)
                   }}
-                  onBeforePayment={validateForm}
+                  onBeforePayment={reserveMemorial}
                   disabled={isSubmitting}
                   customerEmail={formData.email}
                   customerName={formData.name}

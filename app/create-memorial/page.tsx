@@ -73,19 +73,27 @@ export default function CreateMemorialPage() {
       }
 
       if (orderIdParam) {
-        const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
-
-        if (order) {
+        const response = await fetch(`/api/orders/setup?orderId=${encodeURIComponent(orderIdParam)}`)
+        if (response.ok) {
+          const { order } = await response.json()
           setOrderData({
-            customerEmail: order.customer_email || user?.email || "",
-            customerName: order.customer_name || user?.user_metadata?.full_name || "",
+            customerEmail: user?.email || "",
+            customerName: order.customerName || user?.user_metadata?.full_name || "",
             orderId: order.id,
-            packageType: order.product_name || "basic",
+            packageType: order.packageType,
           })
           setOrderId(`ORDER-${order.id}`)
           setIsCheckingAuth(false)
           return
         }
+
+        toast({
+          title: "Order Not Found",
+          description: "We could not load the memorial reserved for this order.",
+          variant: "destructive",
+        })
+        setIsCheckingAuth(false)
+        return
       }
 
       const planParam = searchParams.get("plan")
@@ -296,6 +304,7 @@ export default function CreateMemorialPage() {
         audioFormData.append("artist", "")
         audioFormData.append("kind", kind)
         audioFormData.append("isPrimary", String(isPrimary))
+        if (orderData.orderId) audioFormData.append("orderId", orderData.orderId)
         const response = await fetch("/api/music/upload", { method: "POST", body: audioFormData })
         if (!response.ok) throw new Error((await response.json()).error || "Audio upload failed")
       }

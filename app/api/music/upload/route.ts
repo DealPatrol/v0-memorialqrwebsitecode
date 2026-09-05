@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { put } from "@vercel/blob"
 import { createClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +13,7 @@ export async function POST(request: NextRequest) {
     const uploaderName = formData.get("uploaderName") as string
     const kind = formData.get("kind") === "voice" ? "voice" : "music"
     const isPrimary = formData.get("isPrimary") === "true"
+    const orderId = formData.get("orderId") as string | null
 
     console.log("[v0] Music upload request:", { memorialId, title, artist, fileSize: file?.size })
 
@@ -52,17 +54,36 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
+    const serviceRole = createServiceRoleClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
-    const { data: memorial, error: memorialError } = await supabase
+    const { data: memorial, error: memorialError } = await serviceRole
       .from("memorials")
-      .select("id")
+      .select("id, user_id")
       .eq(isUUID ? "id" : "slug", memorialId)
       .single()
 
     if (memorialError || !memorial) {
       console.error("[v0] Memorial not found:", memorialError)
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
+    }
+
+    let canUpload = Boolean(user && memorial.user_id === user.id)
+    if (!canUpload && !memorial.user_id && orderId) {
+      const { data: order } = await serviceRole
+        .from("orders")
+        .select("id")
+        .eq("id", orderId)
+        .eq("memorial_id", memorial.id)
+        .maybeSingle()
+      canUpload = Boolean(order)
+    }
+
+    if (!canUpload) {
+      return NextResponse.json({ error: "You do not have permission to upload audio" }, { status: 403 })
     }
 
     let blob
@@ -79,15 +100,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
     if (isPrimary) {
-      await supabase.from("music").update({ is_primary: false }).eq("memorial_id", memorial.id)
+      const { error: resetError } = await serviceRole
+        .from("music")
+        .update({ is_primary: false })
+        .eq("memorial_id", memorial.id)
+      if (resetError) {
+        return NextResponse.json({ error: "Failed to update primary recording" }, { status: 500 })
+      }
     }
 
-    const { data: music, error: dbError } = await supabase
+    const { data: music, error: dbError } = await serviceRole
       .from("music")
       .insert({
         memorial_id: memorial.id,

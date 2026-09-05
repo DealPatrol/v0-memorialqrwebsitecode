@@ -6,6 +6,7 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role"
 export async function POST(request: Request) {
   try {
     const { email, password, firstName, lastName, orderId } = await request.json()
+    const serviceRole = createServiceRoleClient()
 
     // Validate input
     if (!email || !password || !firstName || !lastName) {
@@ -13,6 +14,24 @@ export async function POST(request: Request) {
         { success: false, error: "Missing required fields" },
         { status: 400 }
       )
+    }
+
+    let claimOrder: { id: string; memorial_id: string | null } | null = null
+    if (orderId) {
+      const { data: order } = await serviceRole
+        .from("orders")
+        .select("id, memorial_id")
+        .eq("id", orderId)
+        .ilike("customer_email", email)
+        .maybeSingle()
+
+      if (!order) {
+        return NextResponse.json(
+          { success: false, error: "This email does not match the order." },
+          { status: 400 },
+        )
+      }
+      claimOrder = order
     }
 
     const cookieStore = await cookies()
@@ -64,23 +83,27 @@ export async function POST(request: Request) {
       )
     }
 
-    if (orderId) {
-      const serviceRole = createServiceRoleClient()
-      const { data: order } = await serviceRole
+    if (claimOrder) {
+      const { error: orderError } = await serviceRole
         .from("orders")
-        .select("id, memorial_id, customer_email")
-        .eq("id", orderId)
-        .eq("customer_email", email)
-        .maybeSingle()
-
-      if (order) {
-        await serviceRole.from("orders").update({ user_id: authData.user.id }).eq("id", order.id)
-        if (order.memorial_id) {
-          await serviceRole
-            .from("memorials")
-            .update({ user_id: authData.user.id })
-            .eq("id", order.memorial_id)
-            .is("user_id", null)
+        .update({ user_id: authData.user.id })
+        .eq("id", claimOrder.id)
+      if (orderError) {
+        return NextResponse.json({ success: false, error: "Account created, but order claim failed." }, { status: 500 })
+      }
+      if (claimOrder.memorial_id) {
+        const { data: claimedMemorial, error: memorialError } = await serviceRole
+          .from("memorials")
+          .update({ user_id: authData.user.id })
+          .eq("id", claimOrder.memorial_id)
+          .is("user_id", null)
+          .select("id")
+          .maybeSingle()
+        if (memorialError || !claimedMemorial) {
+          return NextResponse.json(
+            { success: false, error: "Account created, but memorial claim failed." },
+            { status: 500 },
+          )
         }
       }
     }

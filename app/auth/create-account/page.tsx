@@ -36,8 +36,11 @@ export default function CreateAccountPage() {
         ...prev,
         email: JSON.parse(postPaymentData).email || '',
       }))
+    } else {
+      const orderId = searchParams.get('order')
+      if (orderId) setOrderData({ orderId })
     }
-  }, [])
+  }, [searchParams])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

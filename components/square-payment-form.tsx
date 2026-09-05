@@ -40,7 +40,7 @@ interface SquarePaymentFormProps {
   orderId: string
   onSuccess?: (paymentId: string, cardId?: string, customerId?: string) => void
   onError?: (error: string) => void
-  onBeforePayment?: () => boolean
+  onBeforePayment?: () => boolean | Promise<boolean>
   disabled?: boolean
   customerEmail?: string
   customerName?: string
@@ -71,7 +71,7 @@ export function SquarePaymentForm({
 
   const handlePayment = async (token: any) => {
     try {
-      if (onBeforePayment && !onBeforePayment()) {
+      if (onBeforePayment && !(await onBeforePayment())) {
         return
       }
 
