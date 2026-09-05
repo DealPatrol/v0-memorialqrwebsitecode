@@ -55,84 +55,96 @@ export default function CreateMemorialPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      setUser(user)
-
       const welcomeParam = searchParams.get("welcome")
       const orderIdParam = searchParams.get("orderId")
-
-      if (welcomeParam === "true" && user) {
-        setShowWelcome(true)
-        // Extract first name from email or metadata
-        const name = user.user_metadata?.full_name || user.email?.split("@")[0] || "there"
-        setCustomerName(name.split(" ")[0])
-      }
-
-      if (orderIdParam) {
-        const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
-
-        if (order) {
-          setOrderData({
-            customerEmail: order.customer_email || user?.email || "",
-            customerName: order.customer_name || user?.user_metadata?.full_name || "",
-            orderId: order.id,
-            packageType: order.product_name || "basic",
-          })
-          setOrderId(`ORDER-${order.id}`)
-          setIsCheckingAuth(false)
-          return
-        }
-      }
-
       const planParam = searchParams.get("plan")
 
-      if (planParam === "free") {
-        setIsFreePlan(true)
-        setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
-          orderId: null,
-          packageType: "free",
-        })
-        setOrderId(`FREE-${Date.now()}`)
-        setIsCheckingAuth(false)
-        return
-      }
-
-      const pendingOrderData = sessionStorage.getItem("pendingOrder")
-
-      if (!pendingOrderData) {
-        setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
-          orderId: null,
-          packageType: "basic",
-        })
-        setOrderId(`ANON-${Date.now()}`)
-        setIsCheckingAuth(false)
-        return
-      }
-
       try {
-        const parsedOrderData = JSON.parse(pendingOrderData)
-        setOrderData(parsedOrderData)
-        setOrderId(`ORDER-${parsedOrderData.orderId || Date.now()}`)
-      } catch (error) {
-        console.error("Error parsing order data:", error)
-        setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
-          orderId: null,
-          packageType: "basic",
-        })
-        setOrderId(`ANON-${Date.now()}`)
-      }
+        let currentUser = null
+        let supabase = null
 
-      setIsCheckingAuth(false)
+        try {
+          supabase = createClient()
+          const authResult = await supabase.auth.getUser()
+          currentUser = authResult.data.user
+          setUser(currentUser)
+        } catch (authError) {
+          console.error("Supabase authentication is unavailable:", authError)
+        }
+
+        if (welcomeParam === "true" && currentUser) {
+          setShowWelcome(true)
+          const name = currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "there"
+          setCustomerName(name.split(" ")[0])
+        }
+
+        if (orderIdParam) {
+          if (!supabase || !currentUser) {
+            toast({
+              title: "Sign in required",
+              description: "Sign in to continue setup for your paid order.",
+              variant: "destructive",
+            })
+            router.push(`/auth/login?next=${encodeURIComponent(`/create-memorial?orderId=${orderIdParam}`)}`)
+            return
+          }
+
+          const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
+
+          if (order) {
+            setOrderData({
+              customerEmail: order.customer_email || currentUser.email || "",
+              customerName: order.customer_name || currentUser.user_metadata?.full_name || "",
+              orderId: order.id,
+              packageType: order.product_name || "basic",
+            })
+            setOrderId(`ORDER-${order.id}`)
+            return
+          }
+        }
+
+        if (planParam === "free") {
+          setIsFreePlan(true)
+          setOrderData({
+            customerEmail: currentUser?.email || "",
+            customerName: currentUser?.user_metadata?.full_name || "",
+            orderId: null,
+            packageType: "free",
+          })
+          setOrderId(`FREE-${Date.now()}`)
+          return
+        }
+
+        const pendingOrderData = sessionStorage.getItem("pendingOrder")
+
+        if (!pendingOrderData) {
+          setOrderData({
+            customerEmail: currentUser?.email || "",
+            customerName: currentUser?.user_metadata?.full_name || "",
+            orderId: null,
+            packageType: "basic",
+          })
+          setOrderId(`ANON-${Date.now()}`)
+          return
+        }
+
+        try {
+          const parsedOrderData = JSON.parse(pendingOrderData)
+          setOrderData(parsedOrderData)
+          setOrderId(`ORDER-${parsedOrderData.orderId || Date.now()}`)
+        } catch (error) {
+          console.error("Error parsing order data:", error)
+          setOrderData({
+            customerEmail: currentUser?.email || "",
+            customerName: currentUser?.user_metadata?.full_name || "",
+            orderId: null,
+            packageType: "basic",
+          })
+          setOrderId(`ANON-${Date.now()}`)
+        }
+      } finally {
+        setIsCheckingAuth(false)
+      }
     }
 
     checkAuth()
