@@ -28,6 +28,24 @@ function CheckoutForm() {
   const [orderTotal, setOrderTotal] = useState(0)
 
   useEffect(() => {
+    const selectedProductId = searchParams.get("product")
+    if (selectedProductId) {
+      const selectedProduct = CHECKOUT_PRODUCTS[selectedProductId]
+      if (selectedProduct) {
+        setCartItems([
+          {
+            id: selectedProductId,
+            name: selectedProduct.name,
+            price: selectedProduct.price,
+            monthlyFee: selectedProduct.monthlyFee,
+            quantity: 1,
+          },
+        ])
+        setOrderTotal(selectedProduct.price)
+        return
+      }
+    }
+
     const storedItems = localStorage.getItem("checkoutItems")
     if (storedItems) {
       try {
@@ -44,8 +62,8 @@ function CheckoutForm() {
       }
     }
 
-    // Fallback to a single product selected from the store.
-    const productId = searchParams.get("product") || "keep-card"
+    // Fallback to the default store product.
+    const productId = "keep-card"
     const product = CHECKOUT_PRODUCTS[productId]
     if (product) {
       setCartItems([{ id: productId, name: product.name, price: product.price, monthlyFee: product.monthlyFee, quantity: 1 }])
