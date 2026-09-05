@@ -764,7 +764,7 @@ export function MemorialClientPage() {
                       <DialogTitle>Add Life Milestone</DialogTitle>
                       <DialogDescription>Add an important moment from their life</DialogDescription>
                     </DialogHeader>
-                    <MilestoneForm memorialId={memorialId} onComplete={handleMilestoneComplete} />
+                    <MilestoneForm memorialId={memorialId} onSuccess={handleMilestoneComplete} />
                   </DialogContent>
                 </Dialog>
               </div>
