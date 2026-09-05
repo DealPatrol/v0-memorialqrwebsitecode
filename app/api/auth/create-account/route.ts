@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(request: Request) {
   try {
@@ -12,6 +13,25 @@ export async function POST(request: Request) {
         { success: false, error: "Missing required fields" },
         { status: 400 }
       )
+    }
+
+    const serviceRole = createServiceRoleClient()
+    let verifiedOrderId: string | null = null
+    if (orderId) {
+      const { data: order, error: orderError } = await serviceRole
+        .from("orders")
+        .select("id, customer_email")
+        .eq("id", orderId)
+        .maybeSingle()
+
+      if (orderError || !order || order.customer_email.toLowerCase() !== email.toLowerCase()) {
+        return NextResponse.json(
+          { success: false, error: "The paid order could not be linked to this email address" },
+          { status: 403 },
+        )
+      }
+
+      verifiedOrderId = order.id
     }
 
     const cookieStore = await cookies()
@@ -63,10 +83,15 @@ export async function POST(request: Request) {
       )
     }
 
-    // Update the order with the user email if it exists
-    if (orderId) {
-      // You might want to update your orders table here with the new user ID
-      // This depends on your database schema
+    if (verifiedOrderId) {
+      const { error: linkError } = await serviceRole
+        .from("orders")
+        .update({ user_id: authData.user.id })
+        .eq("id", verifiedOrderId)
+
+      if (linkError) {
+        console.error("[v0] Failed to link order to account:", linkError)
+      }
     }
 
     return NextResponse.json({
@@ -75,6 +100,7 @@ export async function POST(request: Request) {
         id: authData.user.id,
         email: authData.user.email,
       },
+      orderId: verifiedOrderId,
     })
   } catch (error: any) {
     console.error("[v0] Account creation error:", error)

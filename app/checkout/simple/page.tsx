@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
 import { CHECKOUT_PRODUCTS, resolveCheckoutItems } from "@/lib/checkout-products"
 import type { CheckoutProduct } from "@/lib/checkout-products"
+import { createClient } from "@/lib/supabase/client"
 
 type CheckoutItem = CheckoutProduct & { id: string; quantity: number }
 
@@ -182,11 +183,19 @@ function CheckoutForm() {
 
       toast({
         title: "Payment Successful!",
-        description: "Now let's create your account to access your memorial.",
+        description: "Continue to set up the memorial linked to your QR product.",
       })
 
-      // Redirect to account creation instead of order success
-      router.push(`/auth/create-account?order=${result.order.id}`)
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      router.push(
+        user
+          ? `/create-memorial?orderId=${result.order.id}&welcome=true`
+          : `/auth/create-account?order=${result.order.id}`,
+      )
     } catch (error: any) {
       console.error("[v0] Order creation error:", error)
       toast({

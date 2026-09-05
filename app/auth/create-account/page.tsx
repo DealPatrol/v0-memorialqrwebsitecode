@@ -31,13 +31,20 @@ export default function CreateAccountPage() {
     // Retrieve payment data from session storage
     const postPaymentData = sessionStorage.getItem('postPaymentData')
     if (postPaymentData) {
-      setOrderData(JSON.parse(postPaymentData))
+      const parsedOrderData = JSON.parse(postPaymentData)
+      const [firstName = '', ...lastNameParts] = (parsedOrderData.name || '').split(' ')
+      setOrderData(parsedOrderData)
       setFormData(prev => ({
         ...prev,
-        email: JSON.parse(postPaymentData).email || '',
+        email: parsedOrderData.email || '',
+        firstName,
+        lastName: lastNameParts.join(' '),
       }))
+    } else {
+      const orderId = searchParams.get('order')
+      if (orderId) setOrderData({ orderId })
     }
-  }, [])
+  }, [searchParams])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -137,13 +144,11 @@ export default function CreateAccountPage() {
 
       toast({
         title: 'Account Created!',
-        description: 'Welcome to Memorial QR! Redirecting to your dashboard...',
+        description: 'Welcome to Memorial QR! Continue with your memorial setup.',
       })
 
-      // Redirect to dashboard or create memorial page
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 1500)
+      const linkedOrderId = result.orderId || orderData?.orderId
+      router.push(linkedOrderId ? `/create-memorial?orderId=${linkedOrderId}&welcome=true` : '/create-memorial?welcome=true')
     } catch (error: any) {
       console.error('[v0] Account creation error:', error)
       toast({
