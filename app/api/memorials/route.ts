@@ -28,6 +28,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("memorials")
       .select("id, slug, full_name, birth_date, death_date, location, biography, profile_image_url, created_at")
+      .neq("full_name", "Memorial setup in progress")
       .order("created_at", { ascending: false })
       .limit(100)
 

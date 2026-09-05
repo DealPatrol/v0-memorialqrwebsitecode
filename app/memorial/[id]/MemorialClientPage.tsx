@@ -115,9 +115,9 @@ interface Milestone {
   image_url?: string
 }
 
-export function MemorialClientPage() {
+export function MemorialClientPage({ memorialId: providedMemorialId }: { memorialId?: string }) {
   const params = useParams()
-  const memorialId = params.id as string
+  const memorialId = providedMemorialId || (params.id as string)
   const [newMessage, setNewMessage] = useState("")
   const [newMessageAuthor, setNewMessageAuthor] = useState("")
   const [newStory, setNewStory] = useState({ title: "", content: "", author: "" })

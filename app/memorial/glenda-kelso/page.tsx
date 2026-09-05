@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 }
 
 export default function GlendaKelsoMemorialPage() {
-  return <MemorialClientPage />
+  return <MemorialClientPage memorialId="glenda-kelso" />
 }

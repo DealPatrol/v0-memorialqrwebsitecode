@@ -4,7 +4,7 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
 import { generateQRCodeBuffer } from "@/lib/qr-code"
 import { getStoreProduct } from "@/lib/store-products"
-import { fulfillVoiceKeychain } from "@/lib/printify"
+import { fulfillVoiceKeychain, PrintifyFulfillmentError } from "@/lib/printify"
 
 export async function POST(req: Request) {
   try {
@@ -262,38 +262,53 @@ export async function POST(req: Request) {
         .update({ memorial_id: createdMemorial.id })
         .eq("id", order.id)
 
-      if (qrCodeUrl && primaryProduct.memorialType === "voice-keychain") {
-        try {
-          const fulfillment = await fulfillVoiceKeychain({
-            orderNumber: order.order_number,
-            quantity: orderData.quantity,
-            qrCodeUrl,
-            address: {
-              name: customerName,
-              email: customerEmail,
-              phone: customerPhone,
-              address1: addressLine1,
-              address2: addressLine2,
-              city,
-              region: state,
-              zip,
-              country: "CA",
-            },
-          })
+      if (primaryProduct.memorialType === "voice-keychain") {
+        if (!qrCodeUrl) {
           await supabase
             .from("orders")
             .update({
               fulfillment_provider: "printify",
-              fulfillment_id: fulfillment.fulfillmentId,
-              fulfillment_status: fulfillment.status,
+              fulfillment_status: "failed",
             })
             .eq("id", order.id)
-        } catch (fulfillmentError) {
-          console.error("[v0] Printify fulfillment failed:", fulfillmentError)
-          await supabase
-            .from("orders")
-            .update({ fulfillment_provider: "printify", fulfillment_status: "failed" })
-            .eq("id", order.id)
+        } else {
+          try {
+            const fulfillment = await fulfillVoiceKeychain({
+              orderNumber: order.order_number,
+              quantity: orderData.quantity,
+              qrCodeUrl,
+              address: {
+                name: customerName,
+                email: customerEmail,
+                phone: customerPhone,
+                address1: addressLine1,
+                address2: addressLine2,
+                city,
+                region: state,
+                zip,
+                country: "CA",
+              },
+            })
+            await supabase
+              .from("orders")
+              .update({
+                fulfillment_provider: "printify",
+                fulfillment_id: fulfillment.fulfillmentId,
+                fulfillment_status: fulfillment.status,
+              })
+              .eq("id", order.id)
+          } catch (fulfillmentError) {
+            console.error("[v0] Printify fulfillment failed:", fulfillmentError)
+            await supabase
+              .from("orders")
+              .update({
+                fulfillment_provider: "printify",
+                fulfillment_id:
+                  fulfillmentError instanceof PrintifyFulfillmentError ? fulfillmentError.fulfillmentId : null,
+                fulfillment_status: "failed",
+              })
+              .eq("id", order.id)
+          }
         }
       }
     }

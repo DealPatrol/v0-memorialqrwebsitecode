@@ -32,6 +32,16 @@ type PrintifyResponse = {
   [key: string]: unknown
 }
 
+export class PrintifyFulfillmentError extends Error {
+  constructor(
+    message: string,
+    readonly fulfillmentId: string,
+  ) {
+    super(message)
+    this.name = "PrintifyFulfillmentError"
+  }
+}
+
 const PRINTIFY_API_URL = "https://api.printify.com/v1"
 
 async function printifyRequest<T>(path: string, token: string, init?: RequestInit): Promise<T> {
@@ -128,10 +138,14 @@ export async function fulfillVoiceKeychain(request: FulfillmentRequest) {
   })
   if (!order.id) throw new Error("Printify did not return an order ID")
 
-  await printifyRequest(`/shops/${shopId}/orders/${order.id}/send_to_production.json`, token, {
-    method: "POST",
-    body: "{}",
-  })
+  try {
+    await printifyRequest(`/shops/${shopId}/orders/${order.id}/send_to_production.json`, token, {
+      method: "POST",
+      body: "{}",
+    })
+  } catch (error) {
+    throw new PrintifyFulfillmentError(error instanceof Error ? error.message : String(error), order.id)
+  }
 
   return { status: "sent_to_production" as const, fulfillmentId: order.id }
 }
