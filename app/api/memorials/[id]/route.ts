@@ -27,7 +27,16 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 
-    return NextResponse.json({ memorial })
+    const [{ data: externalLinks }, { data: familyMembers }] = await Promise.all([
+      supabase.from("external_links").select("*").eq("memorial_id", memorial.id).order("created_at"),
+      supabase.from("family_members").select("*").eq("memorial_id", memorial.id).order("created_at"),
+    ])
+
+    return NextResponse.json({
+      memorial,
+      externalLinks: externalLinks || [],
+      familyMembers: familyMembers || [],
+    })
   } catch (error) {
     console.error("Error in memorial API:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

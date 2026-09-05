@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/client"
 function OrderSuccessContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get("order")
+  const memorialSlug = searchParams.get("memorial")
   const { toast } = useToast()
 
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -86,8 +87,10 @@ function OrderSuccessContent() {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
-          <CardTitle className="text-3xl font-bold text-green-600 mb-2">Order Complete!</CardTitle>
-          <p className="text-muted-foreground text-lg">Thank you for your purchase</p>
+          <CardTitle className="text-3xl font-bold text-green-600 mb-2">Your Memorial Is Live</CardTitle>
+          <p className="text-muted-foreground text-lg">
+            Your unique QR destination is ready and your content has been saved.
+          </p>
           {orderId && <p className="text-sm text-muted-foreground mt-2">Order Number: {orderId}</p>}
         </CardHeader>
 
@@ -173,7 +176,7 @@ function OrderSuccessContent() {
             <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-lg">
               <Package className="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold mb-1">Your Order is Being Prepared</h3>
+                <h3 className="font-semibold mb-1">Your Printify Keychain Is Being Prepared</h3>
                 <p className="text-sm text-muted-foreground">
                   Your memorial products are being prepared and will ship soon. You'll receive tracking information via
                   email.
@@ -187,14 +190,14 @@ function OrderSuccessContent() {
             <ol className="space-y-3 text-sm text-muted-foreground">
               <li className="flex gap-3">
                 <span className="font-bold text-blue-600 flex-shrink-0">1.</span>
-                <span>Check your email for order confirmation and memorial setup instructions</span>
+                <span>Open the memorial below and test the voice, photos, videos, family and links</span>
               </li>
               <li className="flex gap-3">
                 <span className="font-bold text-blue-600 flex-shrink-0">2.</span>
                 <span>
                   {isAuthenticated
-                    ? "Access your dashboard to start uploading photos, videos, and memories"
-                    : "Create an account (optional) to easily manage your memorial content"}
+                    ? "Use your dashboard to edit or add content at any time"
+                    : "Create an account to claim this memorial and manage it after today"}
                 </span>
               </li>
               <li className="flex gap-3">
@@ -203,22 +206,27 @@ function OrderSuccessContent() {
               </li>
               <li className="flex gap-3">
                 <span className="font-bold text-blue-600 flex-shrink-0">4.</span>
-                <span>Share the QR code with family and friends to celebrate your loved one's life</span>
+                <span>The printed QR links to this exact memorial page</span>
               </li>
             </ol>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
-            {isAuthenticated ? (
+            {memorialSlug && (
               <Button asChild className="flex-1">
-                <Link href="/dashboard">
-                  Go to Dashboard
+                <Link href={`/memorial/${memorialSlug}`}>
+                  View and test memorial
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
+            )}
+            {isAuthenticated ? (
+              <Button asChild variant="outline" className="flex-1 bg-transparent">
+                <Link href="/dashboard">Go to Dashboard</Link>
+              </Button>
             ) : (
               <Button asChild variant="outline" className="flex-1 bg-transparent">
-                <Link href="/login">Sign In to Dashboard</Link>
+                <Link href={`/auth/create-account?order=${orderId || ""}`}>Create account & claim memorial</Link>
               </Button>
             )}
             <Button asChild variant="outline" className="flex-1 bg-transparent">

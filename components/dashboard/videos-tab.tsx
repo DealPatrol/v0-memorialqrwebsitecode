@@ -24,6 +24,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { VideoUpload } from "@/components/video-upload"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 type VideoType = {
   id: string
@@ -31,6 +33,8 @@ type VideoType = {
   title: string
   uploaded_by: string
   created_at: string
+  embed_provider?: "youtube" | "vimeo" | null
+  embed_id?: string | null
 }
 
 export function VideosTab({ videos, memorialId }: { videos: VideoType[]; memorialId: string }) {
@@ -38,6 +42,10 @@ export function VideosTab({ videos, memorialId }: { videos: VideoType[]; memoria
   const [deleteUrl, setDeleteUrl] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
+  const [embedDialogOpen, setEmbedDialogOpen] = useState(false)
+  const [embedTitle, setEmbedTitle] = useState("")
+  const [embedUrl, setEmbedUrl] = useState("")
+  const [addingEmbed, setAddingEmbed] = useState(false)
   const router = useRouter()
 
   const handleDelete = async () => {
@@ -71,6 +79,54 @@ export function VideosTab({ videos, memorialId }: { videos: VideoType[]; memoria
     router.refresh()
   }
 
+  const handleAddEmbed = async () => {
+    setAddingEmbed(true)
+    try {
+      const response = await fetch(`/api/memorials/${memorialId}/videos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: embedTitle, url: embedUrl }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || "Could not add video")
+      setEmbedTitle("")
+      setEmbedUrl("")
+      setEmbedDialogOpen(false)
+      router.refresh()
+    } catch (error) {
+      console.error("Error adding video embed:", error)
+    } finally {
+      setAddingEmbed(false)
+    }
+  }
+
+  const embedDialog = (
+    <Dialog open={embedDialogOpen} onOpenChange={setEmbedDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Add YouTube / Vimeo</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add an embedded video</DialogTitle>
+          <DialogDescription>Paste a public YouTube or Vimeo link.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="embed-title">Title</Label>
+            <Input id="embed-title" value={embedTitle} onChange={(event) => setEmbedTitle(event.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="embed-url">YouTube or Vimeo URL</Label>
+            <Input id="embed-url" value={embedUrl} onChange={(event) => setEmbedUrl(event.target.value)} />
+          </div>
+          <Button onClick={handleAddEmbed} disabled={addingEmbed || !embedTitle || !embedUrl} className="w-full">
+            {addingEmbed ? "Adding..." : "Add video"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+
   if (videos.length === 0) {
     return (
       <Card>
@@ -92,6 +148,7 @@ export function VideosTab({ videos, memorialId }: { videos: VideoType[]; memoria
                 <VideoUpload memorialId={memorialId} onUploadComplete={handleUploadComplete} />
               </DialogContent>
             </Dialog>
+            <div className="ml-2">{embedDialog}</div>
           </div>
         </CardContent>
       </Card>
@@ -100,7 +157,7 @@ export function VideosTab({ videos, memorialId }: { videos: VideoType[]; memoria
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 flex gap-2">
         <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -116,15 +173,29 @@ export function VideosTab({ videos, memorialId }: { videos: VideoType[]; memoria
             <VideoUpload memorialId={memorialId} onUploadComplete={handleUploadComplete} />
           </DialogContent>
         </Dialog>
+        {embedDialog}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         {videos.map((video) => (
           <Card key={video.id} className="overflow-hidden">
             <div className="relative bg-slate-100">
-              <video src={video.video_url} controls className="w-full aspect-video">
-                Your browser does not support the video element.
-              </video>
+              {video.embed_provider && video.embed_id ? (
+                <iframe
+                  className="aspect-video w-full"
+                  src={
+                    video.embed_provider === "youtube"
+                      ? `https://www.youtube.com/embed/${video.embed_id}`
+                      : `https://player.vimeo.com/video/${video.embed_id}`
+                  }
+                  title={video.title}
+                  allowFullScreen
+                />
+              ) : (
+                <video src={video.video_url} controls className="w-full aspect-video">
+                  Your browser does not support the video element.
+                </video>
+              )}
               <Button
                 variant="destructive"
                 size="icon"

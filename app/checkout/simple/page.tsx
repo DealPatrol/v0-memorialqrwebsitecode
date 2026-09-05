@@ -14,36 +14,7 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
-
-const STORE_PRODUCTS: Record<string, { name: string; price: number; monthlyFee: number }> = {
-  // Standard Plaques
-  "gold-plaque": { name: "Gold Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-  "silver-plaque": { name: "Silver Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-  "black-plaque": { name: "Black Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-
-  // Human Memorial Products
-  "wooden-keychain": { name: "Memorial QR Code Wooden Keychain or Necklace", price: 14.99, monthlyFee: 4.99 },
-  "wooden-keychain-necklace": { name: "Memorial QR Code Wooden Keychain or Necklace", price: 14.99, monthlyFee: 4.99 },
-  "slate-coaster": { name: "Memorial Slate Coaster with QR Code", price: 46.99, monthlyFee: 4.99 },
-  "slate-memorial-coaster": { name: "Memorial Slate Coaster with QR Code", price: 24.99, monthlyFee: 4.99 },
-  "photo-frame": { name: "Memorial Photo Frame with QR Code", price: 49.99, monthlyFee: 4.99 },
-  "memorial-photo-frame": { name: "Memorial Photo Frame with QR Code", price: 49.99, monthlyFee: 4.99 },
-  "human-cremation-urn-wood": { name: "Wooden Cremation Urn with QR Memorial Plaque", price: 89.99, monthlyFee: 4.99 },
-
-  // Pet Memorial Products
-  "pet-collar-memorial-tag": { name: "Pet Memorial Collar with QR Code Tag", price: 19.99, monthlyFee: 4.99 },
-  "pet-garden-tombstone": { name: "Pet Memorial Garden Stone with QR Code", price: 44.99, monthlyFee: 4.99 },
-  "pet-cremation-urn-wood": { name: "Wooden Pet Cremation Urn with QR Code", price: 34.99, monthlyFee: 4.99 },
-  "pet-cremation-urn-ceramic": { name: "Ceramic Pet Cremation Urn with QR Memorial", price: 39.99, monthlyFee: 4.99 },
-  "pet-photo-frame-qr": { name: "Pet Memorial Photo Frame with QR Code", price: 29.99, monthlyFee: 4.99 },
-  "custom-pet-portrait-drawing": { name: "Custom Pet Portrait Drawing with QR Code", price: 54.99, monthlyFee: 4.99 },
-  "pet-shadow-box-collar": { name: "Pet Memorial Shadow Box with Collar Display", price: 64.99, monthlyFee: 4.99 },
-
-  // Concierge Service
-  "concierge-service": { name: "Concierge Memorial Service", price: 299.99, monthlyFee: 4.99 },
-  "concierge-digital": { name: "Concierge Service - Digital Link", price: 299.99, monthlyFee: 4.99 },
-  "concierge-plaque": { name: "Concierge Service - Physical Plaque", price: 329.99, monthlyFee: 4.99 },
-}
+import { getStoreProduct, VOICE_KEYCHAIN_PRODUCT } from "@/lib/store-products"
 
 function CheckoutForm() {
   const router = useRouter()
@@ -62,8 +33,8 @@ function CheckoutForm() {
       setOrderTotal(total)
     } else {
       // Fallback to URL params for single product
-      const productId = searchParams.get("product") || "gold-plaque"
-      const product = STORE_PRODUCTS[productId as keyof typeof STORE_PRODUCTS]
+      const productId = searchParams.get("product") || VOICE_KEYCHAIN_PRODUCT.id
+      const product = getStoreProduct(productId)
       if (product) {
         setCartItems([{ id: productId, name: product.name, price: product.price, quantity: 1 }])
         setOrderTotal(product.price)
@@ -73,6 +44,7 @@ function CheckoutForm() {
   }, []) // Run only once on mount
 
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     phone: "",
     address: "",
@@ -94,6 +66,8 @@ function CheckoutForm() {
 
   const validateForm = () => {
     if (
+      !formData.name ||
+      !formData.email ||
       !formData.address ||
       !formData.city ||
       !formData.state ||
@@ -107,16 +81,14 @@ function CheckoutForm() {
       return false
     }
 
-    if (formData.email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(formData.email)) {
-        toast({
-          title: "Invalid Email",
-          description: "Please enter a valid email address.",
-          variant: "destructive",
-        })
-        return false
-      }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      })
+      return false
     }
 
     return true
@@ -128,11 +100,12 @@ function CheckoutForm() {
 
     try {
       const orderData = {
-        planType: "cart-checkout",
+        planType: "individual-product",
         items: cartItems,
         totalAmount: orderTotal,
         monthlyFee: 4.99,
-        customerEmail: formData.email || "",
+        customerName: formData.name,
+        customerEmail: formData.email,
         customerPhone: formData.phone || "",
         addressLine1: formData.address,
         addressLine2: formData.address2 || "",
@@ -161,6 +134,7 @@ function CheckoutForm() {
       
       // Store payment data in session storage for account creation
       sessionStorage.setItem("postPaymentData", JSON.stringify({
+        name: formData.name,
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
@@ -172,13 +146,19 @@ function CheckoutForm() {
         orderNumber: result.order.orderNumber,
       }))
 
+      sessionStorage.setItem("pendingOrder", JSON.stringify({
+        customerEmail: formData.email,
+        customerName: formData.name,
+        orderId: result.order.id,
+        packageType: result.order.memorialType,
+      }))
+
       toast({
         title: "Payment Successful!",
-        description: "Now let's create your account to access your memorial.",
+        description: "Your unique memorial and QR link are reserved. Complete the memorial now.",
       })
 
-      // Redirect to account creation instead of order success
-      router.push(`/auth/create-account?order=${result.order.id}`)
+      router.push(`/create-memorial?orderId=${result.order.id}&welcome=true`)
     } catch (error: any) {
       console.error("[v0] Order creation error:", error)
       toast({
@@ -282,8 +262,20 @@ function CheckoutForm() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Your full name"
+                      autoComplete="name"
+                      required
+                    />
+                  </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address (Optional)</Label>
+                    <Label htmlFor="email">Email Address *</Label>
                     <Input
                       id="email"
                       name="email"
@@ -292,6 +284,7 @@ function CheckoutForm() {
                       onChange={handleInputChange}
                       placeholder="john.doe@example.com"
                       autoComplete="email"
+                      required
                     />
                     <p className="text-xs text-muted-foreground">For order updates and account recovery</p>
                   </div>
@@ -357,7 +350,7 @@ function CheckoutForm() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="state">
-                        State <span className="text-red-500">*</span>
+                        Province <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="state"
@@ -365,14 +358,13 @@ function CheckoutForm() {
                         value={formData.state}
                         onChange={handleInputChange}
                         required
-                        placeholder="NY"
-                        maxLength={2}
+                        placeholder="AB"
                         autoComplete="address-level1"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="zipCode">
-                        ZIP Code <span className="text-red-500">*</span>
+                        Postal Code <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="zipCode"
@@ -380,7 +372,7 @@ function CheckoutForm() {
                         value={formData.zipCode}
                         onChange={handleInputChange}
                         required
-                        placeholder="10001"
+                        placeholder="T2A 0A1"
                         autoComplete="postal-code"
                       />
                     </div>
@@ -440,7 +432,7 @@ function CheckoutForm() {
                   onBeforePayment={validateForm}
                   disabled={isSubmitting}
                   customerEmail={formData.email}
-                  customerName=""
+                  customerName={formData.name}
                 />
               </CardContent>
             </Card>

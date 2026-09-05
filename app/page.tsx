@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
-import { ProductSelector } from "@/components/product-selector"
+import { VoiceKeychainProduct } from "@/components/voice-keychain-product"
 import { ScrollProgressBar } from "@/components/scroll-progress-bar"
 import { QuickLinksBar } from "@/components/quick-links-bar"
 import { FeaturedMemorialPreview } from "@/components/featured-memorial-preview"
@@ -44,7 +44,8 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
-              Weather-resistant QR plaques transform cemetery headstones into interactive digital tributes. Share photos, videos, and memories—one scan away.
+              A Printify acrylic keychain opens a memorial where their voice, photos, videos, and memories are one scan
+              away.
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -59,7 +60,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <ProductSelector />
+          <VoiceKeychainProduct />
         </div>
       </section>
 

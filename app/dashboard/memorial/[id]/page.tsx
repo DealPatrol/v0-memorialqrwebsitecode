@@ -10,6 +10,7 @@ import { PhotosTab } from "@/components/dashboard/photos-tab"
 import { StoriesTab } from "@/components/dashboard/stories-tab"
 import { MusicTab } from "@/components/dashboard/music-tab"
 import { VideosTab } from "@/components/dashboard/videos-tab"
+import { MemorialDetailsForm } from "@/components/dashboard/memorial-details-form"
 
 export default async function ManageMemorialPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -30,13 +31,23 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
     redirect("/dashboard")
   }
 
-  const [{ data: messages }, { data: photos }, { data: stories }, { data: music }, { data: videos }] =
+  const [
+    { data: messages },
+    { data: photos },
+    { data: stories },
+    { data: music },
+    { data: videos },
+    { data: familyMembers },
+    { data: externalLinks },
+  ] =
     await Promise.all([
       supabase.from("messages").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("photos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("stories").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("music").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("videos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      supabase.from("family_members").select("*").eq("memorial_id", id).order("created_at"),
+      supabase.from("external_links").select("*").eq("memorial_id", id).order("created_at"),
     ])
 
   return (
@@ -67,14 +78,22 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="messages" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 h-auto">
+            <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="messages">Messages ({messages?.length || 0})</TabsTrigger>
             <TabsTrigger value="photos">Photos ({photos?.length || 0})</TabsTrigger>
             <TabsTrigger value="videos">Videos ({videos?.length || 0})</TabsTrigger>
             <TabsTrigger value="stories">Stories ({stories?.length || 0})</TabsTrigger>
             <TabsTrigger value="music">Voicemails/Audio ({music?.length || 0})</TabsTrigger>
           </TabsList>
+          <TabsContent value="details">
+            <MemorialDetailsForm
+              memorial={memorial}
+              familyMembers={familyMembers || []}
+              externalLinks={externalLinks || []}
+            />
+          </TabsContent>
           <TabsContent value="messages">
             <MessagesTab messages={messages || []} memorialId={id} />
           </TabsContent>

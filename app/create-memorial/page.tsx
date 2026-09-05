@@ -10,7 +10,21 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
-import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, ArrowLeft, Heart } from "lucide-react"
+import {
+  User,
+  Calendar,
+  Upload,
+  FileText,
+  Users,
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft,
+  Heart,
+  Mic,
+  Music,
+  Video,
+  LinkIcon,
+} from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
 import { ThemeSelector } from "@/components/theme-selector"
@@ -137,12 +151,20 @@ export default function CreateMemorialPage() {
     favoriteQuote: "",
     profilePhoto: null as File | null,
     additionalPhotos: [] as File[],
+    voiceRecording: null as File | null,
+    voiceTitle: "A message in their voice",
+    musicFile: null as File | null,
+    musicTitle: "",
+    videoFile: null as File | null,
+    videoTitle: "",
+    videoEmbeds: "",
     biography: "",
     personalStory: "",
     spouse: "",
     children: "",
     parents: "",
     siblings: "",
+    externalLinks: "",
   })
 
   const handleInputChange = (field: string, value: any) => {
@@ -202,6 +224,20 @@ export default function CreateMemorialPage() {
         }
       }
 
+      const parsePairs = (value: string, firstKey: string, secondKey: string) =>
+        value
+          .split("\n")
+          .map((line) => line.split("|").map((part) => part.trim()))
+          .filter(([first, second]) => first && second)
+          .map(([first, second]) => ({ [firstKey]: first, [secondKey]: second }))
+
+      const familyMembers = [
+        ...parsePairs(formData.children, "relationship", "name"),
+        ...parsePairs(formData.parents, "relationship", "name"),
+        ...parsePairs(formData.siblings, "relationship", "name"),
+        ...(formData.spouse ? [{ relationship: "Spouse / Partner", name: formData.spouse }] : []),
+      ]
+
       const memorialResponse = await fetch("/api/memorials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -218,6 +254,11 @@ export default function CreateMemorialPage() {
           profileImageUrl: profileImageUrl,
           theme: formData.theme,
           packageType: isFreePlan ? "free" : orderData.packageType || "basic",
+          productType: orderData.packageType || "standard",
+          orderId: orderData.orderId || null,
+          familyMembers,
+          externalLinks: parsePairs(formData.externalLinks, "label", "url"),
+          videoEmbeds: parsePairs(formData.videoEmbeds, "title", "url"),
         }),
       })
 
@@ -247,6 +288,34 @@ export default function CreateMemorialPage() {
         }
       }
 
+      const uploadAudio = async (file: File, title: string, kind: "voice" | "music", isPrimary = false) => {
+        const audioFormData = new FormData()
+        audioFormData.append("file", file)
+        audioFormData.append("memorialId", memorial.slug)
+        audioFormData.append("title", title || file.name)
+        audioFormData.append("artist", "")
+        audioFormData.append("kind", kind)
+        audioFormData.append("isPrimary", String(isPrimary))
+        const response = await fetch("/api/music/upload", { method: "POST", body: audioFormData })
+        if (!response.ok) throw new Error((await response.json()).error || "Audio upload failed")
+      }
+
+      if (formData.voiceRecording) {
+        await uploadAudio(formData.voiceRecording, formData.voiceTitle, "voice", true)
+      }
+      if (formData.musicFile) {
+        await uploadAudio(formData.musicFile, formData.musicTitle, "music")
+      }
+      if (formData.videoFile) {
+        const videoFormData = new FormData()
+        videoFormData.append("file", formData.videoFile)
+        videoFormData.append("memorialId", memorial.slug)
+        videoFormData.append("title", formData.videoTitle || formData.videoFile.name)
+        videoFormData.append("uploadedBy", orderData.customerName || "Memorial creator")
+        const response = await fetch("/api/videos/upload", { method: "POST", body: videoFormData })
+        if (!response.ok) throw new Error((await response.json()).error || "Video upload failed")
+      }
+
       if (orderData.orderId && !isFreePlan) {
         await fetch("/api/orders/link-memorial", {
           method: "POST",
@@ -267,7 +336,11 @@ export default function CreateMemorialPage() {
           : "Your memorial is now live and ready to share.",
       })
 
-      router.push(`/memorial/${memorial.id}`)
+      if (orderData.orderId) {
+        router.push(`/order-success?order=${orderData.orderId}&memorial=${memorial.slug}`)
+      } else {
+        router.push(`/memorial/${memorial.slug}`)
+      }
     } catch (error: any) {
       console.error("Error creating memorial:", error)
       toast({
@@ -595,6 +668,88 @@ export default function CreateMemorialPage() {
                     />
                     <p className="text-sm text-zinc-500 mt-1">{formData.additionalPhotos.length} photos uploaded</p>
                   </div>
+
+                  <div className="border-t border-zinc-800 pt-6 space-y-4">
+                    <div>
+                      <Label htmlFor="voiceRecording" className="text-zinc-300 flex items-center gap-2">
+                        <Mic className="h-4 w-4" />
+                        Voicemail or Voice Recording
+                      </Label>
+                      <Input
+                        id="voiceRecording"
+                        type="file"
+                        accept="audio/*,.m4a,.amr,.3gp,.aac"
+                        onChange={(e) => handleFileUpload("voiceRecording", e.target.files)}
+                        className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
+                      />
+                      <Input
+                        className="mt-2 bg-zinc-800 border-zinc-700 text-white"
+                        value={formData.voiceTitle}
+                        onChange={(e) => handleInputChange("voiceTitle", e.target.value)}
+                        placeholder="Recording title"
+                      />
+                      {orderData.packageType === "voice-keychain" && (
+                        <p className="text-sm text-amber-400 mt-2">
+                          This recording will be the primary action when someone scans the keychain.
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="musicFile" className="text-zinc-300 flex items-center gap-2">
+                        <Music className="h-4 w-4" />
+                        Music File
+                      </Label>
+                      <Input
+                        id="musicFile"
+                        type="file"
+                        accept="audio/*"
+                        onChange={(e) => handleFileUpload("musicFile", e.target.files)}
+                        className="bg-zinc-800 border-zinc-700 text-white"
+                      />
+                      <Input
+                        className="mt-2 bg-zinc-800 border-zinc-700 text-white"
+                        value={formData.musicTitle}
+                        onChange={(e) => handleInputChange("musicTitle", e.target.value)}
+                        placeholder="Song title"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="videoFile" className="text-zinc-300 flex items-center gap-2">
+                        <Video className="h-4 w-4" />
+                        Video File
+                      </Label>
+                      <Input
+                        id="videoFile"
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) => handleFileUpload("videoFile", e.target.files)}
+                        className="bg-zinc-800 border-zinc-700 text-white"
+                      />
+                      <Input
+                        className="mt-2 bg-zinc-800 border-zinc-700 text-white"
+                        value={formData.videoTitle}
+                        onChange={(e) => handleInputChange("videoTitle", e.target.value)}
+                        placeholder="Video title"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="videoEmbeds" className="text-zinc-300">
+                        YouTube or Vimeo Videos
+                      </Label>
+                      <Textarea
+                        id="videoEmbeds"
+                        value={formData.videoEmbeds}
+                        onChange={(e) => handleInputChange("videoEmbeds", e.target.value)}
+                        placeholder={"Celebration of life | https://youtu.be/...\nFavorite memory | https://vimeo.com/..."}
+                        rows={3}
+                        className="bg-zinc-800 border-zinc-700 text-white"
+                      />
+                      <p className="text-xs text-zinc-500 mt-1">One per line: title | URL</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -672,7 +827,7 @@ export default function CreateMemorialPage() {
                       value={formData.children}
                       onChange={(e) => handleInputChange("children", e.target.value)}
                       rows={2}
-                      placeholder="Names of children..."
+                      placeholder={"Child | Alex Smith\nChild | Jordan Smith"}
                       className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     />
                   </div>
@@ -681,10 +836,12 @@ export default function CreateMemorialPage() {
                     <Label htmlFor="parents" className="text-zinc-300">
                       Parents
                     </Label>
-                    <Input
+                    <Textarea
                       id="parents"
                       value={formData.parents}
                       onChange={(e) => handleInputChange("parents", e.target.value)}
+                      rows={2}
+                      placeholder={"Mother | Jane Smith\nFather | Robert Smith"}
                       className="bg-zinc-800 border-zinc-700 text-white"
                     />
                   </div>
@@ -698,9 +855,25 @@ export default function CreateMemorialPage() {
                       value={formData.siblings}
                       onChange={(e) => handleInputChange("siblings", e.target.value)}
                       rows={2}
-                      placeholder="Names of siblings..."
+                      placeholder={"Sister | Taylor Smith\nBrother | Morgan Smith"}
                       className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="externalLinks" className="text-zinc-300 flex items-center gap-2">
+                      <LinkIcon className="h-4 w-4" />
+                      External Links
+                    </Label>
+                    <Textarea
+                      id="externalLinks"
+                      value={formData.externalLinks}
+                      onChange={(e) => handleInputChange("externalLinks", e.target.value)}
+                      rows={3}
+                      placeholder={"Charity | https://example.org\nOnline obituary | https://example.com/obituary"}
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
+                    />
+                    <p className="text-xs text-zinc-500 mt-1">One per line: label | URL</p>
                   </div>
                 </CardContent>
               </Card>
