@@ -75,17 +75,15 @@ export default function CreateMemorialPage() {
       if (orderIdParam) {
         const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
 
-        if (order) {
-          setOrderData({
-            customerEmail: order.customer_email || user?.email || "",
-            customerName: order.customer_name || user?.user_metadata?.full_name || "",
-            orderId: order.id,
-            packageType: order.product_name || "basic",
-          })
-          setOrderId(`ORDER-${order.id}`)
-          setIsCheckingAuth(false)
-          return
-        }
+        setOrderData({
+          customerEmail: order?.customer_email || user?.email || "",
+          customerName: order?.customer_name || user?.user_metadata?.full_name || "",
+          orderId: orderIdParam,
+          packageType: order?.product_name || "basic",
+        })
+        setOrderId(`ORDER-${orderIdParam}`)
+        setIsCheckingAuth(false)
+        return
       }
 
       const planParam = searchParams.get("plan")
@@ -254,38 +252,44 @@ export default function CreateMemorialPage() {
       const { memorial } = await memorialResponse.json()
       const uploaderName = orderData.customerName || user?.user_metadata?.full_name || "Memorial Creator"
       const failedUploads: string[] = []
+      const uploadItem = async (label: string, upload: () => Promise<Response>) => {
+        try {
+          const response = await upload()
+          if (!response.ok) failedUploads.push(label)
+        } catch (error) {
+          console.error(`Error uploading ${label}:`, error)
+          failedUploads.push(label)
+        }
+      }
 
       if (formData.additionalPhotos.length > 0) {
         for (const photo of formData.additionalPhotos) {
-          try {
+          await uploadItem(photo.name, async () => {
             const photoFormData = new FormData()
             photoFormData.append("file", photo)
             photoFormData.append("memorialId", memorial.id)
             photoFormData.append("caption", photo.name)
             photoFormData.append("uploaderName", uploaderName)
 
-            const response = await fetch("/api/photos/upload", {
+            return fetch("/api/photos/upload", {
               method: "POST",
               body: photoFormData,
             })
-            if (!response.ok) failedUploads.push(photo.name)
-          } catch (photoError) {
-            console.error("Error uploading photo:", photoError)
-            failedUploads.push(photo.name)
-          }
+          })
         }
       }
 
       const uploadAudio = async (file: File, title: string, artist: string) => {
-        const audioFormData = new FormData()
-        audioFormData.append("file", file)
-        audioFormData.append("memorialId", memorial.id)
-        audioFormData.append("title", title)
-        audioFormData.append("artist", artist)
-        audioFormData.append("uploaderName", uploaderName)
+        await uploadItem(file.name, async () => {
+          const audioFormData = new FormData()
+          audioFormData.append("file", file)
+          audioFormData.append("memorialId", memorial.id)
+          audioFormData.append("title", title)
+          audioFormData.append("artist", artist)
+          audioFormData.append("uploaderName", uploaderName)
 
-        const response = await fetch("/api/music/upload", { method: "POST", body: audioFormData })
-        if (!response.ok) failedUploads.push(file.name)
+          return fetch("/api/music/upload", { method: "POST", body: audioFormData })
+        })
       }
 
       if (formData.voiceRecording) {
@@ -298,14 +302,15 @@ export default function CreateMemorialPage() {
       }
 
       for (const video of formData.videos) {
-        const videoFormData = new FormData()
-        videoFormData.append("file", video)
-        videoFormData.append("memorialId", memorial.id)
-        videoFormData.append("title", video.name.replace(/\.[^/.]+$/, ""))
-        videoFormData.append("uploadedBy", uploaderName)
+        await uploadItem(video.name, async () => {
+          const videoFormData = new FormData()
+          videoFormData.append("file", video)
+          videoFormData.append("memorialId", memorial.id)
+          videoFormData.append("title", video.name.replace(/\.[^/.]+$/, ""))
+          videoFormData.append("uploadedBy", uploaderName)
 
-        const response = await fetch("/api/videos/upload", { method: "POST", body: videoFormData })
-        if (!response.ok) failedUploads.push(video.name)
+          return fetch("/api/videos/upload", { method: "POST", body: videoFormData })
+        })
       }
 
       const familyDetails = [
@@ -321,20 +326,26 @@ export default function CreateMemorialPage() {
         ...formData.externalLinks
           .split("\n")
           .map((link) => link.trim())
-          .filter((link) => /^https?:\/\//i.test(link))
-          .map((link) => ({
-            title: `External Link: ${new URL(link).hostname}`,
-            content: link,
-          })),
+          .flatMap((link) => {
+            try {
+              const url = new URL(link)
+              return url.protocol === "http:" || url.protocol === "https:"
+                ? [{ title: `External Link: ${url.hostname}`, content: link }]
+                : []
+            } catch {
+              return []
+            }
+          }),
       ].filter((story): story is { title: string; content: string } => Boolean(story))
 
       for (const story of setupStories) {
-        const response = await fetch(`/api/memorials/${memorial.id}/stories`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...story, author_name: uploaderName }),
+        await uploadItem(story.title, () => {
+          return fetch(`/api/memorials/${memorial.id}/stories`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...story, author_name: uploaderName }),
+          })
         })
-        if (!response.ok) failedUploads.push(story.title)
       }
 
       sessionStorage.removeItem("pendingOrder")

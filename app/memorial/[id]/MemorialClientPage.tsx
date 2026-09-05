@@ -136,14 +136,12 @@ export function MemorialClientPage() {
   const setupComplete = searchParams.get("setup") === "complete"
 
   const selectedTheme = themes.find((t) => t.id === (memorial?.theme || "classic")) || themes[0]
-  const featuredVoice =
-    music.find(
-      (track) =>
-        !track.is_youtube &&
-        (track.artist?.toLowerCase() === "voice recording" ||
-          track.title.toLowerCase().includes("voice") ||
-          track.title.toLowerCase().includes("voicemail")),
-    ) || music.find((track) => !track.is_youtube)
+  const featuredVoice = music.find(
+    (track) =>
+      !track.is_youtube &&
+      track.artist?.toLowerCase() === "voice recording" &&
+      track.title.toLowerCase() === "hear their voice",
+  )
   const remainingAudio = featuredVoice ? music.filter((track) => track.id !== featuredVoice.id) : music
   const familyTreeStory = stories.find((story) => story.title === "Family Tree")
   const externalLinkStories = stories.filter(
