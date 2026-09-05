@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
         .update({
           memorial_id: memorial.id,
           user_id: user?.id || null,
-          status: "processing",
+          status: memorial.qr_code_url ? "ready_for_fulfillment" : "setup_required",
         })
         .eq("id", paidOrderId)
 
