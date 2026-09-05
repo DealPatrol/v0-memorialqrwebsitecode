@@ -24,7 +24,7 @@ In today's digital age, the way we honor and remember our loved ones is evolving
 
 ## What Are Memorial QR Codes?
 
-Memorial QR codes are specialized QR codes engraved on plaques, headstones, or keepsakes that link to digital memorial pages. When scanned with a smartphone, these codes instantly connect visitors to a rich multimedia tribute featuring photos, videos, stories, and memories of the departed.
+Memorial QR codes are unique codes printed on personalized keepsakes that link to digital memorial pages. When scanned with a smartphone, these codes instantly connect visitors to a rich multimedia tribute featuring photos, videos, stories, and memories of the departed.
 
 ## Why Choose a QR Memorial?
 
@@ -51,18 +51,19 @@ The process is beautifully simple:
 
 1. **Create the Memorial**: Upload photos, videos, and stories to create a digital memorial page
 2. **Generate the QR Code**: A unique QR code is created that links to your memorial
-3. **Physical Display**: The QR code is engraved on your chosen memorial product (plaque, headstone tag, pendant, etc.)
+3. **Physical Product**: The QR code is added to a custom print file for your selected product
 4. **Easy Access**: Anyone can scan the code with their smartphone to view the full memorial
 
 ## Choosing the Right Memorial QR Product
 
-### Memorial Plaques
-Perfect for headstones, garden displays, or home memorials. Available in Gold, Silver, and Black finishes with weather-resistant materials.
+### Indoor Memorial Displays
+- **Slate Desk Plaque**: A personalized indoor display for a desk or shelf
+- **Memorial Photo Block**: Combine a favorite photo with the memorial QR code
 
 ### Personal Keepsakes
-- **Necklaces and Pendants**: Keep memories close to your heart
-- **Keychains**: Carry remembrance with you daily
-- **Slate Coasters**: Beautiful memorial keepsakes for the home
+- **Keep Card Sticker**: Add a peel-and-stick QR link to a smooth indoor surface
+- **Acrylic QR Keyring**: Carry the memorial link with you
+- **Cork Memorial Coaster**: Display a printed tribute in the home
 
 ## Best Practices for Creating a Memorial QR Page
 
@@ -118,22 +119,22 @@ Pets aren't "just animals"—they're family members who hold irreplaceable place
 
 ## Physical Memorial Ideas
 
-### 1. **Memorial Garden Stone**
-Create a peaceful garden memorial with a custom engraved stone. Add a QR code that links to photos and videos of your pet playing in that very garden.
+### 1. **Pet QR Tag**
+Create a compact personalized keepsake with a unique QR code linked to your pet's memorial.
 
-### 2. **Pet Memorial Plaque**
-Weather-resistant memorial plaques can be placed anywhere—in your yard, on your patio, or beside their favorite napping spot.
+### 2. **Memorial Photo Block**
+Pair a favorite pet photo with a QR code in an indoor display.
 
-### 3. **Slate Memorial Coaster**
-Beautiful slate coasters with personalized engravings and QR codes make touching keepsakes you can display in your home.
+### 3. **Cork Memorial Coaster**
+A cork-backed coaster printed with a memorial QR code makes a touching keepsake for the home.
 
-## Wearable Memorials
+## Portable Memorials
 
-### 4. **Memorial Pendant Necklace**
-Wear a pendant engraved with their name or paw print. Add a QR code to access their memorial page wherever you go.
+### 4. **Acrylic QR Keyring**
+Carry the memorial link with you on a lightweight acrylic keyring.
 
-### 5. **Keychain Memorial**
-Keep their memory close with a custom keychain featuring their photo and a QR memorial link.
+### 5. **Keep Card Sticker**
+Place a peel-and-stick QR link on a smooth indoor surface where family can scan it.
 
 ## Digital Memorial Ideas
 

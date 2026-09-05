@@ -96,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: "Memorial QR",
-    description: "Premium memorial QR code service providing digital tombstone memorials and cemetery tributes",
+    description: "Personalized print-on-demand QR keepsakes linked to hosted digital memorials",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
     telephone: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
     email: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
@@ -110,18 +110,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const productStructuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Memorial QR Code Services",
+    name: "Memorial QR Print-on-Demand Products",
     description:
-      "Premium memorial QR codes for tombstones, headstones, and pet memorials. Weather-resistant digital memorial solutions.",
+      "Personalized QR stickers, coasters, keyrings, indoor displays, pet tags, and photo blocks linked to digital memorials.",
     brand: {
       "@type": "Brand",
       name: "Memorial QR",
     },
     offers: {
       "@type": "AggregateOffer",
-      priceCurrency: "USD",
-      lowPrice: "14.99",
-      highPrice: "89.99",
+      priceCurrency: "CAD",
+      lowPrice: "19.99",
+      highPrice: "59.99",
       availability: "https://schema.org/InStock",
     },
   }

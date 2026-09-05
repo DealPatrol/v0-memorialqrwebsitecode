@@ -33,13 +33,13 @@ export default function PricingPage() {
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
-                <span className="text-4xl font-bold text-slate-900">$14.99</span>
+                <span className="text-4xl font-bold text-slate-900">$19.99</span>
                 <span className="text-slate-600"> and up, one time</span>
               </div>
               <ul className="space-y-3 text-slate-700">
                 <li className="flex gap-2">
                   <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
-                  Plaques, keychains, frames, and other products are priced individually
+                  Six Printful and Printify products are priced individually in CAD
                 </li>
                 <li className="flex gap-2">
                   <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
