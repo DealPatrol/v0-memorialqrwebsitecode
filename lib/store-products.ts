@@ -48,6 +48,22 @@ export const STORE_PRODUCTS = [
     ],
   },
   {
+    id: "voice-keychain",
+    name: "Voice Keychain",
+    price: 24.99,
+    monthlyFee: 4.99,
+    provider: "Printify",
+    fulfillmentProduct: "Acrylic keyring",
+    description:
+      "An acrylic QR keychain linked to a memorial page where your loved one's voicemail or voice recording is featured prominently.",
+    features: [
+      "Custom QR print file for each memorial",
+      "Guided voicemail or voice recording upload",
+      "Opens the memorial's featured voice player",
+      "Printed and fulfilled by Printify",
+    ],
+  },
+  {
     id: "slate-plaque",
     name: "Slate Desk Plaque",
     price: 39.99,

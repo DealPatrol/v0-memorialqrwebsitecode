@@ -102,7 +102,7 @@ export default function HowItWorksPage() {
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
                   Select a memorial product for a loved one or a beloved pet. Choose from stickers, coasters, acrylic
-                  keyrings, indoor desk plaques, pet tags, or photo blocks.
+                  keyrings, a voice-focused keychain, indoor desk plaques, pet tags, or photo blocks.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">

@@ -54,7 +54,7 @@ export function ProductSelector() {
         <CardContent className="p-8">
           <h2 className="text-3xl font-bold text-white text-center mb-3">Choose a Memorial Keepsake</h2>
           <p className="text-gray-300 text-center max-w-3xl mx-auto mb-8">
-            All six products use a unique QR print file and include a link to the online memorial profile.
+            All seven products use a unique QR print file and include a link to the online memorial profile.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

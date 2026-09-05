@@ -87,7 +87,7 @@ const faqCategories = [
       {
         question: "Which physical products are available?",
         answer:
-          "The store offers a Keep Card sticker, cork memorial coaster, acrylic QR keyring, indoor slate desk plaque, pet QR tag, and memorial photo block.",
+          "The store offers a Keep Card sticker, cork memorial coaster, acrylic QR keyring, Voice Keychain, indoor slate desk plaque, pet QR tag, and memorial photo block.",
       },
       {
         question: "Are the products made to order?",

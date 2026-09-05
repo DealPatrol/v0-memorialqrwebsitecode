@@ -33,7 +33,7 @@ export default function StorePage() {
             Memorial QR Code Products - Calgary Northeast
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Six print-on-demand keepsakes, each personalized with a unique QR code that opens an online memorial.
+            Seven print-on-demand keepsakes, each personalized with a unique QR code that opens an online memorial.
           </p>
         </div>
       </section>

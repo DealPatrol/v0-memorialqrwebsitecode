@@ -137,9 +137,9 @@ export default function HomePage() {
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Easy Setup, Ongoing Access</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Creating a memorial QR code is simple. Choose a sticker, coaster, acrylic keyring, indoor desk plaque,
-                pet tag, or photo block, then create the digital memorial with photos and stories. Family members can
-                scan the printed QR code with any smartphone camera—no special app required.
+                Creating a memorial QR code is simple. Choose a sticker, coaster, acrylic keyring, Voice Keychain,
+                indoor desk plaque, pet tag, or photo block, then create the digital memorial with photos, voice, and
+                stories. Family members can scan the printed QR code with any smartphone camera—no special app required.
               </p>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Privacy Controls & Family Collaboration</h3>
@@ -151,10 +151,10 @@ export default function HomePage() {
               </p>
 
               <div className="bg-secondary/50 border border-border rounded-lg p-6 my-10">
-                <h4 className="font-semibold text-lg mb-3 text-foreground">Six Print-on-Demand Options</h4>
+                <h4 className="font-semibold text-lg mb-3 text-foreground">Seven Print-on-Demand Options</h4>
                 <p className="text-muted-foreground mb-4">
-                  Choose a Keep Card sticker, cork-backed coaster, acrylic keyring, indoor slate desk plaque, pet QR tag,
-                  or memorial photo block. Every product includes a link to the same digital memorial.
+                  Choose a Keep Card sticker, cork-backed coaster, acrylic keyring, Voice Keychain, indoor slate desk
+                  plaque, pet QR tag, or memorial photo block. Every product includes a link to the same digital memorial.
                 </p>
               </div>
 

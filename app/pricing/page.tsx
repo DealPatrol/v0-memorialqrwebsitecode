@@ -39,7 +39,7 @@ export default function PricingPage() {
               <ul className="space-y-3 text-slate-700">
                 <li className="flex gap-2">
                   <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
-                  Six Printful and Printify products are priced individually in CAD
+                  Seven Printful and Printify products are priced individually in CAD
                 </li>
                 <li className="flex gap-2">
                   <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
