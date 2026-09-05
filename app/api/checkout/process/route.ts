@@ -60,6 +60,34 @@ export async function POST(req: Request) {
     const finalPlanType = "cart-checkout"
     const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
 
+    const accessToken = process.env.SQUARE_ACCESS_TOKEN
+    const locationId = process.env.SQUARE_LOCATION_ID
+    const environment = process.env.SQUARE_ENVIRONMENT || "sandbox"
+    if (!accessToken || !locationId) {
+      return NextResponse.json({ success: false, error: "Square not configured" }, { status: 500 })
+    }
+
+    const baseUrl =
+      environment === "production" ? "https://connect.squareup.com" : "https://connect.squareupsandbox.com"
+    const paymentResponse = await fetch(`${baseUrl}/v2/payments/${encodeURIComponent(paymentId)}`, {
+      headers: {
+        "Square-Version": "2024-12-18",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    const paymentData = await paymentResponse.json()
+    const payment = paymentData.payment
+
+    if (
+      !paymentResponse.ok ||
+      payment?.status !== "COMPLETED" ||
+      payment?.amount_money?.amount !== totalAmountCents ||
+      payment?.amount_money?.currency !== "CAD" ||
+      payment?.location_id !== locationId
+    ) {
+      return NextResponse.json({ success: false, error: "Payment does not match the order total" }, { status: 400 })
+    }
+
     const supabaseAuth = await createClient()
     const {
       data: { user },

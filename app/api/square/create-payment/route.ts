@@ -4,10 +4,10 @@ import { getCheckoutTotalCents, resolveCheckoutItems } from "@/lib/checkout-prod
 
 export async function POST(req: Request) {
   try {
-    const { sourceId, amount, lineItems, orderId, verificationToken, customerEmail, customerName } = await req.json()
+    const { sourceId, lineItems, orderId, verificationToken, customerEmail, customerName } = await req.json()
 
     // Validate inputs
-    if (!sourceId || !amount || !orderId) {
+    if (!sourceId || !orderId) {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
 
@@ -21,18 +21,12 @@ export async function POST(req: Request) {
     }
 
     const idempotencyKey = randomUUID()
-    const resolvedItems = lineItems === undefined ? null : resolveCheckoutItems(lineItems)
-    if (lineItems !== undefined && !resolvedItems) {
+    const resolvedItems = resolveCheckoutItems(lineItems)
+    if (!resolvedItems) {
       return NextResponse.json({ success: false, error: "Cart contains an unsupported product" }, { status: 400 })
     }
 
-    const amountInCents = resolvedItems
-      ? getCheckoutTotalCents(resolvedItems)
-      : Math.round(Number.parseFloat(amount) * 100)
-
-    if (amountInCents <= 0 || !Number.isFinite(amountInCents)) {
-      return NextResponse.json({ success: false, error: "Invalid payment amount" }, { status: 400 })
-    }
+    const amountInCents = getCheckoutTotalCents(resolvedItems)
 
     // Determine API URL
     const baseUrl =
@@ -113,9 +107,7 @@ export async function POST(req: Request) {
         },
         location_id: locationId,
         reference_id: orderId,
-        ...(resolvedItems && {
-          note: resolvedItems.map((item) => `${item.id} x${item.quantity}`).join(", "),
-        }),
+        note: resolvedItems.map((item) => `${item.id} x${item.quantity}`).join(", "),
         ...(customerId && { customer_id: customerId }),
       }),
     })

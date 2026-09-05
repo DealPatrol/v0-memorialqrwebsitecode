@@ -32,16 +32,24 @@ function CheckoutForm() {
     if (storedItems) {
       try {
         const storedItemsValue: unknown = JSON.parse(storedItems)
-        const items = resolveCheckoutItems(storedItemsValue) ?? []
+        const items = resolveCheckoutItems(storedItemsValue)
 
-        if (items.length > 0) {
+        if (items) {
           setCartItems(items)
           setOrderTotal(items.reduce((sum, item) => sum + item.price * item.quantity, 0))
           return
         }
       } catch {
-        localStorage.removeItem("checkoutItems")
+        // Handled as an invalid cart below.
       }
+
+      localStorage.removeItem("checkoutItems")
+      toast({
+        title: "Cart No Longer Available",
+        description: "Your saved cart contains products that are no longer available. Please select your products again.",
+        variant: "destructive",
+      })
+      return
     }
 
     // Fallback to a single product selected from the store.
