@@ -4,7 +4,10 @@ ALTER TABLE public.memorials
 
 ALTER TABLE public.music
   ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'music',
-  ADD COLUMN IF NOT EXISTS is_primary BOOLEAN NOT NULL DEFAULT false;
+  ADD COLUMN IF NOT EXISTS is_primary BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS is_youtube BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS youtube_id TEXT,
+  ADD COLUMN IF NOT EXISTS uploader_name TEXT;
 
 ALTER TABLE public.videos
   ADD COLUMN IF NOT EXISTS embed_provider TEXT,
@@ -35,6 +38,16 @@ CREATE INDEX IF NOT EXISTS idx_external_links_memorial_id ON public.external_lin
 CREATE INDEX IF NOT EXISTS idx_family_members_memorial_id ON public.family_members(memorial_id);
 ALTER TABLE public.external_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.family_members ENABLE ROW LEVEL SECURITY;
+
+-- Setup and account claiming use verified server-side order access. Do not let an
+-- arbitrary authenticated user claim any memorial that happens to be unowned.
+DROP POLICY IF EXISTS "memorials_update_claim" ON public.memorials;
+DROP POLICY IF EXISTS "memorials_update_flexible" ON public.memorials;
+DROP POLICY IF EXISTS "memorials_update_own" ON public.memorials;
+CREATE POLICY "memorials_update_own"
+  ON public.memorials FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "external_links_select_public"
   ON public.external_links FOR SELECT USING (true);
