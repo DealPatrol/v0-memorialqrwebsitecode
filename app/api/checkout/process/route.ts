@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
+import { put } from "@vercel/blob"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
+import { generateQRCodeBuffer } from "@/lib/qr-code"
+import { getStoreProduct } from "@/lib/store-products"
+import { fulfillVoiceKeychain } from "@/lib/printify"
 
 export async function POST(req: Request) {
   try {
@@ -9,6 +13,7 @@ export async function POST(req: Request) {
     const {
       // New individual product fields
       planType,
+      items,
       package: packageOrProductId,
       productName,
       productPrice,
@@ -57,16 +62,28 @@ export async function POST(req: Request) {
 
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
 
+    const purchasedItems = Array.isArray(items)
+      ? items
+          .map((item) => {
+            const product = getStoreProduct(String(item.id))
+            const quantity = Math.max(1, Math.min(10, Number(item.quantity) || 1))
+            return product ? { product, quantity } : null
+          })
+          .filter(Boolean)
+      : []
+
     let totalAmountCents = 0
     let monthlyAmountCents = 0
     let finalProductName = productName || "Memorial QR Product"
     let finalPlanType = planType || "individual-product"
 
-    if (planType === "individual-product") {
-      // Individual product purchase
-      totalAmountCents = Math.round((productPrice || 0) * 100)
-      monthlyAmountCents = Math.round((monthlyFee || 4.99) * 100)
-      finalProductName = productName || "Memorial QR Product"
+    if (planType === "individual-product" && purchasedItems.length > 0) {
+      totalAmountCents = purchasedItems.reduce(
+        (sum, item) => sum + Math.round(item!.product.price * 100) * item!.quantity,
+        0,
+      )
+      monthlyAmountCents = 499
+      finalProductName = purchasedItems.map((item) => item!.product.name).join(", ")
     } else {
       // Legacy package purchase
       const packagePrices: Record<string, number> = {
@@ -147,15 +164,15 @@ export async function POST(req: Request) {
       shipping_city: city,
       shipping_state: state,
       shipping_zip: zip,
-      shipping_country: "US",
+      shipping_country: "CA",
       payment_id: paymentId,
       payment_status: "completed",
       amount_cents: totalAmountCents,
       monthly_amount_cents: monthlyAmountCents,
-      currency: "USD",
+      currency: "CAD",
       product_type: finalPlanType,
       product_name: finalProductName,
-      quantity: 1,
+      quantity: purchasedItems.reduce((sum, item) => sum + item!.quantity, 0) || 1,
       status: "processing",
       special_instructions: customization || boxPersonalization || null,
       plan_type: finalPlanType,
@@ -197,6 +214,90 @@ export async function POST(req: Request) {
 
     console.log("[v0] Order created successfully:", order.order_number)
 
+    const primaryProduct = purchasedItems[0]?.product
+    let memorial = null
+    let qrCodeUrl: string | null = null
+
+    if (primaryProduct) {
+      const slug = `memorial-${order.order_number.toLowerCase()}`
+      const { data: createdMemorial, error: memorialError } = await supabase
+        .from("memorials")
+        .insert({
+          slug,
+          full_name: "Memorial setup in progress",
+          user_id: userId,
+          package_type: primaryProduct.memorialType,
+          product_type: primaryProduct.memorialType,
+          theme: "classic",
+        })
+        .select()
+        .single()
+
+      if (memorialError || !createdMemorial) {
+        console.error("[v0] Failed to reserve memorial:", memorialError)
+        return NextResponse.json(
+          { success: false, error: "Payment succeeded, but memorial setup could not be reserved. Contact support." },
+          { status: 500 },
+        )
+      }
+
+      memorial = createdMemorial
+      const memorialUrl = `https://www.memorialsqr.com/memorial/${createdMemorial.slug}`
+
+      try {
+        const qrCode = await generateQRCodeBuffer(memorialUrl)
+        const qrBlob = await put(`qr-codes/${createdMemorial.slug}.png`, qrCode, {
+          access: "public",
+          contentType: "image/png",
+          addRandomSuffix: false,
+        })
+        qrCodeUrl = qrBlob.url
+        await supabase.from("memorials").update({ qr_code_url: qrBlob.url }).eq("id", createdMemorial.id)
+      } catch (qrError) {
+        console.error("[v0] QR generation failed:", qrError)
+      }
+
+      await supabase
+        .from("orders")
+        .update({ memorial_id: createdMemorial.id })
+        .eq("id", order.id)
+
+      if (qrCodeUrl && primaryProduct.memorialType === "voice-keychain") {
+        try {
+          const fulfillment = await fulfillVoiceKeychain({
+            orderNumber: order.order_number,
+            quantity: orderData.quantity,
+            qrCodeUrl,
+            address: {
+              name: customerName,
+              email: customerEmail,
+              phone: customerPhone,
+              address1: addressLine1,
+              address2: addressLine2,
+              city,
+              region: state,
+              zip,
+              country: "CA",
+            },
+          })
+          await supabase
+            .from("orders")
+            .update({
+              fulfillment_provider: "printify",
+              fulfillment_id: fulfillment.fulfillmentId,
+              fulfillment_status: fulfillment.status,
+            })
+            .eq("id", order.id)
+        } catch (fulfillmentError) {
+          console.error("[v0] Printify fulfillment failed:", fulfillmentError)
+          await supabase
+            .from("orders")
+            .update({ fulfillment_provider: "printify", fulfillment_status: "failed" })
+            .eq("id", order.id)
+        }
+      }
+    }
+
     try {
       await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/send-order-confirmation`, {
         method: "POST",
@@ -222,6 +323,9 @@ export async function POST(req: Request) {
         id: order.id,
         orderNumber: order.order_number,
         status: order.status,
+        memorialId: memorial?.id || null,
+        memorialSlug: memorial?.slug || null,
+        memorialType: primaryProduct?.memorialType || "standard",
       },
     })
   } catch (error: any) {

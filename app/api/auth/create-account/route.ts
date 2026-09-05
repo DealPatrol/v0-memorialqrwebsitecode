@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(request: Request) {
   try {
@@ -63,10 +64,25 @@ export async function POST(request: Request) {
       )
     }
 
-    // Update the order with the user email if it exists
     if (orderId) {
-      // You might want to update your orders table here with the new user ID
-      // This depends on your database schema
+      const serviceRole = createServiceRoleClient()
+      const { data: order } = await serviceRole
+        .from("orders")
+        .select("id, memorial_id, customer_email")
+        .eq("id", orderId)
+        .eq("customer_email", email)
+        .maybeSingle()
+
+      if (order) {
+        await serviceRole.from("orders").update({ user_id: authData.user.id }).eq("id", order.id)
+        if (order.memorial_id) {
+          await serviceRole
+            .from("memorials")
+            .update({ user_id: authData.user.id })
+            .eq("id", order.memorial_id)
+            .is("user_id", null)
+        }
+      }
     }
 
     return NextResponse.json({

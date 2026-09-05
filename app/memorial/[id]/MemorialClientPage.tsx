@@ -1,5 +1,5 @@
 "use client"
-import { Upload, MusicIcon, VideoIcon, BookOpen, Calendar } from "lucide-react"
+import { Upload, MusicIcon, VideoIcon, BookOpen, Calendar, Volume2, ExternalLink, Users } from "lucide-react"
 import Image from "next/image"
 
 import { useParams } from "next/navigation"
@@ -49,6 +49,8 @@ interface VideoType {
   title: string
   uploaded_by: string | null
   created_at: string
+  embed_provider?: "youtube" | "vimeo" | null
+  embed_id?: string | null
 }
 
 interface Story {
@@ -75,6 +77,8 @@ interface Music {
   created_at: string
   is_youtube?: boolean
   youtube_id?: string
+  kind?: "voice" | "music"
+  is_primary?: boolean
 }
 
 interface Memorial {
@@ -87,6 +91,19 @@ interface Memorial {
   location: string | null
   profile_image_url: string | null
   theme: string | null
+  product_type?: string | null
+}
+
+interface ExternalLinkType {
+  id: string
+  label: string
+  url: string
+}
+
+interface FamilyMember {
+  id: string
+  name: string
+  relationship: string
 }
 
 interface Milestone {
@@ -118,6 +135,8 @@ export function MemorialClientPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [music, setMusic] = useState<Music[]>([])
   const [milestones, setMilestones] = useState<Milestone[]>([])
+  const [externalLinks, setExternalLinks] = useState<ExternalLinkType[]>([])
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [loadingPhotos, setLoadingPhotos] = useState(true)
   const [loadingVideos, setLoadingVideos] = useState(true)
   const [loadingStories, setLoadingStories] = useState(true)
@@ -131,6 +150,7 @@ export function MemorialClientPage() {
   const [submittingStory, setSubmittingStory] = useState(false)
 
   const isSample = memorialId?.startsWith("SAMPLE-")
+  const canEdit = false
 
   const selectedTheme = themes.find((t) => t.id === (memorial?.theme || "classic")) || themes[0]
 
@@ -147,6 +167,8 @@ export function MemorialClientPage() {
           const data = await response.json()
           console.log("[v0] Fetched memorial:", data)
           setMemorial(data.memorial)
+          setExternalLinks(data.externalLinks || [])
+          setFamilyMembers(data.familyMembers || [])
         } else {
           console.error("[v0] Failed to fetch memorial:", response.status)
           toast({
@@ -393,6 +415,8 @@ export function MemorialClientPage() {
     const isBrowserBlob = photoUrl.startsWith("blob:")
     return isBrowserBlob || brokenImages.has(photo.id)
   })
+  const primaryVoice = music.find((item) => item.is_primary || item.kind === "voice")
+  const additionalAudio = music.filter((item) => item.id !== primaryVoice?.id)
 
   if (loadingMemorial) {
     return (
@@ -526,6 +550,26 @@ export function MemorialClientPage() {
       <section className={`py-16 ${selectedTheme.colors.background}`}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto space-y-8">
+            {primaryVoice && (
+              <Card className="border-2 border-purple-300 bg-gradient-to-br from-purple-50 to-blue-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3 text-2xl">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-600 text-white">
+                      <Volume2 className="h-6 w-6" />
+                    </span>
+                    Hear {memorial?.full_name}&apos;s Voice
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="mb-4 text-slate-600">{primaryVoice.title}</p>
+                  <audio controls className="w-full" src={primaryVoice.audio_url} preload="metadata">
+                    Your browser does not support the audio element.
+                  </audio>
+                  <p className="mt-3 text-xs text-slate-500">Tap play to listen to this treasured recording.</p>
+                </CardContent>
+              </Card>
+            )}
+
             {memorial?.biography && (
               <Card>
                 <CardHeader>
@@ -537,7 +581,46 @@ export function MemorialClientPage() {
               </Card>
             )}
 
-            {!isSample && (
+            {familyMembers.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Family Tree
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {familyMembers.map((member) => (
+                      <div key={member.id} className="rounded-lg border bg-slate-50 p-3">
+                        <p className="font-semibold text-slate-900">{member.name}</p>
+                        <p className="text-sm text-slate-500">{member.relationship}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {externalLinks.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Links</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-3">
+                  {externalLinks.map((link) => (
+                    <Button key={link.id} variant="outline" asChild>
+                      <a href={link.url} target="_blank" rel="noopener noreferrer">
+                        {link.label}
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </a>
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {canEdit && !isSample && (
               <div className="flex flex-wrap gap-3">
                 <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
                   <DialogTrigger asChild>
@@ -682,7 +765,7 @@ export function MemorialClientPage() {
                       <DialogTitle>Add Life Milestone</DialogTitle>
                       <DialogDescription>Add an important moment from their life</DialogDescription>
                     </DialogHeader>
-                    <MilestoneForm memorialId={memorialId} onComplete={handleMilestoneComplete} />
+                    <MilestoneForm memorialId={memorialId} onSuccess={handleMilestoneComplete} />
                   </DialogContent>
                 </Dialog>
               </div>
@@ -771,9 +854,23 @@ export function MemorialClientPage() {
                   <div className="grid md:grid-cols-2 gap-4">
                     {videos.map((video) => (
                       <div key={video.id} className="space-y-2">
-                        <video src={video.video_url} controls className="w-full rounded-lg">
-                          Your browser does not support the video element.
-                        </video>
+                        {video.embed_provider && video.embed_id ? (
+                          <iframe
+                            className="aspect-video w-full rounded-lg"
+                            src={
+                              video.embed_provider === "youtube"
+                                ? `https://www.youtube.com/embed/${video.embed_id}`
+                                : `https://player.vimeo.com/video/${video.embed_id}`
+                            }
+                            title={video.title}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <video src={video.video_url} controls className="w-full rounded-lg">
+                            Your browser does not support the video element.
+                          </video>
+                        )}
                         <h4 className="font-semibold text-sm">{video.title}</h4>
                         {video.uploaded_by && (
                           <p className="text-xs text-slate-500">Video added by {video.uploaded_by}</p>
@@ -819,7 +916,7 @@ export function MemorialClientPage() {
               </CardContent>
             </Card>
 
-            {!loadingMusic && music.length > 0 && (
+            {!loadingMusic && additionalAudio.length > 0 && (
               <Card id="music-section">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -829,7 +926,7 @@ export function MemorialClientPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {music.map((song) => (
+                    {additionalAudio.map((song) => (
                       <div key={song.id} className="bg-slate-50 p-4 rounded-lg">
                         <div className="flex items-center gap-3 mb-2">
                           <MusicIcon className="w-4 h-4 text-purple-600" />

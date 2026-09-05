@@ -20,6 +20,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
   const [title, setTitle] = useState("")
   const [artist, setArtist] = useState("")
   const [youtubeUrl, setYoutubeUrl] = useState("")
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false)
   const [uploading, setUploading] = useState(false)
   const { toast } = useToast()
 
@@ -164,6 +165,8 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       formData.append("memorialId", memorialId)
       formData.append("title", title)
       formData.append("artist", artist)
+      formData.append("kind", isVoiceRecording ? "voice" : "music")
+      formData.append("isPrimary", String(isVoiceRecording))
 
       console.log("[v0] Uploading music:", { title, artist, fileSize: file.size })
 
@@ -303,6 +306,22 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
             disabled={uploading}
           />
         </div>
+
+        <label className="flex items-start gap-3 rounded-md border p-3">
+          <input
+            type="checkbox"
+            checked={isVoiceRecording}
+            onChange={(event) => setIsVoiceRecording(event.target.checked)}
+            disabled={uploading}
+            className="mt-1"
+          />
+          <span>
+            <span className="block font-medium">This is a voicemail or voice recording</span>
+            <span className="block text-xs text-slate-500">
+              Feature it prominently as the memorial&apos;s primary voice recording.
+            </span>
+          </span>
+        </label>
 
         <Button onClick={handleUpload} disabled={uploading || !file || !title.trim()} className="w-full">
           {uploading ? (

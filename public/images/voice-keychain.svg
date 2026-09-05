@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-labelledby="title description">
+  <title id="title">Voice Memorial acrylic keychain</title>
+  <desc id="description">Illustration of a clear acrylic keychain with a QR code and sound wave</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5f3ff"/>
+      <stop offset="1" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="acrylic" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".94"/>
+      <stop offset="1" stop-color="#e0e7ff" stop-opacity=".72"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#background)"/>
+  <circle cx="450" cy="118" r="66" fill="none" stroke="#334155" stroke-width="24"/>
+  <path d="M450 184v96" stroke="#334155" stroke-width="24" stroke-linecap="round"/>
+  <rect x="210" y="244" width="480" height="520" rx="92" fill="url(#acrylic)" stroke="#818cf8" stroke-width="12"/>
+  <circle cx="450" cy="300" r="28" fill="#eef2ff" stroke="#6366f1" stroke-width="9"/>
+  <g fill="#111827">
+    <rect x="308" y="370" width="82" height="82" rx="5"/>
+    <rect x="510" y="370" width="82" height="82" rx="5"/>
+    <rect x="308" y="572" width="82" height="82" rx="5"/>
+    <path d="M414 370h32v32h-32zm48 0h26v54h-26zm-48 58h72v26h-72zm0 50h32v32h-32zm50 0h34v76h-34zm52-2h76v30h-76zm-102 58h26v64h-26zm48 42h36v78h-36zm54-42h30v30h-30zm42 18h34v70h-34zm-62 82h48v20h-48z"/>
+  </g>
+  <g fill="#fff">
+    <rect x="326" y="388" width="46" height="46"/>
+    <rect x="528" y="388" width="46" height="46"/>
+    <rect x="326" y="590" width="46" height="46"/>
+  </g>
+  <path d="M330 700h24v-38h18v54h24v-82h18v104h24v-68h18v52h24v-96h18v112h24v-76h18v38h24" fill="none" stroke="#7c3aed" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -10,6 +10,8 @@ export async function POST(request: NextRequest) {
     const title = formData.get("title") as string
     const artist = formData.get("artist") as string
     const uploaderName = formData.get("uploaderName") as string
+    const kind = formData.get("kind") === "voice" ? "voice" : "music"
+    const isPrimary = formData.get("isPrimary") === "true"
 
     console.log("[v0] Music upload request:", { memorialId, title, artist, fileSize: file?.size })
 
@@ -51,10 +53,11 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialId)
+      .eq(isUUID ? "id" : "slug", memorialId)
       .single()
 
     if (memorialError || !memorial) {
@@ -80,6 +83,10 @@ export async function POST(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser()
 
+    if (isPrimary) {
+      await supabase.from("music").update({ is_primary: false }).eq("memorial_id", memorial.id)
+    }
+
     const { data: music, error: dbError } = await supabase
       .from("music")
       .insert({
@@ -88,6 +95,8 @@ export async function POST(request: NextRequest) {
         artist: artist || null,
         audio_url: blob.url,
         user_id: user?.id || null,
+        kind,
+        is_primary: isPrimary,
       })
       .select()
       .single()

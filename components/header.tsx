@@ -55,22 +55,25 @@ export function Header() {
 
   useEffect(() => {
     const getUser = async () => {
-      const supabase = await createClient()
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser()
+      try {
+        const supabase = createClient()
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser()
 
-      if (authUser) {
-        setUser(authUser)
+        if (authUser) {
+          setUser(authUser)
 
-        const { data: profile } = await supabase.from("profiles").select("name").eq("id", authUser.id).single()
+          const { data: profile } = await supabase.from("profiles").select("name").eq("id", authUser.id).single()
 
-        if (profile?.name) {
-          setUserName(profile.name)
-        } else {
-          // Fallback to email name if no profile name
-          setUserName(authUser.email?.split("@")[0] || "User")
+          if (profile?.name) {
+            setUserName(profile.name)
+          } else {
+            setUserName(authUser.email?.split("@")[0] || "User")
+          }
         }
+      } catch (error) {
+        console.warn("Authentication is unavailable:", error)
       }
     }
 

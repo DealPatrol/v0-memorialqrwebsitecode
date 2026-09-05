@@ -6,6 +6,15 @@ import { Trash2, MusicIcon } from "lucide-react"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { MusicUpload } from "@/components/music-upload"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +40,7 @@ type Music = {
 export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: string }) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
   const router = useRouter()
 
   const handleDelete = async () => {
@@ -58,12 +68,34 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
           <CardTitle>No Voicemails/Audio</CardTitle>
           <CardDescription>No voicemails or audio have been added to this memorial yet.</CardDescription>
         </CardHeader>
+        <CardContent>
+          <AudioUploadDialog
+            memorialId={memorialId}
+            open={uploadDialogOpen}
+            onOpenChange={setUploadDialogOpen}
+            onComplete={() => {
+              setUploadDialogOpen(false)
+              router.refresh()
+            }}
+          />
+        </CardContent>
       </Card>
     )
   }
 
   return (
     <>
+      <div className="mb-4">
+        <AudioUploadDialog
+          memorialId={memorialId}
+          open={uploadDialogOpen}
+          onOpenChange={setUploadDialogOpen}
+          onComplete={() => {
+            setUploadDialogOpen(false)
+            router.refresh()
+          }}
+        />
+      </div>
       <div className="space-y-4">
         {music.map((song) => (
           <Card key={song.id}>
@@ -128,5 +160,32 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
         </AlertDialogContent>
       </AlertDialog>
     </>
+  )
+}
+
+function AudioUploadDialog({
+  memorialId,
+  open,
+  onOpenChange,
+  onComplete,
+}: {
+  memorialId: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onComplete: () => void
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
+        <Button>Add voicemail, audio or music</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add voicemail, audio or music</DialogTitle>
+          <DialogDescription>Upload an audio file or add a YouTube music link.</DialogDescription>
+        </DialogHeader>
+        <MusicUpload memorialId={memorialId} onUploadComplete={onComplete} />
+      </DialogContent>
+    </Dialog>
   )
 }

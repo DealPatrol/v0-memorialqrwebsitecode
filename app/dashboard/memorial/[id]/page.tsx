@@ -3,13 +3,15 @@ import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import Image from "next/image"
+import { ArrowLeft, QrCode } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MessagesTab } from "@/components/dashboard/messages-tab"
 import { PhotosTab } from "@/components/dashboard/photos-tab"
 import { StoriesTab } from "@/components/dashboard/stories-tab"
 import { MusicTab } from "@/components/dashboard/music-tab"
 import { VideosTab } from "@/components/dashboard/videos-tab"
+import { MemorialDetailsForm } from "@/components/dashboard/memorial-details-form"
 
 export default async function ManageMemorialPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -30,13 +32,23 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
     redirect("/dashboard")
   }
 
-  const [{ data: messages }, { data: photos }, { data: stories }, { data: music }, { data: videos }] =
+  const [
+    { data: messages },
+    { data: photos },
+    { data: stories },
+    { data: music },
+    { data: videos },
+    { data: familyMembers },
+    { data: externalLinks },
+  ] =
     await Promise.all([
       supabase.from("messages").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("photos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("stories").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("music").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
       supabase.from("videos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      supabase.from("family_members").select("*").eq("memorial_id", id).order("created_at"),
+      supabase.from("external_links").select("*").eq("memorial_id", id).order("created_at"),
     ])
 
   return (
@@ -60,21 +72,43 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
                 : ""}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <Button asChild>
-              <Link href={`/memorial/${memorial.id}`}>View Public Memorial</Link>
+              <Link href={`/memorial/${memorial.slug || memorial.id}`}>View Public Memorial</Link>
             </Button>
+            {memorial.qr_code_url && (
+              <div className="flex items-center gap-3 rounded-lg border p-3">
+                <Image src={memorial.qr_code_url} alt="Memorial QR code" width={72} height={72} />
+                <div>
+                  <p className="mb-2 text-sm font-medium">POD print QR</p>
+                  <Button asChild size="sm" variant="outline">
+                    <a href={memorial.qr_code_url} target="_blank" rel="noopener noreferrer">
+                      <QrCode className="mr-2 h-4 w-4" />
+                      Open print file
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="messages" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 h-auto">
+            <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="messages">Messages ({messages?.length || 0})</TabsTrigger>
             <TabsTrigger value="photos">Photos ({photos?.length || 0})</TabsTrigger>
             <TabsTrigger value="videos">Videos ({videos?.length || 0})</TabsTrigger>
             <TabsTrigger value="stories">Stories ({stories?.length || 0})</TabsTrigger>
             <TabsTrigger value="music">Voicemails/Audio ({music?.length || 0})</TabsTrigger>
           </TabsList>
+          <TabsContent value="details">
+            <MemorialDetailsForm
+              memorial={memorial}
+              familyMembers={familyMembers || []}
+              externalLinks={externalLinks || []}
+            />
+          </TabsContent>
           <TabsContent value="messages">
             <MessagesTab messages={messages || []} memorialId={id} />
           </TabsContent>
