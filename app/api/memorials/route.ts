@@ -22,6 +22,26 @@ function isSafeExternalUrl(value: string) {
   }
 }
 
+export async function GET() {
+  try {
+    const supabase = createServiceRoleClient()
+    const { data, error } = await supabase
+      .from("memorials")
+      .select("id, slug, full_name, birth_date, death_date, location, biography, profile_image_url, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100)
+
+    if (error) {
+      return NextResponse.json({ error: "Failed to load memorials" }, { status: 500 })
+    }
+
+    return NextResponse.json({ memorials: data || [] })
+  } catch (error) {
+    console.error("Failed to list memorials:", error)
+    return NextResponse.json({ error: "Memorial service unavailable", memorials: [] }, { status: 503 })
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

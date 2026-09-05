@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Search, Grid, List, Calendar, MapPin, User, PawPrint } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
 import { useSearchParams } from "next/navigation"
 
 type Memorial = {
@@ -49,25 +48,30 @@ function BrowseMemorialsContent() {
   const [memorialType, setMemorialType] = useState<"all" | "human" | "pet">(initialType as "all" | "human" | "pet")
   const [memorials, setMemorials] = useState<Memorial[]>([glendaMemorial])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     const fetchMemorials = async () => {
       try {
-        const supabase = createClient()
-        const { data, error } = await supabase.from("memorials").select("*").order("created_at", { ascending: false })
+        const controller = new AbortController()
+        const timeout = window.setTimeout(() => controller.abort(), 8000)
+        const response = await fetch("/api/memorials", {
+          signal: controller.signal,
+          cache: "no-store",
+        })
+        window.clearTimeout(timeout)
+        if (!response.ok) throw new Error(`Memorial request failed (${response.status})`)
 
-        if (error) {
-          console.error("Error fetching memorials:", error)
-        } else {
-          const fetchedMemorials = data || []
-          setMemorials(
-            fetchedMemorials.some((memorial) => memorial.slug === glendaMemorial.slug)
-              ? fetchedMemorials
-              : [glendaMemorial, ...fetchedMemorials],
-          )
-        }
+        const result = await response.json()
+        const fetchedMemorials = result.memorials || []
+        setMemorials(
+          fetchedMemorials.some((memorial: Memorial) => memorial.slug === glendaMemorial.slug)
+            ? fetchedMemorials
+            : [glendaMemorial, ...fetchedMemorials],
+        )
       } catch (error) {
-        console.error("Error:", error)
+        console.error("Unable to load memorial directory:", error)
+        setLoadError(true)
       } finally {
         setLoading(false)
       }
@@ -129,6 +133,11 @@ function BrowseMemorialsContent() {
 
       {/* Search and Filters */}
       <div className="container mx-auto px-4 py-8">
+        {loadError && (
+          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            The live directory is temporarily unavailable. You can still view the featured Glenda Jane Kelso memorial.
+          </div>
+        )}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           {/* Memorial Type Tabs */}
           <div className="mb-6">

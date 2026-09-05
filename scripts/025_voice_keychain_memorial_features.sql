@@ -86,3 +86,35 @@ CREATE POLICY "family_members_manage_owner"
       AND memorials.user_id = auth.uid()
     )
   );
+
+-- Enrich the existing featured memorial without replacing or deleting any of
+-- Glenda's current biography, photos, music, messages, or ownership data.
+INSERT INTO public.family_members (memorial_id, name, relationship)
+SELECT memorials.id, seed.name, seed.relationship
+FROM public.memorials
+CROSS JOIN (
+  VALUES
+    ('Lynn Kelso', 'Husband'),
+    ('Eddie Kelso', 'Son'),
+    ('Penny Collins', 'Daughter'),
+    ('Cole Collins', 'Grandson')
+) AS seed(name, relationship)
+WHERE memorials.slug = 'glenda-kelso'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM public.family_members
+    WHERE family_members.memorial_id = memorials.id
+      AND family_members.name = seed.name
+      AND family_members.relationship = seed.relationship
+  );
+
+INSERT INTO public.external_links (memorial_id, label, url)
+SELECT memorials.id, 'The story behind Memorial QR', 'https://www.memorialsqr.com/our-story'
+FROM public.memorials
+WHERE memorials.slug = 'glenda-kelso'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM public.external_links
+    WHERE external_links.memorial_id = memorials.id
+      AND external_links.url = 'https://www.memorialsqr.com/our-story'
+  );

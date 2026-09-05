@@ -150,6 +150,7 @@ export function MemorialClientPage() {
   const [submittingStory, setSubmittingStory] = useState(false)
 
   const isSample = memorialId?.startsWith("SAMPLE-")
+  const canEdit = false
 
   const selectedTheme = themes.find((t) => t.id === (memorial?.theme || "classic")) || themes[0]
 
@@ -619,7 +620,7 @@ export function MemorialClientPage() {
               </Card>
             )}
 
-            {!isSample && (
+            {canEdit && !isSample && (
               <div className="flex flex-wrap gap-3">
                 <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
                   <DialogTrigger asChild>
