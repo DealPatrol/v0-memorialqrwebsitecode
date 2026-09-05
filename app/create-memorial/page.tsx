@@ -89,18 +89,27 @@ export default function CreateMemorialPage() {
             return
           }
 
-          const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
+          const orderResponse = await fetch(`/api/orders/setup/${encodeURIComponent(orderIdParam)}`)
+          const { order } = await orderResponse.json()
 
-          if (order) {
-            setOrderData({
-              customerEmail: order.customer_email || currentUser.email || "",
-              customerName: order.customer_name || currentUser.user_metadata?.full_name || "",
-              orderId: order.id,
-              packageType: order.product_name || "basic",
+          if (!orderResponse.ok || !order) {
+            toast({
+              title: "Order unavailable",
+              description: "We couldn't verify this paid order. Please contact support if the problem continues.",
+              variant: "destructive",
             })
-            setOrderId(`ORDER-${order.id}`)
+            router.push("/dashboard")
             return
           }
+
+          setOrderData({
+            customerEmail: order.customer_email || currentUser.email || "",
+            customerName: order.customer_name || currentUser.user_metadata?.full_name || "",
+            orderId: order.id,
+            packageType: order.product_name || "basic",
+          })
+          setOrderId(`ORDER-${order.id}`)
+          return
         }
 
         if (planParam === "free") {

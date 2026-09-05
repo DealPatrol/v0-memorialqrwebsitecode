@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react"
 import { Header } from "@/components/header"
@@ -22,6 +22,9 @@ export default function LoginPage() {
   const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false)
   const [loginMethod, setLoginMethod] = useState<"magic" | "password">("magic")
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextParam = searchParams.get("next")
+  const nextUrl = nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/dashboard"
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,11 +35,16 @@ export default function LoginPage() {
     const supabase = createClient()
 
     try {
+      const callbackUrl = new URL(
+        process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || "/auth/callback",
+        window.location.origin,
+      )
+      callbackUrl.searchParams.set("next", nextUrl)
+
       const { error: authError } = await supabase.auth.signInWithOtp({
         email: email.trim().toLowerCase(),
         options: {
-          emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl.toString(),
         },
       })
 
@@ -89,7 +97,7 @@ export default function LoginPage() {
       }
 
       if (data?.user) {
-        router.push("/dashboard")
+        router.push(nextUrl)
         router.refresh()
       }
     } catch (err) {

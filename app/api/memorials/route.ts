@@ -39,7 +39,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
       }
 
-      const ownsOrder = order.user_id === user.id || order.customer_email === user.email
+      const ownsOrder =
+        order.user_id === user.id ||
+        (user.email && order.customer_email.toLowerCase() === user.email.toLowerCase())
       if (!ownsOrder || order.payment_status !== "completed") {
         return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
       }

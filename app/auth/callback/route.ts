@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     if (!error && authData.user) {
       // If there's a specific next URL, use it
-      if (next) {
+      if (next?.startsWith("/") && !next.startsWith("//")) {
         return NextResponse.redirect(new URL(next, requestUrl.origin))
       }
 
