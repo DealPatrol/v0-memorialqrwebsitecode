@@ -32,11 +32,11 @@ const greatVibes = Great_Vibes({
 })
 
 export const metadata: Metadata = {
-  title: "Memorial QR Codes | Digital Tombstone & Pet Memorials",
+  title: "Memorial QR Codes | Personalized Keepsakes & Digital Memorials",
   description:
-    "Transform cemetery tombstones and pet memorials with weather-resistant QR plaques and digital hosting for $4.99 per month per memorial.",
+    "Personalized print-on-demand QR keepsakes linked to digital memorials with hosting for $4.99 per month per memorial.",
   keywords:
-    "memorial QR codes, QR code tombstones, headstone memorial tags, cemetery QR codes, gravestone QR plaque, digital memorial, pet memorial QR, tombstone QR code, headstone memorial, memorial services",
+    "memorial QR codes, personalized memorial keepsakes, digital memorial, pet memorial QR, memorial photo block, QR keyring, memorial services",
   authors: [{ name: "Memorial QR" }],
   creator: "Memorial QR",
   publisher: "Memorial QR",
@@ -50,9 +50,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Memorial QR Codes | Digital Cemetery & Pet Memorials",
+    title: "Memorial QR Codes | Personalized Keepsakes & Digital Memorials",
     description:
-      "Transform traditional memorials with weather-resistant QR products and digital hosting for $4.99 per month.",
+      "Print-on-demand QR keepsakes linked to digital memorials with hosting for $4.99 per month.",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
     siteName: "Memorial QR",
     locale: "en_CA",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Memorial QR Codes | Digital Memorials",
     description:
-      "Weather-resistant QR products for cemetery headstones and pet memorials with optional digital hosting.",
+      "Personalized QR keepsakes for human and pet memorials with digital hosting.",
   },
   robots: {
     index: true,
@@ -96,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: "Memorial QR",
-    description: "Premium memorial QR code service providing digital tombstone memorials and cemetery tributes",
+    description: "Personalized print-on-demand QR keepsakes linked to hosted digital memorials",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
     telephone: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
     email: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
@@ -110,18 +110,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const productStructuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Memorial QR Code Services",
+    name: "Memorial QR Print-on-Demand Products",
     description:
-      "Premium memorial QR codes for tombstones, headstones, and pet memorials. Weather-resistant digital memorial solutions.",
+      "Personalized QR stickers, coasters, keyrings, indoor displays, pet tags, and photo blocks linked to digital memorials.",
     brand: {
       "@type": "Brand",
       name: "Memorial QR",
     },
     offers: {
       "@type": "AggregateOffer",
-      priceCurrency: "USD",
-      lowPrice: "14.99",
-      highPrice: "89.99",
+      priceCurrency: "CAD",
+      lowPrice: "19.99",
+      highPrice: "59.99",
       availability: "https://schema.org/InStock",
     },
   }

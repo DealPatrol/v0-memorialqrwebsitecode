@@ -1,20 +1,16 @@
 import { NextResponse } from "next/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
+import { getCheckoutTotalCents, resolveCheckoutItems } from "@/lib/checkout-products"
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
 
     const {
-      // New individual product fields
       planType,
-      package: packageOrProductId,
-      productName,
-      productPrice,
-      monthlyFee,
+      items,
 
-      // Shared fields
       customerName,
       customerEmail,
       customerPhone,
@@ -27,15 +23,6 @@ export async function POST(req: Request) {
       customization,
       cardId,
       squareCustomerId,
-
-      // Old package fields (keep for backwards compatibility)
-      plaqueColor,
-      boxPersonalization,
-      addonWoodenQr,
-      addonPicturePlaque,
-      addonStoneQR,
-      stoneEngravingText,
-      picturePlaqueUrl,
     } = body
 
     // Validate required fields
@@ -55,36 +42,23 @@ export async function POST(req: Request) {
       )
     }
 
-    const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
-
-    let totalAmountCents = 0
-    let monthlyAmountCents = 0
-    let finalProductName = productName || "Memorial QR Product"
-    let finalPlanType = planType || "individual-product"
-
-    if (planType === "individual-product") {
-      // Individual product purchase
-      totalAmountCents = Math.round((productPrice || 0) * 100)
-      monthlyAmountCents = Math.round((monthlyFee || 4.99) * 100)
-      finalProductName = productName || "Memorial QR Product"
-    } else {
-      // Legacy package purchase
-      const packagePrices: Record<string, number> = {
-        basic: 8989,
-        standard: 12989,
-        premium: 19989,
-      }
-      const baseAmount = packagePrices[packageOrProductId as string] || packagePrices.standard
-
-      let addonAmount = 0
-      if (addonWoodenQr) addonAmount += 1989
-      if (addonPicturePlaque) addonAmount += 2989
-      if (addonStoneQR) addonAmount += 3998
-      totalAmountCents = baseAmount + addonAmount
-      monthlyAmountCents = 499 // $4.99/month
-      finalProductName = `Memorial QR ${packageOrProductId || "standard"} Package${plaqueColor ? ` - ${plaqueColor} plaque` : ""}`
-      finalPlanType = "package"
+    if (planType !== "cart-checkout") {
+      return NextResponse.json({ success: false, error: "Unsupported checkout type" }, { status: 400 })
     }
+
+    const resolvedItems = resolveCheckoutItems(items)
+    if (!resolvedItems) {
+      return NextResponse.json({ success: false, error: "Cart contains an unsupported product" }, { status: 400 })
+    }
+
+    const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+    const totalAmountCents = getCheckoutTotalCents(resolvedItems)
+    const monthlyAmountCents = 499
+    const finalProductName = resolvedItems
+      .map((item) => `[${item.id}] ${item.name} × ${item.quantity}`)
+      .join(", ")
+    const finalPlanType = "cart-checkout"
+    const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
 
     const supabaseAuth = await createClient()
     const {
@@ -99,7 +73,6 @@ export async function POST(req: Request) {
     const supabase = createServiceRoleClient()
 
     let subscriptionId = null
-    let subscriptionStatus = null
 
     // Only create subscription if monthly fee exists and payment info is available
     // Note: In future enhancement, check if customer already has subscription for this memorial
@@ -125,7 +98,6 @@ export async function POST(req: Request) {
 
         if (subscriptionData.success) {
           subscriptionId = subscriptionData.subscription.id
-          subscriptionStatus = subscriptionData.subscription.status
           console.log("[v0] Subscription created successfully:", subscriptionId)
         } else {
           console.error("[v0] Subscription creation failed:", subscriptionData.error)
@@ -152,24 +124,23 @@ export async function POST(req: Request) {
       payment_status: "completed",
       amount_cents: totalAmountCents,
       monthly_amount_cents: monthlyAmountCents,
-      currency: "USD",
+      currency: "CAD",
       product_type: finalPlanType,
       product_name: finalProductName,
-      quantity: 1,
+      quantity: totalQuantity,
       status: "processing",
-      special_instructions: customization || boxPersonalization || null,
+      special_instructions: customization || null,
       plan_type: finalPlanType,
       subscription_id: subscriptionId,
       subscription_plan_id: process.env.SQUARE_SUBSCRIPTION_PLAN_ID || null,
 
-      // Keep legacy fields for backwards compatibility
-      plaque_color: plaqueColor || null,
-      box_personalization: boxPersonalization || null,
-      addon_wooden_qr: addonWoodenQr || false,
-      addon_picture_plaque: addonPicturePlaque || false,
-      addon_stone_qr: addonStoneQR || false,
-      stone_engraving_text: stoneEngravingText || null,
-      picture_plaque_url: picturePlaqueUrl || null,
+      plaque_color: null,
+      box_personalization: null,
+      addon_wooden_qr: false,
+      addon_picture_plaque: false,
+      addon_stone_qr: false,
+      stone_engraving_text: null,
+      picture_plaque_url: null,
 
       user_id: userId,
       square_customer_id: finalSquareCustomerId,

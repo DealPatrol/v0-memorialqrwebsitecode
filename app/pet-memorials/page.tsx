@@ -9,7 +9,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Pet Memorials - Memorial QR",
   description:
-    "Create beautiful digital memorials for beloved pets. QR collar tags, garden stones, and lasting tributes for dogs, cats, and all furry friends.",
+    "Create beautiful digital memorials for beloved pets with personalized QR tags, indoor keepsakes, and lasting online tributes.",
 }
 
 export default function PetMemorialsPage() {
@@ -153,7 +153,7 @@ export default function PetMemorialsPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Memorial Products</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose from collar tags, garden stones, or keepsake items
+              Choose a print-on-demand keepsake linked to your pet's digital memorial
             </p>
           </div>
 
@@ -163,9 +163,9 @@ export default function PetMemorialsPage() {
                 <div className="w-24 h-24 bg-amber-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-amber-700" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Collar Tag</h3>
+                <h3 className="text-xl font-semibold mb-2">Pet QR Tag</h3>
                 <p className="text-muted-foreground mb-4">
-                  Durable stainless steel QR tag that attaches to their old collar as a keepsake.
+                  A personalized tag printed with a unique QR code for your pet's memorial.
                 </p>
                 <Badge className="bg-amber-100 text-amber-800">Most Popular</Badge>
               </CardContent>
@@ -176,12 +176,12 @@ export default function PetMemorialsPage() {
                 <div className="w-24 h-24 bg-amber-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-amber-700" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Garden Stone</h3>
+                <h3 className="text-xl font-semibold mb-2">Cork Memorial Coaster</h3>
                 <p className="text-muted-foreground mb-4">
-                  Weather-resistant memorial stone perfect for gardens, yards, or their favorite spot.
+                  A cork-backed indoor keepsake printed with your pet's memorial QR code.
                 </p>
                 <Badge variant="outline" className="border-amber-400 text-amber-700">
-                  Outdoor
+                  Indoor
                 </Badge>
               </CardContent>
             </Card>
@@ -191,9 +191,9 @@ export default function PetMemorialsPage() {
                 <div className="w-24 h-24 bg-amber-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-amber-700" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Keepsake Box</h3>
+                <h3 className="text-xl font-semibold mb-2">Memorial Photo Block</h3>
                 <p className="text-muted-foreground mb-4">
-                  Beautiful wooden box with QR code for storing collar, toys, and cherished items.
+                  A favorite pet photo and unique QR code combined in an indoor display.
                 </p>
                 <Badge variant="outline" className="border-amber-400 text-amber-700">
                   Premium

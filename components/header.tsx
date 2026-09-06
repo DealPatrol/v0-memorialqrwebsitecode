@@ -114,8 +114,8 @@ export function Header() {
                     <ListItem href="/browse-memorials" title="Browse Memorials">
                       View example memorials from our community
                     </ListItem>
-                    <ListItem href="/programs" title="Products & Tags">
-                      QR plaques, headstone tags, and collar tags
+                    <ListItem href="/store" title="Memorial Products">
+                      Print-on-demand QR keepsakes and indoor displays
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -190,8 +190,8 @@ export function Header() {
               <Link href="/browse-memorials" className="text-muted-foreground hover:text-foreground pl-2">
                 Browse Memorials
               </Link>
-              <Link href="/programs" className="text-muted-foreground hover:text-foreground pl-2">
-                Products & Tags
+              <Link href="/store" className="text-muted-foreground hover:text-foreground pl-2">
+                Memorial Products
               </Link>
               <div className="border-t my-2" />
               <Link href="/store" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">

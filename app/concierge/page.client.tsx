@@ -4,14 +4,14 @@ import { ConciergeForm } from "@/components/concierge-form"
 import Link from "next/link"
 
 export function ConciergePageClient() {
-  const handleCheckout = (type: string) => {
+  const handleCheckout = () => {
     localStorage.setItem(
       "checkoutItems",
       JSON.stringify([
         {
-          id: type,
-          name: type === "concierge-plaque" ? "Concierge Service - Physical Plaque" : "Concierge Service - Digital Link",
-          price: type === "concierge-plaque" ? 329.99 : 299.99,
+          id: "concierge-digital",
+          name: "Concierge Service - Digital Link",
+          price: 299.99,
           quantity: 1,
         },
       ])
@@ -28,16 +28,13 @@ export function ConciergePageClient() {
             We Build the Legacy For You
           </h1>
           <p className="text-xl text-zinc-400 mb-6">
-            Too busy grieving? Let our team handle the details. Send us your memories, photos, and stories. We'll create a beautiful, interactive digital memorial with a professional QR code plaque.
+            Too busy grieving? Let our team handle the details. Send us your memories, photos, and stories. We'll create
+            a beautiful, interactive digital memorial with a unique QR link.
           </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+          <div className="flex justify-center">
             <div className="bg-zinc-900 rounded-lg p-6 flex-1 max-w-xs">
               <div className="text-3xl font-bold text-amber-500 mb-2">$299</div>
               <p className="text-zinc-300">Digital Link Only</p>
-            </div>
-            <div className="bg-zinc-900 rounded-lg p-6 flex-1 max-w-xs">
-              <div className="text-3xl font-bold text-amber-500 mb-2">$329</div>
-              <p className="text-zinc-300">+ Physical Plaque</p>
             </div>
           </div>
         </div>
@@ -77,8 +74,8 @@ export function ConciergePageClient() {
             <div className="flex gap-4">
               <div className="text-2xl">📱</div>
               <div>
-                <h3 className="font-semibold text-white mb-2">QR Code Plaque</h3>
-                <p className="text-zinc-400">Choose digital link or physical plaque with QR code</p>
+                <h3 className="font-semibold text-white mb-2">Unique QR Link</h3>
+                <p className="text-zinc-400">Receive a scannable QR code linked to the digital memorial</p>
               </div>
             </div>
             <div className="flex gap-4">
@@ -128,7 +125,7 @@ export function ConciergePageClient() {
               </div>
               <div>
                 <h3 className="font-bold text-white mb-2">Get Your QR Code</h3>
-                <p className="text-zinc-400">Receive your digital link or order physical plaques with the QR code</p>
+                <p className="text-zinc-400">Receive the digital link and QR code for your completed memorial</p>
               </div>
             </div>
           </div>
@@ -144,18 +141,12 @@ export function ConciergePageClient() {
         <div className="mt-12 bg-amber-500/10 border border-amber-500/30 rounded-lg p-8 text-center">
           <h3 className="text-2xl font-bold text-white mb-4">Ready to Order Now?</h3>
           <p className="text-zinc-300 mb-6">You can also checkout directly and our team will contact you for your memorial details.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <button
-              onClick={() => handleCheckout("concierge-digital")}
+              onClick={handleCheckout}
               className="bg-white text-black font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
             >
               Checkout - Digital Link ($299)
-            </button>
-            <button
-              onClick={() => handleCheckout("concierge-plaque")}
-              className="bg-amber-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-amber-700 transition-colors"
-            >
-              Checkout - With Plaque ($329)
             </button>
           </div>
         </div>

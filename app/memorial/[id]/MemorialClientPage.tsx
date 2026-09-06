@@ -1,8 +1,9 @@
 "use client"
-import { Upload, MusicIcon, VideoIcon, BookOpen, Calendar } from "lucide-react"
+
+import { BookOpen, Calendar, Download, ExternalLink, Mic, MusicIcon, Upload, VideoIcon } from "lucide-react"
 import Image from "next/image"
 
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -100,6 +101,7 @@ interface Milestone {
 
 export function MemorialClientPage() {
   const params = useParams()
+  const searchParams = useSearchParams()
   const memorialId = params.id as string
   const [newMessage, setNewMessage] = useState("")
   const [newMessageAuthor, setNewMessageAuthor] = useState("")
@@ -131,8 +133,25 @@ export function MemorialClientPage() {
   const [submittingStory, setSubmittingStory] = useState(false)
 
   const isSample = memorialId?.startsWith("SAMPLE-")
+  const setupComplete = searchParams.get("setup") === "complete"
 
   const selectedTheme = themes.find((t) => t.id === (memorial?.theme || "classic")) || themes[0]
+  const featuredVoice =
+    music.find(
+      (track) =>
+        !track.is_youtube &&
+        (track.artist?.toLowerCase() === "voice recording" ||
+          track.title.toLowerCase().includes("voice") ||
+          track.title.toLowerCase().includes("voicemail")),
+    ) || music.find((track) => !track.is_youtube)
+  const remainingAudio = featuredVoice ? music.filter((track) => track.id !== featuredVoice.id) : music
+  const familyTreeStory = stories.find((story) => story.title === "Family Tree")
+  const externalLinkStories = stories.filter(
+    (story) => story.title.startsWith("External Link:") && /^https?:\/\//i.test(story.content),
+  )
+  const regularStories = stories.filter(
+    (story) => story.title !== "Family Tree" && !story.title.startsWith("External Link:"),
+  )
 
   const getPhotoUrl = (photo: Photo): string => {
     return photo.image_url || photo.photo_url || "/placeholder.svg"
@@ -428,6 +447,23 @@ export function MemorialClientPage() {
     <div className={`min-h-screen ${selectedTheme.colors.background}`}>
       <Header />
 
+      {setupComplete && !isSample && (
+        <div className="border-b border-green-300 bg-green-50 py-4">
+          <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 sm:flex-row">
+            <div>
+              <p className="font-semibold text-green-900">Memorial setup complete</p>
+              <p className="text-sm text-green-800">
+                The unique memorial URL is live and its high-resolution QR print file is ready.
+              </p>
+            </div>
+            <Button onClick={handleDownloadQRCode} className="bg-green-700 hover:bg-green-800">
+              <Download className="mr-2 h-4 w-4" />
+              Download QR Print File
+            </Button>
+          </div>
+        </div>
+      )}
+
       {isSample && (
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3">
           <div className="container mx-auto px-4">
@@ -526,6 +562,25 @@ export function MemorialClientPage() {
       <section className={`py-16 ${selectedTheme.colors.background}`}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto space-y-8">
+            {featuredVoice && (
+              <Card className="border-2 border-purple-300 bg-gradient-to-br from-purple-50 to-white shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3 text-2xl">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-purple-600 text-white">
+                      <Mic className="h-6 w-6" />
+                    </span>
+                    Hear Their Voice
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="mb-4 text-slate-600">{featuredVoice.title}</p>
+                  <audio controls className="w-full" src={featuredVoice.audio_url} preload="metadata">
+                    Your browser does not support the audio element.
+                  </audio>
+                </CardContent>
+              </Card>
+            )}
+
             {memorial?.biography && (
               <Card>
                 <CardHeader>
@@ -533,6 +588,48 @@ export function MemorialClientPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-slate-600 whitespace-pre-wrap">{memorial.biography}</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {familyTreeStory && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Family Tree</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {familyTreeStory.content.split("\n").map((relationship) => (
+                      <div key={relationship} className="rounded-lg border bg-slate-50 p-3 text-slate-700">
+                        {relationship}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {externalLinkStories.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ExternalLink className="h-5 w-5" />
+                    Memorial Links
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {externalLinkStories.map((story) => (
+                    <a
+                      key={story.id}
+                      href={story.content}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between rounded-lg border p-3 text-purple-700 hover:bg-purple-50"
+                    >
+                      <span>{story.title.replace("External Link: ", "")}</span>
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  ))}
                 </CardContent>
               </Card>
             )}
@@ -799,9 +896,9 @@ export function MemorialClientPage() {
               <CardContent>
                 {loadingStories ? (
                   <div className="text-center py-8 text-slate-500">Loading stories...</div>
-                ) : stories.length > 0 ? (
+                ) : regularStories.length > 0 ? (
                   <div className="space-y-4">
-                    {stories.map((story) => (
+                    {regularStories.map((story) => (
                       <div key={story.id} className="bg-slate-50 p-4 rounded-lg">
                         <h4 className="font-semibold text-slate-900 mb-1">{story.title}</h4>
                         <p className="text-xs text-slate-500 mb-2">
@@ -819,7 +916,7 @@ export function MemorialClientPage() {
               </CardContent>
             </Card>
 
-            {!loadingMusic && music.length > 0 && (
+            {!loadingMusic && remainingAudio.length > 0 && (
               <Card id="music-section">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -829,7 +926,7 @@ export function MemorialClientPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {music.map((song) => (
+                    {remainingAudio.map((song) => (
                       <div key={song.id} className="bg-slate-50 p-4 rounded-lg">
                         <div className="flex items-center gap-3 mb-2">
                           <MusicIcon className="w-4 h-4 text-purple-600" />

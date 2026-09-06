@@ -9,7 +9,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Human Memorials - Memorial QR",
   description:
-    "Create beautiful digital memorials for loved ones. QR code headstone plaques, wall tributes, and lasting digital legacies.",
+    "Create beautiful digital memorials for loved ones with print-on-demand QR keepsakes and lasting online tributes.",
 }
 
 export default function HumanMemorialsPage() {
@@ -155,7 +155,7 @@ export default function HumanMemorialsPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Memorial Products</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose from headstone plaques, wall tributes, or keepsake items
+              Choose a print-on-demand keepsake linked to the digital memorial
             </p>
           </div>
 
@@ -165,9 +165,9 @@ export default function HumanMemorialsPage() {
                 <div className="w-24 h-24 bg-slate-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-slate-600" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Headstone Plaque</h3>
+                <h3 className="text-xl font-semibold mb-2">Keep Card</h3>
                 <p className="text-muted-foreground mb-4">
-                  Weather-resistant aluminum plaque designed to mount on headstones and grave markers.
+                  A peel-and-stick QR sticker paired with the online memorial profile.
                 </p>
                 <Badge>Most Popular</Badge>
               </CardContent>
@@ -178,9 +178,9 @@ export default function HumanMemorialsPage() {
                 <div className="w-24 h-24 bg-slate-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-slate-600" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Wall Memorial</h3>
+                <h3 className="text-xl font-semibold mb-2">Slate Desk Plaque</h3>
                 <p className="text-muted-foreground mb-4">
-                  Elegant framed QR display for home, funeral homes, or memorial walls.
+                  A personalized slate plaque designed for indoor desk or shelf display.
                 </p>
                 <Badge variant="outline">Indoor Display</Badge>
               </CardContent>
@@ -191,9 +191,9 @@ export default function HumanMemorialsPage() {
                 <div className="w-24 h-24 bg-slate-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-slate-600" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Keepsake Box</h3>
+                <h3 className="text-xl font-semibold mb-2">Memorial Photo Block</h3>
                 <p className="text-muted-foreground mb-4">
-                  Beautiful wooden box with engraved QR code lid for storing cherished mementos.
+                  A favorite photo and unique QR code combined in an indoor display.
                 </p>
                 <Badge variant="outline">Premium Option</Badge>
               </CardContent>

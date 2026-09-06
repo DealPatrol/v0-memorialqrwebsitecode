@@ -191,8 +191,8 @@ export default function HelpPage() {
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">What if the QR code gets damaged?</h3>
                 <p className="text-gray-600">
-                  Our QR codes are weatherproof and designed to last for decades. If your plaque is damaged within 5
-                  years, we'll replace it free of charge under our durability guarantee.
+                  Contact support if a printed QR code becomes unreadable. Product care and intended use vary by item;
+                  stickers and indoor display products are not sold as permanent outdoor markers.
                 </p>
               </CardContent>
             </Card>

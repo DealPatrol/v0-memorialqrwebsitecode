@@ -10,7 +10,21 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
-import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, ArrowLeft, Heart } from "lucide-react"
+import {
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  CheckCircle,
+  FileText,
+  Heart,
+  LinkIcon,
+  Mic,
+  Music,
+  Upload,
+  User,
+  Users,
+  Video,
+} from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
 import { ThemeSelector } from "@/components/theme-selector"
@@ -18,7 +32,7 @@ import { ThemeSelector } from "@/components/theme-selector"
 const steps = [
   { id: 1, title: "Basic Information", icon: User },
   { id: 2, title: "Life Details", icon: Calendar },
-  { id: 3, title: "Photos & Media", icon: Upload },
+  { id: 3, title: "Photos, Voice & Media", icon: Upload },
   { id: 4, title: "Biography", icon: FileText },
   { id: 5, title: "Family & Friends", icon: Users },
   { id: 6, title: "Review & Submit", icon: CheckCircle },
@@ -41,84 +55,96 @@ export default function CreateMemorialPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      setUser(user)
-
       const welcomeParam = searchParams.get("welcome")
       const orderIdParam = searchParams.get("orderId")
-
-      if (welcomeParam === "true" && user) {
-        setShowWelcome(true)
-        // Extract first name from email or metadata
-        const name = user.user_metadata?.full_name || user.email?.split("@")[0] || "there"
-        setCustomerName(name.split(" ")[0])
-      }
-
-      if (orderIdParam) {
-        const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
-
-        if (order) {
-          setOrderData({
-            customerEmail: order.customer_email || user?.email || "",
-            customerName: order.customer_name || user?.user_metadata?.full_name || "",
-            orderId: order.id,
-            packageType: order.product_name || "basic",
-          })
-          setOrderId(`ORDER-${order.id}`)
-          setIsCheckingAuth(false)
-          return
-        }
-      }
-
       const planParam = searchParams.get("plan")
 
-      if (planParam === "free") {
-        setIsFreePlan(true)
-        setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
-          orderId: null,
-          packageType: "free",
-        })
-        setOrderId(`FREE-${Date.now()}`)
-        setIsCheckingAuth(false)
-        return
-      }
-
-      const pendingOrderData = sessionStorage.getItem("pendingOrder")
-
-      if (!pendingOrderData) {
-        setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
-          orderId: null,
-          packageType: "basic",
-        })
-        setOrderId(`ANON-${Date.now()}`)
-        setIsCheckingAuth(false)
-        return
-      }
-
       try {
-        const parsedOrderData = JSON.parse(pendingOrderData)
-        setOrderData(parsedOrderData)
-        setOrderId(`ORDER-${parsedOrderData.orderId || Date.now()}`)
-      } catch (error) {
-        console.error("Error parsing order data:", error)
-        setOrderData({
-          customerEmail: user?.email || "",
-          customerName: user?.user_metadata?.full_name || "",
-          orderId: null,
-          packageType: "basic",
-        })
-        setOrderId(`ANON-${Date.now()}`)
-      }
+        let currentUser = null
+        let supabase = null
 
-      setIsCheckingAuth(false)
+        try {
+          supabase = createClient()
+          const authResult = await supabase.auth.getUser()
+          currentUser = authResult.data.user
+          setUser(currentUser)
+        } catch (authError) {
+          console.error("Supabase authentication is unavailable:", authError)
+        }
+
+        if (welcomeParam === "true" && currentUser) {
+          setShowWelcome(true)
+          const name = currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "there"
+          setCustomerName(name.split(" ")[0])
+        }
+
+        if (orderIdParam) {
+          if (!supabase || !currentUser) {
+            toast({
+              title: "Sign in required",
+              description: "Sign in to continue setup for your paid order.",
+              variant: "destructive",
+            })
+            router.push(`/auth/login?next=${encodeURIComponent(`/create-memorial?orderId=${orderIdParam}`)}`)
+            return
+          }
+
+          const { data: order } = await supabase.from("orders").select("*").eq("id", orderIdParam).single()
+
+          if (order) {
+            setOrderData({
+              customerEmail: order.customer_email || currentUser.email || "",
+              customerName: order.customer_name || currentUser.user_metadata?.full_name || "",
+              orderId: order.id,
+              packageType: order.product_name || "basic",
+            })
+            setOrderId(`ORDER-${order.id}`)
+            return
+          }
+        }
+
+        if (planParam === "free") {
+          setIsFreePlan(true)
+          setOrderData({
+            customerEmail: currentUser?.email || "",
+            customerName: currentUser?.user_metadata?.full_name || "",
+            orderId: null,
+            packageType: "free",
+          })
+          setOrderId(`FREE-${Date.now()}`)
+          return
+        }
+
+        const pendingOrderData = sessionStorage.getItem("pendingOrder")
+
+        if (!pendingOrderData) {
+          setOrderData({
+            customerEmail: currentUser?.email || "",
+            customerName: currentUser?.user_metadata?.full_name || "",
+            orderId: null,
+            packageType: "basic",
+          })
+          setOrderId(`ANON-${Date.now()}`)
+          return
+        }
+
+        try {
+          const parsedOrderData = JSON.parse(pendingOrderData)
+          setOrderData(parsedOrderData)
+          setOrderId(`ORDER-${parsedOrderData.orderId || Date.now()}`)
+        } catch (error) {
+          console.error("Error parsing order data:", error)
+          setOrderData({
+            customerEmail: currentUser?.email || "",
+            customerName: currentUser?.user_metadata?.full_name || "",
+            orderId: null,
+            packageType: "basic",
+          })
+          setOrderId(`ANON-${Date.now()}`)
+        }
+      } finally {
+        setIsCheckingAuth(false)
+      }
     }
 
     checkAuth()
@@ -137,6 +163,10 @@ export default function CreateMemorialPage() {
     favoriteQuote: "",
     profilePhoto: null as File | null,
     additionalPhotos: [] as File[],
+    voiceRecording: null as File | null,
+    musicFiles: [] as File[],
+    videos: [] as File[],
+    externalLinks: "",
     biography: "",
     personalStory: "",
     spouse: "",
@@ -152,11 +182,11 @@ export default function CreateMemorialPage() {
   const handleFileUpload = (field: string, files: FileList | null) => {
     if (!files) return
 
-    if (field === "additionalPhotos") {
-      const newPhotos = Array.from(files)
+    if (field === "additionalPhotos" || field === "musicFiles" || field === "videos") {
+      const newFiles = Array.from(files)
       setFormData((prev) => ({
         ...prev,
-        additionalPhotos: [...prev.additionalPhotos, ...newPhotos],
+        [field]: [...prev[field], ...newFiles],
       }))
     } else {
       setFormData((prev) => ({ ...prev, [field]: files[0] }))
@@ -179,6 +209,13 @@ export default function CreateMemorialPage() {
     setIsSubmitting(true)
 
     try {
+      const lifeDetails = [
+        formData.occupation && `Occupation: ${formData.occupation}`,
+        formData.hobbies && `Hobbies & interests: ${formData.hobbies}`,
+        formData.achievements && `Achievements: ${formData.achievements}`,
+        formData.favoriteQuote && `Favorite quote: ${formData.favoriteQuote}`,
+      ].filter(Boolean)
+      const completeBiography = [formData.biography, lifeDetails.join("\n")].filter(Boolean).join("\n\n")
       let profileImageUrl = null
 
       if (formData.profilePhoto) {
@@ -211,10 +248,10 @@ export default function CreateMemorialPage() {
           dateOfBirth: formData.dateOfBirth,
           dateOfDeath: formData.dateOfDeath,
           location: formData.location,
-          biography: formData.biography,
+          biography: completeBiography,
           customerEmail: user?.email || orderData.customerEmail,
           customerName: user?.user_metadata?.full_name || orderData.customerName,
-          userId: user?.id || null,
+          orderId: orderData.orderId || null,
           profileImageUrl: profileImageUrl,
           theme: formData.theme,
           packageType: isFreePlan ? "free" : orderData.packageType || "basic",
@@ -227,6 +264,8 @@ export default function CreateMemorialPage() {
       }
 
       const { memorial } = await memorialResponse.json()
+      const uploaderName = orderData.customerName || user?.user_metadata?.full_name || "Memorial Creator"
+      const failedUploads: string[] = []
 
       if (formData.additionalPhotos.length > 0) {
         for (const photo of formData.additionalPhotos) {
@@ -235,39 +274,93 @@ export default function CreateMemorialPage() {
             photoFormData.append("file", photo)
             photoFormData.append("memorialId", memorial.id)
             photoFormData.append("caption", photo.name)
-            photoFormData.append("uploaderName", orderData.customerName || "Memorial Creator")
+            photoFormData.append("uploaderName", uploaderName)
 
-            await fetch("/api/photos/upload", {
+            const response = await fetch("/api/photos/upload", {
               method: "POST",
               body: photoFormData,
             })
+            if (!response.ok) failedUploads.push(photo.name)
           } catch (photoError) {
             console.error("Error uploading photo:", photoError)
+            failedUploads.push(photo.name)
           }
         }
       }
 
-      if (orderData.orderId && !isFreePlan) {
-        await fetch("/api/orders/link-memorial", {
+      const uploadAudio = async (file: File, title: string, artist: string) => {
+        const audioFormData = new FormData()
+        audioFormData.append("file", file)
+        audioFormData.append("memorialId", memorial.id)
+        audioFormData.append("title", title)
+        audioFormData.append("artist", artist)
+        audioFormData.append("uploaderName", uploaderName)
+
+        const response = await fetch("/api/music/upload", { method: "POST", body: audioFormData })
+        if (!response.ok) failedUploads.push(file.name)
+      }
+
+      if (formData.voiceRecording) {
+        await uploadAudio(formData.voiceRecording, "Hear Their Voice", "Voice recording")
+      }
+
+      for (const musicFile of formData.musicFiles) {
+        const title = musicFile.name.replace(/\.[^/.]+$/, "")
+        await uploadAudio(musicFile, title, "Memorial music")
+      }
+
+      for (const video of formData.videos) {
+        const videoFormData = new FormData()
+        videoFormData.append("file", video)
+        videoFormData.append("memorialId", memorial.id)
+        videoFormData.append("title", video.name.replace(/\.[^/.]+$/, ""))
+        videoFormData.append("uploadedBy", uploaderName)
+
+        const response = await fetch("/api/videos/upload", { method: "POST", body: videoFormData })
+        if (!response.ok) failedUploads.push(video.name)
+      }
+
+      const familyDetails = [
+        formData.spouse && `Spouse/Partner: ${formData.spouse}`,
+        formData.children && `Children: ${formData.children}`,
+        formData.parents && `Parents: ${formData.parents}`,
+        formData.siblings && `Siblings: ${formData.siblings}`,
+      ].filter(Boolean)
+
+      const setupStories = [
+        formData.personalStory && { title: "A Special Memory", content: formData.personalStory },
+        familyDetails.length > 0 && { title: "Family Tree", content: familyDetails.join("\n") },
+        ...formData.externalLinks
+          .split("\n")
+          .map((link) => link.trim())
+          .filter((link) => /^https?:\/\//i.test(link))
+          .map((link) => ({
+            title: `External Link: ${new URL(link).hostname}`,
+            content: link,
+          })),
+      ].filter((story): story is { title: string; content: string } => Boolean(story))
+
+      for (const story of setupStories) {
+        const response = await fetch(`/api/memorials/${memorial.id}/stories`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: orderData.orderId,
-            memorialId: memorial.id,
-          }),
+          body: JSON.stringify({ ...story, author_name: uploaderName }),
         })
+        if (!response.ok) failedUploads.push(story.title)
       }
 
       sessionStorage.removeItem("pendingOrder")
 
       toast({
         title: "Memorial Created Successfully!",
-        description: isFreePlan
+        description: failedUploads.length > 0
+          ? `The memorial is live, but ${failedUploads.length} media item(s) need to be uploaded again.`
+          : isFreePlan
           ? "Your free memorial is now live! Upgrade anytime to unlock more features."
-          : "Your memorial is now live and ready to share.",
+          : "Setup is complete. Your memorial URL and QR print file are ready.",
       })
 
-      router.push(`/memorial/${memorial.id}`)
+      router.push(`/memorial/${memorial.slug}?setup=complete`)
     } catch (error: any) {
       console.error("Error creating memorial:", error)
       toast({
@@ -595,6 +688,71 @@ export default function CreateMemorialPage() {
                     />
                     <p className="text-sm text-zinc-500 mt-1">{formData.additionalPhotos.length} photos uploaded</p>
                   </div>
+
+                  <div className="border-t border-zinc-800 pt-6">
+                    <Label htmlFor="voiceRecording" className="text-zinc-300 flex items-center gap-2">
+                      <Mic className="h-4 w-4" />
+                      Voicemail or Voice Recording
+                    </Label>
+                    <Input
+                      id="voiceRecording"
+                      type="file"
+                      accept="audio/*,.m4a,.amr,.3gp,.aac"
+                      onChange={(e) => handleFileUpload("voiceRecording", e.target.files)}
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
+                    />
+                    <p className="text-sm text-zinc-500 mt-1">
+                      This recording appears prominently as “Hear Their Voice” on the memorial page.
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="musicFiles" className="text-zinc-300 flex items-center gap-2">
+                      <Music className="h-4 w-4" />
+                      Music
+                    </Label>
+                    <Input
+                      id="musicFiles"
+                      type="file"
+                      accept="audio/*,.m4a,.aac"
+                      multiple
+                      onChange={(e) => handleFileUpload("musicFiles", e.target.files)}
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
+                    />
+                    <p className="text-sm text-zinc-500 mt-1">{formData.musicFiles.length} music files selected</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="videos" className="text-zinc-300 flex items-center gap-2">
+                      <Video className="h-4 w-4" />
+                      Videos
+                    </Label>
+                    <Input
+                      id="videos"
+                      type="file"
+                      accept="video/*"
+                      multiple
+                      onChange={(e) => handleFileUpload("videos", e.target.files)}
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
+                    />
+                    <p className="text-sm text-zinc-500 mt-1">{formData.videos.length} videos selected</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="externalLinks" className="text-zinc-300 flex items-center gap-2">
+                      <LinkIcon className="h-4 w-4" />
+                      External Links
+                    </Label>
+                    <Textarea
+                      id="externalLinks"
+                      value={formData.externalLinks}
+                      onChange={(e) => handleInputChange("externalLinks", e.target.value)}
+                      rows={3}
+                      placeholder={"https://example.com/tribute\nhttps://example.com/charity"}
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
+                    />
+                    <p className="text-sm text-zinc-500 mt-1">Enter one full web address per line.</p>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -750,11 +908,26 @@ export default function CreateMemorialPage() {
                     )}
 
                     <div className="border-t border-zinc-700 pt-4">
-                      <span className="text-zinc-400 text-sm">Photos:</span>
-                      <p className="text-white">
-                        {formData.profilePhoto ? "1 profile photo" : "No profile photo"},{" "}
-                        {formData.additionalPhotos.length} additional photos
-                      </p>
+                      <span className="text-zinc-400 text-sm">Media & connections:</span>
+                      <ul className="text-white text-sm mt-1 space-y-1">
+                        <li>
+                          {formData.profilePhoto ? "1 profile photo" : "No profile photo"},{" "}
+                          {formData.additionalPhotos.length} additional photos
+                        </li>
+                        <li>{formData.voiceRecording ? "Voice recording selected" : "No voice recording selected"}</li>
+                        <li>
+                          {formData.musicFiles.length} music file(s), {formData.videos.length} video(s)
+                        </li>
+                        <li>
+                          {
+                            formData.externalLinks
+                              .split("\n")
+                              .map((link) => link.trim())
+                              .filter(Boolean).length
+                          }{" "}
+                          external link(s)
+                        </li>
+                      </ul>
                     </div>
                   </div>
 
@@ -822,23 +995,13 @@ export default function CreateMemorialPage() {
               <h4 className="font-semibold mb-4">Products</h4>
               <ul className="space-y-2 text-sm text-slate-400">
                 <li>
-                  <Link href="/products?category=plaques" className="hover:text-white">
-                    Memorial Plaques
+                  <Link href="/store" className="hover:text-white">
+                    POD Memorial Products
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products?category=stones" className="hover:text-white">
-                    Memorial Stones
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products?category=monuments" className="hover:text-white">
-                    Monuments
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products?category=pet" className="hover:text-white">
-                    Pet Memorials
+                  <Link href="/store" className="hover:text-white">
+                    Voice Keychain
                   </Link>
                 </li>
               </ul>
