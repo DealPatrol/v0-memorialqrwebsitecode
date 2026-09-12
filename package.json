@@ -64,6 +64,7 @@
     "react-square-web-payments-sdk": "latest",
     "recharts": "3.6.0",
     "resend": "latest",
+    "sharp": "^0.35.4",
     "sonner": "2.0.7",
     "square": "latest",
     "tailwind-merge": "^2.5.5",

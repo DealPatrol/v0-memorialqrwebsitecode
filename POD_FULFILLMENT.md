@@ -23,12 +23,14 @@ The store operates exclusively on a dropship Print-on-Demand model. No physical 
 ### Printful
 - `PRINTFUL_API_TOKEN`: Private API token from your Printful dashboard (requires `orders` and `store` scopes).
 - `PRINTFUL_AUTO_CONFIRM`: Optional (`"true"` to submit orders directly to fulfillment, `"false"` to create draft orders for manual review).
+- `PRINTFUL_WEBHOOK_SECRET`: Secret configured for the Printful webhook signature.
 
 ### Printify
 - `PRINTIFY_API_TOKEN`: Personal Access Token from your Printify account settings.
 - `PRINTIFY_SHOP_ID`: The numeric shop ID for your MemorialsQR Printify store.
 - `PRINTIFY_DEFAULT_VARIANT_ID`: Optional default variant ID for keychain/plaque prints.
 - `PRINTIFY_AUTO_PRODUCTION`: Optional (`"true"` to send to production immediately, `"false"` to keep in review).
+- `PRINTIFY_WEBHOOK_SECRET`: Secret configured when creating the Printify webhook.
 
 ## Database Migration
 
@@ -40,6 +42,8 @@ The migration is additive and adds:
 - `orders.fulfillment_status` (TEXT)
 - `orders.fulfillment_data` (JSONB)
 - `orders.print_file_url` (TEXT)
+- `orders.tracking_number` (TEXT)
+- A unique index on `orders.payment_id`
 
 The code includes graceful fallbacks that continue functioning even if the database has not yet been migrated.
 

@@ -1,9 +1,20 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
+import { verifyWebhookSignature } from "@/lib/webhook-signature"
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    const rawBody = await req.text()
+    const webhookSecret = process.env.PRINTIFY_WEBHOOK_SECRET
+    if (!webhookSecret) {
+      console.error("[Printify Webhook] PRINTIFY_WEBHOOK_SECRET is not configured")
+      return NextResponse.json({ success: false, error: "Webhook verification is not configured" }, { status: 503 })
+    }
+    if (!verifyWebhookSignature(rawBody, req.headers.get("x-pfy-signature"), webhookSecret)) {
+      return NextResponse.json({ success: false, error: "Invalid webhook signature" }, { status: 401 })
+    }
+
+    const body = JSON.parse(rawBody)
     const { type, resource } = body
 
     console.log(`[Printify Webhook] Event received: ${type}`)
@@ -38,7 +49,7 @@ export async function POST(req: NextRequest) {
       const trackingUrl = tracking?.url || null
       const carrier = tracking?.carrier || null
 
-      await supabase
+      const { error: updateError } = await supabase
         .from("orders")
         .update({
           fulfillment_status: "shipped",
@@ -55,6 +66,10 @@ export async function POST(req: NextRequest) {
           },
         })
         .eq("id", order.id)
+
+      if (updateError) {
+        throw new Error(`Failed to update order shipment: ${updateError.message}`)
+      }
 
       console.log(`[Printify Webhook] Updated order ${order.id} status to shipped with tracking ${trackingNumber}`)
     }

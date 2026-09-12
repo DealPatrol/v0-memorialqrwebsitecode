@@ -73,27 +73,29 @@ export async function POST(req: Request) {
     const accessToken = process.env.SQUARE_ACCESS_TOKEN
     const locationId = process.env.SQUARE_LOCATION_ID
     const environment = process.env.SQUARE_ENVIRONMENT || "sandbox"
-    if (accessToken && locationId) {
-      const baseUrl =
-        environment === "production" ? "https://connect.squareup.com" : "https://connect.squareupsandbox.com"
-      const paymentResponse = await fetch(`${baseUrl}/v2/payments/${encodeURIComponent(paymentId)}`, {
-        headers: {
-          "Square-Version": "2024-12-18",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      const paymentData = await paymentResponse.json()
-      const payment = paymentData.payment
+    if (!accessToken || !locationId) {
+      return NextResponse.json({ success: false, error: "Payment verification is not configured" }, { status: 503 })
+    }
 
-      if (
-        !paymentResponse.ok ||
-        payment?.status !== "COMPLETED" ||
-        payment?.amount_money?.amount !== totalAmountCents ||
-        payment?.amount_money?.currency !== "CAD" ||
-        payment?.location_id !== locationId
-      ) {
-        return NextResponse.json({ success: false, error: "Payment does not match the order total" }, { status: 400 })
-      }
+    const baseUrl =
+      environment === "production" ? "https://connect.squareup.com" : "https://connect.squareupsandbox.com"
+    const paymentResponse = await fetch(`${baseUrl}/v2/payments/${encodeURIComponent(paymentId)}`, {
+      headers: {
+        "Square-Version": "2024-12-18",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    const paymentData = await paymentResponse.json()
+    const payment = paymentData.payment
+
+    if (
+      !paymentResponse.ok ||
+      payment?.status !== "COMPLETED" ||
+      payment?.amount_money?.amount !== totalAmountCents ||
+      payment?.amount_money?.currency !== "CAD" ||
+      payment?.location_id !== locationId
+    ) {
+      return NextResponse.json({ success: false, error: "Payment does not match the order total" }, { status: 400 })
     }
 
     const supabaseAuth = await createClient()
@@ -107,6 +109,18 @@ export async function POST(req: Request) {
     console.log("[v0] Processing checkout - User ID:", userId, "Square Customer ID:", finalSquareCustomerId)
 
     const supabase = createServiceRoleClient()
+    const { data: existingOrder, error: paymentLookupError } = await supabase
+      .from("orders")
+      .select("id")
+      .eq("payment_id", paymentId)
+      .maybeSingle()
+
+    if (paymentLookupError) {
+      return NextResponse.json({ success: false, error: "Could not validate payment usage" }, { status: 500 })
+    }
+    if (existingOrder) {
+      return NextResponse.json({ success: false, error: "Payment has already been used" }, { status: 409 })
+    }
 
     let subscriptionId = null
 
@@ -155,7 +169,7 @@ export async function POST(req: Request) {
       shipping_city: city,
       shipping_state: state,
       shipping_zip: zip,
-      shipping_country: "US",
+      shipping_country: "CA",
       payment_id: paymentId,
       payment_status: "completed",
       amount_cents: totalAmountCents,
@@ -205,6 +219,9 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error("[v0] Database error creating order:", error)
+      if (error.code === "23505") {
+        return NextResponse.json({ success: false, error: "Payment has already been used" }, { status: 409 })
+      }
       return NextResponse.json(
         {
           success: false,

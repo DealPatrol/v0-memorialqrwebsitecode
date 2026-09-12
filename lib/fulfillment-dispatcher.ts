@@ -2,7 +2,6 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { submitPrintfulOrder, type PrintfulItem } from "@/lib/printful"
 import { submitPrintifyOrder, type PrintifyItem } from "@/lib/printify"
 import type { PodOrderLineItem } from "@/lib/checkout-products"
-import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 
 export type DispatchResult = {
   success: boolean
@@ -44,6 +43,18 @@ export async function dispatchOrderFulfillment(
     }
   }
 
+  if (
+    order.fulfillment_id ||
+    ["dispatching", "submitted", "in_production", "shipped"].includes(order.fulfillment_status)
+  ) {
+    return {
+      success: true,
+      orderId,
+      fulfillmentStatus: order.fulfillment_status,
+      fulfillmentId: order.fulfillment_id,
+    }
+  }
+
   const printFileUrl = overridePrintFileUrl || order.print_file_url
   if (!printFileUrl) {
     return {
@@ -55,6 +66,43 @@ export async function dispatchOrderFulfillment(
   }
 
   const lineItems: PodOrderLineItem[] = Array.isArray(order.line_items) ? order.line_items : []
+  if (lineItems.length === 0) {
+    await supabase.from("orders").update({ fulfillment_status: "awaiting_configuration" }).eq("id", order.id)
+    return {
+      success: false,
+      orderId,
+      fulfillmentStatus: "awaiting_configuration",
+      error: "Order has no fulfillment line items",
+    }
+  }
+
+  if (order.fulfillment_status !== "ready_for_fulfillment") {
+    return {
+      success: false,
+      orderId,
+      fulfillmentStatus: order.fulfillment_status || "awaiting_configuration",
+      error: "Order is not ready for fulfillment",
+    }
+  }
+
+  const { data: claimedOrder, error: claimError } = await supabase
+    .from("orders")
+    .update({ fulfillment_status: "dispatching" })
+    .eq("id", order.id)
+    .eq("fulfillment_status", "ready_for_fulfillment")
+    .is("fulfillment_id", null)
+    .select("id")
+    .maybeSingle()
+
+  if (claimError || !claimedOrder) {
+    return {
+      success: false,
+      orderId,
+      fulfillmentStatus: claimError ? "awaiting_configuration" : "dispatching",
+      error: claimError?.message || "Order fulfillment is already being dispatched",
+    }
+  }
+
   const printfulItems = lineItems.filter((item) => item.fulfillment_provider === "printful")
   const printifyItems = lineItems.filter((item) => item.fulfillment_provider === "printify")
 
@@ -141,10 +189,16 @@ export async function dispatchOrderFulfillment(
     print_file_url: printFileUrl,
   }
 
-  let updateRes = await supabase.from("orders").update(updatePayload).eq("id", order.id)
-  if (updateRes.error && isMissingPodOrderSchema(updateRes.error)) {
-    // If additive columns are not migrated, update legacy status
-    await supabase.from("orders").update({ status: finalStatus }).eq("id", order.id)
+  const { error: updateError } = await supabase.from("orders").update(updatePayload).eq("id", order.id)
+  if (updateError) {
+    return {
+      success: false,
+      orderId,
+      fulfillmentStatus: "dispatching",
+      fulfillmentId: finalFulfillmentId,
+      error: updateError.message,
+      details: dispatchDetails,
+    }
   }
 
   return {

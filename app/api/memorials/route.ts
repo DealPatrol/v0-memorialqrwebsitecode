@@ -167,19 +167,32 @@ export async function POST(request: NextRequest) {
           ...podFulfillmentUpdate,
         })
         .eq("id", paidOrderId)
+        .is("memorial_id", null)
+        .select("id")
+        .maybeSingle()
 
       if (linkResult.error && isMissingPodOrderSchema(linkResult.error)) {
         console.warn("[v0] POD order migration is not available; linking memorial with legacy fields")
-        linkResult = await serviceRole.from("orders").update(legacyOrderUpdate).eq("id", paidOrderId)
+        linkResult = await serviceRole
+          .from("orders")
+          .update(legacyOrderUpdate)
+          .eq("id", paidOrderId)
+          .is("memorial_id", null)
+          .select("id")
+          .maybeSingle()
       }
 
-      const { error: linkError } = linkResult
+      const { data: linkedOrder, error: linkError } = linkResult
 
-      if (linkError) {
+      if (linkError || !linkedOrder) {
         console.error("Failed to link memorial to paid order:", linkError)
         return NextResponse.json(
-          { error: "Memorial created, but the order could not be linked. Contact support with your order number." },
-          { status: 500 },
+          {
+            error: linkError
+              ? "Memorial created, but the order could not be linked. Contact support with your order number."
+              : "This order is already linked to a memorial",
+          },
+          { status: linkError ? 500 : 409 },
         )
       }
 

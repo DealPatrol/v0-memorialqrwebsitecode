@@ -17,6 +17,10 @@ export async function POST(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser()
 
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Authentication required" }, { status: 401 })
+    }
+
     const serviceRole = createServiceRoleClient()
     const { data: order, error: orderError } = await serviceRole
       .from("orders")
@@ -28,14 +32,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 })
     }
 
-    // Ensure order is owned by authenticated user or admin
-    if (user) {
-      const orderEmail = order.customer_email?.toLowerCase()
-      const userEmail = user.email?.toLowerCase()
-      const isOwner = order.user_id === user.id || (Boolean(orderEmail) && orderEmail === userEmail)
-      if (!isOwner) {
-        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 })
-      }
+    const orderEmail = order.customer_email?.toLowerCase()
+    const userEmail = user.email?.toLowerCase()
+    const isOwner = order.user_id === user.id || (Boolean(orderEmail) && orderEmail === userEmail)
+    if (!isOwner) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 })
     }
 
     const result = await dispatchOrderFulfillment(orderId, printFileUrl)

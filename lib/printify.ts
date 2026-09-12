@@ -34,6 +34,23 @@ export type PrintifyFulfillmentResult = {
 
 const PRINTIFY_API_URL = "https://api.printify.com/v1"
 
+type PrintifyProduct = {
+  blueprint_id: number
+  print_provider_id: number
+  print_areas: Array<{
+    variant_ids: number[]
+    placeholders: Array<{ position: string }>
+  }>
+}
+
+type PrintifyOrderLineItem = {
+  blueprint_id: number
+  print_provider_id: number
+  variant_id: number
+  quantity: number
+  print_areas: Record<string, string>
+}
+
 async function printifyRequest<T>(path: string, token: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${PRINTIFY_API_URL}${path}`, {
     ...init,
@@ -88,7 +105,7 @@ export async function submitPrintifyOrder(
   }
 
   try {
-    const orderLineItems: Array<{ product_id: string; variant_id: number; quantity: number }> = []
+    const orderLineItems: PrintifyOrderLineItem[] = []
 
     for (const item of request.items) {
       if (!item.productId || !item.variantId) {
@@ -96,10 +113,29 @@ export async function submitPrintifyOrder(
         continue
       }
 
+      const variantId = item.variantId
+      const product = await printifyRequest<PrintifyProduct>(
+        `/shops/${shopId}/products/${item.productId}.json`,
+        token,
+      )
+      const printAreas = product.print_areas
+        .filter((area) => area.variant_ids.includes(variantId))
+        .flatMap((area) => area.placeholders)
+        .reduce<Record<string, string>>((areas, placeholder) => {
+          areas[placeholder.position] = item.print_file_url
+          return areas
+        }, {})
+
+      if (Object.keys(printAreas).length === 0) {
+        throw new Error(`Printify product ${item.productId} has no print area for variant ${variantId}`)
+      }
+
       orderLineItems.push({
-        product_id: item.productId,
-        variant_id: item.variantId,
+        blueprint_id: product.blueprint_id,
+        print_provider_id: product.print_provider_id,
+        variant_id: variantId,
         quantity: item.quantity,
+        print_areas: printAreas,
       })
     }
 

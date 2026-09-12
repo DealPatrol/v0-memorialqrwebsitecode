@@ -1,5 +1,6 @@
 import QRCode from "qrcode"
 import { put } from "@vercel/blob"
+import sharp from "sharp"
 
 export type PrintAssetOptions = {
   memorialId: string
@@ -71,9 +72,12 @@ export async function generateCompositePrintAsset(
     },
   })
 
-  // Extract inner svg content from generated QR
-  const svgInnerMatch = qrSvg.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i)
-  const qrInnerContent = svgInnerMatch ? svgInnerMatch[1] : ""
+  const qrViewBox = qrSvg.match(/viewBox="([^"]+)"/i)?.[1]
+  const qrInnerContent = qrSvg.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i)?.[1]
+  if (!qrViewBox || !qrInnerContent) {
+    throw new Error("Could not parse generated QR SVG")
+  }
+  const sizedQrSvg = `<svg x="285" y="215" width="630" height="630" viewBox="${qrViewBox}">${qrInnerContent}</svg>`
 
   const datesText = formatDateRange(birthDate, deathDate)
   const safeName = escapeXml(fullName)
@@ -94,12 +98,8 @@ export async function generateCompositePrintAsset(
   <rect x="60" y="60" width="1080" height="1080" rx="24" fill="none" stroke="#F3F4F6" stroke-width="4"/>
 
   <!-- Centered QR Code with quiet zone -->
-  <g transform="translate(250, 180)">
-    <rect width="700" height="700" rx="20" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
-    <g transform="translate(35, 35) scale(0.9)">
-      ${qrInnerContent}
-    </g>
-  </g>
+  <rect x="250" y="180" width="700" height="700" rx="20" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+  ${sizedQrSvg}
 
   <!-- Memorial Details -->
   <text x="600" y="960" class="name-text">${safeName}</text>
@@ -107,16 +107,7 @@ export async function generateCompositePrintAsset(
   <text x="600" y="1065" class="sub-text">Scan to remember and celebrate</text>
 </svg>`
 
-  // Also generate high-resolution PNG buffer (1200x1200px)
-  const qrPngBuffer = await QRCode.toBuffer(memorialUrl, {
-    width: 1200,
-    margin: 3,
-    errorCorrectionLevel: "H",
-    color: {
-      dark: "#000000",
-      light: "#FFFFFF",
-    },
-  })
+  const compositePngBuffer = await sharp(Buffer.from(compositeSvg)).png().toBuffer()
 
   // Upload SVG and PNG to Vercel Blob
   let svgUrl = ""
@@ -129,20 +120,14 @@ export async function generateCompositePrintAsset(
     })
     svgUrl = svgBlob.url
   } catch (svgErr) {
-    console.warn("[v0] SVG Blob upload failed (using fallback URL):", svgErr)
-    svgUrl = `/api/qr-code/print-asset?id=${memorialId}&format=svg`
+    console.warn("[v0] SVG Blob upload failed:", svgErr)
   }
 
-  try {
-    const pngBlob = await put(`print-assets/${memorialId}-print-300dpi.png`, qrPngBuffer, {
-      access: "public",
-      contentType: "image/png",
-    })
-    pngUrl = pngBlob.url
-  } catch (pngErr) {
-    console.warn("[v0] PNG Blob upload failed (using fallback URL):", pngErr)
-    pngUrl = `/api/qr-code/print-asset?id=${memorialId}&format=png`
-  }
+  const pngBlob = await put(`print-assets/${memorialId}-print-300dpi.png`, compositePngBuffer, {
+    access: "public",
+    contentType: "image/png",
+  })
+  pngUrl = pngBlob.url
 
   return { svgUrl, pngUrl }
 }
