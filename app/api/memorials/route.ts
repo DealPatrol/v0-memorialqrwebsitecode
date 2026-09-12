@@ -2,6 +2,9 @@ import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { sendWelcomeEmail } from "@/lib/email"
+import { isMissingPodOrderSchema } from "@/lib/pod-orders"
+import { generateCompositePrintAsset } from "@/lib/print-asset-generator"
+import { dispatchOrderFulfillment } from "@/lib/fulfillment-dispatcher"
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +42,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
       }
 
-      const ownsOrder = order.user_id === user.id || order.customer_email === user.email
+      const orderEmail = order.customer_email?.toLowerCase()
+      const userEmail = user.email?.toLowerCase()
+      const ownsOrder = order.user_id === user.id || (Boolean(orderEmail) && orderEmail === userEmail)
       if (!ownsOrder || order.payment_status !== "completed") {
         return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
       }
@@ -125,16 +130,50 @@ export async function POST(request: NextRequest) {
       console.error("Exception generating QR code:", qrError)
     }
 
+    let printAssetUrl = memorial.qr_code_url || null
+    if (memorial.qr_code_url) {
+      try {
+        const compositeAsset = await generateCompositePrintAsset({
+          memorialId: memorial.id,
+          fullName: memorial.full_name,
+          birthDate: memorial.birth_date,
+          deathDate: memorial.death_date,
+          memorialUrl,
+        })
+        if (compositeAsset.pngUrl) {
+          printAssetUrl = compositeAsset.pngUrl
+        }
+      } catch (assetErr) {
+        console.warn("[v0] Failed to generate composite print asset, using standard QR code:", assetErr)
+      }
+    }
+
     if (paidOrderId) {
       const serviceRole = createServiceRoleClient()
-      const { error: linkError } = await serviceRole
+      const legacyOrderUpdate = {
+        memorial_id: memorial.id,
+        user_id: user?.id || null,
+        status: printAssetUrl ? "ready_for_fulfillment" : "setup_required",
+      }
+      const podFulfillmentUpdate = {
+        fulfillment_status: printAssetUrl ? "ready_for_fulfillment" : "awaiting_print_file",
+        print_file_url: printAssetUrl,
+      }
+
+      let linkResult = await serviceRole
         .from("orders")
         .update({
-          memorial_id: memorial.id,
-          user_id: user?.id || null,
-          status: memorial.qr_code_url ? "ready_for_fulfillment" : "setup_required",
+          ...legacyOrderUpdate,
+          ...podFulfillmentUpdate,
         })
         .eq("id", paidOrderId)
+
+      if (linkResult.error && isMissingPodOrderSchema(linkResult.error)) {
+        console.warn("[v0] POD order migration is not available; linking memorial with legacy fields")
+        linkResult = await serviceRole.from("orders").update(legacyOrderUpdate).eq("id", paidOrderId)
+      }
+
+      const { error: linkError } = linkResult
 
       if (linkError) {
         console.error("Failed to link memorial to paid order:", linkError)
@@ -142,6 +181,14 @@ export async function POST(request: NextRequest) {
           { error: "Memorial created, but the order could not be linked. Contact support with your order number." },
           { status: 500 },
         )
+      }
+
+      if (printAssetUrl) {
+        try {
+          await dispatchOrderFulfillment(paidOrderId, printAssetUrl)
+        } catch (dispatchErr) {
+          console.warn("[v0] Automated fulfillment dispatch deferred:", dispatchErr)
+        }
       }
     }
 
@@ -166,7 +213,7 @@ export async function POST(request: NextRequest) {
       {
         memorial,
         memorialUrl,
-        printFileUrl: memorial.qr_code_url || null,
+        printFileUrl: printAssetUrl || memorial.qr_code_url || null,
       },
       { status: 201 },
     )

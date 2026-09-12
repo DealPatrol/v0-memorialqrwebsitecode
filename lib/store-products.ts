@@ -6,6 +6,7 @@ export const STORE_PRODUCTS = [
     monthlyFee: 4.99,
     provider: "Printful",
     fulfillmentProduct: "Kiss-cut vinyl sticker",
+    templateIdEnvironment: "PRINTFUL_KEEP_CARD_TEMPLATE_ID",
     description:
       "A peel-and-stick memorial QR sticker for smooth indoor surfaces, paired with a personalized online memorial profile.",
     features: [
@@ -22,6 +23,7 @@ export const STORE_PRODUCTS = [
     monthlyFee: 4.99,
     provider: "Printful",
     fulfillmentProduct: "Cork-back coaster",
+    templateIdEnvironment: "PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID",
     description:
       "A custom cork-back coaster printed with a unique QR code that opens the linked digital memorial.",
     features: [
@@ -38,6 +40,7 @@ export const STORE_PRODUCTS = [
     monthlyFee: 4.99,
     provider: "Printify",
     fulfillmentProduct: "Acrylic keyring",
+    templateIdEnvironment: "PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID",
     description:
       "A lightweight acrylic keepsake keyring printed with a unique QR code for the digital memorial.",
     features: [
@@ -54,6 +57,7 @@ export const STORE_PRODUCTS = [
     monthlyFee: 4.99,
     provider: "Printify",
     fulfillmentProduct: "Acrylic keyring",
+    templateIdEnvironment: "PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID",
     description:
       "An acrylic QR keychain linked to a memorial page where your loved one's voicemail or voice recording is featured prominently.",
     features: [
@@ -70,6 +74,7 @@ export const STORE_PRODUCTS = [
     monthlyFee: 4.99,
     provider: "Printify",
     fulfillmentProduct: "Slate desk plaque",
+    templateIdEnvironment: "PRINTIFY_SLATE_PLAQUE_PRODUCT_ID",
     description:
       "A personalized slate desk plaque for indoor memorial display, printed with a QR code linked to the digital memorial.",
     features: [
@@ -86,6 +91,7 @@ export const STORE_PRODUCTS = [
     monthlyFee: 4.99,
     provider: "Printify",
     fulfillmentProduct: "Pet/dog tag",
+    templateIdEnvironment: "PRINTIFY_PET_TAG_PRODUCT_ID",
     description:
       "A personalized pet tag printed with a unique QR code that opens your pet's digital memorial.",
     features: [
@@ -102,6 +108,7 @@ export const STORE_PRODUCTS = [
     monthlyFee: 4.99,
     provider: "Printify",
     fulfillmentProduct: "Photo block",
+    templateIdEnvironment: "PRINTIFY_PHOTO_BLOCK_PRODUCT_ID",
     description:
       "A personalized indoor photo block featuring a favorite image and a unique QR code linked to the digital memorial.",
     features: [
