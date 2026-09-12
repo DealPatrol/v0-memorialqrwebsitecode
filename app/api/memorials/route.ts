@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { sendWelcomeEmail } from "@/lib/email"
+import { isMissingPodOrderSchema } from "@/lib/pod-orders"
+import { STORE_PRODUCTS } from "@/lib/store-products"
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +25,7 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     let paidOrderId: string | null = null
+    let paidOrderHasPodProducts = false
     if (body.orderId) {
       if (!user) {
         return NextResponse.json({ error: "Sign in to set up the memorial for this order" }, { status: 401 })
@@ -31,7 +34,7 @@ export async function POST(request: NextRequest) {
       const serviceRole = createServiceRoleClient()
       const { data: order, error: orderError } = await serviceRole
         .from("orders")
-        .select("id, customer_email, user_id, payment_status, memorial_id")
+        .select("id, customer_email, user_id, payment_status, memorial_id, product_name")
         .eq("id", body.orderId)
         .maybeSingle()
 
@@ -49,6 +52,7 @@ export async function POST(request: NextRequest) {
       }
 
       paidOrderId = order.id
+      paidOrderHasPodProducts = STORE_PRODUCTS.some((product) => order.product_name.includes(`[${product.id}]`))
     }
 
     // Generate unique memorial slug
@@ -127,15 +131,32 @@ export async function POST(request: NextRequest) {
 
     if (paidOrderId) {
       const serviceRole = createServiceRoleClient()
-      const { error: linkError } = await serviceRole
+      const legacyOrderUpdate = {
+        memorial_id: memorial.id,
+        user_id: user?.id || null,
+        status: memorial.qr_code_url ? "ready_for_fulfillment" : "setup_required",
+      }
+      const podFulfillmentUpdate = paidOrderHasPodProducts
+        ? {
+            fulfillment_status: memorial.qr_code_url ? "ready_for_fulfillment" : "awaiting_print_file",
+            print_file_url: memorial.qr_code_url || null,
+          }
+        : {}
+
+      let linkResult = await serviceRole
         .from("orders")
         .update({
-          memorial_id: memorial.id,
-          user_id: user?.id || null,
-          status: memorial.qr_code_url ? "ready_for_fulfillment" : "setup_required",
+          ...legacyOrderUpdate,
+          ...podFulfillmentUpdate,
         })
         .eq("id", paidOrderId)
 
+      if (linkResult.error && isMissingPodOrderSchema(linkResult.error)) {
+        console.warn("[v0] POD order migration is not available; linking memorial with legacy fields")
+        linkResult = await serviceRole.from("orders").update(legacyOrderUpdate).eq("id", paidOrderId)
+      }
+
+      const { error: linkError } = linkResult
       if (linkError) {
         console.error("Failed to link memorial to paid order:", linkError)
         return NextResponse.json(

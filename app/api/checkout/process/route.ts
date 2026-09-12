@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
-import { getCheckoutTotalCents, resolveCheckoutItems } from "@/lib/checkout-products"
+import {
+  createPodOrderLineItems,
+  getCheckoutTotalCents,
+  resolveCheckoutItems,
+} from "@/lib/checkout-products"
+import {
+  getConfiguredTemplateId,
+  getFulfillmentProvider,
+  isMissingPodOrderSchema,
+} from "@/lib/pod-orders"
 
 export async function POST(req: Request) {
   try {
@@ -59,6 +68,7 @@ export async function POST(req: Request) {
       .join(", ")
     const finalPlanType = "cart-checkout"
     const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
+    const podLineItems = createPodOrderLineItems(resolvedItems, getConfiguredTemplateId)
 
     const supabaseAuth = await createClient()
     const {
@@ -146,7 +156,24 @@ export async function POST(req: Request) {
       square_customer_id: finalSquareCustomerId,
     }
 
-    const { data: order, error } = await supabase.from("orders").insert(orderData).select().single()
+    const podOrderData = {
+      ...orderData,
+      line_items: podLineItems,
+      fulfillment_provider: getFulfillmentProvider(podLineItems),
+      fulfillment_id: null,
+      fulfillment_status: podLineItems.length > 0 ? "awaiting_print_file" : "not_required",
+      fulfillment_data: { schema_version: 1 },
+      print_file_url: null,
+    }
+
+    let insertResult = await supabase.from("orders").insert(podOrderData).select().single()
+
+    if (insertResult.error && isMissingPodOrderSchema(insertResult.error)) {
+      console.warn("[v0] POD order migration is not available; saving legacy order fields")
+      insertResult = await supabase.from("orders").insert(orderData).select().single()
+    }
+
+    const { data: order, error } = insertResult
 
     if (error) {
       console.error("[v0] Database error creating order:", error)
