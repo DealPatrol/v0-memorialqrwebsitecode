@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
-import { getCheckoutTotalCents, resolveCheckoutItems } from "@/lib/checkout-products"
+import {
+  createPodOrderLineItems,
+  getCheckoutTotalCents,
+  resolveCheckoutItems,
+} from "@/lib/checkout-products"
+import {
+  getConfiguredTemplateId,
+  getFulfillmentProvider,
+  isMissingPodOrderSchema,
+} from "@/lib/pod-orders"
 
 export async function POST(req: Request) {
   try {
@@ -59,6 +68,33 @@ export async function POST(req: Request) {
       .join(", ")
     const finalPlanType = "cart-checkout"
     const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
+    const podLineItems = createPodOrderLineItems(resolvedItems, getConfiguredTemplateId)
+
+    const accessToken = process.env.SQUARE_ACCESS_TOKEN
+    const locationId = process.env.SQUARE_LOCATION_ID
+    const environment = process.env.SQUARE_ENVIRONMENT || "sandbox"
+    if (accessToken && locationId) {
+      const baseUrl =
+        environment === "production" ? "https://connect.squareup.com" : "https://connect.squareupsandbox.com"
+      const paymentResponse = await fetch(`${baseUrl}/v2/payments/${encodeURIComponent(paymentId)}`, {
+        headers: {
+          "Square-Version": "2024-12-18",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      const paymentData = await paymentResponse.json()
+      const payment = paymentData.payment
+
+      if (
+        !paymentResponse.ok ||
+        payment?.status !== "COMPLETED" ||
+        payment?.amount_money?.amount !== totalAmountCents ||
+        payment?.amount_money?.currency !== "CAD" ||
+        payment?.location_id !== locationId
+      ) {
+        return NextResponse.json({ success: false, error: "Payment does not match the order total" }, { status: 400 })
+      }
+    }
 
     const supabaseAuth = await createClient()
     const {
@@ -146,7 +182,26 @@ export async function POST(req: Request) {
       square_customer_id: finalSquareCustomerId,
     }
 
-    const { data: order, error } = await supabase.from("orders").insert(orderData).select().single()
+    const { data: order, error } = await (async () => {
+      const podOrderData = {
+        ...orderData,
+        line_items: podLineItems,
+        fulfillment_provider: getFulfillmentProvider(podLineItems),
+        fulfillment_id: null,
+        fulfillment_status: podLineItems.length > 0 ? "awaiting_memorial_setup" : "not_required",
+        fulfillment_data: { schema_version: 1 },
+        print_file_url: null,
+      }
+
+      let insertResult = await supabase.from("orders").insert(podOrderData).select().single()
+
+      if (insertResult.error && isMissingPodOrderSchema(insertResult.error)) {
+        console.warn("[v0] POD order migration is not available; saving legacy order fields")
+        insertResult = await supabase.from("orders").insert(orderData).select().single()
+      }
+
+      return insertResult
+    })()
 
     if (error) {
       console.error("[v0] Database error creating order:", error)
