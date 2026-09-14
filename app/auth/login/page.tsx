@@ -24,7 +24,14 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const requestedNext = searchParams.get("next")
-  const nextPath = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/dashboard"
+  const isSafeNext = Boolean(
+    requestedNext &&
+      requestedNext.startsWith("/") &&
+      !requestedNext.startsWith("//") &&
+      !requestedNext.includes("\\") &&
+      !requestedNext.includes("://"),
+  )
+  const nextPath = isSafeNext ? requestedNext! : "/dashboard"
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
