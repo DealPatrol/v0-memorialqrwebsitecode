@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
-import { PRODUCTS, SUBSCRIPTION_PRICE_CENTS, formatPrice, type Product } from "@/lib/products"
+import { PRODUCTS, formatPrice, type Product } from "@/lib/products"
 import { Heart, PawPrint, Frame, ShoppingCart, Plus, Minus, X, CreditCard, Check } from "lucide-react"
 import { loadStripe } from "@stripe/stripe-js"
 
@@ -106,7 +106,7 @@ export function PetMemorialsClient() {
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">Honor Your Beloved Pet</h1>
             <p className="text-lg md:text-xl text-slate-600 mb-8">
               They gave us unconditional love. Create a lasting digital tribute to celebrate their life, share memories,
-              and keep their spirit alive forever.
+              and keep their spirit close for years to come.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-amber-600 hover:bg-amber-700" asChild>
@@ -344,15 +344,18 @@ export function PetMemorialsClient() {
         </div>
       </section>
 
-      {/* Subscription Info */}
+      {/* Hosting Info */}
       <section className="py-12 bg-amber-50">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <p className="text-lg">
-              Pet memorial website hosting is just{" "}
-              <span className="font-bold">${formatPrice(SUBSCRIPTION_PRICE_CENTS)}/month</span>
+              Every physical pet keepsake includes{" "}
+              <span className="font-bold">10 years of basic memorial hosting</span>
             </p>
-            <p className="text-slate-600 mt-2">Unlimited photos, videos, and stories. Cancel anytime.</p>
+            <p className="text-slate-600 mt-2">
+              $4.99/mo is only for digital-only plans, renewals after year 10, or optional Premium. If Premium
+              lapses, your basic page stays online — the QR never goes dead.
+            </p>
           </div>
         </div>
       </section>
@@ -428,8 +431,9 @@ export function PetMemorialsClient() {
 
                 <div className="mx-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
                   <p className="text-sm text-amber-800">
-                    <strong>Note:</strong> Memorial website hosting is ${formatPrice(SUBSCRIPTION_PRICE_CENTS)}/month,
-                    billed after you create your pet's memorial.
+                    <strong>Included:</strong> Any physical pet keepsake includes 10 years of basic memorial hosting.
+                    $4.99/mo applies only to digital-only plans, renewals after year 10, or optional Premium. If Premium
+                    lapses, your basic memorial page stays online — the QR never goes dead.
                   </p>
                 </div>
 

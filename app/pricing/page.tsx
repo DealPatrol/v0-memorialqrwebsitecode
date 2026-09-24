@@ -13,13 +13,13 @@ import { BreadcrumbSchema } from "@/components/seo/structured-data"
 export const metadata: Metadata = {
   title: "Pricing - Affordable Memorial QR Packages | Memorial QR",
   description:
-    "Choose from 4 memorial packages starting at $39.89. One-time payment, lifetime hosting. Includes premium QR plaques, unlimited photos/videos, and 30-day money-back guarantee.",
+    "Choose from 4 memorial packages starting at $39.89. One-time payment; 10 years basic hosting with every plaque. Includes premium QR plaques, unlimited photos/videos, and 30-day money-back guarantee.",
   keywords:
-    "memorial pricing, QR code plaque cost, digital memorial packages, memorial prices, affordable memorial, lifetime memorial hosting, cemetery QR code price, grave marker QR code cost",
+    "memorial pricing, QR code plaque cost, digital memorial packages, memorial prices, affordable memorial, 10-year memorial hosting, cemetery QR code price, grave marker QR code cost",
   openGraph: {
-    title: "Memorial QR Pricing - From $39.89 with Lifetime Hosting",
+    title: "Memorial QR Pricing - From $39.89 with 10-Year Hosting",
     description:
-      "Create a lasting digital memorial with our affordable packages. One-time payment includes premium QR plaque, unlimited content, and lifetime hosting. No monthly fees.",
+      "Create a lasting digital memorial with our affordable packages. One-time payment includes premium QR plaque, unlimited content, and 10 years of basic hosting with every plaque package. Digital-only plans are $4.99/mo.",
     type: "website",
     url: "https://memorialsqr.com/pricing",
     images: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Affordable Memorial Packages - From $39.89",
-    description: "One-time payment • Lifetime hosting • Premium QR plaques • Unlimited content",
+    description: "One-time payment • 10-year hosting with plaques • Premium QR plaques • Unlimited content",
     images: ["https://memorialsqr.com/og-image.jpg"],
   },
   alternates: {
@@ -47,7 +47,7 @@ function PricingSchema() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Memorial QR Pricing Packages",
-    description: "Choose from 4 memorial packages with lifetime hosting",
+    description: "Choose from 4 memorial packages with 10 years basic hosting",
     numberOfItems: 4,
     itemListElement: [
       {
@@ -56,7 +56,7 @@ function PricingSchema() {
         item: {
           "@type": "Product",
           name: "Starter Package",
-          description: "500 MB storage, 1 premium QR plaque, unlimited photos/videos, lifetime hosting",
+          description: "500 MB storage, 1 premium QR plaque, unlimited photos/videos, 10 years basic hosting",
           offers: {
             "@type": "Offer",
             price: "39.89",
@@ -72,7 +72,7 @@ function PricingSchema() {
         item: {
           "@type": "Product",
           name: "Basic Package",
-          description: "1 GB storage, 1 premium QR plaque, unlimited photos/videos, lifetime hosting",
+          description: "1 GB storage, 1 premium QR plaque, unlimited photos/videos, 10 years basic hosting",
           offers: {
             "@type": "Offer",
             price: "89.89",
@@ -89,7 +89,7 @@ function PricingSchema() {
           "@type": "Product",
           name: "Standard Package",
           description:
-            "2 GB storage, 2 premium QR plaques, unlimited photos/videos, lifetime hosting, priority support",
+            "2 GB storage, 2 premium QR plaques, unlimited photos/videos, 10 years basic hosting, priority support",
           offers: {
             "@type": "Offer",
             price: "129.89",
@@ -106,7 +106,7 @@ function PricingSchema() {
           "@type": "Product",
           name: "Premium Package",
           description:
-            "5 GB storage, 3 premium QR plaques, unlimited photos/videos, lifetime hosting, priority phone & email support",
+            "5 GB storage, 3 premium QR plaques, unlimited photos/videos, 10 years basic hosting, priority phone & email support",
           offers: {
             "@type": "Offer",
             price: "199.89",
@@ -145,7 +145,7 @@ export default function PricingPage() {
         "Family tree display",
         "Easy social media sharing",
         "Custom QR code design",
-        "Lifetime hosting included",
+        "10 years basic hosting included",
       ],
     },
     {
@@ -163,7 +163,7 @@ export default function PricingPage() {
         "Family tree display",
         "Easy social media sharing",
         "Custom QR code design",
-        "Lifetime hosting included",
+        "10 years basic hosting included",
       ],
     },
     {
@@ -181,7 +181,7 @@ export default function PricingPage() {
         "Family tree display",
         "Easy social media sharing",
         "Custom QR code design",
-        "Lifetime hosting included",
+        "10 years basic hosting included",
         "Priority email support",
       ],
     },
@@ -200,7 +200,7 @@ export default function PricingPage() {
         "Family tree display",
         "Easy social media sharing",
         "Custom QR code design",
-        "Lifetime hosting included",
+        "10 years basic hosting included",
         "Priority phone & email support",
         "Wooden keychain or necklace option",
       ],
@@ -224,8 +224,8 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Choose Your Memorial Package</h1>
           <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            Create a beautiful, lasting tribute with unlimited content. All packages include lifetime hosting and
-            premium QR plaques with no hidden fees.
+            Create a beautiful, lasting tribute with unlimited content. All packages include 10 years of basic memorial hosting and
+            premium QR plaques. After year 10, renew from $4.99/mo or choose optional Premium — basic pages stay online.
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -252,7 +252,7 @@ export default function PricingPage() {
                   <div className="flex justify-center items-baseline mb-2">
                     <span className="text-5xl font-bold text-gray-900">${pkg.price}</span>
                   </div>
-                  <CardDescription className="text-base">One-time payment • Lifetime access</CardDescription>
+                  <CardDescription className="text-base">One-time payment • 10 years basic hosting</CardDescription>
 
                   <div className="flex flex-col gap-2 mt-4">
                     <Badge variant="outline" className="text-sm font-semibold py-1">
@@ -307,8 +307,8 @@ export default function PricingPage() {
               </div>
               <div className="text-center">
                 <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p className="font-semibold">Lifetime Hosting</p>
-                <p className="text-sm text-gray-600">No monthly fees, no renewals • Keep forever</p>
+                <p className="font-semibold">10-Year Hosting Included</p>
+                <p className="text-sm text-gray-600">With every plaque • Renew after year 10 from $4.99/mo • Basic page never goes dead</p>
               </div>
             </div>
           </div>

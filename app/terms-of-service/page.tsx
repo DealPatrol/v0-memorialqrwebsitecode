@@ -9,7 +9,7 @@ export default function TermsOfServicePage() {
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-gray-900 mb-8">Terms of Service</h1>
-          <p className="text-gray-600 mb-8">Last updated: December 2024</p>
+          <p className="text-gray-600 mb-8">Last updated: September 2026</p>
 
           <div className="prose prose-lg max-w-none">
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Acceptance of Terms</h2>
@@ -33,6 +33,15 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
               Payment is required at the time of order. We offer a 30-day money-back guarantee for our services.
+            </p>
+
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Memorial Hosting Policy</h2>
+            <p className="text-gray-700 mb-4">
+              Any physical keepsake purchase includes ten (10) years of basic memorial hosting from the purchase
+              date for that memorial URL. A monthly fee of $4.99 applies only to digital-only memorial plans (no
+              physical product), renewals after the included 10-year period, or optional Premium features. We do
+              not promise perpetual &quot;forever&quot; hosting without a continuity plan. If an optional Premium
+              subscription lapses, the basic memorial page remains available so the QR code never goes dead.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Prohibited Uses</h2>
@@ -62,7 +71,7 @@ export default function TermsOfServicePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with lasting digital memorials — 10 years hosting included with every keepsake.</p>
             </div>
 
             <div>

@@ -56,7 +56,7 @@ export default function StoreSuccessPage() {
                     <div>
                       <h3 className="font-medium">Scan to create memorial</h3>
                       <p className="text-slate-600 text-sm">
-                        Scan the QR code on your plaque to set up the digital memorial ($4.99/month).
+                        Scan the QR code on your plaque to set up the digital memorial. Your purchase includes 10 years of basic memorial hosting.
                       </p>
                     </div>
                   </div>

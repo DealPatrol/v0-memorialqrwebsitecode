@@ -8,7 +8,7 @@ export interface Product {
   category: "plaque" | "accessory" | "pet"
 }
 
-// Monthly subscription for memorial website
+// $4.99/mo: digital-only plans, post-10-year renewals, or optional Premium (NOT required with physical keepsakes)
 export const SUBSCRIPTION_PRICE_CENTS = 499 // $4.99/month
 
 // All products available in the store
@@ -24,6 +24,7 @@ export const PRODUCTS: Product[] = [
       "Laser-engraved QR code",
       "Mounting hardware included",
       "5-year guarantee",
+      "10 years basic hosting included",
     ],
     category: "plaque",
   },
@@ -33,7 +34,13 @@ export const PRODUCTS: Product[] = [
     description: "Elegant gold-finished aluminum plaque with custom QR code. Perfect for indoor or outdoor use.",
     priceInCents: 4989, // $49.89
     image: "/images/f88be955-5dd5-4c48-8640.jpeg",
-    features: ["Premium gold finish", "Laser-engraved QR code", "Mounting hardware included", "5-year guarantee"],
+    features: [
+      "Premium gold finish",
+      "Laser-engraved QR code",
+      "Mounting hardware included",
+      "5-year guarantee",
+      "10 years basic hosting included",
+    ],
     category: "plaque",
   },
   {
@@ -42,7 +49,13 @@ export const PRODUCTS: Product[] = [
     description: "Classic black aluminum plaque with white QR code engraving. Timeless and dignified.",
     priceInCents: 3989, // $39.89
     image: "/images/f88be955-5dd5-4c48-8640.jpeg",
-    features: ["Matte black finish", "High-contrast QR code", "Mounting hardware included", "5-year guarantee"],
+    features: [
+      "Matte black finish",
+      "High-contrast QR code",
+      "Mounting hardware included",
+      "5-year guarantee",
+      "10 years basic hosting included",
+    ],
     category: "plaque",
   },
   {
@@ -51,7 +64,13 @@ export const PRODUCTS: Product[] = [
     description: "Natural wood keychain with laser-engraved QR code. Carry their memory everywhere.",
     priceInCents: 1999, // $19.99
     image: "/images/2e4fdbea-5150-40fa-bb82.jpeg",
-    features: ["Natural wood grain", "Portable memorial", "Durable construction", "Key ring included"],
+    features: [
+      "Natural wood grain",
+      "Portable memorial",
+      "Durable construction",
+      "Key ring included",
+      "10 years basic hosting included",
+    ],
     category: "accessory",
   },
   {
@@ -60,7 +79,13 @@ export const PRODUCTS: Product[] = [
     description: "Durable stone memorial with engraved QR code. Perfect for gardens or gravesites.",
     priceInCents: 7999, // $79.99
     image: "/images/e4de3d0a-3087-4815-924d.jpg",
-    features: ["Natural stone material", "Weatherproof", "Ground or wall mount", "Lifetime durability"],
+    features: [
+      "Natural stone material",
+      "Weatherproof",
+      "Ground or wall mount",
+      "Lifetime durability",
+      "10 years basic hosting included",
+    ],
     category: "plaque",
   },
   {
@@ -69,7 +94,13 @@ export const PRODUCTS: Product[] = [
     description: "Beautiful plaque with photo display and QR code. Shows their picture alongside their memorial.",
     priceInCents: 5999, // $59.99
     image: "/aluminum-card.jpg",
-    features: ["Photo display area", "QR code engraved", "Tabletop or wall mount", "Premium aluminum"],
+    features: [
+      "Photo display area",
+      "QR code engraved",
+      "Tabletop or wall mount",
+      "Premium aluminum",
+      "10 years basic hosting included",
+    ],
     category: "plaque",
   },
   {
@@ -83,6 +114,7 @@ export const PRODUCTS: Product[] = [
       "QR code engraved in frame",
       "Solid wood construction",
       "Tabletop or wall mount",
+      "10 years basic hosting included",
     ],
     category: "pet",
   },
@@ -97,6 +129,7 @@ export const PRODUCTS: Product[] = [
       "QR code in bottom right",
       "Premium matte paper",
       "Multiple sizes available",
+      "10 years basic hosting included",
     ],
     category: "pet",
   },
@@ -106,7 +139,13 @@ export const PRODUCTS: Product[] = [
     description: "Weather-resistant garden stone with engraved QR code. Perfect for backyard memorials.",
     priceInCents: 3999,
     image: "/pet-memorial-garden-stone-with-qr-code-paw-print.jpg",
-    features: ["Paw print design", "Weather-resistant resin", "QR code engraved", "Indoor or outdoor use"],
+    features: [
+      "Paw print design",
+      "Weather-resistant resin",
+      "QR code engraved",
+      "Indoor or outdoor use",
+      "10 years basic hosting included",
+    ],
     category: "pet",
   },
   {
@@ -115,7 +154,13 @@ export const PRODUCTS: Product[] = [
     description: "Small memorial tag with QR code to keep their memory close. Attaches to your keychain or bag.",
     priceInCents: 1499,
     image: "/pet-memorial-tag-with-qr-code-paw-shape-metal.jpg",
-    features: ["Paw-shaped design", "Stainless steel", "Micro QR code", "Keychain attachment"],
+    features: [
+      "Paw-shaped design",
+      "Stainless steel",
+      "Micro QR code",
+      "Keychain attachment",
+      "10 years basic hosting included",
+    ],
     category: "pet",
   },
 ]

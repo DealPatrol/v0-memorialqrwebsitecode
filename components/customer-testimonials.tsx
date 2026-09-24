@@ -49,7 +49,7 @@ const testimonials = [
     image: "/professional-woman-glasses.png",
     rating: 5,
     quote:
-      "Our grandfather served in WWII, and this memorial lets us share his service photos and stories with future generations. The lifetime hosting means his legacy will never be lost.",
+      "Our grandfather served in WWII, and this memorial lets us share his service photos and stories with future generations. The included 10-year hosting means his legacy stays online, with continuity options after that.",
     productPhoto: "/military-memorial-with-american-flag.jpg",
     verified: true,
   },
@@ -75,15 +75,15 @@ export function CustomerTestimonials() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Lifetime Hosting */}
+          {/* 10-Year Hosting */}
           <Card className="text-center p-8">
             <CardContent className="pt-6">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Clock className="w-8 h-8 text-purple-600" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Lifetime Hosting</h3>
+              <h3 className="text-xl font-bold mb-3">10-Year Hosting Included</h3>
               <p className="text-muted-foreground">
-                Your memorial stays online forever. One payment, no subscriptions, no renewals.
+                Every physical keepsake includes 10 years of basic memorial hosting. After that, renew from $4.99/mo or keep a basic page — your QR never goes dead.
               </p>
             </CardContent>
           </Card>

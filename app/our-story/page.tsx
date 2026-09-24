@@ -9,13 +9,13 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Our Story - Built with Love for Grandma Glenda | Memorial QR",
   description:
-    "The personal story behind Memorial QR. Founded by Cole Collins to honor his grandmother Glenda Kelso and help families preserve precious memories forever.",
+    "The personal story behind Memorial QR. Founded by Cole Collins to honor his grandmother Glenda Kelso and help families preserve precious memories for generations.",
   keywords:
     "memorial QR story, founder story, why memorial QR, Glenda Kelso, Cole Collins, memorial inspiration, family memorial",
   openGraph: {
     title: "Our Story - Why We Built Memorial QR",
     description:
-      "Founded by Cole Collins to honor his grandmother Glenda Kelso. Learn the personal story behind our mission to preserve memories forever.",
+      "Founded by Cole Collins to honor his grandmother Glenda Kelso. Learn the personal story behind our mission to preserve memories for generations.",
     type: "website",
     url: "https://memorialsqr.com/our-story",
     images: [
@@ -183,7 +183,7 @@ export default function OurStoryPage() {
                 <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-4">Excellence</h3>
                 <p className="text-gray-600">
-                  Every memorial we create is crafted with attention to detail and built to last forever.
+                  Every memorial we create is crafted with attention to detail. Physical keepsakes include 10 years of basic hosting, with continuity so the QR never goes dead.
                 </p>
               </CardContent>
             </Card>
@@ -233,7 +233,7 @@ export default function OurStoryPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with lasting digital memorials — 10 years hosting included with every keepsake.</p>
             </div>
 
             <div>

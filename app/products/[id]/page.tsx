@@ -21,10 +21,10 @@ const getProduct = (id: string) => {
       "/placeholder.svg?height=500&width=500&text=Memorial+QR+Detail",
     ],
     description:
-      "Honor your loved one with our beautiful Memorial QR Plaque. This weather-resistant aluminum plaque features a custom QR code that links to a digital memorial page where family and friends can share memories, photos, and stories forever.",
+      "Honor your loved one with our beautiful Memorial QR Plaque. This weather-resistant aluminum plaque features a custom QR code that links to a digital memorial page where family and friends can share memories, photos, and stories. Includes 10 years of basic memorial hosting.",
     features: [
       "Weather Resistant Premium Aluminum Construction",
-      "Lifetime Digital Memorial Page Included",
+      "10 Years Basic Hosting Included",
       "Custom QR Code Laser Engraved",
       "Professional Text Engraving (up to 6 lines)",
       "Easy Wall or Ground Mounting Hardware",
@@ -39,7 +39,7 @@ const getProduct = (id: string) => {
       "QR Code": "Laser Engraved for Permanence",
       Warranty: "5 Years Against Fading & Weather Damage",
       "Production Time": "3-5 Business Days",
-      "Digital Memorial": "Lifetime Hosting Included",
+      "Digital Memorial": "10 Years Basic Hosting Included",
       Support: "24/7 Customer Support",
     },
     sizes: [

@@ -668,14 +668,16 @@ A small, paw-shaped stainless steel tag with QR code. Attach it to your keychain
 
 ### Memorial Website Hosting
 
-All our pet memorial products include access to create a digital memorial. Website hosting is $4.99/month, which covers:
-- Unlimited photo storage
-- Video hosting
+Any physical pet memorial product includes **10 years of basic memorial hosting**. That covers:
+- Unlimited photo storage (basic plan limits apply after Premium features)
+- Video hosting on Premium; basic page remains available throughout
 - Custom memorial page
 - Shareable link
 - Family contribution features
 
-*Your pet deserves to be remembered. A QR memorial makes it easy to share their story forever.*
+$4.99/mo applies only to **digital-only** memorials (no physical keepsake), renewals after the included 10-year period, or optional Premium. If a paid plan lapses, your basic memorial page stays online — the QR never goes dead.
+
+*Your pet deserves to be remembered. A QR memorial makes it easy to share their story for years to come, with continuity options after the included term.*
     `,
   },
   {

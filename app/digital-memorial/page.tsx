@@ -87,7 +87,7 @@ export default function DigitalMemorialPage() {
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span>Just $4.99/month hosting</span>
+                    <span>$4.99/mo for digital-only plans</span>
                   </li>
                 </ul>
                 <div className="flex flex-col sm:flex-row gap-4">
@@ -169,7 +169,7 @@ export default function DigitalMemorialPage() {
               <h2 className="text-3xl font-bold mb-6">Simple, Affordable Pricing</h2>
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <div className="text-5xl font-bold mb-2">$4.99</div>
-                <div className="text-slate-600 mb-6">per month</div>
+                <div className="text-slate-600 mb-6">per month · digital-only</div>
                 <ul className="text-left space-y-3 mb-8">
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
@@ -193,10 +193,12 @@ export default function DigitalMemorialPage() {
                   </li>
                 </ul>
                 <Button size="lg" className="w-full" asChild>
-                  <Link href="/store">Get Your QR Plaque</Link>
+                  <Link href="/store">Prefer a plaque? Get 10 years hosting included</Link>
                 </Button>
                 <p className="text-sm text-slate-500 mt-4">
-                  Purchase a QR plaque first, then activate your memorial website when it arrives.
+                  Digital-only memorials are $4.99/mo. Any physical keepsake purchase includes 10 years of basic
+                  memorial hosting. After year 10, renew from $4.99/mo or choose optional Premium — if Premium
+                  lapses, your basic page stays online so the QR never goes dead.
                 </p>
               </div>
             </div>

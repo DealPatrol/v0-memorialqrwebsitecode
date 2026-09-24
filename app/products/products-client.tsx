@@ -22,10 +22,10 @@ const product = {
   image: "/placeholder.svg?height=400&width=400&text=Memorial+QR+Plaque",
   badge: "Most Popular",
   description:
-    "Honor your loved one with our beautiful Memorial QR Plaque. This weather-resistant aluminum plaque features a custom QR code that links to a digital memorial page where family and friends can share memories, photos, and stories forever.",
+    "Honor your loved one with our beautiful Memorial QR Plaque. This weather-resistant aluminum plaque features a custom QR code that links to a digital memorial page where family and friends can share memories, photos, and stories. Includes 10 years of basic memorial hosting.",
   features: [
     "Weather Resistant Aluminum Construction",
-    "Lifetime Digital Memorial Included",
+    "10 Years Basic Hosting Included",
     "Custom QR Code Laser Engraved",
     "Professional Text Engraving",
     "Easy Wall or Ground Mounting",
@@ -233,8 +233,8 @@ export function ProductsClient() {
               </Card>
               <Card className="p-6 text-center">
                 <Clock className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="font-bold text-lg mb-2">Lifetime Hosting</h3>
-                <p className="text-slate-600 text-sm">Your digital memorial stays online forever. No hidden fees.</p>
+                <h3 className="font-bold text-lg mb-2">10-Year Hosting Included</h3>
+                <p className="text-slate-600 text-sm">Every plaque includes 10 years of basic hosting. After that, renew from $4.99/mo or keep a basic page — the QR never goes dead.</p>
               </Card>
               <Card className="p-6 text-center">
                 <Heart className="w-12 h-12 text-purple-600 mx-auto mb-4" />
@@ -277,7 +277,7 @@ export function ProductsClient() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with lasting digital memorials — 10 years hosting included with every keepsake.</p>
             </div>
 
             <div>

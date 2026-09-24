@@ -206,7 +206,7 @@ export default function Programs() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Honor Your Loved One?</h2>
           <p className="text-xl text-slate-200 mb-6 max-w-2xl mx-auto">
-            Create a beautiful, lasting memorial that celebrates their life and keeps their memory alive forever.
+            Create a beautiful, lasting memorial that celebrates their life. Physical keepsakes include 10 years of basic hosting.
           </p>
           <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
             <Link href="/checkout">Start Creating Memorial - $89.89</Link>

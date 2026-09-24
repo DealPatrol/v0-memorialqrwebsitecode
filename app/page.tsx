@@ -67,7 +67,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center justify-center gap-2 text-white/90">
                 <Clock className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-medium drop-shadow-md">Lifetime Access</span>
+                <span className="text-sm font-medium drop-shadow-md">10-Year Hosting</span>
               </div>
               <div className="flex items-center justify-center gap-2 text-white/90">
                 <Users className="w-5 h-5 text-purple-400" />
@@ -196,9 +196,9 @@ export default function HomePage() {
             <Card className="memorial-card">
               <CardContent className="p-6">
                 <Shield className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Lifetime Hosting</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-2">10-Year Hosting Included</h3>
                 <p className="text-muted-foreground">
-                  Your memorial page will be hosted forever, ensuring lasting access.
+                  Every physical keepsake includes 10 years of basic memorial hosting. After that, renew from $4.99/mo or keep a basic page online — your QR never goes dead.
                 </p>
               </CardContent>
             </Card>
@@ -224,13 +224,13 @@ export default function HomePage() {
             Ready to Honor Your Loved One?
           </h2>
           <p className="text-xl text-primary-foreground/90 mb-8">
-            Create a lasting digital memorial that celebrates their life and keeps their memory alive forever.
+            Create a lasting digital memorial that celebrates their life. Physical keepsakes include 10 years of basic hosting.
           </p>
 
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8 max-w-md mx-auto">
             <p className="text-sm text-primary-foreground/80 mb-2">Starting at</p>
             <p className="text-5xl font-bold text-primary-foreground mb-2">$39.89</p>
-            <p className="text-sm text-primary-foreground/80">One-time payment • Lifetime hosting</p>
+            <p className="text-sm text-primary-foreground/80">One-time payment • 10 years hosting with keepsakes</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

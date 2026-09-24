@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sample Digital Memorials - Browse Real Examples",
     description:
-      "See beautiful memorial pages created by families. Explore photos, videos, stories, and QR code plaques that keep memories alive forever.",
+      "See beautiful memorial pages created by families. Explore photos, videos, stories, and QR code plaques that keep memories alive for years to come.",
     type: "website",
     url: "https://memorialsqr.com/browse-memorials",
     images: [

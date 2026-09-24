@@ -32,11 +32,11 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"),
   title: {
-    default: "Memorial QR - Digital Memorial Plaques | QR Code Memorials with Lifetime Hosting",
+    default: "Memorial QR - Digital Memorial Plaques | QR Code Memorials with 10-Year Hosting",
     template: "%s | Memorial QR",
   },
   description:
-    "Create beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones. Starting at $39.89 with lifetime hosting. Free shipping. 30-day guarantee.",
+    "Create beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones. Starting at $39.89 with 10 years basic hosting on physical keepsakes. Free shipping. 30-day guarantee.",
   keywords: [
     "memorial QR code",
     "digital memorial",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     "memorial gift",
     "personalized memorial",
     "weatherproof memorial plaque",
-    "lifetime memorial hosting",
+    "10-year memorial hosting",
   ],
   authors: [{ name: "Memorial QR", url: "https://memorialsqr.com" }],
   creator: "Memorial QR",
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     siteName: "Memorial QR",
     title: "Memorial QR - Create Lasting Digital Memorials with QR Code Plaques",
     description:
-      "Honor your loved ones with beautiful QR code memorial plaques. Unlimited photos & videos, lifetime hosting, free shipping. Starting at $39.89.",
+      "Honor your loved ones with beautiful QR code memorial plaques. Unlimited photos & videos, 10-year hosting with keepsakes, free shipping. Starting at $39.89.",
     images: [
       {
         url: "/og-image.jpg",
@@ -96,7 +96,7 @@ export const metadata: Metadata = {
     site: "@memorialqr",
     creator: "@memorialqr",
     title: "Memorial QR - Digital Memorial Plaques",
-    description: "Create beautiful QR code memorial plaques with lifetime hosting. Starting at $39.89.",
+    description: "Create beautiful QR code memorial plaques with 10-year hosting on keepsakes. Starting at $39.89.",
     images: ["/og-image.jpg"],
   },
   facebook: {

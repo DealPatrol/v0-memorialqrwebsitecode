@@ -40,12 +40,17 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "No! Memorial QR is a one-time payment starting at $39.89 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
+          "Physical keepsake purchases include 10 years of basic memorial hosting — no monthly fee during that period. $4.99/mo applies only to digital-only memorials (no physical product), renewals after the included 10-year term, or optional Premium. If Premium lapses, your basic memorial page stays online so the QR never goes dead.",
+      },
+      {
+        question: "How long is memorial hosting included?",
+        answer:
+          "Any physical keepsake purchase includes 10 years of basic memorial hosting. Digital-only plans are $4.99/mo. After the included 10-year period you can renew from $4.99/mo or choose optional Premium. If a paid plan lapses, the basic memorial page stays online — your QR never goes dead.",
       },
       {
         question: "What's included in the price?",
         answer:
-          "Everything! You get a complete digital memorial website, unlimited photo uploads, guest message board, a weatherproof QR code plaque with professional engraving, free shipping, and lifetime hosting. No additional costs.",
+          "You get a complete digital memorial website, photo uploads, guest message board, a weatherproof QR code plaque with professional engraving, free shipping, and 10 years of basic memorial hosting with every physical keepsake. After year 10 you can renew from $4.99/mo or choose optional Premium; a basic page remains so the QR never goes dead.",
       },
       {
         question: "Do you offer refunds?",
@@ -80,7 +85,7 @@ const faqCategories = [
       {
         question: "What if the QR code stops working?",
         answer:
-          "QR codes don't 'expire' or stop working. As long as our service is running (which is guaranteed for life), the QR code will always link to the memorial. If there are ever technical issues, we'll resolve them immediately at no cost.",
+          "QR codes don't expire. Your physical purchase includes 10 years of basic memorial hosting, and after that you can renew or keep a basic page online — we never leave a QR dead if Premium lapses. If there are technical issues, we'll resolve them promptly.",
       },
       {
         question: "How long does shipping take?",
@@ -151,13 +156,13 @@ const allFaqs = faqCategories.flatMap((category) => category.faqs)
 export const metadata: Metadata = {
   title: "FAQ - Frequently Asked Questions About QR Memorial Plaques",
   description:
-    "Get answers about Memorial QR: pricing ($39.89+), QR code plaques, digital memorials, lifetime hosting, free shipping, 30-day guarantee, and 24/7 support.",
+    "Get answers about Memorial QR: pricing ($39.89+), QR code plaques, digital memorials, 10-year hosting with physical keepsakes, free shipping, 30-day guarantee, and 24/7 support.",
   keywords:
     "memorial FAQ, QR code plaque questions, digital memorial help, memorial pricing, memorial support, QR memorial answers, cemetery QR code FAQ",
   openGraph: {
     title: "Memorial QR FAQ - Your Questions Answered",
     description:
-      "Find answers about creating digital memorials, QR code plaques, pricing, shipping, and our lifetime hosting guarantee.",
+      "Find answers about creating digital memorials, QR code plaques, pricing, shipping, and our 10-year hosting policy with physical keepsakes.",
     type: "website",
     url: "https://memorialsqr.com/faq",
     images: [
@@ -172,7 +177,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Memorial QR FAQ - Your Questions Answered",
-    description: "Get answers about pricing, setup, QR plaques, and our lifetime guarantee",
+    description: "Get answers about pricing, setup, QR plaques, and our 10-year hosting policy",
     images: ["https://memorialsqr.com/og-image.jpg"],
   },
   alternates: {
@@ -306,8 +311,8 @@ export default function FAQPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Start honoring your loved one today with a beautiful digital memorial that will preserve their memory
-            forever.
+            Start honoring your loved one today with a beautiful digital memorial — every physical keepsake includes
+            10 years of basic hosting, and a basic page stays online so the QR never goes dead.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -337,7 +342,7 @@ export default function FAQPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with lasting digital memorials — 10 years hosting included with every keepsake.</p>
             </div>
 
             <div>

@@ -23,7 +23,7 @@ const slides = [
   {
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/2fb8ebb5-03da-4770-8bcf-480f1de6e781.jpeg",
     alt: "Memorial keepsake box with engraved message",
-    description: "Personalized wooden memorial box to treasure precious keepsakes forever",
+    description: "Personalized wooden memorial box to treasure precious keepsakes",
   },
   {
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/a2fb5ef4-2050-4706-a4c2-56f4eef83ebb.jpeg",
@@ -60,7 +60,7 @@ const slides = [
   {
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/50e6a4f9-9a11-49fc-9168-716424a46c6f.jpg",
     alt: "Child scanning memorial QR code",
-    description: "Share their story and keep memories alive forever",
+    description: "Share their story and keep memories alive for years to come",
   },
 ]
 

@@ -18,7 +18,7 @@ export function OrganizationSchema() {
     },
     image: "https://memorialsqr.com/og-image.jpg",
     description:
-      "Memorial QR creates beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones. Lifetime hosting included.",
+      "Memorial QR creates beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones. 10 years of basic hosting included with physical keepsakes.",
     foundingDate: "2024",
     founders: [
       {
@@ -78,7 +78,7 @@ export function WebSiteSchema() {
     "@id": "https://memorialsqr.com/#website",
     url: "https://memorialsqr.com",
     name: "Memorial QR",
-    description: "Create beautiful QR code memorial plaques with lifetime digital hosting",
+    description: "Create beautiful QR code memorial plaques with 10-year hosting on physical keepsakes",
     publisher: {
       "@id": "https://memorialsqr.com/#organization",
     },
@@ -105,7 +105,7 @@ export function WebSiteSchema() {
 // Product Schema - shows price, availability, ratings in search
 export function ProductSchema({
   name = "Memorial QR Plaque",
-  description = "Weather-resistant QR code memorial plaque with lifetime digital memorial page",
+  description = "Weather-resistant QR code memorial plaque with 10 years basic memorial hosting included",
   price = 39.89,
   image = "https://memorialsqr.com/og-image.jpg",
   sku = "MQR-PLAQUE-001",
@@ -307,7 +307,7 @@ export function ServiceSchema() {
     "@id": "https://memorialsqr.com/#service",
     name: "Digital Memorial Creation Service",
     description:
-      "Create beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones with lifetime hosting.",
+      "Create beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones with 10-year hosting on physical keepsakes.",
     provider: {
       "@id": "https://memorialsqr.com/#organization",
     },
@@ -325,7 +325,7 @@ export function ServiceSchema() {
           itemOffered: {
             "@type": "Service",
             name: "Digital Memorial Page",
-            description: "Lifetime hosted memorial page with unlimited photos and videos",
+            description: "Memorial page with 10 years basic hosting included and unlimited photos and videos",
           },
         },
         {

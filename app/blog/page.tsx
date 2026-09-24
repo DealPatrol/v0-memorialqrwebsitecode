@@ -194,7 +194,7 @@ export default function BlogPage() {
           <div className="container mx-auto max-w-3xl px-4 text-center">
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">Ready to Create a Lasting Tribute?</h2>
             <p className="mt-4 text-muted-foreground">
-              Honor your loved one with a beautiful QR memorial that preserves their memory forever.
+              Honor your loved one with a beautiful QR memorial — 10 years basic hosting included with every physical keepsake.
             </p>
             <Link
               href="/store"

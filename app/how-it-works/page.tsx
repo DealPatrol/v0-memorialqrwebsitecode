@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "How Memorial QR Works - Simple 4-Step Process",
     description:
-      "Create a lasting digital memorial in minutes. Choose your package, upload content, receive your QR plaque, and share their story forever.",
+      "Create a lasting digital memorial in minutes. Choose your package, upload content, receive your QR plaque, and share their story for years to come.",
     type: "website",
     url: "https://memorialsqr.com/how-it-works",
     images: [
@@ -304,8 +304,8 @@ export default function HowItWorksPage() {
             <Card className="text-center p-6">
               <CardContent className="p-0">
                 <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Lifetime Hosting</h3>
-                <p className="text-sm text-gray-600">Your memorial will be hosted forever</p>
+                <h3 className="font-semibold text-gray-900 mb-2">10-Year Hosting Included</h3>
+                <p className="text-sm text-gray-600">Physical keepsakes include 10 years of basic hosting; basic pages stay if Premium lapses</p>
               </CardContent>
             </Card>
 
@@ -325,7 +325,7 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Create a Memorial?</h2>
           <p className="text-xl text-white/90 mb-8">
-            Start honoring your loved one today with a beautiful digital memorial that lasts forever.
+            Start honoring your loved one today with a beautiful digital memorial — 10 years hosting included with every keepsake.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
