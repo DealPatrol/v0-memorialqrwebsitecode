@@ -50,12 +50,13 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId)
 
     const { data: memorial, error: memorialError } = await supabase
       .from("memorials")
       .select("id")
-      .eq("slug", memorialId)
-      .single()
+      .eq(isUUID ? "id" : "slug", memorialId)
+      .maybeSingle()
 
     if (memorialError || !memorial) {
       console.error("[v0] Memorial not found:", memorialError)

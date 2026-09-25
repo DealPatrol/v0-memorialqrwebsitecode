@@ -97,7 +97,7 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
       formData.append("file", item.file)
       formData.append("memorialId", memorialId)
       formData.append("title", item.title)
-      formData.append("uploaderName", uploaderName)
+      formData.append("uploadedBy", uploaderName)
 
       setItems((prev) => {
         const newItems = [...prev]
@@ -122,6 +122,7 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
         return newItems
       })
     } catch (error) {
+      console.error("[v0] Bulk upload item error:", error)
       setItems((prev) => {
         const newItems = [...prev]
         newItems[index].status = "error"

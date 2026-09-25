@@ -2,140 +2,211 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
-import { CountdownTimer } from "@/components/countdown-timer"
-import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
-import { MemorialSlideshow } from "@/components/memorial-slideshow"
-import { CustomerTestimonials } from "@/components/customer-testimonials"
-import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Play, Smartphone, Globe, Lock } from "lucide-react"
+import { ProductSelector } from "@/components/product-selector"
+import { ScrollProgressBar } from "@/components/scroll-progress-bar"
+import { QuickLinksBar } from "@/components/quick-links-bar"
+import { FeaturedMemorialPreview } from "@/components/featured-memorial-preview"
+import { TrustBadges } from "@/components/trust-badges"
+import { FAQPreview } from "@/components/faq-preview"
+import { RelatedContentLinks } from "@/components/related-content-links"
+import { EmailCollectionPopup } from "@/components/email-collection-popup"
+import {
+  Heart,
+  QrCode,
+  Shield,
+  Clock,
+  Users,
+  ArrowRight,
+  Globe,
+  Lock,
+  PawPrint,
+  User,
+  Star,
+  CheckCircle,
+} from "lucide-react"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-16 md:pb-0">
+      <ScrollProgressBar />
       <Header />
 
-      {/* Hero Section with Military Background */}
-      <section className="memorial-bg min-h-screen flex items-center justify-center relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-4xl mx-auto">
-            {/* Hero Content */}
-            <div className="mb-8">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 text-shadow-lg">
-                Honor Their Memory with a <span className="gradient-text">Digital Memorial</span>
-              </h1>
-
-              <div className="mb-8">
-                <MemorialSlideshow />
-              </div>
-
-              <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto text-shadow-lg">
-                Create a beautiful QR code memorial plaque that connects visitors to photos, videos, and stories of your
-                loved one's life.
-              </p>
+      {/* Hero Section with Product Selector */}
+      <section className="memorial-bg py-20 md:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <div className="inline-block mb-6 px-4 py-2 rounded-full bg-secondary/50 border border-border">
+              <span className="text-sm font-medium text-foreground">Honor and Remember</span>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button
-                asChild
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8 py-4 btn-hover-lift"
-              >
-                <Link href="/store">
-                  Create Memorial Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance leading-tight">
+              Digital Memorials Your Family Can Visit for Years
+            </h1>
 
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4 bg-transparent"
-              >
-                <Link href="/browse-memorials">
-                  <Play className="mr-2 w-5 h-5" />
-                  View Examples
-                </Link>
-              </Button>
-            </div>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
+              Personalized QR keepsakes connect family and friends to an online memorial filled with photos, videos, and
+              memories—one scan away.
+            </p>
 
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              <div className="flex items-center justify-center gap-2 text-white/90">
-                <Shield className="w-5 h-5 text-green-400" />
-                <span className="text-sm font-medium drop-shadow-md">30-Day Guarantee</span>
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
+                <Shield className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-foreground">30-Day Guarantee</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-white/90">
-                <Clock className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-medium drop-shadow-md">10-Year Hosting</span>
-              </div>
-              <div className="flex items-center justify-center gap-2 text-white/90">
-                <Users className="w-5 h-5 text-purple-400" />
-                <span className="text-sm font-medium drop-shadow-md">24/7 Support</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
+                <Clock className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-foreground">10 Years Hosting Included</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Countdown Timer - Bottom Right */}
-        <div className="absolute bottom-8 right-8 hidden lg:block">
-          <CountdownTimer />
+          <ProductSelector />
         </div>
       </section>
 
-      {/* Video Section */}
-      <section className="py-20 bg-muted">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-            <iframe
-              src="https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=0&mute=0&controls=1&rel=0"
-              title="Memorial QR Video"
-              className="absolute top-0 left-0 w-full h-full rounded-lg shadow-2xl border-2 border-border"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+      <TrustBadges />
+
+      <FeaturedMemorialPreview />
+
+      {/* SEO Content Section */}
+      <section className="py-20 md:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 text-balance">
+                Why Choose Memorial QR Codes?
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Preserve and share a lifetime of memories
+              </p>
+            </div>
+
+            <div className="prose prose-lg max-w-none text-muted-foreground space-y-8">
+              <p className="text-base leading-relaxed text-foreground">
+                Memorial QR codes offer a simple way to honor and remember loved ones. Each of our print-on-demand
+                keepsakes links directly to a rich digital tribute that family and friends can visit from a phone.
+              </p>
+
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">More Room for Every Memory</h3>
+              <p className="text-base leading-relaxed text-foreground">
+                A printed keepsake has limited space, but its QR code can link to a comprehensive digital memorial page
+                containing photos, videos, life stories, military service records, family trees, and cherished memories
+                shared by friends and family.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-6 my-10">
+                <Card className="bg-secondary/30 border-border">
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold text-lg mb-3 flex items-center gap-2 text-foreground">
+                      <CheckCircle className="w-5 h-5 text-primary" />
+                      For Human Memorials
+                    </h4>
+                    <ul className="space-y-2 text-muted-foreground text-sm">
+                      <li>• Preserve military service and veteran honors</li>
+                      <li>• Share family history and genealogy</li>
+                      <li>• Display photo galleries spanning decades</li>
+                      <li>• Record voice messages and video tributes</li>
+                      <li>• Enable virtual cemetery visits for distant family</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-secondary/30 border-border">
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold text-lg mb-3 flex items-center gap-2 text-foreground">
+                      <CheckCircle className="w-5 h-5 text-primary" />
+                      For Pet Memorials
+                    </h4>
+                    <ul className="space-y-2 text-muted-foreground text-sm">
+                      <li>• Celebrate your pet's unique personality</li>
+                      <li>• Share favorite photos and videos</li>
+                      <li>• Remember special moments and milestones</li>
+                      <li>• Create lasting tributes for beloved companions</li>
+                      <li>• Honor dogs, cats, horses, and all pets</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Made to Order with a Unique QR Code</h3>
+              <p className="text-base leading-relaxed text-foreground">
+                Every physical product is prepared with a custom print file for one memorial and fulfilled through
+                Printful or Printify. Stickers and indoor display products are intended for the uses described in each
+                product listing; they are not sold as cemetery-grade outdoor markers.
+              </p>
+
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Easy Setup, Ongoing Access</h3>
+              <p className="text-base leading-relaxed text-foreground">
+                Creating a memorial QR code is simple. Choose a sticker, coaster, acrylic keyring, Voice Keychain,
+                indoor desk plaque, pet tag, or photo block, then create the digital memorial with photos, voice, and
+                stories. Family members can scan the printed QR code with any smartphone camera—no special app required.
+              </p>
+
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Privacy Controls & Family Collaboration</h3>
+              <p className="text-base leading-relaxed text-foreground">
+                You control who can view and contribute to your memorial page. Set it as public for anyone to visit, or
+                make it private with password protection for family only. Invite multiple family members to collaborate
+                by adding photos, videos, and stories, creating a living tribute that grows over time as memories are
+                shared across generations.
+              </p>
+
+              <div className="bg-secondary/50 border border-border rounded-lg p-6 my-10">
+                <h4 className="font-semibold text-lg mb-3 text-foreground">Seven Print-on-Demand Options</h4>
+                <p className="text-muted-foreground mb-4">
+                  Choose a Keep Card sticker, cork-backed coaster, acrylic keyring, Voice Keychain, indoor slate desk
+                  plaque, pet QR tag, or memorial photo block. Every product includes a link to the same digital memorial.
+                </p>
+              </div>
+
+              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
+              <p className="text-base leading-relaxed text-foreground">
+                Physical products start at $19.99 and include 10 years of basic hosting for the memorial page, with no
+                monthly fee. After 10 years, renewal is optional at $4.99/month. Digital-only memorials (no physical
+                product) are $4.99/month. Multiple items for the same loved one share one hosting term.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 bg-muted">
+      <section className="py-20 md:py-32 bg-secondary/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">How It Works</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Create a lasting digital memorial in just three simple steps
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 text-balance">How It Works</h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Create a lasting tribute for your loved ones in three simple steps
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-6">
-                <QrCode className="w-8 h-8 text-primary-foreground" />
+              <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
+                <QrCode className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-4">1. Create Your Memorial</h3>
-              <p className="text-muted-foreground">
-                Upload photos, videos, and stories to create a beautiful digital memorial page for your loved one.
+              <h3 className="text-xl font-semibold text-foreground mb-3">1. Create Their Profile</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Upload photos, videos, and cherished memories to create a beautiful digital memorial page.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-6">
-                <Smartphone className="w-8 h-8 text-primary-foreground" />
+              <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
+                <Heart className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-4">2. Get Your QR Code</h3>
-              <p className="text-muted-foreground">
-                Receive a custom QR code that links directly to your memorial page, ready for your plaque.
+              <h3 className="text-xl font-semibold text-foreground mb-3">2. Get Your Memorial</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Receive a made-to-order product with a custom QR code linked directly to the memorial page.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-8 h-8 text-primary-foreground" />
+              <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
+                <Users className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-4">3. Share Their Story</h3>
-              <p className="text-muted-foreground">
-                Visitors can scan the QR code to view photos, videos, and memories, keeping their legacy alive.
+              <h3 className="text-xl font-semibold text-foreground mb-3">3. Share Their Legacy</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Friends and family can scan the QR code to view memories and share their own stories.
               </p>
             </div>
           </div>
@@ -143,100 +214,101 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20 md:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Everything You Need</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Our memorial plaques come with powerful features to honor your loved one
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 text-balance">Everything You Need</h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Our memorials come with powerful features to honor those you love
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="memorial-card">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="bg-white border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <Globe className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Unlimited Photos & Videos</h3>
-                <p className="text-muted-foreground">
-                  Upload unlimited photos and videos to create a comprehensive memorial.
+                <Globe className="w-10 h-10 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Unlimited Photos & Videos</h3>
+                <p className="text-muted-foreground text-sm">Upload unlimited photos and videos to create a comprehensive memorial.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <Lock className="w-10 h-10 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Privacy Controls</h3>
+                <p className="text-muted-foreground text-sm">Control who can view and contribute to your memorial page.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <Users className="w-10 h-10 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Family Collaboration</h3>
+                <p className="text-muted-foreground text-sm">Invite family members to contribute photos, videos, and memories.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <User className="w-10 h-10 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Human Memorials</h3>
+                <p className="text-muted-foreground text-sm">
+                  Honor veterans, parents, grandparents, and all those who touched our lives.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="memorial-card">
+            <Card className="bg-white border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <Lock className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Privacy Controls</h3>
-                <p className="text-muted-foreground">
-                  Control who can view and contribute to your loved one's memorial page.
+                <PawPrint className="w-10 h-10 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Pet Memorials</h3>
+                <p className="text-muted-foreground text-sm">
+                  Celebrate dogs, cats, horses, and all the furry friends who gave us unconditional love.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="memorial-card">
+            <Card className="bg-white border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <Users className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Family Collaboration</h3>
-                <p className="text-muted-foreground">
-                  Invite family members to contribute photos, videos, and memories.
+                <Shield className="w-10 h-10 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Digital Memorial Hosting</h3>
+                <p className="text-muted-foreground text-sm">
+                  10 years of basic hosting included with physical keepsakes, then optional $4.99/month renewal.
                 </p>
-              </CardContent>
-            </Card>
-
-            <Card className="memorial-card">
-              <CardContent className="p-6">
-                <QrCode className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Custom QR Codes</h3>
-                <p className="text-muted-foreground">
-                  Beautiful, customizable QR codes that match your memorial design.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="memorial-card">
-              <CardContent className="p-6">
-                <Shield className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">10-Year Hosting Included</h3>
-                <p className="text-muted-foreground">
-                  Every physical keepsake includes 10 years of basic memorial hosting. After that, renew from $4.99/mo or keep a basic page online — your QR never goes dead.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="memorial-card">
-              <CardContent className="p-6">
-                <Heart className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">Guest Book</h3>
-                <p className="text-muted-foreground">Allow visitors to leave messages and share their own memories.</p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Customer Testimonials Section */}
-      <CustomerTestimonials />
+      <FAQPreview />
+
+      <RelatedContentLinks />
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary to-accent">
+      <section className="py-20 md:py-32 bg-primary text-white">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
-            Ready to Honor Your Loved One?
-          </h2>
-          <p className="text-xl text-primary-foreground/90 mb-8">
-            Create a lasting digital memorial that celebrates their life. Physical keepsakes include 10 years of basic hosting.
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Create a Lasting Memorial?</h2>
+          <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Whether honoring a loved one or a beloved pet, create a beautiful digital memorial that family and friends
+            can visit for years to come.
           </p>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8 max-w-md mx-auto">
-            <p className="text-sm text-primary-foreground/80 mb-2">Starting at</p>
-            <p className="text-5xl font-bold text-primary-foreground mb-2">$39.89</p>
-            <p className="text-sm text-primary-foreground/80">One-time payment • 10 years hosting with keepsakes</p>
-          </div>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-background text-primary hover:bg-background/90 text-lg px-8 py-4">
+            <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
               <Link href="/store">
-                Get Started Today
+                Shop Memorial Products
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
+
+            <Button
+              asChild
+              size="lg"
+              className="bg-white/20 text-white hover:bg-white/30 border border-white/30 text-lg px-8"
+            >
+              <Link href="/concierge">
+                Concierge Service
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -245,7 +317,7 @@ export default function HomePage() {
               asChild
               variant="outline"
               size="lg"
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-lg px-8 py-4 bg-transparent"
+              className="border-white/30 text-white hover:bg-white/10 text-lg px-8 bg-transparent"
             >
               <Link href="/contact">Contact Us</Link>
             </Button>
@@ -254,73 +326,81 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-foreground text-primary-foreground py-12">
+      <footer className="bg-foreground/5 text-foreground py-12 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-                  <QrCode className="w-5 h-5 text-primary-foreground" />
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <QrCode className="w-5 h-5 text-white" />
                 </div>
                 <span className="memorial-logo text-xl font-bold">Memorial QR</span>
               </div>
-              <p className="text-primary-foreground/70">
-                Creating lasting digital memorials to honor and remember your loved ones.
-              </p>
+              <p className="text-muted-foreground text-sm">Creating lasting digital memorials to honor and remember your loved ones.</p>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-primary-foreground/70">
+              <h3 className="font-semibold mb-4 text-foreground">Services</h3>
+              <ul className="space-y-2 text-muted-foreground text-sm">
                 <li>
-                  <Link href="/how-it-works" className="hover:text-primary-foreground">
-                    How It Works
+                  <Link href="/human-memorials" className="hover:text-primary transition-colors">
+                    Human Memorials
                   </Link>
                 </li>
                 <li>
-                  <Link href="/store" className="hover:text-primary-foreground">
-                    Pricing
+                  <Link href="/pet-memorials" className="hover:text-primary transition-colors">
+                    Pet Memorials
                   </Link>
                 </li>
                 <li>
-                  <Link href="/browse-memorials" className="hover:text-primary-foreground">
-                    Examples
+                  <Link href="/store" className="hover:text-primary transition-colors">
+                    Store
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-primary-foreground/70">
+              <h3 className="font-semibold mb-4 text-foreground">Company</h3>
+              <ul className="space-y-2 text-muted-foreground text-sm">
                 <li>
-                  <Link href="/our-story" className="hover:text-primary-foreground">
+                  <Link href="/our-story" className="hover:text-primary transition-colors">
                     Our Story
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="hover:text-primary-foreground">
+                  <Link href="/how-it-works" className="hover:text-primary transition-colors">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-primary transition-colors">
                     Contact
                   </Link>
                 </li>
                 <li>
-                  <Link href="/faq" className="hover:text-primary-foreground">
+                  <Link href="/faq" className="hover:text-primary transition-colors">
                     FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/blog" className="hover:text-primary transition-colors">
+                    Blog
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-primary-foreground/70">
+              <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
+              <ul className="space-y-2 text-muted-foreground text-sm">
                 <li>
-                  <Link href="/privacy-policy" className="hover:text-primary-foreground">
+                  <Link href="/privacy-policy" className="hover:text-primary transition-colors">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms-of-service" className="hover:text-primary-foreground">
+                  <Link href="/terms-of-service" className="hover:text-primary transition-colors">
                     Terms of Service
                   </Link>
                 </li>
@@ -328,14 +408,16 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-primary-foreground/70">
-            <p>&copy; 2025 Memorial QR. All rights reserved.</p>
+          <div className="border-t border-border mt-12 pt-8 text-center">
+            <p className="text-muted-foreground text-sm">
+              &copy; {new Date().getFullYear()} Memorial QR. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
 
-      {/* Sticky CTA */}
-      <HomepageStickyCTA />
+      {/* Email Collection Popup */}
+      <EmailCollectionPopup />
     </div>
   )
 }

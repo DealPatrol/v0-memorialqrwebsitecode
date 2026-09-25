@@ -54,7 +54,7 @@ const quickLinks = [
     title: "Video Tutorials",
     description: "Step-by-step video guides",
     icon: Video,
-    href: "/how-it-works",
+    href: "#",
   },
   {
     title: "Phone Support",
@@ -141,7 +141,7 @@ export default function HelpPage() {
                     {category.articles.map((article, articleIndex) => (
                       <li key={articleIndex}>
                         <Link
-                          href="/faq"
+                          href="#"
                           className="text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-2"
                         >
                           <span className="w-2 h-2 bg-orange-600 rounded-full" />
@@ -191,8 +191,8 @@ export default function HelpPage() {
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">What if the QR code gets damaged?</h3>
                 <p className="text-gray-600">
-                  Our QR codes are weatherproof and designed to last for decades. If your plaque is damaged within 5
-                  years, we'll replace it free of charge under our durability guarantee.
+                  Contact support if a printed QR code becomes unreadable. Product care and intended use vary by item;
+                  stickers and indoor display products are not sold as permanent outdoor markers.
                 </p>
               </CardContent>
             </Card>
@@ -247,7 +247,7 @@ export default function HelpPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with lasting digital memorials — 10 years hosting included with every keepsake.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and digital memorials.</p>
             </div>
 
             <div>

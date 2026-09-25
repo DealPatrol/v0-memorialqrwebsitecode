@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push("/auth/signin")
+        router.push("/auth/login")
       }, 3000)
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
@@ -114,7 +114,7 @@ export default function ResetPasswordPage() {
               <div className="space-y-4">
                 <p className="text-sm text-slate-600 text-center">Redirecting you to the login page...</p>
                 <Button asChild className="w-full bg-purple-600 hover:bg-purple-700">
-                  <Link href="/auth/signin">Go to Login</Link>
+                  <Link href="/auth/login">Go to Login</Link>
                 </Button>
               </div>
             </CardContent>

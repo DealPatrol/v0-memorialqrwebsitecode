@@ -1,86 +1,68 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-import { sendNewAccountNotification } from "@/lib/email"
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get("code")
-  const redirect = requestUrl.searchParams.get("redirect")
-  const next = requestUrl.searchParams.get("next")
-
-  console.log("[v0] OAuth callback received")
-  console.log("[v0] Code:", code ? "present" : "missing")
-  console.log("[v0] Redirect param:", redirect)
-  console.log("[v0] Next param:", next)
+  const requestedNext = requestUrl.searchParams.get("next")
+  const isSafeNext = Boolean(
+    requestedNext &&
+      requestedNext.startsWith("/") &&
+      !requestedNext.startsWith("//") &&
+      !requestedNext.includes("\\") &&
+      !requestedNext.includes("://"),
+  )
+  const next = isSafeNext ? requestedNext : null
 
   if (code) {
     const supabase = await createClient()
-    console.log("[v0] Exchanging code for session...")
-
     const { data: authData, error } = await supabase.auth.exchangeCodeForSession(code)
 
-    console.log("[v0] Exchange result - User:", authData?.user?.id || "none")
-    console.log("[v0] Exchange error:", error?.message || "none")
-
     if (!error && authData.user) {
-      console.log("[v0] Auth successful for user:", authData.user.email)
-
-      const isNewUser = authData.user.created_at === authData.user.last_sign_in_at
-      if (isNewUser) {
-        try {
-          const userName = authData.user.user_metadata?.full_name || authData.user.email?.split("@")[0] || "Unknown"
-          const accountType = authData.user.app_metadata?.provider || "email"
-
-          console.log("[v0] New OAuth user detected, sending admin notification")
-          await sendNewAccountNotification({
-            userName,
-            userEmail: authData.user.email || "no-email@provided.com",
-            accountType: accountType as "email" | "google" | "facebook",
-            signupDate: new Date().toLocaleString("en-US", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            }),
-          })
-          console.log("[v0] Admin notification sent for new OAuth account")
-        } catch (notifError) {
-          console.error("Failed to send admin notification:", notifError)
-        }
-      }
-
-      if (redirect) {
-        console.log("[v0] Redirecting to custom URL:", redirect)
-        return NextResponse.redirect(new URL(redirect, requestUrl.origin))
-      }
-
+      // If there's a specific next URL, use it
       if (next) {
-        console.log("[v0] Redirecting to next URL:", next)
         return NextResponse.redirect(new URL(next, requestUrl.origin))
       }
 
-      const { data: memorials, error: memorialError } = await supabase
+      const { data: memorials } = await supabase
         .from("memorials")
-        .select("id")
+        .select("id, slug")
         .eq("user_id", authData.user.id)
+        .order("created_at", { ascending: false })
         .limit(1)
 
-      console.log("[v0] User memorials count:", memorials?.length || 0)
-      console.log("[v0] Memorial query error:", memorialError?.message || "none")
-
+      // If user has memorials, go to first memorial
       if (memorials && memorials.length > 0) {
-        console.log("[v0] Redirecting to dashboard")
-        return NextResponse.redirect(new URL("/dashboard", requestUrl.origin))
-      } else {
-        console.log("[v0] Redirecting to create-memorial")
-        return NextResponse.redirect(new URL("/store", requestUrl.origin))
+        return NextResponse.redirect(new URL(`/memorial/${memorials[0].id}`, requestUrl.origin))
       }
-    } else {
-      console.error("[v0] Auth exchange failed:", error?.message)
+
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("id, memorial_id, status")
+        .eq("customer_email", authData.user.email)
+        .is("memorial_id", null)
+        .in("status", ["completed", "paid", "processing"])
+        .limit(1)
+
+      if (orders && orders.length > 0) {
+        const orderId = orders[0].id
+        return NextResponse.redirect(new URL(`/create-memorial?orderId=${orderId}&welcome=true`, requestUrl.origin))
+      }
+
+      const { data: allOrders } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("customer_email", authData.user.email)
+        .limit(1)
+
+      // If they have any order history, go to dashboard
+      if (allOrders && allOrders.length > 0) {
+        return NextResponse.redirect(new URL("/dashboard", requestUrl.origin))
+      }
+
+      return NextResponse.redirect(new URL("/store", requestUrl.origin))
     }
-  } else {
-    console.error("[v0] No code parameter in callback URL")
   }
 
-  const errorMessage = encodeURIComponent("Authentication failed. Please try again.")
-  console.log("[v0] Redirecting to sign-in with error")
-  return NextResponse.redirect(new URL(`/auth/signin?error=${errorMessage}`, requestUrl.origin))
+  return NextResponse.redirect(new URL("/auth/login?error=Invalid authentication link", requestUrl.origin))
 }

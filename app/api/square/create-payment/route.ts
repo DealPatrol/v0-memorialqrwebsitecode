@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
+import { getCheckoutTotalCents, resolveCheckoutItems } from "@/lib/checkout-products"
 
 export async function POST(req: Request) {
   try {
-    const { sourceId, amount, orderId } = await req.json()
+    const { sourceId, lineItems, orderId, verificationToken, customerEmail, customerName } = await req.json()
 
     // Validate inputs
-    if (!sourceId || !amount || !orderId) {
+    if (!sourceId || !orderId) {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
 
@@ -20,7 +21,12 @@ export async function POST(req: Request) {
     }
 
     const idempotencyKey = randomUUID()
-    const amountInCents = Math.round(Number.parseFloat(amount) * 100)
+    const resolvedItems = resolveCheckoutItems(lineItems)
+    if (!resolvedItems || resolvedItems.length === 0) {
+      return NextResponse.json({ success: false, error: "Cart contains an unsupported product" }, { status: 400 })
+    }
+
+    const amountInCents = getCheckoutTotalCents(resolvedItems)
 
     if (amountInCents <= 0 || !Number.isFinite(amountInCents)) {
       return NextResponse.json({ success: false, error: "Invalid payment amount" }, { status: 400 })
@@ -29,6 +35,64 @@ export async function POST(req: Request) {
     // Determine API URL
     const baseUrl =
       environment === "production" ? "https://connect.squareup.com" : "https://connect.squareupsandbox.com"
+
+    let customerId = null
+    let cardId = null
+
+    if (customerEmail && customerName) {
+      try {
+        const [givenName, ...familyNameParts] = customerName.split(" ")
+        const familyName = familyNameParts.join(" ")
+
+        const customerResponse = await fetch(`${baseUrl}/v2/customers`, {
+          method: "POST",
+          headers: {
+            "Square-Version": "2025-09-24",
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idempotency_key: `customer-${orderId}`,
+            email_address: customerEmail,
+            given_name: givenName,
+            family_name: familyName,
+          }),
+        })
+
+        const customerData = await customerResponse.json()
+
+        if (customerResponse.ok && customerData.customer) {
+          customerId = customerData.customer.id
+          console.log("[v0] Square customer created:", customerId)
+
+          const cardResponse = await fetch(`${baseUrl}/v2/cards`, {
+            method: "POST",
+            headers: {
+              "Square-Version": "2025-09-24",
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              idempotency_key: `card-${orderId}`,
+              source_id: sourceId,
+              card: {
+                customer_id: customerId,
+              },
+            }),
+          })
+
+          const cardData = await cardResponse.json()
+
+          if (cardResponse.ok && cardData.card) {
+            cardId = cardData.card.id
+            console.log("[v0] Card stored on file:", cardId)
+          }
+        }
+      } catch (customerError) {
+        console.error("[v0] Customer/Card creation error:", customerError)
+        // Continue with payment even if customer creation fails
+      }
+    }
 
     // Call Square API
     const squareResponse = await fetch(`${baseUrl}/v2/payments`, {
@@ -43,10 +107,12 @@ export async function POST(req: Request) {
         idempotency_key: idempotencyKey,
         amount_money: {
           amount: amountInCents,
-          currency: "USD",
+          currency: "CAD",
         },
         location_id: locationId,
         reference_id: orderId,
+        note: resolvedItems.map((item) => `${item.id} x${item.quantity}`).join(", "),
+        ...(customerId && { customer_id: customerId }),
       }),
     })
 
@@ -79,6 +145,8 @@ export async function POST(req: Request) {
         id: squareData.payment?.id,
         status: squareData.payment?.status,
       },
+      customerId,
+      cardId,
     })
   } catch (error) {
     console.error("Payment error:", error)

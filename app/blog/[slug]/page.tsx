@@ -1,42 +1,189 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import Image from "next/image"
-import { notFound } from "next/navigation"
-import { BLOG_POSTS, getBlogPost } from "@/lib/blog-posts"
-import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react"
+import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Calendar, Clock, User, ArrowLeft, Share2, Facebook, Twitter, Mail } from "lucide-react"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 
-interface PageProps {
-  params: Promise<{ slug: string }>
+import { blogPosts } from "@/lib/blog-posts"
+
+// Full blog post content
+const blogPostsContent: Record<
+  string,
+  {
+    content: string
+  }
+> = {
+  "complete-guide-to-memorial-qr-codes": {
+    content: `
+# The Complete Guide to Memorial QR Codes
+
+In today's digital age, the way we honor and remember our loved ones is evolving. Memorial QR codes represent a beautiful fusion of traditional remembrance and modern technology, creating lasting tributes that connect the physical and digital worlds.
+
+## What Are Memorial QR Codes?
+
+Memorial QR codes are unique codes printed on personalized keepsakes that link to digital memorial pages. When scanned with a smartphone, these codes instantly connect visitors to a rich multimedia tribute featuring photos, videos, stories, and memories of the departed.
+
+## Why Choose a QR Memorial?
+
+### 1. **Unlimited Digital Content**
+Traditional memorials are limited by physical space. QR memorials allow you to share:
+- Unlimited photos and videos
+- Audio recordings and favorite songs
+- Life stories and achievements
+- Guest messages and tributes
+- Family trees and genealogy
+
+### 2. **Always Accessible**
+Family and friends can access the memorial anytime, anywhere in the world. No need to visit a physical location—memories are just a scan away.
+
+### 3. **Forever Updating**
+Unlike traditional memorials that are permanent and unchanging, digital memorials can be updated with new memories, photos, and tributes as time goes on.
+
+### 4. **Eco-Friendly**
+Digital memorials reduce the need for paper memorial cards and programs, making them an environmentally conscious choice.
+
+## How Memorial QR Codes Work
+
+The process is beautifully simple:
+
+1. **Create the Memorial**: Upload photos, videos, and stories to create a digital memorial page
+2. **Generate the QR Code**: A unique QR code is created that links to your memorial
+3. **Physical Product**: The QR code is added to a custom print file for your selected product
+4. **Easy Access**: Anyone can scan the code with their smartphone to view the full memorial
+
+## Choosing the Right Memorial QR Product
+
+### Indoor Memorial Displays
+- **Slate Desk Plaque**: A personalized indoor display for a desk or shelf
+- **Memorial Photo Block**: Combine a favorite photo with the memorial QR code
+
+### Personal Keepsakes
+- **Keep Card Sticker**: Add a peel-and-stick QR link to a smooth indoor surface
+- **Acrylic QR Keyring**: Carry the memorial link with you
+- **Cork Memorial Coaster**: Display a printed tribute in the home
+
+## Best Practices for Creating a Memorial QR Page
+
+### Tell Their Story
+- Include birth and passing dates
+- Share life milestones and achievements
+- Describe their personality and values
+- Include favorite quotes or sayings
+
+### Curate Meaningful Photos
+- Choose photos from different life stages
+- Include candid moments, not just formal portraits
+- Show them doing what they loved
+- Include family gatherings and celebrations
+
+### Add Video and Audio
+- Record family members sharing memories
+- Include favorite songs or music they played
+- Add video messages for future generations
+- Capture their voice if recordings exist
+
+## Getting Started
+
+Creating a memorial QR tribute is easier than you might think:
+
+1. Choose your memorial product
+2. Gather photos, videos, and stories
+3. Create your digital memorial page
+4. Receive your custom QR memorial product
+5. Share with family and friends
+
+Memorial QR codes represent the perfect balance between honoring tradition and embracing innovation. They allow us to create rich, lasting tributes that can be shared across generations, ensuring that the memories of those we love never fade.
+
+---
+
+*Ready to create a lasting memorial? Explore our collection of memorial QR products and start building a beautiful digital tribute today.*
+    `,
+  },
+  "pet-memorial-ideas-honoring-furry-friends": {
+    content: `
+# 25 Beautiful Pet Memorial Ideas to Honor Your Furry Friend
+
+Losing a pet is one of the most painful experiences we face. Our furry companions give us unconditional love, endless joy, and unwavering loyalty. When they pass, we're left with a profound sense of loss. Creating a memorial helps us process grief while celebrating the beautiful life we shared with them.
+
+## Why Pet Memorials Matter
+
+Pets aren't "just animals"—they're family members who hold irreplaceable places in our hearts. Creating a memorial:
+- Validates your grief and loss
+- Provides a focal point for remembrance
+- Helps children understand and process pet loss
+- Celebrates the joy your pet brought to your life
+- Creates a lasting tribute for years to come
+
+## Physical Memorial Ideas
+
+### 1. **Pet QR Tag**
+Create a compact personalized keepsake with a unique QR code linked to your pet's memorial.
+
+### 2. **Memorial Photo Block**
+Pair a favorite pet photo with a QR code in an indoor display.
+
+### 3. **Cork Memorial Coaster**
+A cork-backed coaster printed with a memorial QR code makes a touching keepsake for the home.
+
+## Portable Memorials
+
+### 4. **Acrylic QR Keyring**
+Carry the memorial link with you on a lightweight acrylic keyring.
+
+### 5. **Keep Card Sticker**
+Place a peel-and-stick QR link on a smooth indoor surface where family can scan it.
+
+## Digital Memorial Ideas
+
+### 6. **QR Code Memorial Page**
+Create a comprehensive digital memorial with photos, videos, and stories. Share the QR code with family and friends.
+
+### 7. **Social Media Tribute Page**
+Create a dedicated memorial page or group where family and friends can share photos and memories.
+
+## Coping with Pet Loss
+
+Creating a memorial is part of the healing process, but grief takes time:
+
+- **Allow yourself to grieve**: Your pain is real and valid
+- **Talk about your feelings**: Share with understanding friends or pet loss support groups
+- **Consider a memorial timeline**: You don't have to decide everything immediately
+
+## Conclusion
+
+Your pet gave you years of unconditional love, loyalty, and companionship. They deserved nothing less than to be remembered and honored. Whether you choose a physical memorial, digital tribute, or charitable act, what matters most is that it feels right to you.
+
+---
+
+*Ready to create a lasting memorial for your beloved pet? Explore our pet memorial products and create a beautiful tribute that celebrates their life and legacy.*
+    `,
+  },
 }
 
-export async function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({
-    slug: post.slug,
-  }))
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
-  const post = getBlogPost(slug)
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = blogPosts.find((p) => p.slug === params.slug)
 
   if (!post) {
     return {
-      title: "Article Not Found | Memorial QR Blog",
+      title: "Article Not Found",
     }
   }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"
 
   return {
     title: `${post.title} | Memorial QR Blog`,
     description: post.excerpt,
-    keywords: post.keywords,
+    keywords: `${post.category.toLowerCase()}, memorial QR, digital memorials, ${post.slug.replace(/-/g, " ")}`,
     authors: [{ name: post.author }],
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      url: `https://memorialsqr.com/blog/${post.slug}`,
       type: "article",
-      publishedTime: post.publishedAt,
+      publishedTime: post.date,
       authors: [post.author],
       images: [
         {
@@ -46,237 +193,190 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           alt: post.title,
         },
       ],
+      url: `${siteUrl}/blog/${params.slug}`,
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
+      images: [post.image],
     },
     alternates: {
-      canonical: `https://memorialsqr.com/blog/${post.slug}`,
+      canonical: `/blog/${params.slug}`,
     },
   }
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
-  const { slug } = await params
-  const post = getBlogPost(slug)
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = blogPosts.find((p) => p.slug === params.slug)
+  const postContent = blogPostsContent[params.slug]
 
-  if (!post) {
+  if (!post || !postContent) {
     notFound()
   }
 
-  // Related posts (same category, excluding current)
-  const relatedPosts = BLOG_POSTS.filter((p) => p.category === post.category && p.slug !== post.slug).slice(0, 2)
-
-  // JSON-LD for Article
-  const jsonLd = {
+  const articleStructuredData = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
     image: post.image,
-    datePublished: post.publishedAt,
-    dateModified: post.publishedAt,
+    datePublished: post.date,
+    dateModified: post.date,
     author: {
-      "@type": "Organization",
+      "@type": "Person",
       name: post.author,
-      url: "https://memorialsqr.com",
     },
     publisher: {
       "@type": "Organization",
       name: "Memorial QR",
-      url: "https://memorialsqr.com",
       logo: {
         "@type": "ImageObject",
-        url: "https://memorialsqr.com/logo.png",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/images/41730040-9590-452b-80df.jpeg`,
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://memorialsqr.com/blog/${post.slug}`,
+      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/blog/${params.slug}`,
     },
-    keywords: post.keywords.join(", "),
-  }
-
-  // Breadcrumb JSON-LD
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://memorialsqr.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blog",
-        item: "https://memorialsqr.com/blog",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: `https://memorialsqr.com/blog/${post.slug}`,
-      },
-    ],
   }
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <Header />
 
-      <main className="min-h-screen bg-background">
-        {/* Hero */}
-        <section className="relative">
-          <div className="relative aspect-[21/9] w-full md:aspect-[3/1]">
-            <Image src={post.image || "/placeholder.svg"} alt={post.title} fill className="object-cover" priority />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          </div>
+        {/* Back Button */}
+        <div className="container mx-auto px-4 py-6">
+          <Button asChild variant="ghost">
+            <Link href="/blog">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Blog
+            </Link>
+          </Button>
+        </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
-            <div className="container mx-auto max-w-4xl">
-              <Link href="/blog" className="mb-4 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Blog
-              </Link>
-              <span className="mb-3 block text-sm font-semibold uppercase tracking-wide text-primary-foreground/90">
+        {/* Article Header */}
+        <article className="container mx-auto px-4 pb-16">
+          <div className="max-w-4xl mx-auto">
+            {/* Featured Image */}
+            <div className="aspect-video relative bg-slate-200 rounded-lg overflow-hidden mb-8">
+              <img src={post.image || "/placeholder.svg"} alt={post.title} className="object-cover w-full h-full" />
+            </div>
+
+            {/* Meta Information */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
+              <Badge variant="secondary" className="text-base">
                 {post.category}
-              </span>
-              <h1 className="text-3xl font-bold text-white md:text-4xl lg:text-5xl">{post.title}</h1>
-              <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/80">
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  {post.readTime}
-                </span>
-                <span>By {post.author}</span>
+              </Badge>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                {new Date(post.date).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                {post.readTime}
+              </div>
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                {post.author}
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Article Content */}
-        <article className="py-12">
-          <div className="container mx-auto max-w-3xl px-4">
-            <div
-              className="prose prose-lg prose-slate max-w-none dark:prose-invert
-                prose-headings:font-bold prose-headings:tracking-tight
-                prose-h2:mt-10 prose-h2:text-2xl
-                prose-h3:mt-8 prose-h3:text-xl
-                prose-p:leading-relaxed
-                prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                prose-strong:font-semibold
-                prose-ul:my-6 prose-li:my-1"
-              dangerouslySetInnerHTML={{ __html: formatContent(post.content) }}
-            />
+            {/* Title */}
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
 
-            {/* Share */}
-            <div className="mt-12 flex items-center justify-between border-t pt-8">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Share2 className="h-4 w-4" />
-                Share this article
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://memorialsqr.com/blog/${post.slug}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Twitter
-                  </a>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://memorialsqr.com/blog/${post.slug}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Facebook
-                  </a>
-                </Button>
-              </div>
+            {/* Share Buttons */}
+            <div className="flex items-center gap-3 mb-8 pb-8 border-b">
+              <span className="text-sm font-medium text-muted-foreground">Share:</span>
+              <Button variant="outline" size="sm">
+                <Facebook className="w-4 h-4 mr-2" />
+                Facebook
+              </Button>
+              <Button variant="outline" size="sm">
+                <Twitter className="w-4 h-4 mr-2" />
+                Twitter
+              </Button>
+              <Button variant="outline" size="sm">
+                <Mail className="w-4 h-4 mr-2" />
+                Email
+              </Button>
+              <Button variant="outline" size="sm">
+                <Share2 className="w-4 h-4 mr-2" />
+                Copy Link
+              </Button>
             </div>
+
+            {/* Article Content */}
+            <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-blue-600 prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground">
+              {postContent.content.split("\n").map((paragraph, index) => {
+                if (paragraph.startsWith("# ")) {
+                  return (
+                    <h1 key={index} className="text-4xl font-bold mt-8 mb-4">
+                      {paragraph.replace("# ", "")}
+                    </h1>
+                  )
+                }
+                if (paragraph.startsWith("## ")) {
+                  return (
+                    <h2 key={index} className="text-3xl font-bold mt-8 mb-4">
+                      {paragraph.replace("## ", "")}
+                    </h2>
+                  )
+                }
+                if (paragraph.startsWith("### ")) {
+                  return (
+                    <h3 key={index} className="text-2xl font-bold mt-6 mb-3">
+                      {paragraph.replace("### ", "")}
+                    </h3>
+                  )
+                }
+                if (paragraph.startsWith("---")) {
+                  return <hr key={index} className="my-8" />
+                }
+                if (paragraph.trim() === "") {
+                  return <br key={index} />
+                }
+                if (paragraph.startsWith("*") && paragraph.endsWith("*")) {
+                  return (
+                    <p key={index} className="italic text-muted-foreground my-6">
+                      {paragraph.replace(/\*/g, "")}
+                    </p>
+                  )
+                }
+                return (
+                  <p key={index} className="mb-4 leading-relaxed">
+                    {paragraph}
+                  </p>
+                )
+              })}
+            </div>
+
+            {/* CTA Section */}
+            <Card className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <CardContent className="p-8 text-center">
+                <h3 className="text-2xl font-bold mb-4">Ready to Create a Lasting Memorial?</h3>
+                <p className="text-muted-foreground mb-6">
+                  Honor your loved ones with a beautiful QR memorial that preserves their legacy.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+                    <Link href="/store">Browse Memorial Products</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg">
+                    <Link href="/pricing">View Pricing</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </article>
-
-        {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <section className="border-t bg-muted/30 py-12">
-            <div className="container mx-auto max-w-4xl px-4">
-              <h2 className="mb-8 text-2xl font-bold">Related Articles</h2>
-              <div className="grid gap-6 sm:grid-cols-2">
-                {relatedPosts.map((relatedPost) => (
-                  <Link key={relatedPost.slug} href={`/blog/${relatedPost.slug}`} className="group">
-                    <article className="overflow-hidden rounded-xl border bg-card shadow-sm transition-all hover:shadow-md">
-                      <div className="relative aspect-video">
-                        <Image
-                          src={relatedPost.image || "/placeholder.svg"}
-                          alt={relatedPost.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-primary">
-                          {relatedPost.category}
-                        </span>
-                        <h3 className="mt-1 line-clamp-2 font-bold text-foreground group-hover:text-primary">
-                          {relatedPost.title}
-                        </h3>
-                      </div>
-                    </article>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* CTA */}
-        <section className="bg-primary py-16 text-primary-foreground">
-          <div className="container mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-2xl font-bold md:text-3xl">Create a Lasting Memorial Today</h2>
-            <p className="mt-4 text-primary-foreground/80">Honor your loved one with a beautiful QR memorial plaque.</p>
-            <Link
-              href="/store"
-              className="mt-8 inline-flex items-center justify-center rounded-lg bg-white px-8 py-3 font-semibold text-primary transition-colors hover:bg-white/90"
-            >
-              Shop Memorial Plaques
-            </Link>
-          </div>
-        </section>
-      </main>
+      </div>
     </>
   )
-}
-
-function formatContent(content: string): string {
-  // Convert markdown-style content to HTML
-  return content
-    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/^- (.*$)/gim, "<li>$1</li>")
-    .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/^(?!<[hup])/gm, "<p>")
-    .replace(/(?<![>])$/gm, "</p>")
-    .replace(/<p><\/p>/g, "")
-    .replace(/<p>(<[hul])/g, "$1")
-    .replace(/(<\/[hul][^>]*>)<\/p>/g, "$1")
-    .replace(/\[([^\]]+)\]$$([^)]+)$$/g, '<a href="$2">$1</a>')
 }

@@ -1,7 +1,8 @@
 "use client"
 
+import { Suspense } from "react"
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,24 +13,90 @@ import { CheckCircle, Shield, Lock, CreditCard, Award } from "lucide-react"
 import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { Textarea } from "@/components/ui/textarea"
+import { CHECKOUT_PRODUCTS, resolveCheckoutItems } from "@/lib/checkout-products"
+import type { CheckoutProduct } from "@/lib/checkout-products"
+import { createClient } from "@/lib/supabase/client"
+import { HOSTING_INCLUDED_YEARS, HOSTING_MONTHLY_PRICE_LABEL, getHostingTerms } from "@/lib/hosting"
 
-const PACKAGES = {
-  starter: { id: "starter", name: "Starter Package", price: 39.89, storage: "500 MB", plaques: 1 },
-  basic: { id: "basic", name: "Basic Package", price: 89.89, storage: "1 GB", plaques: 1 },
-  standard: { id: "standard", name: "Standard Package", price: 129.89, storage: "2 GB", plaques: 2 },
-  premium: { id: "premium", name: "Premium Package", price: 199.89, storage: "5 GB", plaques: 3 },
-}
+type CheckoutItem = CheckoutProduct & { id: string; quantity: number }
 
-export default function SimpleCheckoutPage() {
+function CheckoutForm() {
   const router = useRouter()
   const { toast } = useToast()
   const searchParams = useSearchParams()
-  const packageId = searchParams.get("package") || "standard"
-  const selectedPackage = PACKAGES[packageId as keyof typeof PACKAGES] || PACKAGES.standard
+
+  const [cartItems, setCartItems] = useState<CheckoutItem[]>([])
+  const [orderTotal, setOrderTotal] = useState(0)
+
+  useEffect(() => {
+    const selectedProductId = searchParams.get("product")
+    if (selectedProductId) {
+      const selectedProduct = CHECKOUT_PRODUCTS[selectedProductId]
+      if (selectedProduct) {
+        setCartItems([
+          {
+            id: selectedProductId,
+            name: selectedProduct.name,
+            price: selectedProduct.price,
+            monthlyFee: selectedProduct.monthlyFee,
+            hostingIncludedYears: selectedProduct.hostingIncludedYears,
+            quantity: 1,
+          },
+        ])
+        setOrderTotal(selectedProduct.price)
+        return
+      }
+    }
+
+    const storedItems = localStorage.getItem("checkoutItems")
+    if (storedItems) {
+      try {
+        const storedItemsValue: unknown = JSON.parse(storedItems)
+        const items = resolveCheckoutItems(storedItemsValue)
+
+        if (items && items.length > 0) {
+          setCartItems(items)
+          setOrderTotal(items.reduce((sum, item) => sum + item.price * item.quantity, 0))
+          return
+        }
+      } catch {
+        // Handled as an invalid cart below.
+      }
+
+      localStorage.removeItem("checkoutItems")
+      toast({
+        title: "Cart No Longer Available",
+        description: "Your saved cart contains products that are no longer available. Please select your products again.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Fallback to the default store product.
+    const productId = "keep-card"
+    const product = CHECKOUT_PRODUCTS[productId]
+    if (product) {
+      setCartItems([
+        {
+          id: productId,
+          name: product.name,
+          price: product.price,
+          monthlyFee: product.monthlyFee,
+          hostingIncludedYears: product.hostingIncludedYears,
+          quantity: 1,
+        },
+      ])
+      setOrderTotal(product.price)
+    } else {
+      setCartItems([])
+      setOrderTotal(0)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Run only once on mount
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     phone: "",
     address: "",
@@ -37,11 +104,14 @@ export default function SimpleCheckoutPage() {
     city: "",
     state: "",
     zipCode: "",
+    customization: "",
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const hostingTerms = getHostingTerms(cartItems)
+  const includesKeepsake = hostingTerms.includesPhysicalKeepsake
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -50,8 +120,7 @@ export default function SimpleCheckoutPage() {
 
   const validateForm = () => {
     if (
-      !formData.firstName ||
-      !formData.lastName ||
+      !formData.name ||
       !formData.email ||
       !formData.address ||
       !formData.city ||
@@ -60,34 +129,38 @@ export default function SimpleCheckoutPage() {
     ) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields before proceeding with payment.",
+        description: "Please fill in all required contact and address fields before proceeding with payment.",
         variant: "destructive",
       })
       return false
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      })
-      return false
+    if (formData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.email)) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address.",
+          variant: "destructive",
+        })
+        return false
+      }
     }
 
     return true
   }
 
-  const handlePaymentSuccess = async (paymentId: string) => {
+  const handlePaymentSuccess = async (paymentId: string, cardId?: string, customerId?: string) => {
     if (isSubmitting) return
     setIsSubmitting(true)
 
     try {
       const orderData = {
-        planType: "one-time",
-        packageType: packageId,
-        customerName: `${formData.firstName} ${formData.lastName}`,
+        planType: "cart-checkout",
+        items: cartItems,
+        totalAmount: orderTotal,
+        monthlyFee: hostingTerms.monthlyAmountCents / 100,
+        customerName: formData.name,
         customerEmail: formData.email,
         customerPhone: formData.phone || "",
         addressLine1: formData.address,
@@ -96,12 +169,9 @@ export default function SimpleCheckoutPage() {
         state: formData.state,
         zip: formData.zipCode,
         paymentId: paymentId,
-        // These will be added later in customization
-        plaqueColor: "pending",
-        boxPersonalization: "",
-        addonWoodenQr: false,
-        addonPicturePlaque: false,
-        addonStoneQR: false,
+        customization: formData.customization || "",
+        cardId: cardId,
+        squareCustomerId: customerId,
       }
 
       const response = await fetch("/api/checkout/process", {
@@ -116,16 +186,42 @@ export default function SimpleCheckoutPage() {
         throw new Error(result.error || "Failed to create order")
       }
 
+      localStorage.removeItem("checkoutItems")
+      
+      // Store payment data in session storage for account creation
+      sessionStorage.setItem("postPaymentData", JSON.stringify({
+        email: formData.email,
+        name: formData.name,
+        phone: formData.phone,
+        address: formData.address,
+        address2: formData.address2,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zipCode,
+        orderId: result.order.id,
+        orderNumber: result.order.orderNumber,
+      }))
+
       toast({
         title: "Payment Successful!",
-        description: "Redirecting you to customize your memorial...",
+        description: "Continue to set up the memorial linked to your QR product.",
       })
 
-      router.push(`/checkout/customize?order=${result.order.orderNumber}&package=${packageId}`)
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      router.push(
+        user
+          ? `/create-memorial?orderId=${result.order.id}&welcome=true`
+          : `/auth/create-account?order=${result.order.id}`,
+      )
     } catch (error: any) {
+      console.error("[v0] Order creation error:", error)
       toast({
-        title: "Payment Failed",
-        description: error.message || "There was an error processing your payment. Please try again.",
+        title: "Order Processing Failed",
+        description: error.message || "There was an error processing your order. Please contact support.",
         variant: "destructive",
         duration: 10000,
       })
@@ -134,265 +230,316 @@ export default function SimpleCheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
-      <Header />
+    <section className="py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Purchase</h1>
+          <p className="text-lg text-muted-foreground">Secure checkout for your memorial products</p>
+        </div>
 
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Purchase</h1>
-            <p className="text-lg text-muted-foreground">You'll customize your plaque and add-ons after checkout</p>
-          </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          <Card className="h-fit lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-accent" />
+                Order Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                {cartItems.map((item, index) => (
+                  <div key={index} className="pb-3 border-b border-gray-200 dark:border-gray-800">
+                    <div className="text-sm font-medium text-foreground mb-1">{item.name}</div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Qty: {item.quantity}</span>
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Order Summary Sidebar */}
-            <Card className="h-fit lg:col-span-1">
+                <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
+                  {includesKeepsake ? (
+                    <>
+                      <div className="flex justify-between items-center text-sm mb-1">
+                        <span className="text-blue-900 dark:text-blue-100 font-medium">Memorial Hosting:</span>
+                        <span className="font-semibold text-blue-900 dark:text-blue-100">
+                          {HOSTING_INCLUDED_YEARS} years included
+                        </span>
+                      </div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                        {HOSTING_INCLUDED_YEARS} years of basic hosting for this memorial are included with your physical
+                        keepsake. No monthly fee. After {HOSTING_INCLUDED_YEARS} years you can optionally renew at{" "}
+                        {HOSTING_MONTHLY_PRICE_LABEL}/month.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center text-sm mb-1">
+                        <span className="text-blue-900 dark:text-blue-100 font-medium">Monthly Hosting Fee:</span>
+                        <span className="font-semibold text-blue-900 dark:text-blue-100">
+                          {HOSTING_MONTHLY_PRICE_LABEL}/mo
+                        </span>
+                      </div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                        Digital-only memorials are billed <strong>per memorial page</strong>, not per product.
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                <Separator />
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-lg font-bold">Due Today:</span>
+                  <span className="text-2xl font-bold text-blue-600">${orderTotal.toFixed(2)}</span>
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  {includesKeepsake
+                    ? `One-time payment. ${HOSTING_INCLUDED_YEARS} years of basic hosting included; renewal optional after year ${HOSTING_INCLUDED_YEARS}.`
+                    : `Then ${HOSTING_MONTHLY_PRICE_LABEL}/month per memorial starting next month`}
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p className="font-semibold text-foreground text-xs mb-2">What's Included:</p>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Personalized memorial product with QR code</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>
+                    {includesKeepsake
+                      ? `Digital memorial website with ${HOSTING_INCLUDED_YEARS} years of basic hosting`
+                      : "Digital memorial website"}
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Photos, videos & memories</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Multiple keepsakes for the same memorial share one hosting term</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-green-50 dark:bg-green-950 p-3 rounded-lg border border-green-200 dark:border-green-800">
+                <Shield className="h-4 w-4 text-green-600" />
+                <span className="text-green-900 dark:text-green-100 font-medium">30-day money-back guarantee</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Main Form */}
+          <div className="space-y-6 lg:col-span-2">
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  Order Summary
-                </CardTitle>
+                <CardTitle>Shipping & Contact Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">{selectedPackage.name}</span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">
-                      ${selectedPackage.price.toFixed(2)}
-                    </span>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">
+                      Full Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Full name"
+                      autoComplete="name"
+                    />
                   </div>
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <p>• {selectedPackage.storage} storage space</p>
-                    <p>
-                      • {selectedPackage.plaques} premium {selectedPackage.plaques === 1 ? "plaque" : "plaques"}
-                    </p>
-                    <p>• Unlimited photos, videos & audio</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">
+                      Email Address <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="john.doe@example.com"
+                      autoComplete="email"
+                    />
+                    <p className="text-xs text-muted-foreground">For order updates and account recovery</p>
                   </div>
-                  <Separator />
-                  <div className="flex justify-between items-center text-lg font-bold">
-                    <span>Total Today</span>
-                    <span className="text-2xl text-gray-900 dark:text-gray-100">
-                      ${selectedPackage.price.toFixed(2)}
-                    </span>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number (Optional)</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="(555) 123-4567"
+                      autoComplete="tel"
+                    />
                   </div>
                 </div>
 
                 <Separator />
 
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p className="font-semibold text-foreground text-xs">What's Next:</p>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
-                    <span>Choose plaque color</span>
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-sm">Shipping Address</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="address">
+                      Street Address <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="123 Main Street"
+                      autoComplete="street-address"
+                    />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
-                    <span>Add optional extras</span>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="address2">Apartment, Suite, etc.</Label>
+                    <Input
+                      id="address2"
+                      name="address2"
+                      value={formData.address2}
+                      onChange={handleInputChange}
+                      placeholder="Apt 4B"
+                      autoComplete="address-line2"
+                    />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
-                    <span>Create your memorial</span>
+
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">
+                        City <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="New York"
+                        autoComplete="address-level2"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">
+                        State <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="state"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="NY"
+                        maxLength={2}
+                        autoComplete="address-level1"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zipCode">
+                        ZIP Code <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="zipCode"
+                        name="zipCode"
+                        value={formData.zipCode}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="10001"
+                        autoComplete="postal-code"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <Shield className="h-4 w-4 text-accent" />
-                  <span>30-day money-back guarantee</span>
+                <Separator />
+
+                <div className="space-y-2">
+                  <Label htmlFor="customization">Memorial Customization (Optional)</Label>
+                  <Textarea
+                    id="customization"
+                    name="customization"
+                    value={formData.customization}
+                    onChange={handleInputChange}
+                    placeholder="Provide the memorial name, dates, preferred photo, and any special text for the print file..."
+                    rows={4}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Let us know personalization details: names, dates, memorial text, or special requests for your
+                    order.
+                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Main Form */}
-            <div className="space-y-6 lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Shipping & Contact Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">
-                        First Name <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="firstName"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="John"
-                        autoComplete="given-name"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">
-                        Last Name <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="lastName"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Doe"
-                        autoComplete="family-name"
-                      />
-                    </div>
+            {/* Payment Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lock className="h-5 w-5 text-accent" />
+                  Secure Payment
+                </CardTitle>
+                <div className="flex flex-wrap items-center gap-4 pt-4 border-t mt-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Shield className="h-5 w-5 text-green-600" />
+                    <span className="font-medium">SSL Encrypted</span>
                   </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">
-                        Email Address <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="john.doe@example.com"
-                        autoComplete="email"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="(555) 123-4567"
-                        autoComplete="tel"
-                      />
-                    </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CreditCard className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium">Square Secure Checkout</span>
                   </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-sm">Shipping Address</h3>
-                    <div className="space-y-2">
-                      <Label htmlFor="address">
-                        Street Address <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="address"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="123 Main Street"
-                        autoComplete="street-address"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="address2">Apartment, Suite, etc.</Label>
-                      <Input
-                        id="address2"
-                        name="address2"
-                        value={formData.address2}
-                        onChange={handleInputChange}
-                        placeholder="Apt 4B"
-                        autoComplete="address-line2"
-                      />
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="city">
-                          City <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id="city"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="New York"
-                          autoComplete="address-level2"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="state">
-                          State <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id="state"
-                          name="state"
-                          value={formData.state}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="NY"
-                          maxLength={2}
-                          autoComplete="address-level1"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="zipCode">
-                          ZIP Code <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id="zipCode"
-                          name="zipCode"
-                          value={formData.zipCode}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="10001"
-                          autoComplete="postal-code"
-                        />
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Award className="h-5 w-5 text-purple-600" />
+                    <span className="font-medium">100% Satisfaction Guaranteed</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <SquarePaymentForm
+                  amount={orderTotal}
+                  lineItems={cartItems.map(({ id, quantity }) => ({ id, quantity }))}
+                  orderId={`order_${Date.now()}`}
+                  onSuccess={handlePaymentSuccess}
+                  onError={(error) => {
+                    console.error("[v0] Payment error:", error)
+                  }}
+                  onBeforePayment={validateForm}
+                  disabled={isSubmitting}
+                  customerEmail={formData.email}
+                  customerName={formData.name}
+                />
+              </CardContent>
+            </Card>
 
-              {/* Payment Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="h-5 w-5 text-accent" />
-                    Secure Payment
-                  </CardTitle>
-                  <div className="flex flex-wrap items-center gap-4 pt-4 border-t mt-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Shield className="h-5 w-5 text-green-600" />
-                      <span className="font-medium">SSL Encrypted</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CreditCard className="h-5 w-5 text-blue-600" />
-                      <span className="font-medium">Secure Checkout</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Award className="h-5 w-5 text-purple-600" />
-                      <span className="font-medium">100% Satisfaction Guaranteed</span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <SquarePaymentForm
-                    amount={selectedPackage.price}
-                    orderId={`order_${Date.now()}`}
-                    onSuccess={handlePaymentSuccess}
-                    onError={(error) => {
-                      console.error("Payment error:", error)
-                    }}
-                    onBeforePayment={validateForm}
-                    disabled={isSubmitting}
-                  />
-                </CardContent>
-              </Card>
-
-              <p className="text-xs text-muted-foreground text-center">
-                By completing your order, you agree to our Terms of Service and Privacy Policy.
-              </p>
-            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              By completing your order, you agree to our Terms of Service and Privacy Policy.
+            </p>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  )
+}
+
+export default function SimpleCheckoutPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
+      <Header />
+      <Suspense fallback={<div className="py-20 text-center">Loading checkout...</div>}>
+        <CheckoutForm />
+      </Suspense>
     </div>
   )
 }

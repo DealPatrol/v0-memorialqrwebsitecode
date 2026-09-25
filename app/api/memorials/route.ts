@@ -1,7 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { createAdminClient, generateSecurePassword } from "@/lib/supabase/admin"
-import { sendAccountCreatedEmail } from "@/lib/email"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
+import { sendWelcomeEmail } from "@/lib/email"
+import { isMissingPodOrderSchema } from "@/lib/pod-orders"
+import { generateCompositePrintAsset } from "@/lib/print-asset-generator"
+import { dispatchOrderFulfillment } from "@/lib/fulfillment-dispatcher"
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,36 +21,39 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
-    let userId = body.userId || null
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    if (!userId && body.customerEmail) {
-      try {
-        console.log("[v0] Creating auto-account for:", body.customerEmail)
-        const adminClient = createAdminClient()
-        const generatedPassword = generateSecurePassword(16)
-
-        const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
-          email: body.customerEmail,
-          password: generatedPassword,
-          email_confirm: true, // Auto-confirm email
-          user_metadata: {
-            full_name: body.customerName || `${body.firstName} ${body.lastName}`,
-          },
-        })
-
-        if (authError) {
-          console.error("[v0] Auto-account creation failed:", authError.message)
-          // Continue without userId - memorial can still be created
-        } else if (authData.user) {
-          userId = authData.user.id
-          console.log("[v0] Auto-account created successfully:", userId)
-          // Store password to email later
-          body._generatedPassword = generatedPassword
-        }
-      } catch (autoAccountError) {
-        console.error("[v0] Exception during auto-account creation:", autoAccountError)
-        // Continue without userId
+    let paidOrderId: string | null = null
+    if (body.orderId) {
+      if (!user) {
+        return NextResponse.json({ error: "Sign in to set up the memorial for this order" }, { status: 401 })
       }
+
+      const serviceRole = createServiceRoleClient()
+      const { data: order, error: orderError } = await serviceRole
+        .from("orders")
+        .select("id, customer_email, user_id, payment_status, memorial_id")
+        .eq("id", body.orderId)
+        .maybeSingle()
+
+      if (orderError || !order) {
+        return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
+      }
+
+      const orderEmail = order.customer_email?.toLowerCase()
+      const userEmail = user.email?.toLowerCase()
+      const ownsOrder = order.user_id === user.id || (Boolean(orderEmail) && orderEmail === userEmail)
+      if (!ownsOrder || order.payment_status !== "completed") {
+        return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
+      }
+
+      if (order.memorial_id) {
+        return NextResponse.json({ error: "This order is already linked to a memorial" }, { status: 409 })
+      }
+
+      paidOrderId = order.id
     }
 
     // Generate unique memorial slug
@@ -67,10 +73,10 @@ export async function POST(request: NextRequest) {
         location: body.location || null,
         biography: body.biography || null,
         slug,
-        user_id: userId, // Now includes auto-created user ID
-        profile_image_url: body.profileImageUrl || null,
-        theme: body.theme || "classic",
-        package_type: packageType,
+        user_id: user?.id || null,
+        profile_image_url: body.profileImageUrl || null, // Store the profile image URL
+        theme: body.theme || "classic", // Store theme selection
+        package_type: packageType, // Store package type
       })
       .select()
       .single()
@@ -91,7 +97,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Memorial was not created - no data returned" }, { status: 500 })
     }
 
-    const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/memorial/${memorial.id}`
+    const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/memorial/${memorial.slug}`
 
     try {
       const qrResponse = await fetch(
@@ -124,28 +130,110 @@ export async function POST(request: NextRequest) {
       console.error("Exception generating QR code:", qrError)
     }
 
-    if (body.customerEmail) {
+    let printAssetUrl = memorial.qr_code_url || null
+    if (memorial.qr_code_url) {
       try {
-        const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/dashboard`
-
-        if (body._generatedPassword) {
-          // Send email with account credentials
-          await sendAccountCreatedEmail({
-            customerName: body.customerName || `${body.firstName} ${body.lastName}`,
-            customerEmail: body.customerEmail,
-            generatedPassword: body._generatedPassword,
-            memorialName: memorial.full_name,
-            memorialUrl,
-            dashboardUrl,
-            qrCodeUrl: memorial.qr_code_url,
-          })
+        const compositeAsset = await generateCompositePrintAsset({
+          memorialId: memorial.id,
+          fullName: memorial.full_name,
+          birthDate: memorial.birth_date,
+          deathDate: memorial.death_date,
+          memorialUrl,
+        })
+        if (compositeAsset.pngUrl) {
+          printAssetUrl = compositeAsset.pngUrl
         }
-      } catch (emailError) {
-        console.error("Failed to send email:", emailError)
+      } catch (assetErr) {
+        console.warn("[v0] Failed to generate composite print asset, using standard QR code:", assetErr)
       }
     }
 
-    return NextResponse.json({ memorial }, { status: 201 })
+    if (paidOrderId) {
+      const serviceRole = createServiceRoleClient()
+      const legacyOrderUpdate = {
+        memorial_id: memorial.id,
+        user_id: user?.id || null,
+        status: printAssetUrl ? "ready_for_fulfillment" : "setup_required",
+      }
+      const podFulfillmentUpdate = {
+        fulfillment_status: printAssetUrl ? "ready_for_fulfillment" : "awaiting_print_file",
+        print_file_url: printAssetUrl,
+      }
+
+      let linkResult = await serviceRole
+        .from("orders")
+        .update({
+          ...legacyOrderUpdate,
+          ...podFulfillmentUpdate,
+        })
+        .eq("id", paidOrderId)
+
+      if (linkResult.error && isMissingPodOrderSchema(linkResult.error)) {
+        console.warn("[v0] POD order migration is not available; linking memorial with legacy fields")
+        linkResult = await serviceRole.from("orders").update(legacyOrderUpdate).eq("id", paidOrderId)
+      }
+
+      const { error: linkError } = linkResult
+
+      if (linkError) {
+        console.error("Failed to link memorial to paid order:", linkError)
+        return NextResponse.json(
+          { error: "Memorial created, but the order could not be linked. Contact support with your order number." },
+          { status: 500 },
+        )
+      }
+
+      // Best-effort: copy the included-hosting end date from the physical order onto the memorial.
+      // Never blocks memorial setup (column may not exist until scripts/026 is applied).
+      try {
+        const { data: linkedOrder } = await serviceRole.from("orders").select("*").eq("id", paidOrderId).maybeSingle()
+        const hostingIncludedUntil =
+          linkedOrder?.hosting_included_until ?? linkedOrder?.fulfillment_data?.hosting_included_until ?? null
+        if (hostingIncludedUntil) {
+          const { error: hostingError } = await serviceRole
+            .from("memorials")
+            .update({ hosting_included_until: hostingIncludedUntil })
+            .eq("id", memorial.id)
+          if (hostingError) console.warn("[v0] Could not store hosting_included_until on memorial:", hostingError.message)
+        }
+      } catch (hostingErr) {
+        console.warn("[v0] Could not copy hosting_included_until to memorial:", hostingErr)
+      }
+
+      if (printAssetUrl) {
+        try {
+          await dispatchOrderFulfillment(paidOrderId, printAssetUrl)
+        } catch (dispatchErr) {
+          console.warn("[v0] Automated fulfillment dispatch deferred:", dispatchErr)
+        }
+      }
+    }
+
+    if (body.customerEmail) {
+      try {
+        const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/dashboard`
+
+        await sendWelcomeEmail({
+          customerName: body.customerName || `${body.firstName} ${body.lastName}`,
+          customerEmail: body.customerEmail,
+          memorialName: memorial.full_name,
+          memorialUrl,
+          dashboardUrl,
+          qrCodeUrl: memorial.qr_code_url,
+        })
+      } catch (emailError) {
+        console.error("Failed to send welcome email:", emailError)
+      }
+    }
+
+    return NextResponse.json(
+      {
+        memorial,
+        memorialUrl,
+        printFileUrl: printAssetUrl || memorial.qr_code_url || null,
+      },
+      { status: 201 },
+    )
   } catch (error: any) {
     console.error("Unexpected exception creating memorial:", error.message)
     return NextResponse.json(

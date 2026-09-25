@@ -1,0 +1,104 @@
+import { type NextRequest, NextResponse } from "next/server"
+import { getResend } from "@/lib/resend"
+
+export async function POST(request: NextRequest) {
+  try {
+    const resend = getResend()
+    const { email, orderDetails, customerName, orderId, orderNumber, productName, amount, monthlyFee, customerEmail, hostingIncludedUntil } =
+      await request.json()
+
+    const finalEmail = email || customerEmail
+    const finalOrderDetails =
+      orderDetails ||
+      `
+      <p><strong>Order Number:</strong> ${orderNumber || "N/A"}</p>
+      <p><strong>Product:</strong> ${productName || "Memorial QR Product"}</p>
+      <p><strong>Amount Paid:</strong> $${amount || "0.00"}</p>
+      ${
+        hostingIncludedUntil
+          ? `<p><strong>Memorial Hosting:</strong> 10 years of basic hosting included with your keepsake (through ${new Date(hostingIncludedUntil).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}). No monthly fee. Optional renewal at $4.99/month after that.</p>`
+          : monthlyFee && Number.parseFloat(monthlyFee) > 0
+            ? `<p><strong>Monthly Hosting:</strong> $${monthlyFee}/month (starting next month)</p>`
+            : ""
+      }
+    `
+
+    if (!finalEmail) {
+      return NextResponse.json({ error: "Missing email address" }, { status: 400 })
+    }
+
+    const { data, error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "Memorial QR <orders@memorialqr.com>",
+      to: [finalEmail],
+      bcc: [process.env.ADMIN_EMAIL || "support@memorialqr.com"],
+      subject: `Order Confirmation - ${orderNumber || "Memorial QR"}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Order Confirmation</title>
+          </head>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">Thank You for Your Order!</h1>
+            </div>
+            
+            <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
+              <p style="font-size: 16px; margin-bottom: 20px;">Dear ${customerName || "Valued Customer"},</p>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                We've received your order and are preparing your memorial products with care. You'll receive another email with tracking information once your order ships.
+              </p>
+              
+              <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #8b5cf6;">
+                <h2 style="color: #8b5cf6; margin-top: 0;">Order Details</h2>
+                ${finalOrderDetails}
+              </div>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                <strong>Next Steps:</strong>
+              </p>
+              <ol style="font-size: 16px; padding-left: 20px;">
+                <li style="margin-bottom: 10px;">You'll receive an email with your memorial dashboard login credentials within 24 hours</li>
+                <li style="margin-bottom: 10px;">Start uploading photos, videos, and memories to create your digital memorial</li>
+                <li style="margin-bottom: 10px;">Your physical memorial products will be prepared and shipped to your address</li>
+              </ol>
+              
+              <div style="background: #e0e7ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; font-size: 14px; color: #4c51bf;">
+                  <strong>Need Help?</strong> Contact us at ${process.env.ADMIN_EMAIL || "support@memorialqr.com"} or visit our FAQ page.
+                </p>
+              </div>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                With heartfelt sympathy,<br>
+                <strong>The Memorial QR Team</strong>
+              </p>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; color: #6b7280; font-size: 14px;">
+              <p style="margin: 5px 0;">&copy; 2025 Memorial QR. All rights reserved.</p>
+              <p style="margin: 5px 0;">
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/terms-of-service" style="color: #8b5cf6; text-decoration: none;">Terms</a> | 
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/privacy-policy" style="color: #8b5cf6; text-decoration: none;">Privacy</a>
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
+    })
+
+    if (error) {
+      console.error("[v0] Email send error:", error)
+      return NextResponse.json({ error: "Failed to send email" }, { status: 500 })
+    }
+
+    console.log("[v0] Order confirmation email sent successfully to:", finalEmail)
+    return NextResponse.json({ success: true, data })
+  } catch (error) {
+    console.error("[v0] Order confirmation error:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}

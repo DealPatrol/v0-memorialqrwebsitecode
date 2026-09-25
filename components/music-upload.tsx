@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Upload, Loader2, LinkIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface MusicUploadProps {
   memorialId: string
@@ -20,6 +21,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
   const [title, setTitle] = useState("")
   const [artist, setArtist] = useState("")
   const [youtubeUrl, setYoutubeUrl] = useState("")
+  const [isVoiceRecording, setIsVoiceRecording] = useState(true)
   const [uploading, setUploading] = useState(false)
   const { toast } = useToast()
 
@@ -163,7 +165,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       formData.append("file", file)
       formData.append("memorialId", memorialId)
       formData.append("title", title)
-      formData.append("artist", artist)
+      formData.append("artist", isVoiceRecording ? "Voice recording" : artist)
 
       console.log("[v0] Uploading music:", { title, artist, fileSize: file.size })
 
@@ -194,6 +196,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       setFile(null)
       setTitle("")
       setArtist("")
+      setIsVoiceRecording(true)
       onUploadComplete()
     } catch (error) {
       console.error("[v0] Upload error:", error)
@@ -208,7 +211,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
   }
 
   return (
-    <Tabs defaultValue="youtube" className="w-full">
+    <Tabs defaultValue="file" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="youtube">YouTube Link</TabsTrigger>
         <TabsTrigger value="file">Upload File</TabsTrigger>
@@ -269,6 +272,20 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
       </TabsContent>
 
       <TabsContent value="file" className="space-y-4">
+        <div className="flex items-start gap-3 rounded-lg border bg-purple-50 p-3">
+          <Checkbox
+            id="voice-recording"
+            checked={isVoiceRecording}
+            onCheckedChange={(checked) => setIsVoiceRecording(checked === true)}
+          />
+          <div>
+            <Label htmlFor="voice-recording">Feature as “Hear Their Voice”</Label>
+            <p className="text-xs text-slate-600">
+              Select this for a voicemail or voice recording. It will appear prominently on the memorial page.
+            </p>
+          </div>
+        </div>
+
         <div>
           <Label htmlFor="music-file">Audio File (MP3, WAV, M4A, AMR, 3GP, Voicemail - Max 20MB)</Label>
           <Input
@@ -283,12 +300,12 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
         </div>
 
         <div>
-          <Label htmlFor="music-title">Song Title *</Label>
+          <Label htmlFor="music-title">Audio Title *</Label>
           <Input
             id="music-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter song title..."
+            placeholder={isVoiceRecording ? "A message in their voice" : "Enter song title..."}
             disabled={uploading}
           />
         </div>
@@ -300,7 +317,7 @@ export function MusicUpload({ memorialId, onUploadComplete }: MusicUploadProps) 
             value={artist}
             onChange={(e) => setArtist(e.target.value)}
             placeholder="Enter artist name..."
-            disabled={uploading}
+            disabled={uploading || isVoiceRecording}
           />
         </div>
 

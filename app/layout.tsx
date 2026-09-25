@@ -4,15 +4,15 @@ import { Inter, Dancing_Script, Great_Vibes } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { ExitIntentPopup } from "@/components/exit-intent-popup"
 import { LiveChatButton } from "@/components/live-chat-button"
-import { OrganizationSchema, WebSiteSchema, LocalBusinessSchema, ServiceSchema } from "@/components/seo/structured-data"
+import { Footer } from "@/components/footer"
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  preload: true,
 })
 
 const dancingScript = Dancing_Script({
@@ -20,6 +20,7 @@ const dancingScript = Dancing_Script({
   weight: ["400", "500", "600", "700"],
   variable: "--font-dancing-script",
   display: "swap",
+  preload: false,
 })
 
 const greatVibes = Great_Vibes({
@@ -27,39 +28,16 @@ const greatVibes = Great_Vibes({
   weight: ["400"],
   variable: "--font-great-vibes",
   display: "swap",
+  preload: false,
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"),
-  title: {
-    default: "Memorial QR - Digital Memorial Plaques | QR Code Memorials with 10-Year Hosting",
-    template: "%s | Memorial QR",
-  },
+  title: "Memorial QR Codes | Personalized Keepsakes & Digital Memorials",
   description:
-    "Create beautiful QR code memorial plaques that connect visitors to photos, videos, and stories of your loved ones. Starting at $39.89 with 10 years basic hosting on physical keepsakes. Free shipping. 30-day guarantee.",
-  keywords: [
-    "memorial QR code",
-    "digital memorial",
-    "QR code memorial plaque",
-    "memorial plaque",
-    "grave marker QR code",
-    "cemetery QR code",
-    "headstone QR code",
-    "remembrance plaque",
-    "memorial tribute",
-    "online memorial",
-    "digital obituary",
-    "memorial website",
-    "QR code grave marker",
-    "lasting tribute",
-    "memorial keepsake",
-    "honor loved one",
-    "memorial gift",
-    "personalized memorial",
-    "weatherproof memorial plaque",
-    "10-year memorial hosting",
-  ],
-  authors: [{ name: "Memorial QR", url: "https://memorialsqr.com" }],
+    "Personalized print-on-demand QR keepsakes linked to digital memorials. 10 years of basic hosting included with every physical keepsake, then optional $4.99/month renewal.",
+  keywords:
+    "memorial QR codes, personalized memorial keepsakes, digital memorial, pet memorial QR, memorial photo block, QR keyring, memorial services",
+  authors: [{ name: "Memorial QR" }],
   creator: "Memorial QR",
   publisher: "Memorial QR",
   formatDetection: {
@@ -67,145 +45,114 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"),
   alternates: {
     canonical: "/",
-    languages: {
-      "en-US": "/",
-    },
   },
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://memorialsqr.com",
-    siteName: "Memorial QR",
-    title: "Memorial QR - Create Lasting Digital Memorials with QR Code Plaques",
+    title: "Memorial QR Codes | Personalized Keepsakes & Digital Memorials",
     description:
-      "Honor your loved ones with beautiful QR code memorial plaques. Unlimited photos & videos, 10-year hosting with keepsakes, free shipping. Starting at $39.89.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Memorial QR - Digital Memorial Plaques with QR Codes",
-        type: "image/jpeg",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@memorialqr",
-    creator: "@memorialqr",
-    title: "Memorial QR - Digital Memorial Plaques",
-    description: "Create beautiful QR code memorial plaques with 10-year hosting on keepsakes. Starting at $39.89.",
-    images: ["/og-image.jpg"],
+      "Print-on-demand QR keepsakes linked to digital memorials, with 10 years of basic hosting included.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
+    siteName: "Memorial QR",
+    locale: "en_CA",
+    type: "website",
   },
   facebook: {
     appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Memorial QR Codes | Digital Memorials",
+    description:
+      "Personalized QR keepsakes for human and pet memorials with digital hosting.",
+  },
   robots: {
     index: true,
     follow: true,
-    nocache: false,
     googleBot: {
       index: true,
       follow: true,
-      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
     },
   },
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION || "your-google-verification-code",
-    yandex: process.env.YANDEX_VERIFICATION,
-    yahoo: process.env.YAHOO_VERIFICATION,
+    google: process.env.GOOGLE_SITE_VERIFICATION,
   },
-  category: "Memorial Services",
-  classification: "Business",
-  referrer: "origin-when-cross-origin",
-  generator: "Next.js",
-  applicationName: "Memorial QR",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Memorial QR",
-  },
-  manifest: "/manifest.json",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-  },
-  other: {
-    "msapplication-TileColor": "#7c3aed",
-    "theme-color": "#7c3aed",
-    "apple-mobile-web-app-capable": "yes",
-    "mobile-web-app-capable": "yes",
-    "format-detection": "telephone=no",
-    "geo.region": "US",
-    "geo.placename": "United States",
-    rating: "General",
-    distribution: "Global",
-    "revisit-after": "7 days",
-  },
+  generator: "v0.app",
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  userScalable: true,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
-    { media: "(prefers-color-scheme: dark)", color: "#7c3aed" },
-  ],
-  colorScheme: "light",
+  themeColor: "#2563eb",
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Memorial QR",
+    description: "Personalized print-on-demand QR keepsakes linked to hosted digital memorials",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
+    telephone: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
+    email: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
+    priceRange: "$$",
+    servesCuisine: null,
+    paymentAccepted: ["Credit Card", "Debit Card"],
+    openingHours: "Mo-Su 00:00-23:59",
+    sameAs: [],
+  }
+
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "Memorial QR Print-on-Demand Products",
+    description:
+      "Personalized QR stickers, coasters, keyrings, indoor displays, pet tags, and photo blocks linked to digital memorials.",
+    brand: {
+      "@type": "Brand",
+      name: "Memorial QR",
+    },
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "CAD",
+      lowPrice: "19.99",
+      highPrice: "59.99",
+      availability: "https://schema.org/InStock",
+    },
+  }
+
   return (
     <html
-      lang="en"
+      lang="en-CA"
       suppressHydrationWarning
       className={`${inter.variable} ${dancingScript.variable} ${greatVibes.variable} bg-background`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBP2W2XN7P"></script>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Memorial QR Blog RSS Feed"
+          href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/feed.xml`}
+        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-RBP2W2XN7P');
-            `,
-          }}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
         />
       </head>
       <body className={inter.className}>
-        <OrganizationSchema />
-        <WebSiteSchema />
-        <LocalBusinessSchema />
-        <ServiceSchema />
-
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           {children}
+          <Footer />
           <Toaster />
-          <Analytics />
-          <SpeedInsights />
+          <ExitIntentPopup />
           <LiveChatButton />
         </ThemeProvider>
       </body>

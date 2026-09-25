@@ -11,7 +11,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Music ID is required" }, { status: 400 })
     }
 
-    const supabase = await createServerClient()
+    const supabase = createServerClient()
 
     const { data: music, error: fetchError } = await supabase.from("music").select("*").eq("id", musicId).single()
 

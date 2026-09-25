@@ -6,7 +6,24 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
 import type { Metadata } from "next"
-import { FAQSchema, BreadcrumbSchema } from "@/components/seo/structured-data"
+import { JsonLd } from "@/components/json-ld"
+
+export const metadata: Metadata = {
+  title: "Memorial QR FAQ | Print-on-Demand Keepsakes | Common Questions",
+  description:
+    "Answers to frequently asked questions about Memorial QR products, fulfillment, pricing, and the 10 years of basic hosting included with physical keepsakes.",
+  keywords:
+    "memorial QR FAQ Calgary, print-on-demand memorial products, pet memorial QR answers, digital memorial hosting Alberta",
+  alternates: {
+    canonical: "/faq",
+  },
+  openGraph: {
+    title: "Memorial QR FAQ | Calgary Northeast",
+    description:
+      "Get answers about memorial QR codes, installation, product pricing, and memorial hosting.",
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/faq`,
+  },
+}
 
 const faqCategories = [
   {
@@ -30,7 +47,7 @@ const faqCategories = [
       {
         question: "How long does it take to set up?",
         answer:
-          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, your digital memorial is live immediately, and your QR code plaque ships within 3-5 business days.",
+          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, the digital memorial can go live while the selected product is prepared for print-on-demand fulfillment.",
       },
     ],
   },
@@ -40,17 +57,17 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "Physical keepsake purchases include 10 years of basic memorial hosting — no monthly fee during that period. $4.99/mo applies only to digital-only memorials (no physical product), renewals after the included 10-year term, or optional Premium. If Premium lapses, your basic memorial page stays online so the QR never goes dead.",
+          "Not with a physical keepsake. Every physical product includes 10 years of basic hosting for its memorial page. After 10 years you can optionally renew at $4.99/month. Digital-only memorials (no physical product) are $4.99/month.",
       },
       {
-        question: "How long is memorial hosting included?",
+        question: "What's included in the product price?",
         answer:
-          "Any physical keepsake purchase includes 10 years of basic memorial hosting. Digital-only plans are $4.99/mo. After the included 10-year period you can renew from $4.99/mo or choose optional Premium. If a paid plan lapses, the basic memorial page stays online — your QR never goes dead.",
+          "The price shown in the store covers the physical product plus 10 years of basic hosting for the linked memorial page. The 10 years start on your order date.",
       },
       {
-        question: "What's included in the price?",
+        question: "What happens when hosting ends or I cancel?",
         answer:
-          "You get a complete digital memorial website, photo uploads, guest message board, a weatherproof QR code plaque with professional engraving, free shipping, and 10 years of basic memorial hosting with every physical keepsake. After year 10 you can renew from $4.99/mo or choose optional Premium; a basic page remains so the QR never goes dead.",
+          "Digital-only plans are not charged for another billing period after you cancel. If hosting is not renewed (after a digital-only plan is canceled, or after the included 10 years on a physical keepsake), the page shows a gentle \"memorial paused\" notice and is restored when you renew at $4.99/month. Your memorial link is never reassigned to anyone else. Contact support if you need help preserving a copy of your content.",
       },
       {
         question: "Do you offer refunds?",
@@ -65,32 +82,32 @@ const faqCategories = [
     ],
   },
   {
-    title: "QR Code & Plaque",
+    title: "QR Products & Fulfillment",
     faqs: [
       {
-        question: "How durable is the QR code plaque?",
+        question: "Which physical products are available?",
         answer:
-          "Our QR code plaques are made from weatherproof metal with UV-resistant coating and professional laser engraving. They're designed to withstand rain, snow, sun, and extreme temperatures for decades. We offer a 5-year durability guarantee.",
+          "The store offers a Keep Card sticker, cork memorial coaster, acrylic QR keyring, Voice Keychain, indoor slate desk plaque, pet QR tag, and memorial photo block.",
       },
       {
-        question: "What size is the QR code plaque?",
+        question: "Are the products made to order?",
         answer:
-          "The standard plaque is 4 inches by 6 inches, perfect for mounting on headstones, memorial benches, or display stands. The QR code is large enough to scan easily from 2-3 feet away.",
+          "Yes. Each product uses a unique print file containing the memorial's QR code and is fulfilled through Printful or Printify.",
       },
       {
-        question: "How do I mount the plaque?",
+        question: "Can I use these products as permanent outdoor cemetery markers?",
         answer:
-          "Each plaque comes with multiple mounting options including adhesive backing, screw holes, and magnetic backing. We include detailed instructions and all necessary hardware for secure installation.",
+          "No. The sticker and display products are not sold as cemetery-grade outdoor markers. Follow the intended use shown on each product listing.",
       },
       {
         question: "What if the QR code stops working?",
         answer:
-          "QR codes don't expire. Your physical purchase includes 10 years of basic memorial hosting, and after that you can renew or keep a basic page online — we never leave a QR dead if Premium lapses. If there are technical issues, we'll resolve them promptly.",
+          "The printed QR code itself does not expire; it links to your memorial page, which is hosted for the 10 years included with your keepsake (or while a digital-only plan is active). Contact support if an active memorial is not loading.",
       },
       {
         question: "How long does shipping take?",
         answer:
-          "QR code plaques ship within 3-5 business days via USPS Priority Mail (2-3 day delivery). Rush shipping options are available for an additional fee if you need it faster.",
+          "Production and shipping times depend on the selected product and fulfillment provider. Tracking details are sent when the order ships.",
       },
     ],
   },
@@ -149,53 +166,56 @@ const faqCategories = [
       },
     ],
   },
-]
-
-const allFaqs = faqCategories.flatMap((category) => category.faqs)
-
-export const metadata: Metadata = {
-  title: "FAQ - Frequently Asked Questions About QR Memorial Plaques",
-  description:
-    "Get answers about Memorial QR: pricing ($39.89+), QR code plaques, digital memorials, 10-year hosting with physical keepsakes, free shipping, 30-day guarantee, and 24/7 support.",
-  keywords:
-    "memorial FAQ, QR code plaque questions, digital memorial help, memorial pricing, memorial support, QR memorial answers, cemetery QR code FAQ",
-  openGraph: {
-    title: "Memorial QR FAQ - Your Questions Answered",
-    description:
-      "Find answers about creating digital memorials, QR code plaques, pricing, shipping, and our 10-year hosting policy with physical keepsakes.",
-    type: "website",
-    url: "https://memorialsqr.com/faq",
-    images: [
+  {
+    title: "Using Your Memorial QR Code",
+    faqs: [
       {
-        url: "https://memorialsqr.com/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Memorial QR FAQ",
+        question: "What does the printed QR code open?",
+        answer:
+          "It opens the linked digital memorial website with photos, videos, life stories, and guest messages.",
+      },
+      {
+        question: "Does every physical product use a unique QR code?",
+        answer:
+          "Yes. A custom print file is generated for the memorial associated with the order.",
+      },
+      {
+        question: "Can family members scan it without an app?",
+        answer:
+          "Yes. Most current smartphone camera apps recognize QR codes without a separate app.",
+      },
+      {
+        question: "Can I order more than one product for the same memorial?",
+        answer:
+          "Yes. Multiple products can link to the same digital memorial and share one 10-year hosting term; terms do not stack.",
+      },
+      {
+        question: "Can I update the memorial after the product is printed?",
+        answer:
+          "Yes. The QR destination stays the same while authorized family members update the hosted memorial content.",
       },
     ],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Memorial QR FAQ - Your Questions Answered",
-    description: "Get answers about pricing, setup, QR plaques, and our 10-year hosting policy",
-    images: ["https://memorialsqr.com/og-image.jpg"],
-  },
-  alternates: {
-    canonical: "https://memorialsqr.com/faq",
-  },
-}
+]
 
 export default function FAQPage() {
+  const allFaqs = faqCategories.flatMap((category) => category.faqs)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: allFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-white">
-      <FAQSchema faqs={allFaqs} />
-      <BreadcrumbSchema
-        items={[
-          { name: "Home", url: "https://memorialsqr.com" },
-          { name: "FAQ", url: "https://memorialsqr.com/faq" },
-        ]}
-      />
-
+      <JsonLd data={faqSchema} />
       <Header />
 
       {/* Hero Section */}
@@ -209,8 +229,8 @@ export default function FAQPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Find answers to common questions about creating digital memorials, QR code plaques, pricing, and more. Can't
-            find what you're looking for? Our support team is here to help 24/7.
+            Find answers to common questions about creating digital memorials, personalized QR products, pricing, and
+            more. Can't find what you're looking for? Contact our support team for help.
           </p>
 
           <Button asChild size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
@@ -257,7 +277,7 @@ export default function FAQPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Still Need Help?</h2>
             <p className="text-xl text-gray-600 mb-12">
-              Our friendly support team is available 24/7 to help you create the perfect memorial for your loved one.
+              Our support team can help you create a memorial for your loved one.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -276,7 +296,7 @@ export default function FAQPage() {
                 <CardContent className="p-8 text-center">
                   <Mail className="w-12 h-12 text-orange-600 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h3>
-                  <p className="text-gray-600 mb-4">Send us your questions and we'll respond within 2 hours.</p>
+                  <p className="text-gray-600 mb-4">Send us your questions and we'll respond as soon as we can.</p>
                   <Button
                     asChild
                     variant="outline"
@@ -311,8 +331,8 @@ export default function FAQPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Start honoring your loved one today with a beautiful digital memorial — every physical keepsake includes
-            10 years of basic hosting, and a basic page stays online so the QR never goes dead.
+            Start honoring your loved one today with a beautiful digital memorial that family and friends can
+            visit for years to come.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -321,7 +341,7 @@ export default function FAQPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/create-profile">Create Memorial - $39.89</Link>
+              <Link href="/store">Shop Memorial Products</Link>
             </Button>
 
             <Button
@@ -342,7 +362,7 @@ export default function FAQPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with lasting digital memorials — 10 years hosting included with every keepsake.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and digital memorials.</p>
             </div>
 
             <div>
@@ -405,7 +425,7 @@ export default function FAQPage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 Memorial QR. All rights reserved.</p>
+            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
           </div>
         </div>
       </footer>

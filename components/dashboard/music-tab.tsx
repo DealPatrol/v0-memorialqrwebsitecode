@@ -2,10 +2,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Trash2, MusicIcon } from "lucide-react"
+import { MusicIcon, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { MusicUpload } from "@/components/music-upload"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +17,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 type Music = {
   id: string
@@ -31,7 +40,13 @@ type Music = {
 export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: string }) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
   const router = useRouter()
+
+  const handleUploadComplete = () => {
+    setUploadDialogOpen(false)
+    router.refresh()
+  }
 
   const handleDelete = async () => {
     if (!deleteId) return
@@ -54,9 +69,26 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
   if (music.length === 0) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-4">
           <CardTitle>No Voicemails/Audio</CardTitle>
           <CardDescription>No voicemails or audio have been added to this memorial yet.</CardDescription>
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-fit">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Voice or Music
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Voice Recording or Music</DialogTitle>
+                <DialogDescription>
+                  Voice recordings are featured prominently on the public memorial page.
+                </DialogDescription>
+              </DialogHeader>
+              <MusicUpload memorialId={memorialId} onUploadComplete={handleUploadComplete} />
+            </DialogContent>
+          </Dialog>
         </CardHeader>
       </Card>
     )
@@ -64,6 +96,25 @@ export function MusicTab({ music, memorialId }: { music: Music[]; memorialId: st
 
   return (
     <>
+      <div className="mb-4">
+        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Voice or Music
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Voice Recording or Music</DialogTitle>
+              <DialogDescription>
+                Use “Voice recording” as the artist to feature a voicemail in “Hear Their Voice.”
+              </DialogDescription>
+            </DialogHeader>
+            <MusicUpload memorialId={memorialId} onUploadComplete={handleUploadComplete} />
+          </DialogContent>
+        </Dialog>
+      </div>
       <div className="space-y-4">
         {music.map((song) => (
           <Card key={song.id}>

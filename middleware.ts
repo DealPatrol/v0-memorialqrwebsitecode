@@ -1,6 +1,5 @@
 import { updateSession } from "@/lib/supabase/middleware"
 import type { NextRequest } from "next/server"
-import { NextResponse } from "next/server"
 
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
@@ -8,7 +7,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // For all other routes, just continue
-  return NextResponse.next()
+  return
 }
 
 export const config = {
