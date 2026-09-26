@@ -36,10 +36,14 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
   if (!isStoreProductId(params.id)) return { title: "Memorial QR Products" }
   const product = STORE_PRODUCTS_BY_ID[params.id]
   const copy = HEADLINES[product.id]
+  const title = `${product.name} | Memorial QR`
+  const description = copy?.subhead ?? product.description
+  const url = `/products/${product.id}`
   return {
-    title: `${product.name} | Memorial QR`,
-    description: copy?.subhead ?? product.description,
-    alternates: { canonical: `/products/${product.id}` },
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url },
   }
 }
 
