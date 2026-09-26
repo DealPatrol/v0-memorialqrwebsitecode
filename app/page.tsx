@@ -40,12 +40,19 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance leading-tight">
-              Digital Memorials That Last Forever
+              QR Keepsakes That Open Their Full Story
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
               Personalized QR keepsakes connect family and friends to an online memorial filled with photos, videos, and
               memories—one scan away.
+            </p>
+
+            <p className="text-base text-foreground mb-8 max-w-3xl mx-auto">
+              <span className="font-semibold">Plain pricing:</span> keepsakes from $19.99 CAD, one-time. Keeping the
+              online memorial page hosted is a separate <span className="font-semibold">$4.99/month per memorial</span>
+              {" "}(one fee even if you order several keepsakes for the same person). You can stop future renewals at
+              any time.
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">

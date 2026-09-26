@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { CHECKOUT_PRODUCTS, resolveCheckoutItems } from "@/lib/checkout-products"
 import type { CheckoutProduct } from "@/lib/checkout-products"
 import { createClient } from "@/lib/supabase/client"
+import { trackPurchase } from "@/lib/track"
 
 type CheckoutItem = CheckoutProduct & { id: string; quantity: number }
 
@@ -174,6 +175,13 @@ function CheckoutForm() {
       }
 
       localStorage.removeItem("checkoutItems")
+
+      trackPurchase({
+        transactionId: String(result.order.id),
+        value: orderTotal,
+        currency: "CAD",
+        items: cartItems.map((item) => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity })),
+      })
       
       // Store payment data in session storage for account creation
       sessionStorage.setItem("postPaymentData", JSON.stringify({
@@ -280,7 +288,7 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Lifetime digital memorial website</span>
+                  <span>Digital memorial page (hosting $4.99/month per memorial)</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />

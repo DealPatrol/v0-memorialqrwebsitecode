@@ -20,9 +20,10 @@ export default function StorePage() {
           </div>
           <p className="text-sm text-blue-800 leading-relaxed">
             Each product includes a <span className="font-semibold">one-time purchase price</span> plus{" "}
-            <span className="font-semibold">$4.99/month per memorial</span> for unlimited hosting, photos, and videos.{" "}
+            <span className="font-semibold">$4.99/month per memorial</span> to keep the online memorial page hosted.{" "}
             <span className="font-semibold">Ordering multiple products for the same memorial?</span> You only pay{" "}
-            <span className="font-semibold">one monthly fee</span>.
+            <span className="font-semibold">one monthly fee</span>. You can stop future renewals at any time. Prices are in
+            Canadian dollars (CAD).
           </p>
         </div>
       </section>
@@ -55,7 +56,11 @@ export default function StorePage() {
                 </div>
 
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg leading-tight">{product.name}</CardTitle>
+                  <CardTitle className="text-lg leading-tight">
+                    <Link href={`/products/${product.id}`} className="hover:underline">
+                      {product.name}
+                    </Link>
+                  </CardTitle>
                   <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
                     {product.provider} · {product.fulfillmentProduct}
                   </p>

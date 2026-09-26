@@ -26,8 +26,8 @@ export function TrustBadges() {
         </div>
         <div className="flex flex-col items-center text-center gap-2 hidden lg:flex">
           <Award className="h-8 w-8 text-orange-500" />
-          <p className="text-sm font-semibold text-white">Weather-Resistant</p>
-          <p className="text-xs text-zinc-500">Built to last decades</p>
+          <p className="text-sm font-semibold text-white">Made to Order</p>
+          <p className="text-xs text-zinc-500">Printed by Printful or Printify</p>
         </div>
       </div>
     </div>
