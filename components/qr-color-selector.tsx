@@ -170,7 +170,7 @@ export function QRColorSelector() {
               </Button>
 
               <p className="text-center text-sm text-gray-500 mt-4">
-                ✓ Secure checkout • ✓ Ships within 5-7 business days
+                ✓ Secure checkout • ✓ Ships within 3-7 business days
               </p>
             </div>
           </div>

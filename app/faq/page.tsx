@@ -13,12 +13,12 @@ export const metadata: Metadata = {
   description:
     "Answers to frequently asked questions about Memorial QR products, fulfillment, pricing, and $4.99 monthly digital hosting.",
   keywords:
-    "memorial QR FAQ Calgary, print-on-demand memorial products, pet memorial QR answers, digital memorial hosting Alberta",
+    "memorial QR FAQ, print-on-demand memorial products, pet memorial QR answers, digital memorial hosting",
   alternates: {
     canonical: "/faq",
   },
   openGraph: {
-    title: "Memorial QR FAQ | Calgary Northeast",
+    title: "Memorial QR FAQ | Memorial QR",
     description:
       "Get answers about memorial QR codes, installation, product pricing, and monthly digital hosting.",
     url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/faq`,

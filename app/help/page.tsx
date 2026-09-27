@@ -169,7 +169,7 @@ export default function HelpPage() {
                   How long does it take to receive my QR code plaque?
                 </h3>
                 <p className="text-gray-600">
-                  QR code plaques are professionally engraved and ship within 3-5 business days via USPS Priority Mail.
+                  Keepsakes are made to order and ship within 3-7 business days.
                   You'll receive tracking information once your order ships.
                 </p>
               </CardContent>

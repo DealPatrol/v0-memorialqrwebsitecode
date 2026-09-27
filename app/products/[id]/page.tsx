@@ -60,11 +60,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     includedYears > 0
       ? {
           q: "Is hosting included in the price?",
-          a: `Yes. The ${product.name} is a one-time purchase of ${priceLabel} CAD and includes ${includedYears} years of memorial page hosting for the memorial it links to, starting on the purchase date. There is no monthly hosting fee during that time, including for other keepsakes you order for the same memorial.`,
+          a: `Yes. The ${product.name} is a one-time purchase of ${priceLabel} and includes ${includedYears} years of memorial page hosting for the memorial it links to, starting on the purchase date. There is no monthly hosting fee during that time, including for other keepsakes you order for the same memorial.`,
         }
       : {
           q: "Is hosting included in the price?",
-          a: `No. The ${product.name} is a one-time purchase of ${priceLabel} CAD. Keeping the online memorial page hosted is a separate $${product.monthlyFee.toFixed(2)}/month per memorial, starting the month after your order. If you order several keepsakes for the same person, you pay one hosting fee, not one per item.`,
+          a: `No. The ${product.name} is a one-time purchase of ${priceLabel}. Keeping the online memorial page hosted is a separate $${product.monthlyFee.toFixed(2)}/month per memorial, starting the month after your order. If you order several keepsakes for the same person, you pay one hosting fee, not one per item.`,
         },
     includedYears > 0
       ? {
@@ -88,8 +88,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       a: `Each ${product.name} is made to order from a custom print file for one memorial and fulfilled by ${product.provider}.`,
     },
     {
-      q: "What currency are prices in?",
-      a: "Prices are shown and charged in Canadian dollars (CAD) through Square checkout.",
+      q: "How long does shipping take?",
+      a: "Your keepsake is made to order and ships within 3-7 business days to addresses in the United States.",
     },
   ]
 
@@ -110,9 +110,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
               <div className="mb-2 flex items-baseline gap-2">
                 <span className="text-4xl font-bold text-slate-900">{priceLabel}</span>
-                <span className="text-slate-600">CAD, one-time</span>
+                <span className="text-slate-600">one-time</span>
               </div>
-              <p className="mb-6 text-sm text-slate-700">{hostingLine}</p>
+              <p className="mb-2 text-sm text-slate-700">{hostingLine}</p>
+              <p className="mb-6 text-sm text-slate-700">Made to order. Ships within 3-7 business days (US).</p>
 
               <Button asChild size="lg" className="w-full gap-2 bg-blue-600 py-6 text-lg hover:bg-blue-700 sm:w-auto sm:px-10">
                 <Link href={checkoutHref}>
@@ -197,7 +198,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         <section className="px-4 py-14 text-center">
           <h2 className="mb-3 text-3xl font-bold text-slate-900">Ready when you are</h2>
           <p className="mb-6 text-slate-600">
-            {priceLabel} CAD one-time.{" "}
+            {priceLabel} one-time.{" "}
             {includedYears > 0
               ? `${includedYears} years of memorial page hosting included.`
               : `+ $${product.monthlyFee.toFixed(2)}/month per memorial for hosting.`}

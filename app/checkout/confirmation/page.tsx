@@ -205,7 +205,7 @@ export default function OrderConfirmationPage() {
               <div>
                 <h3 className="font-semibold mb-2">Shipping Timeline</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your memorial plaque will be carefully crafted and shipped within 3-5 business days. You'll receive
+                  Your memorial plaque will be carefully crafted and shipped within 3-7 business days. You'll receive
                   tracking information via email.
                 </p>
               </div>

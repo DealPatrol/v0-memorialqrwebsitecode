@@ -23,8 +23,7 @@ export default function StorePage() {
             {" "}(no monthly fee). Other products include a <span className="font-semibold">one-time purchase price</span> plus{" "}
             <span className="font-semibold">$4.99/month per memorial</span> to keep the online memorial page hosted.{" "}
             <span className="font-semibold">Ordering multiple products for the same memorial?</span> You only pay{" "}
-            <span className="font-semibold">one monthly fee</span>. You can stop future renewals at any time. Prices are in
-            Canadian dollars (CAD).
+            <span className="font-semibold">one monthly fee</span>. You can stop future renewals at any time. All prices are in US dollars.
           </p>
         </div>
       </section>
@@ -32,7 +31,7 @@ export default function StorePage() {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-            Memorial QR Code Products - Calgary Northeast
+            Memorial QR Code Products
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
             Seven print-on-demand keepsakes, each personalized with a unique QR code that opens an online memorial.
@@ -81,7 +80,7 @@ export default function StorePage() {
 
                   <div className="mb-4">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-blue-600">${product.price.toFixed(2)} CAD</span>
+                      <span className="text-2xl font-bold text-blue-600">${product.price.toFixed(2)}</span>
                       <span className="text-sm text-muted-foreground">one-time</span>
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">

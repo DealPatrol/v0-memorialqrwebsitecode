@@ -181,7 +181,7 @@ function CheckoutForm() {
       trackPurchase({
         transactionId: String(result.order.id),
         value: orderTotal,
-        currency: "CAD",
+        currency: "USD",
         items: cartItems.map((item) => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity })),
       })
       

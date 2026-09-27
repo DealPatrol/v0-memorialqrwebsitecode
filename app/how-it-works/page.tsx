@@ -24,12 +24,12 @@ export const metadata: Metadata = {
   description:
     "Learn how Memorial QR products and $4.99 monthly digital memorial hosting work for human and pet memorials.",
   keywords:
-    "how memorial QR works Calgary, custom QR keepsakes, print-on-demand memorial products, pet memorial QR process, digital memorial creation Alberta",
+    "how memorial QR works, custom QR keepsakes, print-on-demand memorial products, pet memorial QR process, digital memorial creation",
   alternates: {
     canonical: "/how-it-works",
   },
   openGraph: {
-    title: "How Memorial QR Codes Work | Calgary Northeast",
+    title: "How Memorial QR Codes Work | Memorial QR",
     description:
       "Create a digital memorial and order a personalized QR keepsake fulfilled through Printful or Printify.",
     url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/how-it-works`,

@@ -59,7 +59,7 @@ SHIPPING ADDRESS
 ${data.shippingAddress.line1}
 ${data.shippingAddress.line2 ? `${data.shippingAddress.line2}\n` : ""}${data.shippingAddress.city}, ${data.shippingAddress.state} ${data.shippingAddress.zip}
 
-${data.isGift ? "The recipient will receive instructions for creating their memorial page. Your gift will ship within 5-7 business days." : "You'll receive another email shortly with your memorial page link and instructions for managing your memorial."}
+${data.isGift ? "The recipient will receive instructions for creating their memorial page. Your gift will ship within 3-7 business days." : "You'll receive another email shortly with your memorial page link and instructions for managing your memorial."}
 
 If you have any questions, please contact us at support@memorialsQR.com
 
@@ -180,7 +180,7 @@ Memorial QR - Creating Lasting Digital Memorials
                               <p style="margin: 0; font-size: 14px; color: #0c5460; line-height: 1.5;">
                                 ${
                                   data.isGift
-                                    ? "The recipient will receive instructions for creating their memorial page. Your gift will ship within 5-7 business days."
+                                    ? "The recipient will receive instructions for creating their memorial page. Your gift will ship within 3-7 business days."
                                     : "You'll receive another email shortly with your memorial page link and instructions for managing your memorial."
                                 }
                               </p>
@@ -341,7 +341,7 @@ export async function sendWelcomeEmail(data: WelcomeEmailData) {
               
               <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
                 <p style="margin: 0; font-size: 14px;"><strong>Your Physical Plaque:</strong></p>
-                <p style="margin: 10px 0 0 0; font-size: 14px;">Your QR code plaque will be shipped within 3-5 business days. You'll receive a tracking number once it ships.</p>
+                <p style="margin: 10px 0 0 0; font-size: 14px;">Your QR code plaque will ship within 3-7 business days. You'll receive a tracking number once it ships.</p>
               </div>
               
               <p style="font-size: 14px; color: #666; margin-top: 30px;">If you have any questions or need assistance, please don't hesitate to contact us.</p>
@@ -504,7 +504,7 @@ ${data.giftMessage ? `PERSONAL MESSAGE:\n"${data.giftMessage}"\n\n` : ""}WHAT'S 
 - Free shipping to your address
 
 NEXT STEPS
-Your gift will arrive within 5-7 business days. You'll receive another email with instructions on how to create and customize your memorial page.
+Your gift will ship within 3-7 business days. You'll receive another email with instructions on how to create and customize your memorial page.
 
 If you have any questions about your gift, please contact us at support@memorialsQR.com
 
@@ -594,7 +594,7 @@ Memorial QR - Creating Lasting Digital Memorials
                             <td style="padding: 16px 20px;">
                               <p style="margin: 0 0 8px 0; font-size: 14px; color: #0c5460; font-weight: 600;">Next Steps:</p>
                               <p style="margin: 0; font-size: 14px; color: #0c5460; line-height: 1.5;">
-                                Your gift will arrive within 5-7 business days. You'll receive another email with instructions on how to create and customize your memorial page.
+                                Your gift will ship within 3-7 business days. You'll receive another email with instructions on how to create and customize your memorial page.
                               </p>
                             </td>
                           </tr>

@@ -43,7 +43,7 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
             <p className="text-gray-700 mb-4">
-              Physical memorial products ship within 3-5 business days. Free shipping is included on all orders within
+              Physical memorial products ship within 3-7 business days. Free shipping is included on all orders within
               the United States. International shipping rates apply for orders outside the US.
             </p>
 
