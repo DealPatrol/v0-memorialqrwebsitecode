@@ -5,7 +5,7 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check, Info, QrCode, ShoppingCart } from "lucide-react"
-import { STORE_PRODUCTS } from "@/lib/store-products"
+import { STORE_PRODUCTS, hostingIncludedYears } from "@/lib/store-products"
 
 export default function StorePage() {
   return (
@@ -19,7 +19,8 @@ export default function StorePage() {
             <h2 className="text-lg font-semibold text-blue-900">How Pricing Works</h2>
           </div>
           <p className="text-sm text-blue-800 leading-relaxed">
-            Each product includes a <span className="font-semibold">one-time purchase price</span> plus{" "}
+            <span className="font-semibold">Slate Desk Plaque: $49 with 10 years of memorial page hosting included</span>
+            {" "}(no monthly fee). Other products include a <span className="font-semibold">one-time purchase price</span> plus{" "}
             <span className="font-semibold">$4.99/month per memorial</span> to keep the online memorial page hosted.{" "}
             <span className="font-semibold">Ordering multiple products for the same memorial?</span> You only pay{" "}
             <span className="font-semibold">one monthly fee</span>. You can stop future renewals at any time. Prices are in
@@ -82,6 +83,11 @@ export default function StorePage() {
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold text-blue-600">${product.price.toFixed(2)} CAD</span>
                       <span className="text-sm text-muted-foreground">one-time</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {hostingIncludedYears(product.id) > 0
+                        ? `${hostingIncludedYears(product.id)} years of memorial page hosting included`
+                        : "+ $4.99/month per memorial for hosting"}
                     </div>
                   </div>
                 </CardContent>

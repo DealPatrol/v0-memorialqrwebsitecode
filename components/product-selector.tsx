@@ -7,6 +7,7 @@ import { Minus, Plus, QrCode, ShoppingCart } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { STORE_PRODUCTS } from "@/lib/store-products"
 import type { StoreProductId } from "@/lib/store-products"
+import { cartIncludesHosting, hostingIncludedYears } from "@/lib/store-products"
 
 export function ProductSelector() {
   const router = useRouter()
@@ -76,6 +77,11 @@ export function ProductSelector() {
 
                     <div className="mb-4">
                       <span className="text-xl font-bold text-blue-400">${product.price.toFixed(2)} CAD</span>
+                      {hostingIncludedYears(product.id) > 0 && (
+                        <p className="text-xs text-green-400 mt-1">
+                          {hostingIncludedYears(product.id)} years of hosting included
+                        </p>
+                      )}
                     </div>
 
                     {quantity > 0 ? (
@@ -117,7 +123,11 @@ export function ProductSelector() {
                 <div>
                   <p className="text-sm text-gray-400">Products Total</p>
                   <p className="text-3xl font-bold text-white">${cartTotal.toFixed(2)} CAD</p>
-                  <p className="text-xs text-gray-400 mt-1">+ $4.99/month per memorial for hosting</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {cartIncludesHosting(selectedProducts)
+                      ? "10 years of memorial page hosting included (plaque in cart)"
+                      : "+ $4.99/month per memorial for hosting"}
+                  </p>
                 </div>
 
                 <Button size="lg" onClick={handleCheckout} className="gap-2 px-8 py-6 text-lg">

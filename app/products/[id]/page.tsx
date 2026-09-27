@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 import { Check, Heart, Package, QrCode, ShoppingCart } from "lucide-react"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
-import { STORE_PRODUCTS_BY_ID, isStoreProductId } from "@/lib/store-products"
+import { STORE_PRODUCTS_BY_ID, hostingIncludedYears, isStoreProductId } from "@/lib/store-products"
 
 // Ad-traffic product landing pages. Every statement here must stay true to
 // lib/store-products.ts, /pricing and /faq. Do not add durability, lifetime,
@@ -14,7 +14,7 @@ const HEADLINES: Partial<Record<string, { headline: string; subhead: string }>> 
   "slate-plaque": {
     headline: "A slate plaque that opens their full story",
     subhead:
-      "A personalized slate desk plaque with a QR code. One scan opens their online memorial with photos, stories, and memories.",
+      "A personalized slate desk plaque with a QR code. One scan opens their online memorial with photos, stories, and memories. 10 years of memorial page hosting included.",
   },
   "voice-keychain": {
     headline: "Keep their voice one scan away",
@@ -49,16 +49,32 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const copy = HEADLINES[product.id] ?? { headline: product.name, subhead: product.description }
   const checkoutHref = `/checkout/simple?product=${product.id}`
   const indoor = INDOOR_ONLY.has(product.id)
+  const includedYears = hostingIncludedYears(product.id)
+  const priceLabel = Number.isInteger(product.price) ? `$${product.price}` : `$${product.price.toFixed(2)}`
+  const hostingLine =
+    includedYears > 0
+      ? `${includedYears} years of memorial page hosting included. No monthly fee.`
+      : `+ $${product.monthlyFee.toFixed(2)}/month per memorial to keep the online memorial page hosted. One fee per memorial, not per product. Stop future renewals at any time.`
 
   const faqs = [
-    {
-      q: "Is hosting included in the price?",
-      a: `No. The ${product.name} is a one-time purchase of $${product.price.toFixed(2)} CAD. Keeping the online memorial page hosted is a separate $${product.monthlyFee.toFixed(2)}/month per memorial, starting the month after your order. If you order several keepsakes for the same person, you pay one hosting fee, not one per item.`,
-    },
-    {
-      q: "What happens if I stop the hosting plan?",
-      a: "You won't be charged for another billing period, and the keepsake is still yours. The hosted memorial page may become unavailable after the paid period ends. Contact us before canceling if you'd like help keeping a copy of the content.",
-    },
+    includedYears > 0
+      ? {
+          q: "Is hosting included in the price?",
+          a: `Yes. The ${product.name} is a one-time purchase of ${priceLabel} CAD and includes ${includedYears} years of memorial page hosting for the memorial it links to, starting on the purchase date. There is no monthly hosting fee during that time, including for other keepsakes you order for the same memorial.`,
+        }
+      : {
+          q: "Is hosting included in the price?",
+          a: `No. The ${product.name} is a one-time purchase of ${priceLabel} CAD. Keeping the online memorial page hosted is a separate $${product.monthlyFee.toFixed(2)}/month per memorial, starting the month after your order. If you order several keepsakes for the same person, you pay one hosting fee, not one per item.`,
+        },
+    includedYears > 0
+      ? {
+          q: "What happens after the included hosting ends?",
+          a: "Before the included term ends, we'll contact you about renewal options. The keepsake is always yours.",
+        }
+      : {
+          q: "What happens if I stop the hosting plan?",
+          a: "You won't be charged for another billing period, and the keepsake is still yours. The hosted memorial page may become unavailable after the paid period ends. Contact us before canceling if you'd like help keeping a copy of the content.",
+        },
     {
       q: "Does anyone need an app to scan it?",
       a: "No. Family and friends can scan the QR code with a regular smartphone camera.",
@@ -93,13 +109,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               <p className="mb-6 text-lg text-slate-600">{copy.subhead}</p>
 
               <div className="mb-2 flex items-baseline gap-2">
-                <span className="text-4xl font-bold text-slate-900">${product.price.toFixed(2)}</span>
+                <span className="text-4xl font-bold text-slate-900">{priceLabel}</span>
                 <span className="text-slate-600">CAD, one-time</span>
               </div>
-              <p className="mb-6 text-sm text-slate-700">
-                + ${product.monthlyFee.toFixed(2)}/month per memorial to keep the online memorial page hosted. One
-                fee per memorial, not per product. Stop future renewals at any time.
-              </p>
+              <p className="mb-6 text-sm text-slate-700">{hostingLine}</p>
 
               <Button asChild size="lg" className="w-full gap-2 bg-blue-600 py-6 text-lg hover:bg-blue-700 sm:w-auto sm:px-10">
                 <Link href={checkoutHref}>
@@ -184,7 +197,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         <section className="px-4 py-14 text-center">
           <h2 className="mb-3 text-3xl font-bold text-slate-900">Ready when you are</h2>
           <p className="mb-6 text-slate-600">
-            ${product.price.toFixed(2)} CAD one-time + ${product.monthlyFee.toFixed(2)}/month per memorial for hosting.
+            {priceLabel} CAD one-time.{" "}
+            {includedYears > 0
+              ? `${includedYears} years of memorial page hosting included.`
+              : `+ $${product.monthlyFee.toFixed(2)}/month per memorial for hosting.`}
           </p>
           <Button asChild size="lg" className="gap-2 bg-blue-600 px-10 py-6 text-lg hover:bg-blue-700">
             <Link href={checkoutHref}>

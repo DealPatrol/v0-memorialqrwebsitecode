@@ -9,7 +9,7 @@ const faqs = [
   {
     question: "How long does a memorial QR code last?",
     answer:
-      "The physical QR product is designed for long-term use. The linked digital memorial remains available while its $4.99 monthly hosting plan is active.",
+      "The physical QR product is designed for long-term use. With the Slate Desk Plaque, 10 years of memorial page hosting is included. For other products, the linked digital memorial remains available while its $4.99 monthly hosting plan is active.",
   },
   {
     question: "Can multiple family members contribute to a memorial?",

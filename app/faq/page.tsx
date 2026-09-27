@@ -57,12 +57,12 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "Physical products are one-time purchases. Digital memorial hosting is billed separately at $4.99 per month per memorial.",
+          "Physical products are one-time purchases. The Slate Desk Plaque ($49) includes 10 years of memorial page hosting. For other products, digital memorial hosting is billed separately at $4.99 per month per memorial.",
       },
       {
         question: "What's included in the product price?",
         answer:
-          "The price shown in the store covers the physical product in your cart. Digital memorial hosting is a separate $4.99 monthly charge per memorial.",
+          "The price shown in the store covers the physical product in your cart. Digital memorial hosting is a separate $4.99 monthly charge per memorial, except when your order includes the Slate Desk Plaque, which includes 10 years of hosting.",
       },
       {
         question: "What happens if I cancel my hosting subscription?",

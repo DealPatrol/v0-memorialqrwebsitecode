@@ -70,8 +70,10 @@ export const STORE_PRODUCTS = [
   {
     id: "slate-plaque",
     name: "Slate Desk Plaque",
-    price: 39.99,
-    monthlyFee: 4.99,
+    // Cole decision (Sep 25, 2026): $49 with 10 years of memorial hosting included.
+    // Square has no catalog item for this; the charge is computed from this price.
+    price: 49.0,
+    monthlyFee: 0,
     provider: "Printify",
     fulfillmentProduct: "Slate desk plaque",
     templateIdEnvironment: "PRINTIFY_SLATE_PLAQUE_PRODUCT_ID",
@@ -80,7 +82,7 @@ export const STORE_PRODUCTS = [
     features: [
       "Custom QR print file for each memorial",
       "Designed for indoor desk or shelf display",
-      "Includes a link to the digital memorial",
+      "10 years of memorial page hosting included",
       "Printed and fulfilled by Printify",
     ],
   },
@@ -129,4 +131,18 @@ export const STORE_PRODUCTS_BY_ID: Record<StoreProductId, StoreProduct> = Object
 
 export function isStoreProductId(id: string): id is StoreProductId {
   return id in STORE_PRODUCTS_BY_ID
+}
+
+/** Years of memorial page hosting included with a product (no monthly fee during that term). */
+export const HOSTING_INCLUDED_YEARS: Partial<Record<StoreProductId, number>> = {
+  "slate-plaque": 10,
+}
+
+export function hostingIncludedYears(id: string): number {
+  return isStoreProductId(id) ? HOSTING_INCLUDED_YEARS[id] ?? 0 : 0
+}
+
+/** A cart is one memorial; if it contains a hosting-included product, no monthly subscription is created. */
+export function cartIncludesHosting(items: { id: string }[]): boolean {
+  return items.some((item) => hostingIncludedYears(item.id) > 0)
 }

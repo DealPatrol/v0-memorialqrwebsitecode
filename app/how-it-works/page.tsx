@@ -289,7 +289,7 @@ export default function HowItWorksPage() {
               <CardContent className="p-0">
                 <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Digital Memorial Hosting</h3>
-                <p className="text-sm text-gray-600">$4.99 per month for each hosted memorial</p>
+                <p className="text-sm text-gray-600">10 years included with the Slate Desk Plaque; otherwise $4.99 per month for each hosted memorial</p>
               </CardContent>
             </Card>
 
