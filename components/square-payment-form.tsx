@@ -205,8 +205,8 @@ export function SquarePaymentForm({
           locationId={locId}
           cardTokenizeResponseReceived={handlePayment}
           createPaymentRequest={() => ({
-            countryCode: "US",
-            currencyCode: "USD",
+            countryCode: "CA",
+            currencyCode: "CAD",
             total: {
               amount: amount.toFixed(2),
               label: "Total",

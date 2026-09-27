@@ -92,7 +92,7 @@ export async function POST(req: Request) {
         !paymentResponse.ok ||
         payment?.status !== "COMPLETED" ||
         payment?.amount_money?.amount !== totalAmountCents ||
-        payment?.amount_money?.currency !== "USD" ||
+        payment?.amount_money?.currency !== "CAD" ||
         payment?.location_id !== locationId
       ) {
         return NextResponse.json({ success: false, error: "Payment does not match the order total" }, { status: 400 })
