@@ -49,7 +49,7 @@ export default function HomePage() {
             </p>
 
             <p className="text-base text-foreground mb-8 max-w-3xl mx-auto">
-              <span className="font-semibold">Plain pricing:</span> our Slate Memorial Plaque is{" "}
+              <span className="font-semibold">Plain pricing:</span> our Slate Desk Plaque is{" "}
               <span className="font-semibold">$49 CAD, one-time, with 10 years of memorial page hosting included</span>
               {" "}(no monthly fee). Other keepsakes start at $19.99 CAD, one-time, plus $4.99/month per memorial for
               hosting (one fee even if you order several keepsakes for the same person). You can stop future renewals
@@ -168,7 +168,7 @@ export default function HomePage() {
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
-                The Slate Memorial Plaque is $49 with 10 years of memorial page hosting included. Other physical
+                The Slate Desk Plaque is $49 with 10 years of memorial page hosting included. Other physical
                 products start at $19.99, and their digital memorial hosting is a separate $4.99 monthly charge per
                 memorial, not per physical product. Order multiple items for the same loved one and pay only one monthly
                 hosting fee.

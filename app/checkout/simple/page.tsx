@@ -317,7 +317,11 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>One monthly fee covers all products for same memorial</span>
+                  <span>
+                    {hostingIncluded
+                      ? "Other keepsakes for the same memorial are covered by the included hosting"
+                      : "One monthly fee covers all products for same memorial"}
+                  </span>
                 </div>
               </div>
 
