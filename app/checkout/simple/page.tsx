@@ -315,10 +315,12 @@ function CheckoutForm() {
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <span>Unlimited photos, videos & memories</span>
                 </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>One monthly fee covers all products for same memorial</span>
-                </div>
+                {!hostingIncluded && (
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>One monthly fee covers all products for same memorial</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2 text-sm text-muted-foreground bg-green-50 dark:bg-green-950 p-3 rounded-lg border border-green-200 dark:border-green-800">
