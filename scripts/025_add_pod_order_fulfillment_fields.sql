@@ -1,7 +1,7 @@
 -- Migration: Add POD fulfillment fields to orders table
 -- This migration is strictly additive and safe for existing data.
 
-ALTER TABLE orders 
+ALTER TABLE orders
 ADD COLUMN IF NOT EXISTS line_items JSONB,
 ADD COLUMN IF NOT EXISTS fulfillment_provider TEXT,
 ADD COLUMN IF NOT EXISTS fulfillment_id TEXT,
