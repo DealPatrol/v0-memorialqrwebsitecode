@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { sendWelcomeEmail } from "@/lib/email"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
-import { STORE_PRODUCTS } from "@/lib/store-products"
+import { generateCompositePrintAsset } from "@/lib/print-asset-generator"
+import { dispatchOrderFulfillment } from "@/lib/fulfillment-dispatcher"
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +26,6 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     let paidOrderId: string | null = null
-    let paidOrderHasPodProducts = false
     if (body.orderId) {
       if (!user) {
         return NextResponse.json({ error: "Sign in to set up the memorial for this order" }, { status: 401 })
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       const serviceRole = createServiceRoleClient()
       const { data: order, error: orderError } = await serviceRole
         .from("orders")
-        .select("id, customer_email, user_id, payment_status, memorial_id, product_name")
+        .select("id, customer_email, user_id, payment_status, memorial_id")
         .eq("id", body.orderId)
         .maybeSingle()
 
@@ -42,7 +42,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
       }
 
-      const ownsOrder = order.user_id === user.id || order.customer_email === user.email
+      const orderEmail = order.customer_email?.toLowerCase()
+      const userEmail = user.email?.toLowerCase()
+      const ownsOrder = order.user_id === user.id || (Boolean(orderEmail) && orderEmail === userEmail)
       if (!ownsOrder || order.payment_status !== "completed") {
         return NextResponse.json({ error: "A matching paid order is required" }, { status: 403 })
       }
@@ -52,7 +54,6 @@ export async function POST(request: NextRequest) {
       }
 
       paidOrderId = order.id
-      paidOrderHasPodProducts = STORE_PRODUCTS.some((product) => order.product_name.includes(`[${product.id}]`))
     }
 
     // Generate unique memorial slug
@@ -129,19 +130,35 @@ export async function POST(request: NextRequest) {
       console.error("Exception generating QR code:", qrError)
     }
 
+    let printAssetUrl = memorial.qr_code_url || null
+    if (memorial.qr_code_url) {
+      try {
+        const compositeAsset = await generateCompositePrintAsset({
+          memorialId: memorial.id,
+          fullName: memorial.full_name,
+          birthDate: memorial.birth_date,
+          deathDate: memorial.death_date,
+          memorialUrl,
+        })
+        if (compositeAsset.pngUrl) {
+          printAssetUrl = compositeAsset.pngUrl
+        }
+      } catch (assetErr) {
+        console.warn("[v0] Failed to generate composite print asset, using standard QR code:", assetErr)
+      }
+    }
+
     if (paidOrderId) {
       const serviceRole = createServiceRoleClient()
       const legacyOrderUpdate = {
         memorial_id: memorial.id,
         user_id: user?.id || null,
-        status: memorial.qr_code_url ? "ready_for_fulfillment" : "setup_required",
+        status: printAssetUrl ? "ready_for_fulfillment" : "setup_required",
       }
-      const podFulfillmentUpdate = paidOrderHasPodProducts
-        ? {
-            fulfillment_status: memorial.qr_code_url ? "ready_for_fulfillment" : "awaiting_print_file",
-            print_file_url: memorial.qr_code_url || null,
-          }
-        : {}
+      const podFulfillmentUpdate = {
+        fulfillment_status: printAssetUrl ? "ready_for_fulfillment" : "awaiting_print_file",
+        print_file_url: printAssetUrl,
+      }
 
       let linkResult = await serviceRole
         .from("orders")
@@ -157,12 +174,21 @@ export async function POST(request: NextRequest) {
       }
 
       const { error: linkError } = linkResult
+
       if (linkError) {
         console.error("Failed to link memorial to paid order:", linkError)
         return NextResponse.json(
           { error: "Memorial created, but the order could not be linked. Contact support with your order number." },
           { status: 500 },
         )
+      }
+
+      if (printAssetUrl) {
+        try {
+          await dispatchOrderFulfillment(paidOrderId, printAssetUrl)
+        } catch (dispatchErr) {
+          console.warn("[v0] Automated fulfillment dispatch deferred:", dispatchErr)
+        }
       }
     }
 
@@ -187,7 +213,7 @@ export async function POST(request: NextRequest) {
       {
         memorial,
         memorialUrl,
-        printFileUrl: memorial.qr_code_url || null,
+        printFileUrl: printAssetUrl || memorial.qr_code_url || null,
       },
       { status: 201 },
     )

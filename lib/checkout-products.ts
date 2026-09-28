@@ -83,7 +83,6 @@ export function createPodOrderLineItems(
     if (!item.fulfillment) return []
 
     const unitAmountCents = Math.round(item.price * 100)
-
     return [
       {
         sku: item.id,
