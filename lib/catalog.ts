@@ -21,6 +21,140 @@ export interface CheckoutProduct {
   monthlyFee: number
 }
 
+export type FulfillmentProvider = "printful" | "printify"
+
+/** A physical product that can be sold only when every requiredEnv name is set. */
+export interface PodProduct {
+  id: string
+  name: string
+  price: number
+  monthlyFee: number
+  provider: FulfillmentProvider
+  fulfillmentProduct: string
+  /** Env var holding the Printful sync variant id or the Printify product id. */
+  templateEnv: string
+  /** Printify variant id. Printful leaves this null. */
+  variantEnv: string | null
+  requiredEnv: string[]
+  category: StoreCategory
+  description: string
+  features: string[]
+}
+
+const PRINTFUL_SHARED = ["PRINTFUL_API_TOKEN"] as const
+const PRINTIFY_SHARED = ["PRINTIFY_API_TOKEN", "PRINTIFY_SHOP_ID"] as const
+
+/**
+ * The only physical products that may be sold. Prices are USD.
+ * A product stays hidden until its requiredEnv values are present on the server.
+ */
+export const POD_PRODUCTS: PodProduct[] = [
+  {
+    id: "keep-card",
+    name: "Keep Card — Sticker + Online Memorial Profile",
+    price: 39.99,
+    monthlyFee: HOSTING_MONTHLY_PRICE,
+    provider: "printful",
+    fulfillmentProduct: "Kiss-cut vinyl sticker, 3×3 in.",
+    templateEnv: "PRINTFUL_KEEP_CARD_TEMPLATE_ID",
+    variantEnv: null,
+    requiredEnv: [...PRINTFUL_SHARED, "PRINTFUL_KEEP_CARD_TEMPLATE_ID"],
+    category: "Human",
+    description:
+      "A peel-and-stick memorial QR sticker for smooth indoor surfaces, paired with an online memorial page.",
+    features: ["Unique QR for this memorial", "Kiss-cut vinyl sticker", "Printed by Printful", "Ships in the United States"],
+  },
+  {
+    id: "memorial-coaster",
+    name: "Cork Memorial Coaster",
+    price: 19.99,
+    monthlyFee: HOSTING_MONTHLY_PRICE,
+    provider: "printful",
+    fulfillmentProduct: "Cork-back coaster",
+    templateEnv: "PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID",
+    variantEnv: null,
+    requiredEnv: [...PRINTFUL_SHARED, "PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID"],
+    category: "Human",
+    description: "A cork-back coaster printed with a QR code that opens the memorial page.",
+    features: ["Unique QR for this memorial", "Cork backing", "Printed by Printful", "Ships in the United States"],
+  },
+  {
+    id: "acrylic-keyring",
+    name: "Acrylic QR Keyring",
+    price: 19.99,
+    monthlyFee: HOSTING_MONTHLY_PRICE,
+    provider: "printify",
+    fulfillmentProduct: "Acrylic keyring",
+    templateEnv: "PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID",
+    variantEnv: "PRINTIFY_ACRYLIC_KEYRING_VARIANT_ID",
+    requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID", "PRINTIFY_ACRYLIC_KEYRING_VARIANT_ID"],
+    category: "Human",
+    description: "A lightweight acrylic keyring printed with a QR code for the memorial page.",
+    features: ["Unique QR for this memorial", "Acrylic keepsake", "Printed by Printify", "Ships in the United States"],
+  },
+  {
+    id: "voice-keychain",
+    name: "Voice Keychain",
+    price: 24.99,
+    monthlyFee: HOSTING_MONTHLY_PRICE,
+    provider: "printify",
+    fulfillmentProduct: "Acrylic keyring",
+    templateEnv: "PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID",
+    variantEnv: "PRINTIFY_VOICE_KEYCHAIN_VARIANT_ID",
+    requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID", "PRINTIFY_VOICE_KEYCHAIN_VARIANT_ID"],
+    category: "Human",
+    description:
+      "An acrylic QR keychain for a memorial page where a voice recording can be added after checkout.",
+    features: ["Unique QR for this memorial", "Same acrylic keyring blank", "Printed by Printify", "Ships in the United States"],
+  },
+  {
+    id: "slate-plaque",
+    name: "Slate Desk Plaque",
+    price: 39.99,
+    monthlyFee: HOSTING_MONTHLY_PRICE,
+    provider: "printify",
+    fulfillmentProduct: "Slate desk plaque",
+    templateEnv: "PRINTIFY_SLATE_PLAQUE_PRODUCT_ID",
+    variantEnv: "PRINTIFY_SLATE_PLAQUE_VARIANT_ID",
+    requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_SLATE_PLAQUE_PRODUCT_ID", "PRINTIFY_SLATE_PLAQUE_VARIANT_ID"],
+    category: "Human",
+    description: "An indoor slate desk plaque printed with a QR code that opens the memorial page.",
+    features: ["Unique QR for this memorial", "Indoor desk display", "Printed by Printify", "Ships in the United States"],
+  },
+  {
+    id: "pet-tag",
+    name: "Pet QR Tag",
+    price: 24.99,
+    monthlyFee: HOSTING_MONTHLY_PRICE,
+    provider: "printify",
+    fulfillmentProduct: "Pet tag",
+    templateEnv: "PRINTIFY_PET_TAG_PRODUCT_ID",
+    variantEnv: "PRINTIFY_PET_TAG_VARIANT_ID",
+    requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_PET_TAG_PRODUCT_ID", "PRINTIFY_PET_TAG_VARIANT_ID"],
+    category: "Pet",
+    description: "A pet tag printed with a QR code that opens the pet's memorial page.",
+    features: ["Unique QR for this memorial", "Pet tag blank", "Printed by Printify", "Ships in the United States"],
+  },
+  {
+    id: "photo-block",
+    name: "Memorial Photo Block",
+    price: 59.99,
+    monthlyFee: HOSTING_MONTHLY_PRICE,
+    provider: "printify",
+    fulfillmentProduct: "Acrylic photo block",
+    templateEnv: "PRINTIFY_PHOTO_BLOCK_PRODUCT_ID",
+    variantEnv: "PRINTIFY_PHOTO_BLOCK_VARIANT_ID",
+    requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_PHOTO_BLOCK_PRODUCT_ID", "PRINTIFY_PHOTO_BLOCK_VARIANT_ID"],
+    category: "Human",
+    description: "An indoor photo block printed with this order's memorial QR code.",
+    features: ["Unique QR for this memorial", "Indoor display", "Printed by Printify", "Ships in the United States"],
+  },
+]
+
+export function getPodProduct(id: string): PodProduct | undefined {
+  return POD_PRODUCTS.find((product) => product.id === id)
+}
+
 /**
  * Physical catalog kept in code so it can be sold again, but not shown or
  * charged. None of these ids have an automatic supplier order on payment.

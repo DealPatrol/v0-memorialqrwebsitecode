@@ -15,16 +15,17 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-import { getCheckoutProduct } from "@/lib/catalog"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { formatUsd } from "@/lib/site"
 
-type CartLine = { id: string; name: string; price: number; quantity: number }
+type CartLine = { id: string; name: string; price: number; quantity: number; ships: boolean }
 
-function lineFromCatalog(id: string, quantity: number): CartLine | null {
-  const product = getCheckoutProduct(id)
+type SellableRow = { id: string; name: string; price: number; ships: boolean }
+
+function lineFromSellable(catalog: Map<string, SellableRow>, id: string, quantity: number): CartLine | null {
+  const product = catalog.get(id)
   if (!product) return null
-  return { id: product.id, name: product.name, price: product.price, quantity }
+  return { id: product.id, name: product.name, price: product.price, quantity, ships: product.ships }
 }
 
 function CheckoutForm() {
@@ -38,32 +39,45 @@ function CheckoutForm() {
   const [rejectedProduct, setRejectedProduct] = useState(false)
 
   useEffect(() => {
-    const storedItems = localStorage.getItem("checkoutItems")
-    let items: CartLine[] = []
-    let rejected = false
+    let cancelled = false
+    async function loadCart() {
+      const response = await fetch("/api/catalog/sellable")
+      const payload = (await response.json()) as { products?: SellableRow[] }
+      const catalog = new Map((payload.products ?? []).map((product) => [product.id, product]))
+      const storedItems = localStorage.getItem("checkoutItems")
+      let items: CartLine[] = []
+      let rejected = false
 
-    if (storedItems) {
-      const parsed = JSON.parse(storedItems) as Array<{ id: string; name: string; price: number; quantity: number }>
-      items = parsed.flatMap((item) => {
-        const line = lineFromCatalog(item.id, item.quantity)
-        if (!line) rejected = true
-        return line ? [line] : []
-      })
-    } else {
-      const productId = searchParams.get("product")
-      if (productId) {
-        const line = lineFromCatalog(productId, 1)
-        if (line) items = [line]
-        else rejected = true
+      if (storedItems) {
+        const parsed = JSON.parse(storedItems) as Array<{ id: string; quantity: number }>
+        items = parsed.flatMap((item) => {
+          const line = lineFromSellable(catalog, item.id, item.quantity)
+          if (!line) rejected = true
+          return line ? [line] : []
+        })
+      } else {
+        const productId = searchParams.get("product")
+        if (productId) {
+          const line = lineFromSellable(catalog, productId, 1)
+          if (line) items = [line]
+          else rejected = true
+        }
       }
-    }
 
-    if (rejected) localStorage.removeItem("checkoutItems")
-    setRejectedProduct(rejected)
-    setCheckoutBlocked(items.length === 0)
-    setCartItems(items)
-    setOrderTotal(items.reduce((sum, item) => sum + item.price * item.quantity, 0))
-    // Prices always come from the catalog. Unknown and physical ids are rejected.
+      if (cancelled) return
+      if (rejected) localStorage.removeItem("checkoutItems")
+      setRejectedProduct(rejected)
+      setCheckoutBlocked(items.length === 0)
+      setCartItems(items)
+      setOrderTotal(items.reduce((sum, item) => sum + item.price * item.quantity, 0))
+    }
+    loadCart().catch(() => {
+      if (!cancelled) setCheckoutBlocked(true)
+    })
+    return () => {
+      cancelled = true
+    }
+    // Prices come from the server catalog. Missing supplier env keeps a product out of that list.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -88,6 +102,7 @@ function CheckoutForm() {
   }
 
   const validateForm = () => {
+    const needsShipping = cartItems.some((item) => item.ships)
     if (
       !formData.email ||
       !formData.address ||
@@ -113,6 +128,23 @@ function CheckoutForm() {
         })
         return false
       }
+    }
+
+    if (needsShipping && !/^[A-Za-z]{2}$/.test(formData.state.trim())) {
+      toast({
+        title: "US state required",
+        description: "Enter a 2-letter state code. We ship only in the United States.",
+        variant: "destructive",
+      })
+      return false
+    }
+    if (needsShipping && !/^\d{5}(-\d{4})?$/.test(formData.zipCode.trim())) {
+      toast({
+        title: "US ZIP required",
+        description: "Enter a 5-digit ZIP code. We ship only in the United States.",
+        variant: "destructive",
+      })
+      return false
     }
 
     return true
@@ -334,7 +366,12 @@ function CheckoutForm() {
                 <Separator />
 
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-sm">Billing Address</h3>
+                  <h3 className="font-semibold text-sm">
+                    {cartItems.some((item) => item.ships) ? "US shipping address" : "Billing Address"}
+                  </h3>
+                  {cartItems.some((item) => item.ships) ? (
+                    <p className="text-sm text-muted-foreground">Ships to United States addresses only.</p>
+                  ) : null}
                   <div className="space-y-2">
                     <Label htmlFor="address">
                       Street Address <span className="text-red-500">*</span>
@@ -379,7 +416,7 @@ function CheckoutForm() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="state">
-                        State <span className="text-red-500">*</span>
+                        State (2-letter code) <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="state"

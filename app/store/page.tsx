@@ -4,10 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
 import { DIGITAL_MEMORIAL } from "@/lib/catalog"
+import { SellableProductGrid } from "@/components/sellable-product-grid"
+import { getSellablePodProducts } from "@/lib/fulfillment-availability"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { formatUsd } from "@/lib/site"
 
+export const dynamic = "force-dynamic"
+
 export default function StorePage() {
+  const physicalProducts = getSellablePodProducts()
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <Header />
@@ -17,7 +22,10 @@ export default function StorePage() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">Digital Memorials</h1>
           <p className="text-lg md:text-xl text-muted-foreground mb-8">
             A memorial page for photos, stories, and messages. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)} per month
-            for each memorial. Nothing is shipped.
+            for each memorial.
+            {physicalProducts.length === 0
+              ? " Nothing is shipped."
+              : " Printed keepsakes ship to United States addresses."}
           </p>
         </div>
       </section>
@@ -59,6 +67,8 @@ export default function StorePage() {
           </Card>
         </div>
       </section>
+
+      <SellableProductGrid />
     </div>
   )
 }

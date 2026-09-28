@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
+import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { ScrollProgressBar } from "@/components/scroll-progress-bar"
 import { QuickLinksBar } from "@/components/quick-links-bar"
 import { FeaturedMemorialPreview } from "@/components/featured-memorial-preview"
@@ -23,10 +24,14 @@ import {
   Star,
   CheckCircle,
 } from "lucide-react"
+import { getSellablePodProducts } from "@/lib/fulfillment-availability"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { formatUsd } from "@/lib/site"
 
+export const dynamic = "force-dynamic"
+
 export default function HomePage() {
+  const physicalProducts = getSellablePodProducts()
   return (
     <div className="min-h-screen pb-16 md:pb-0">
       <ScrollProgressBar />
@@ -46,7 +51,10 @@ export default function HomePage() {
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
               A digital memorial page for photos, videos, and stories. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)} per
-              month, and nothing needs to be shipped.
+              month.
+              {physicalProducts.length === 0
+                ? " Nothing needs to be shipped."
+                : " Printed keepsakes ship to United States addresses when a supplier is connected."}
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -85,6 +93,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <SellableProductGrid />
 
       <TrustBadges />
 

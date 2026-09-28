@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "test:fulfillment": "node --import tsx --test scripts/dry-run-fulfillment.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "latest",
@@ -85,6 +86,7 @@
     "eslint-config-next": "14.0.4",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }
