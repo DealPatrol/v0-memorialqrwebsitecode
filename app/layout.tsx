@@ -7,6 +7,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { ExitIntentPopup } from "@/components/exit-intent-popup"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
+import { STORE_PRODUCTS } from "@/lib/catalog"
+import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,17 +47,17 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"),
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Memorial QR Codes | Digital Cemetery & Pet Memorials",
+    title: "MemorialsQR | Digital Memorial Plaques",
     description:
-      "Transform traditional memorials with weather-resistant QR products and digital hosting for $4.99 per month.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
-    siteName: "Memorial QR",
-    locale: "en_CA",
+      "Weather-resistant QR memorials that ship anywhere in the United States from Alabama. Digital hosting is $4.99 per month.",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: "en_US",
     type: "website",
   },
   facebook: {
@@ -63,9 +65,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Memorial QR Codes | Digital Memorials",
+    title: "MemorialsQR | Digital Memorial Plaques",
     description:
-      "Weather-resistant QR products for cemetery headstones and pet memorials with optional digital hosting.",
+      "Weather-resistant QR memorials that ship anywhere in the United States from Alabama.",
   },
   robots: {
     index: true,
@@ -81,7 +83,7 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
   },
-  generator: "v0.app",
+  applicationName: SITE_NAME,
 }
 
 export const viewport: Viewport = {
@@ -97,9 +99,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@type": "LocalBusiness",
     name: "Memorial QR",
     description: "Premium memorial QR code service providing digital tombstone memorials and cemetery tributes",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
-    telephone: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
-    email: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
+    url: SITE_URL,
+    email: SUPPORT_EMAIL,
     priceRange: "$$",
     servesCuisine: null,
     paymentAccepted: ["Credit Card", "Debit Card"],
@@ -120,15 +121,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "USD",
-      lowPrice: "14.99",
-      highPrice: "89.99",
+      lowPrice: Math.min(...STORE_PRODUCTS.map((product) => product.price)).toFixed(2),
+      highPrice: Math.max(...STORE_PRODUCTS.map((product) => product.price)).toFixed(2),
       availability: "https://schema.org/InStock",
     },
   }
 
   return (
     <html
-      lang="en-CA"
+      lang="en-US"
       suppressHydrationWarning
       className={`${inter.variable} ${dancingScript.variable} ${greatVibes.variable} bg-background`}
     >
@@ -139,7 +140,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="alternate"
           type="application/rss+xml"
           title="Memorial QR Blog RSS Feed"
-          href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/feed.xml`}
+          href={`${SITE_URL}/feed.xml`}
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <script

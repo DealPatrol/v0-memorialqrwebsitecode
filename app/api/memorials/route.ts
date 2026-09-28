@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { sendWelcomeEmail } from "@/lib/email"
+import { SITE_URL } from "@/lib/site"
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Memorial was not created - no data returned" }, { status: 500 })
     }
 
-    const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/memorial/${memorial.id}`
+    const memorialUrl = `${SITE_URL}/memorial/${memorial.id}`
 
     try {
       const qrResponse = await fetch(
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
 
     if (body.customerEmail) {
       try {
-        const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/dashboard`
+        const dashboardUrl = `${SITE_URL}/dashboard`
 
         await sendWelcomeEmail({
           customerName: body.customerName || `${body.firstName} ${body.lastName}`,

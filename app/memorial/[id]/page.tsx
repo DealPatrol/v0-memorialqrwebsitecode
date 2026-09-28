@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { MemorialClientPage } from "./MemorialClientPage"
+import { SITE_URL } from "@/lib/site"
 
 interface Memorial {
   id: string
@@ -16,7 +17,7 @@ interface Memorial {
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   try {
     const memorialId = params.id
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"
+    const baseUrl = SITE_URL
 
     // Fetch memorial data for accurate metadata
     const memorial = await fetch(`${baseUrl}/api/memorials/${memorialId}`, {

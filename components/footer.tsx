@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Shield, Lock, Award, Clock, Mail, MapPin } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { SUPPORT_EMAIL, US_SHIPPING_COPY } from "@/lib/site"
 
 export function Footer() {
   return (
@@ -65,7 +66,7 @@ export function Footer() {
             <h3 className="font-bold text-lg mb-4">Support</h3>
             <ul className="space-y-2 text-sm text-zinc-400">
               <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-              <li><a href="mailto:support@memorialqr.com" className="hover:text-white transition-colors flex items-center gap-2"><Mail className="w-4 h-4" />Email Support</a></li>
+              <li><a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-white transition-colors flex items-center gap-2"><Mail className="w-4 h-4" />Email Support</a></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
             </ul>
           </div>
@@ -103,11 +104,11 @@ export function Footer() {
               <div className="space-y-2 text-sm text-zinc-400">
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-amber-500" />
-                  <span>Based in the United States<br />Serving worldwide</span>
+                  <span>Based in the United States<br />{US_SHIPPING_COPY}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-amber-500" />
-                  <a href="mailto:support@memorialqr.com" className="hover:text-white transition-colors">support@memorialqr.com</a>
+                  <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-white transition-colors">{SUPPORT_EMAIL}</a>
                 </div>
               </div>
             </div>

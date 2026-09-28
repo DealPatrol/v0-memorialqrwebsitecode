@@ -2,6 +2,7 @@ import { Header } from "@/components/header"
 import { BlogContent } from "@/components/blog-content"
 import { Suspense } from "react"
 import type { Metadata } from "next"
+import { SITE_URL } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Memorial QR Blog | Digital Tribute Guides & Grief Support Resources",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Memorial QR Blog | Digital Tribute Guides",
     description: "Articles about digital memorials and honoring loved ones with QR code tributes.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/blog`,
+    url: `${SITE_URL}/blog`,
   },
 }
 

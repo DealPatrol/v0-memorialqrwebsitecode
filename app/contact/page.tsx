@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Header } from "@/components/header"
 import { Phone, Mail, MessageCircle, MapPin, Clock, Send, CheckCircle } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -109,7 +110,7 @@ export default function ContactPage() {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h3>
                 <p className="text-gray-600 mb-4">Send us your questions and get detailed responses</p>
                 <div className="space-y-2">
-                  <div className="font-semibold text-gray-900">support@memorialsQR.com</div>
+                  <div className="font-semibold text-gray-900">{SUPPORT_EMAIL}</div>
                   <div className="text-sm text-gray-600">Response within 2 hours</div>
                 </div>
                 <Button
@@ -117,7 +118,7 @@ export default function ContactPage() {
                   variant="outline"
                   className="mt-4 border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
                 >
-                  <Link href="mailto:support@memorialsQR.com">Send Email</Link>
+                  <Link href={`mailto:${SUPPORT_EMAIL}`}>Send Email</Link>
                 </Button>
               </CardContent>
             </Card>

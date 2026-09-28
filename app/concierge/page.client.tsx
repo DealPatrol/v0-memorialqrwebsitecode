@@ -2,6 +2,11 @@
 
 import { ConciergeForm } from "@/components/concierge-form"
 import Link from "next/link"
+import { getCheckoutProduct } from "@/lib/catalog"
+import { formatUsd } from "@/lib/site"
+
+const digitalConcierge = getCheckoutProduct("concierge-digital")!
+const plaqueConcierge = getCheckoutProduct("concierge-plaque")!
 
 export function ConciergePageClient() {
   const handleCheckout = (type: string) => {
@@ -10,8 +15,8 @@ export function ConciergePageClient() {
       JSON.stringify([
         {
           id: type,
-          name: type === "concierge-plaque" ? "Concierge Service - Physical Plaque" : "Concierge Service - Digital Link",
-          price: type === "concierge-plaque" ? 329.99 : 299.99,
+          name: type === "concierge-plaque" ? plaqueConcierge.name : digitalConcierge.name,
+          price: type === "concierge-plaque" ? plaqueConcierge.price : digitalConcierge.price,
           quantity: 1,
         },
       ])
@@ -32,11 +37,11 @@ export function ConciergePageClient() {
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
             <div className="bg-zinc-900 rounded-lg p-6 flex-1 max-w-xs">
-              <div className="text-3xl font-bold text-amber-500 mb-2">$299</div>
+              <div className="text-3xl font-bold text-amber-500 mb-2">{formatUsd(digitalConcierge.price)}</div>
               <p className="text-zinc-300">Digital Link Only</p>
             </div>
             <div className="bg-zinc-900 rounded-lg p-6 flex-1 max-w-xs">
-              <div className="text-3xl font-bold text-amber-500 mb-2">$329</div>
+              <div className="text-3xl font-bold text-amber-500 mb-2">{formatUsd(plaqueConcierge.price)}</div>
               <p className="text-zinc-300">+ Physical Plaque</p>
             </div>
           </div>
@@ -149,13 +154,13 @@ export function ConciergePageClient() {
               onClick={() => handleCheckout("concierge-digital")}
               className="bg-white text-black font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              Checkout - Digital Link ($299)
+              Checkout - Digital Link ({formatUsd(digitalConcierge.price)})
             </button>
             <button
               onClick={() => handleCheckout("concierge-plaque")}
               className="bg-amber-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-amber-700 transition-colors"
             >
-              Checkout - With Plaque ($329)
+              Checkout - With Plaque ({formatUsd(plaqueConcierge.price)})
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getResend } from "@/lib/resend"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export async function POST(request: Request) {
   try {
@@ -7,8 +8,8 @@ export async function POST(request: Request) {
     const { name, email, message } = await request.json()
 
     const result = await resend.emails.send({
-      from: "Memorial QR Support <support@memorialsqr.com>",
-      to: "support@memorialsQR.com",
+      from: `Memorial QR Support <${SUPPORT_EMAIL}>`,
+      to: SUPPORT_EMAIL,
       replyTo: email,
       subject: `Support Request from ${name}`,
       html: `

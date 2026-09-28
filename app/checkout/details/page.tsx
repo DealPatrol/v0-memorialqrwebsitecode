@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { useSearchParams } from "next/navigation"
+import { getCheckoutProduct } from "@/lib/catalog"
 
 const PRODUCTS = {
   memorial: {
@@ -30,7 +31,7 @@ const PRODUCTS = {
       id: "wooden_qr",
       name: "Wooden QR Code",
       description: "Natural wood finish with laser-engraved QR code",
-      price: 29.97, // Restored from $19.89 to normal price
+      price: getCheckoutProduct("wooden-keychain")!.price,
       image: "/wooden-keychain.png",
     },
     picturePlaque: {

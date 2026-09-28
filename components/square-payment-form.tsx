@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast"
 import { Loader2 } from "lucide-react"
 import dynamic from "next/dynamic"
+import { CHECKOUT_COUNTRY, CHECKOUT_CURRENCY } from "@/lib/site"
 
 const PaymentForm = dynamic(
   () =>
@@ -202,8 +203,8 @@ export function SquarePaymentForm({
           locationId={locId}
           cardTokenizeResponseReceived={handlePayment}
           createPaymentRequest={() => ({
-            countryCode: "CA",
-            currencyCode: "CAD",
+            countryCode: CHECKOUT_COUNTRY,
+            currencyCode: CHECKOUT_CURRENCY,
             total: {
               amount: amount.toFixed(2),
               label: "Total",

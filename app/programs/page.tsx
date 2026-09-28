@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Heart, Users, Music, ImageIcon, MessageCircle, Share2, Download, Smartphone } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { getCheckoutProduct } from "@/lib/catalog"
 
 export default function Programs() {
   const [boxMessage, setBoxMessage] = useState("")
@@ -44,7 +45,7 @@ export default function Programs() {
     {
       name: "Wooden QR Code",
       description: "Natural wood finish with laser-engraved QR code",
-      price: 29.97,
+      price: getCheckoutProduct("wooden-keychain")!.price,
       image: "/wooden-keychain.png",
     },
     {

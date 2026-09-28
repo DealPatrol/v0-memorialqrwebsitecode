@@ -7,21 +7,22 @@ import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
 import type { Metadata } from "next"
 import { JsonLd } from "@/components/json-ld"
+import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 export const metadata: Metadata = {
-  title: "Memorial QR FAQ | Tombstone QR Codes Calgary Northeast | Common Questions",
+  title: "Memorial QR FAQ | Common Questions",
   description:
-    "Answers to frequently asked questions about Memorial QR products, installation, pricing, durability, and $4.99 monthly digital hosting.",
+    "Answers to frequently asked questions about Memorial QR products, installation, pricing, durability, and $4.99 monthly digital hosting. Ships anywhere in the United States from Alabama.",
   keywords:
-    "memorial QR FAQ Calgary, tombstone QR questions, headstone QR code durability, cemetery plaque Calgary Northeast, pet memorial QR answers, gravestone QR installation guide Alberta",
+    "memorial QR FAQ, tombstone QR questions, headstone QR code durability, cemetery plaque, pet memorial QR answers, gravestone QR installation guide",
   alternates: {
     canonical: "/faq",
   },
   openGraph: {
-    title: "Memorial QR FAQ | Calgary Northeast Tombstone QR Code Questions",
+    title: "Memorial QR FAQ",
     description:
       "Get answers about memorial QR codes, installation, product pricing, and monthly digital hosting.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/faq`,
+    url: `${SITE_URL}/faq`,
   },
 }
 
@@ -302,7 +303,7 @@ export default function FAQPage() {
                     variant="outline"
                     className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
                   >
-                    <Link href="mailto:support@memorialsQR.com">Email Us</Link>
+                    <Link href={`mailto:${SUPPORT_EMAIL}`}>Email Us</Link>
                   </Button>
                 </CardContent>
               </Card>

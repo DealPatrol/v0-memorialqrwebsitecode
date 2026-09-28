@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from 'lucide-react'
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 const helpCategories = [
   {
@@ -66,7 +67,7 @@ const quickLinks = [
     title: "Email Support",
     description: "Send us your questions",
     icon: Mail,
-    href: "mailto:support@memorialsQR.com",
+    href: `mailto:${SUPPORT_EMAIL}`,
   },
 ]
 

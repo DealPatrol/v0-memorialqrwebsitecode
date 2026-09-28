@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
+import { CHECKOUT_CURRENCY } from "@/lib/site"
 
 export async function POST(req: Request) {
   try {
@@ -101,7 +102,7 @@ export async function POST(req: Request) {
         idempotency_key: idempotencyKey,
         amount_money: {
           amount: amountInCents,
-          currency: "CAD",
+          currency: CHECKOUT_CURRENCY,
         },
         location_id: locationId,
         reference_id: orderId,

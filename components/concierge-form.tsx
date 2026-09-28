@@ -1,12 +1,16 @@
 'use client'
 
 import React from "react"
-
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { AlertCircle, CheckCircle2, Loader2, Upload } from 'lucide-react'
+import { getCheckoutProduct } from "@/lib/catalog"
+import { SUPPORT_EMAIL, formatUsd } from "@/lib/site"
+
+const digitalConcierge = getCheckoutProduct("concierge-digital")!
+const plaqueConcierge = getCheckoutProduct("concierge-plaque")!
 
 export function ConciergeForm() {
   const [formData, setFormData] = useState({
@@ -83,11 +87,11 @@ export function ConciergeForm() {
         setFiles({ photos: [], videos: [], documents: [] })
       } else {
         setStatus('error')
-        setMessage('Something went wrong. Please try again or email support@memorials.com')
+        setMessage(`Something went wrong. Please try again or email ${SUPPORT_EMAIL}`)
       }
     } catch (error) {
       setStatus('error')
-      setMessage('Error submitting form. Please email support@memorials.com with your details.')
+      setMessage(`Error submitting form. Please email ${SUPPORT_EMAIL} with your details.`)
     }
   }
 
@@ -231,7 +235,7 @@ export function ConciergeForm() {
               onChange={handleInputChange}
               className="w-4 h-4"
             />
-            <span className="text-white">Digital Link Only ($299)</span>
+            <span className="text-white">Digital Link Only ({formatUsd(digitalConcierge.price)})</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -242,7 +246,7 @@ export function ConciergeForm() {
               onChange={handleInputChange}
               className="w-4 h-4"
             />
-            <span className="text-white">Physical Plaque with QR Code (+$29.99)</span>
+            <span className="text-white">Physical Plaque with QR Code (+{formatUsd(plaqueConcierge.price - digitalConcierge.price)})</span>
           </label>
         </div>
 
@@ -295,7 +299,7 @@ export function ConciergeForm() {
       </Button>
 
       <p className="text-center text-sm text-zinc-400">
-        Or email us directly at <span className="text-amber-500">support@memorials.com</span> with your materials
+        Or email us directly at <span className="text-amber-500">{SUPPORT_EMAIL}</span> with your materials
       </p>
     </form>
   )

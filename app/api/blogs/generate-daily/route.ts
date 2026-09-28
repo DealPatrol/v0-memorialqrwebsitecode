@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { generateText } from "ai"
+import { SITE_URL } from "@/lib/site"
 
 // Topics to rotate through for daily blog posts
 const blogTopics = [
@@ -97,7 +98,7 @@ export async function GET(request: Request) {
     }
 
     // Trigger blog published webhook to post to Facebook & send email
-    const blogUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/blog/${blogPost.slug}`
+    const blogUrl = `${SITE_URL}/blog/${blogPost.slug}`
     
     await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/api/webhooks/blog-published`, {
       method: "POST",
@@ -107,7 +108,7 @@ export async function GET(request: Request) {
         title: blogPost.title,
         excerpt: blogPost.excerpt,
         url: blogUrl,
-        image: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/images/blog-default.jpg`,
+        image: `${SITE_URL}/images/blog-default.jpg`,
       }),
     })
 

@@ -1,5 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { STORE_PRODUCTS } from "@/lib/catalog"
+import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { formatUsd } from "@/lib/site"
+
+const startingPrice = Math.min(...STORE_PRODUCTS.map((product) => product.price))
 import { CheckCircle } from "lucide-react"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
@@ -33,7 +38,7 @@ export default function PricingPage() {
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
-                <span className="text-4xl font-bold text-slate-900">$14.99</span>
+                <span className="text-4xl font-bold text-slate-900">{formatUsd(startingPrice)}</span>
                 <span className="text-slate-600"> and up, one time</span>
               </div>
               <ul className="space-y-3 text-slate-700">
@@ -58,7 +63,7 @@ export default function PricingPage() {
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
-                <span className="text-4xl font-bold text-slate-900">$4.99</span>
+                <span className="text-4xl font-bold text-slate-900">{formatUsd(HOSTING_MONTHLY_PRICE)}</span>
                 <span className="text-slate-600"> per month, per memorial</span>
               </div>
               <p className="text-slate-700">

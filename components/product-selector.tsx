@@ -7,32 +7,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Minus, Plus, ShoppingCart } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { getCheckoutProduct, PLAQUE_PRICE, PLAQUE_PRODUCTS } from "@/lib/catalog"
+import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { formatUsd } from "@/lib/site"
 
-const standardPlaques = [
-  { id: "gold-plaque", name: "Gold", price: 29.99, description: "Gold Memorial Plaque" },
-  { id: "silver-plaque", name: "Silver", price: 29.99, description: "Silver Memorial Plaque" },
-  { id: "black-plaque", name: "Black", price: 29.99, description: "Black Memorial Plaque" },
-]
+const standardPlaques = PLAQUE_PRODUCTS.map((plaque) => ({
+  id: plaque.id,
+  name: plaque.name.replace(" Memorial Plaque", ""),
+  price: plaque.price,
+  description: plaque.name,
+}))
 
 const otherOptions = [
   {
     id: "wooden-keychain",
     name: "Wooden QR Keychain/Necklace",
-    price: 14.99,
+    price: getCheckoutProduct("wooden-keychain")!.price,
     image: "/images/17c80bbb-d33f-4068-8656.jpeg",
     description: "Portable memorial with laser-engraved QR code",
   },
   {
     id: "slate-coaster",
     name: "Memorial Slate Coaster",
-    price: 46.99,
+    price: getCheckoutProduct("slate-coaster")!.price,
     image: "/images/f8c3da8d-d112-4a57-b614.jpeg",
     description: "Natural slate coaster with engraved QR code",
   },
   {
     id: "photo-frame",
     name: "QR Memorial Photo Frame",
-    price: 49.99,
+    price: getCheckoutProduct("photo-frame")!.price,
     image: "/images/0d120a50-1c8d-4a75-a564.jpeg",
     description: "Display their photo with integrated QR code",
   },
@@ -76,7 +80,7 @@ export function ProductSelector() {
   }
 
   const getCartTotal = () => {
-    const plaqueTotal = selectedPlaque ? 29.99 * plaqueQuantity : 0
+    const plaqueTotal = selectedPlaque ? PLAQUE_PRICE * plaqueQuantity : 0
     const addonTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
     return plaqueTotal + addonTotal
   }
@@ -145,13 +149,13 @@ export function ProductSelector() {
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-800 border-zinc-700">
                     <SelectItem value="black-plaque" className="text-lg py-3 text-white">
-                      Black $29.99
+                      Black {formatUsd(PLAQUE_PRICE)}
                     </SelectItem>
                     <SelectItem value="gold-plaque" className="text-lg py-3 text-white">
-                      Gold $29.99
+                      Gold {formatUsd(PLAQUE_PRICE)}
                     </SelectItem>
                     <SelectItem value="silver-plaque" className="text-lg py-3 text-white">
-                      Silver $29.99
+                      Silver {formatUsd(PLAQUE_PRICE)}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -183,8 +187,8 @@ export function ProductSelector() {
                   </div>
 
                   <div className="mt-4 p-4 bg-blue-900/30 border border-blue-700 rounded-lg">
-                    <p className="text-2xl font-bold text-blue-400">${(29.99 * plaqueQuantity).toFixed(2)}</p>
-                    <p className="text-sm text-gray-300 mt-1">+ $4.99/month per memorial</p>
+                    <p className="text-2xl font-bold text-blue-400">{formatUsd(PLAQUE_PRICE * plaqueQuantity)}</p>
+                    <p className="text-sm text-gray-300 mt-1">+ {formatUsd(HOSTING_MONTHLY_PRICE)}/month per memorial</p>
                   </div>
                 </div>
               )}
@@ -222,7 +226,7 @@ export function ProductSelector() {
                     <p className="text-xs text-gray-400 mb-3">{product.description}</p>
 
                     <div className="mb-4">
-                      <span className="text-xl font-bold text-blue-400">${product.price.toFixed(2)}</span>
+                      <span className="text-xl font-bold text-blue-400">{formatUsd(product.price)}</span>
                     </div>
 
                     {getCartItemQuantity(product.id) > 0 ? (
@@ -264,7 +268,7 @@ export function ProductSelector() {
                 <div>
                   <p className="text-sm text-gray-400">Additional Products Total</p>
                   <p className="text-3xl font-bold text-white">
-                    ${cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}
+                    {formatUsd(cart.reduce((sum, item) => sum + item.price * item.quantity, 0))}
                   </p>
                 </div>
 

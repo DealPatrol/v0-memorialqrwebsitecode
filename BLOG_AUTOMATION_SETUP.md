@@ -7,7 +7,7 @@ This guide explains how to set up automated blog post distribution across social
 ### 1. RSS Feed
 **What it does:** Provides an RSS feed that third-party services can subscribe to for automatic blog updates.
 
-**Access URL:** `https://memorialqr.com/feed.xml`
+**Access URL:** `https://memorialsqr.com/feed.xml`
 
 **How to use:**
 - Submit your RSS feed to RSS directories like Feedly, Feedburner, etc.
@@ -38,13 +38,13 @@ This guide explains how to set up automated blog post distribution across social
 
 4. **Test the Webhook:**
    ```bash
-   curl -X POST https://memorialqr.com/api/webhooks/blog-published \
+   curl -X POST https://memorialsqr.com/api/webhooks/blog-published \
      -H "Content-Type: application/json" \
      -d '{
        "slug": "complete-guide-to-memorial-qr-codes",
        "title": "The Complete Guide to Memorial QR Codes",
        "excerpt": "Discover how QR code memorials are revolutionizing...",
-       "url": "https://memorialqr.com/blog/complete-guide-to-memorial-qr-codes"
+       "url": "https://memorialsqr.com/blog/complete-guide-to-memorial-qr-codes"
      }'
    ```
 
@@ -63,13 +63,13 @@ This guide explains how to set up automated blog post distribution across social
 
 3. **Send Newsletter for New Post:**
    ```bash
-   curl -X POST https://memorialqr.com/api/newsletter/send \
+   curl -X POST https://memorialsqr.com/api/newsletter/send \
      -H "Content-Type: application/json" \
      -d '{
        "slug": "complete-guide-to-memorial-qr-codes",
        "title": "The Complete Guide to Memorial QR Codes",
        "excerpt": "Discover how QR code memorials...",
-       "imageUrl": "https://memorialqr.com/images/92623621-9554-4f8b-a5be.jpeg"
+       "imageUrl": "https://memorialsqr.com/images/92623621-9554-4f8b-a5be.jpeg"
      }'
    ```
 
@@ -108,25 +108,25 @@ This guide explains how to set up automated blog post distribution across social
 
 3. **Trigger social media sharing:**
    ```bash
-   curl -X POST https://memorialqr.com/api/webhooks/blog-published \
+   curl -X POST https://memorialsqr.com/api/webhooks/blog-published \
      -H "Content-Type: application/json" \
      -d '{
        "slug": "new-blog-post",
        "title": "Your Blog Title",
        "excerpt": "Brief description...",
-       "url": "https://memorialqr.com/blog/new-blog-post"
+       "url": "https://memorialsqr.com/blog/new-blog-post"
      }'
    ```
 
 4. **Send to newsletter subscribers:**
    ```bash
-   curl -X POST https://memorialqr.com/api/newsletter/send \
+   curl -X POST https://memorialsqr.com/api/newsletter/send \
      -H "Content-Type: application/json" \
      -d '{
        "slug": "new-blog-post",
        "title": "Your Blog Title",
        "excerpt": "Brief description...",
-       "imageUrl": "https://memorialqr.com/images/your-image.jpeg"
+       "imageUrl": "https://memorialsqr.com/images/your-image.jpeg"
      }'
    ```
 

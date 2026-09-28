@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getResend } from "@/lib/resend"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: recipientEmail,
-      replyTo: "support@memorialsQR.com",
+      replyTo: SUPPORT_EMAIL,
       subject: `Memorial for ${memorialName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

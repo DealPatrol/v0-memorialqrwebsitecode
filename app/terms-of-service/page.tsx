@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export default function TermsOfServicePage() {
   return (
@@ -41,8 +42,8 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
             <p className="text-gray-700 mb-4">
-              Physical memorial products ship within 3-5 business days. Free shipping is included on all orders within
-              the United States. International shipping rates apply for orders outside the US.
+              Physical memorial products ship within 3-5 business days. Ships anywhere in the United States from
+              Alabama. Free shipping is included on orders within the United States.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Digital Memorial Content</h2>
@@ -82,10 +83,10 @@ export default function TermsOfServicePage() {
             <p className="text-gray-700 mb-4">
               Questions about these Terms should be sent to{" "}
               <Link
-                href={`mailto:${process.env.NEXT_PUBLIC_ADMIN_EMAIL || "support@memorialqr.com"}`}
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-orange-600 hover:underline"
               >
-                {process.env.NEXT_PUBLIC_ADMIN_EMAIL || "support@memorialqr.com"}
+                {SUPPORT_EMAIL}
               </Link>
             </p>
           </div>

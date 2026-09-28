@@ -8,6 +8,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { blogPosts } from "@/lib/blog-posts"
+import { SITE_URL } from "@/lib/site"
 
 // Full blog post content
 const blogPostsContent: Record<
@@ -171,7 +172,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"
+  const siteUrl = SITE_URL
 
   return {
     title: `${post.title} | Memorial QR Blog`,
@@ -231,12 +232,12 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       name: "Memorial QR",
       logo: {
         "@type": "ImageObject",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/images/41730040-9590-452b-80df.jpeg`,
+        url: `${SITE_URL}/images/41730040-9590-452b-80df.jpeg`,
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/blog/${params.slug}`,
+      "@id": `${SITE_URL}/blog/${params.slug}`,
     },
   }
 

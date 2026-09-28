@@ -24,6 +24,13 @@ import {
   Star,
   CheckCircle,
 } from "lucide-react"
+import { getCheckoutProduct, PLAQUE_PRICE } from "@/lib/catalog"
+import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { formatUsd } from "@/lib/site"
+
+const keychainPrice = getCheckoutProduct("wooden-keychain")!.price
+const coasterPrice = getCheckoutProduct("slate-coaster")!.price
+const framePrice = getCheckoutProduct("photo-frame")!.price
 
 export default function HomePage() {
   return (
@@ -54,7 +61,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">$4.99/month Hosting</span>
+                <span className="text-sm font-medium text-foreground">{formatUsd(HOSTING_MONTHLY_PRICE)}/month Hosting</span>
               </div>
             </div>
           </div>
@@ -165,9 +172,11 @@ export default function HomePage() {
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Our memorial QR codes start at just $14.99 for keychains and coasters, $29.99 for premium plaques, and
-                $49.99 for photo frames. Digital memorial hosting is a separate $4.99 monthly charge per memorial, not
-                per physical product. Order multiple items for the same loved one and pay only one monthly hosting fee.
+                Our memorial QR codes start at just {formatUsd(keychainPrice)} for keychains, {formatUsd(coasterPrice)}{" "}
+                for slate coasters, {formatUsd(PLAQUE_PRICE)} for premium plaques, and {formatUsd(framePrice)} for photo
+                frames. Digital memorial hosting is a separate {formatUsd(HOSTING_MONTHLY_PRICE)} monthly charge per
+                memorial, not per physical product. Order multiple items for the same loved one and pay only one
+                monthly hosting fee.
               </p>
             </div>
           </div>
@@ -278,7 +287,7 @@ export default function HomePage() {
                 <Shield className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Digital Memorial Hosting</h3>
                 <p className="text-muted-foreground text-sm">
-                  Keep the memorial page available with hosting billed at $4.99 per month per memorial.
+                  Keep the memorial page available with hosting billed at {formatUsd(HOSTING_MONTHLY_PRICE)} per month per memorial.
                 </p>
               </CardContent>
             </Card>

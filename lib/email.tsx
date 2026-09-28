@@ -1,4 +1,5 @@
 import { getResend } from "@/lib/resend"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 interface OrderEmailData {
   customerName: string
@@ -61,7 +62,7 @@ ${data.shippingAddress.line2 ? `${data.shippingAddress.line2}\n` : ""}${data.shi
 
 ${data.isGift ? "The recipient will receive instructions for creating their memorial page. Your gift will ship within 5-7 business days." : "You'll receive another email shortly with your memorial page link and instructions for managing your memorial."}
 
-If you have any questions, please contact us at support@memorialsQR.com
+If you have any questions, please contact us at ${SUPPORT_EMAIL}
 
 Best regards,
 The Memorial QR Team
@@ -72,7 +73,7 @@ Memorial QR - Creating Lasting Digital Memorials
     await getResend().emails.send({
       from: "Memorial QR Orders <orders@memorialsqr.com>",
       to: data.customerEmail,
-      replyTo: "support@memorialsqr.com",
+      replyTo: SUPPORT_EMAIL,
       subject: data.isGift
         ? `Gift Order Confirmation - ${data.orderNumber}`
         : `Order Confirmation - ${data.orderNumber}`,
@@ -189,7 +190,7 @@ Memorial QR - Creating Lasting Digital Memorials
                         </table>
                         
                         <p style="font-size: 14px; color: #666; margin: 30px 0 10px 0; line-height: 1.5;">
-                          If you have any questions, please don't hesitate to contact us at <a href="mailto:support@memorialsQR.com" style="color: #667eea; text-decoration: none;">support@memorialsQR.com</a>
+                          If you have any questions, please don't hesitate to contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color: #667eea; text-decoration: none;">${SUPPORT_EMAIL}</a>
                         </p>
                         
                         <p style="font-size: 16px; margin: 30px 0 0 0; color: #333;">
@@ -209,7 +210,7 @@ Memorial QR - Creating Lasting Digital Memorials
                           This is an automated message from a trusted sender.
                         </p>
                         <p style="margin: 10px 0 0 0; font-size: 13px; color: #999;">
-                          <a href="mailto:support@memorialsQR.com" style="color: #667eea; text-decoration: none;">Contact Support</a>
+                          <a href="mailto:${SUPPORT_EMAIL}" style="color: #667eea; text-decoration: none;">Contact Support</a>
                         </p>
                       </td>
                     </tr>
@@ -376,13 +377,13 @@ Best regards,
 The Memorial QR Team
 
 Memorial QR - Creating Lasting Digital Memorials
-Need help? Contact us at support@memorialsQR.com
+Need help? Contact us at ${SUPPORT_EMAIL}
     `.trim()
 
     await getResend().emails.send({
-      from: "Memorial QR Support <support@memorialsQR.com>",
+      from: `Memorial QR Support <${SUPPORT_EMAIL}>`,
       to: data.email,
-      replyTo: "support@memorialsQR.com",
+      replyTo: SUPPORT_EMAIL,
       subject: "Reset Your Memorial QR Password",
       headers: getEmailHeaders(),
       text: plainText,
@@ -464,7 +465,7 @@ Need help? Contact us at support@memorialsQR.com
                           This is an automated message from a trusted sender.
                         </p>
                         <p style="margin: 10px 0 0 0; font-size: 13px; color: #999;">
-                          Need help? Contact us at <a href="mailto:support@memorialsQR.com" style="color: #667eea; text-decoration: none;">support@memorialsQR.com</a>
+                          Need help? Contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color: #667eea; text-decoration: none;">${SUPPORT_EMAIL}</a>
                         </p>
                       </td>
                     </tr>
@@ -506,7 +507,7 @@ ${data.giftMessage ? `PERSONAL MESSAGE:\n"${data.giftMessage}"\n\n` : ""}WHAT'S 
 NEXT STEPS
 Your gift will arrive within 5-7 business days. You'll receive another email with instructions on how to create and customize your memorial page.
 
-If you have any questions about your gift, please contact us at support@memorialsQR.com
+If you have any questions about your gift, please contact us at ${SUPPORT_EMAIL}
 
 Order Reference: ${data.orderNumber}
 
@@ -519,7 +520,7 @@ Memorial QR - Creating Lasting Digital Memorials
     await getResend().emails.send({
       from: "Memorial QR Gifts <gifts@memorialsqr.com>",
       to: data.recipientEmail,
-      replyTo: "support@memorialsQR.com",
+      replyTo: SUPPORT_EMAIL,
       subject: `${data.senderName} sent you a Memorial QR Gift`,
       headers: getEmailHeaders(),
       text: plainText,
@@ -601,7 +602,7 @@ Memorial QR - Creating Lasting Digital Memorials
                         </table>
                         
                         <p style="font-size: 14px; color: #666; margin: 30px 0 10px 0; line-height: 1.5;">
-                          If you have any questions about your gift, please contact us at <a href="mailto:support@memorialsQR.com" style="color: #667eea; text-decoration: none;">support@memorialsQR.com</a>
+                          If you have any questions about your gift, please contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color: #667eea; text-decoration: none;">${SUPPORT_EMAIL}</a>
                         </p>
                         
                         <p style="margin: 10px 0 0 0; font-size: 13px; color: #999;">
@@ -625,7 +626,7 @@ Memorial QR - Creating Lasting Digital Memorials
                           This is an automated message from a trusted sender.
                         </p>
                         <p style="margin: 10px 0 0 0; font-size: 13px; color: #999;">
-                          <a href="mailto:support@memorialsQR.com" style="color: #667eea; text-decoration: none;">Contact Support</a>
+                          <a href="mailto:${SUPPORT_EMAIL}" style="color: #667eea; text-decoration: none;">Contact Support</a>
                         </p>
                       </td>
                     </tr>

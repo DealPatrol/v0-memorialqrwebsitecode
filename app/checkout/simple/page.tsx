@@ -14,35 +14,21 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
+import { getCheckoutProduct } from "@/lib/catalog"
+import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { formatUsd, US_SHIPPING_COPY } from "@/lib/site"
 
-const STORE_PRODUCTS: Record<string, { name: string; price: number; monthlyFee: number }> = {
-  // Standard Plaques
-  "gold-plaque": { name: "Gold Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-  "silver-plaque": { name: "Silver Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
-  "black-plaque": { name: "Black Memorial Plaque", price: 29.99, monthlyFee: 4.99 },
+type CartLine = { id: string; name: string; price: number; quantity: number }
 
-  // Human Memorial Products
-  "wooden-keychain": { name: "Memorial QR Code Wooden Keychain or Necklace", price: 14.99, monthlyFee: 4.99 },
-  "wooden-keychain-necklace": { name: "Memorial QR Code Wooden Keychain or Necklace", price: 14.99, monthlyFee: 4.99 },
-  "slate-coaster": { name: "Memorial Slate Coaster with QR Code", price: 46.99, monthlyFee: 4.99 },
-  "slate-memorial-coaster": { name: "Memorial Slate Coaster with QR Code", price: 24.99, monthlyFee: 4.99 },
-  "photo-frame": { name: "Memorial Photo Frame with QR Code", price: 49.99, monthlyFee: 4.99 },
-  "memorial-photo-frame": { name: "Memorial Photo Frame with QR Code", price: 49.99, monthlyFee: 4.99 },
-  "human-cremation-urn-wood": { name: "Wooden Cremation Urn with QR Memorial Plaque", price: 89.99, monthlyFee: 4.99 },
-
-  // Pet Memorial Products
-  "pet-collar-memorial-tag": { name: "Pet Memorial Collar with QR Code Tag", price: 19.99, monthlyFee: 4.99 },
-  "pet-garden-tombstone": { name: "Pet Memorial Garden Stone with QR Code", price: 44.99, monthlyFee: 4.99 },
-  "pet-cremation-urn-wood": { name: "Wooden Pet Cremation Urn with QR Code", price: 34.99, monthlyFee: 4.99 },
-  "pet-cremation-urn-ceramic": { name: "Ceramic Pet Cremation Urn with QR Memorial", price: 39.99, monthlyFee: 4.99 },
-  "pet-photo-frame-qr": { name: "Pet Memorial Photo Frame with QR Code", price: 29.99, monthlyFee: 4.99 },
-  "custom-pet-portrait-drawing": { name: "Custom Pet Portrait Drawing with QR Code", price: 54.99, monthlyFee: 4.99 },
-  "pet-shadow-box-collar": { name: "Pet Memorial Shadow Box with Collar Display", price: 64.99, monthlyFee: 4.99 },
-
-  // Concierge Service
-  "concierge-service": { name: "Concierge Memorial Service", price: 299.99, monthlyFee: 4.99 },
-  "concierge-digital": { name: "Concierge Service - Digital Link", price: 299.99, monthlyFee: 4.99 },
-  "concierge-plaque": { name: "Concierge Service - Physical Plaque", price: 329.99, monthlyFee: 4.99 },
+function lineFromCatalog(id: string, quantity: number, fallbackName?: string, fallbackPrice?: number): CartLine | null {
+  const product = getCheckoutProduct(id)
+  if (product) {
+    return { id: product.id, name: product.name, price: product.price, quantity }
+  }
+  if (fallbackName != null && fallbackPrice != null) {
+    return { id, name: fallbackName, price: fallbackPrice, quantity }
+  }
+  return null
 }
 
 function CheckoutForm() {
@@ -50,27 +36,30 @@ function CheckoutForm() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
 
-  const [cartItems, setCartItems] = useState<any[]>([])
+  const [cartItems, setCartItems] = useState<CartLine[]>([])
   const [orderTotal, setOrderTotal] = useState(0)
 
   useEffect(() => {
     const storedItems = localStorage.getItem("checkoutItems")
+    let items: CartLine[] = []
+
     if (storedItems) {
-      const items = JSON.parse(storedItems)
-      setCartItems(items)
-      const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0)
-      setOrderTotal(total)
+      const parsed = JSON.parse(storedItems) as Array<{ id: string; name: string; price: number; quantity: number }>
+      items = parsed.flatMap((item) => {
+        const line = lineFromCatalog(item.id, item.quantity, item.name, item.price)
+        return line ? [line] : []
+      })
     } else {
-      // Fallback to URL params for single product
       const productId = searchParams.get("product") || "gold-plaque"
-      const product = STORE_PRODUCTS[productId as keyof typeof STORE_PRODUCTS]
-      if (product) {
-        setCartItems([{ id: productId, name: product.name, price: product.price, quantity: 1 }])
-        setOrderTotal(product.price)
-      }
+      const line = lineFromCatalog(productId, 1)
+      if (line) items = [line]
     }
+
+    setCartItems(items)
+    setOrderTotal(items.reduce((sum, item) => sum + item.price * item.quantity, 0))
+    // Prices always come from the catalog so Square is charged the store amount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Run only once on mount
+  }, [])
 
   const [formData, setFormData] = useState({
     email: "",
@@ -131,7 +120,7 @@ function CheckoutForm() {
         planType: "cart-checkout",
         items: cartItems,
         totalAmount: orderTotal,
-        monthlyFee: 4.99,
+        monthlyFee: HOSTING_MONTHLY_PRICE,
         customerEmail: formData.email || "",
         customerPhone: formData.phone || "",
         addressLine1: formData.address,
@@ -215,7 +204,7 @@ function CheckoutForm() {
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-muted-foreground">Qty: {item.quantity}</span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatUsd(item.price * item.quantity)}
                       </span>
                     </div>
                   </div>
@@ -224,7 +213,7 @@ function CheckoutForm() {
                 <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
                   <div className="flex justify-between items-center text-sm mb-1">
                     <span className="text-blue-900 dark:text-blue-100 font-medium">Monthly Hosting Fee:</span>
-                    <span className="font-semibold text-blue-900 dark:text-blue-100">$4.99/mo</span>
+                    <span className="font-semibold text-blue-900 dark:text-blue-100">{formatUsd(HOSTING_MONTHLY_PRICE)}/mo</span>
                   </div>
                   <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
                     This fee is <strong>per memorial page</strong>, not per product. If you order multiple products for
@@ -238,11 +227,12 @@ function CheckoutForm() {
                 <Separator />
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-lg font-bold">Due Today:</span>
-                  <span className="text-2xl font-bold text-blue-600">${orderTotal.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-blue-600">{formatUsd(orderTotal)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Then $4.99/month per memorial starting next month
+                  Then {formatUsd(HOSTING_MONTHLY_PRICE)}/month per memorial starting next month
                 </p>
+                <p className="text-xs text-muted-foreground text-center">{US_SHIPPING_COPY}</p>
               </div>
 
               <Separator />
@@ -313,6 +303,7 @@ function CheckoutForm() {
 
                 <div className="space-y-4">
                   <h3 className="font-semibold text-sm">Shipping Address</h3>
+                  <p className="text-sm text-muted-foreground">{US_SHIPPING_COPY}</p>
                   <div className="space-y-2">
                     <Label htmlFor="address">
                       Street Address <span className="text-red-500">*</span>

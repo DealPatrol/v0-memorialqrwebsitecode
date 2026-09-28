@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getResend } from "@/lib/resend"
+import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "Memorial QR <orders@memorialqr.com>",
       to: [finalEmail],
-      bcc: [process.env.ADMIN_EMAIL || "support@memorialqr.com"],
+      bcc: [process.env.ADMIN_EMAIL || SUPPORT_EMAIL],
       subject: `Order Confirmation - ${orderNumber || "Memorial QR"}`,
       html: `
         <!DOCTYPE html>
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
               
               <div style="background: #e0e7ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <p style="margin: 0; font-size: 14px; color: #4c51bf;">
-                  <strong>Need Help?</strong> Contact us at ${process.env.ADMIN_EMAIL || "support@memorialqr.com"} or visit our FAQ page.
+                  <strong>Need Help?</strong> Contact us at ${process.env.ADMIN_EMAIL || SUPPORT_EMAIL} or visit our FAQ page.
                 </p>
               </div>
               
@@ -75,8 +76,8 @@ export async function POST(request: NextRequest) {
             <div style="text-align: center; padding: 20px; color: #6b7280; font-size: 14px;">
               <p style="margin: 5px 0;">&copy; 2025 Memorial QR. All rights reserved.</p>
               <p style="margin: 5px 0;">
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/terms-of-service" style="color: #8b5cf6; text-decoration: none;">Terms</a> | 
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/privacy-policy" style="color: #8b5cf6; text-decoration: none;">Privacy</a>
+                <a href="${SITE_URL}/terms-of-service" style="color: #8b5cf6; text-decoration: none;">Terms</a> | 
+                <a href="${SITE_URL}/privacy-policy" style="color: #8b5cf6; text-decoration: none;">Privacy</a>
               </p>
             </div>
           </body>

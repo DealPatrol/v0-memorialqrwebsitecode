@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { getResend } from '@/lib/resend'
+import { SUPPORT_EMAIL } from '@/lib/site'
 
 export async function POST(request: Request) {
   try {
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
     }
 
     // Send notification email to support
-    const adminEmail = process.env.ADMIN_EMAIL || 'support@memorials.com'
+    const adminEmail = process.env.ADMIN_EMAIL || SUPPORT_EMAIL
     await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'Memorial QR <noreply@memorialqr.com>',
       to: adminEmail,
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
           <li>We'll deliver your ${deliveryType === 'plaque' ? `${plaqueColor} plaque with QR code` : 'digital link'}</li>
         </ol>
         
-        <p>If you have any questions, please reply to this email or contact us at support@memorials.com</p>
+        <p>If you have any questions, please reply to this email or contact us at ${SUPPORT_EMAIL}</p>
         <p>Honoring memories, preserving legacies,<br>The Memorial QR Team</p>
       `,
     })
