@@ -6,17 +6,16 @@ import { getCheckoutProduct } from "@/lib/catalog"
 import { formatUsd } from "@/lib/site"
 
 const digitalConcierge = getCheckoutProduct("concierge-digital")!
-const plaqueConcierge = getCheckoutProduct("concierge-plaque")!
 
 export function ConciergePageClient() {
-  const handleCheckout = (type: string) => {
+  const handleCheckout = () => {
     localStorage.setItem(
       "checkoutItems",
       JSON.stringify([
         {
-          id: type,
-          name: type === "concierge-plaque" ? plaqueConcierge.name : digitalConcierge.name,
-          price: type === "concierge-plaque" ? plaqueConcierge.price : digitalConcierge.price,
+          id: digitalConcierge.id,
+          name: digitalConcierge.name,
+          price: digitalConcierge.price,
           quantity: 1,
         },
       ])
@@ -33,16 +32,12 @@ export function ConciergePageClient() {
             We Build the Legacy For You
           </h1>
           <p className="text-xl text-zinc-400 mb-6">
-            Too busy grieving? Let our team handle the details. Send us your memories, photos, and stories. We'll create a beautiful, interactive digital memorial with a professional QR code plaque.
+            Too busy grieving? Let our team handle the details. Send us your memories, photos, and stories. We'll create a digital memorial page you can share.
           </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-            <div className="bg-zinc-900 rounded-lg p-6 flex-1 max-w-xs">
+          <div className="flex justify-center">
+            <div className="bg-zinc-900 rounded-lg p-6 max-w-xs">
               <div className="text-3xl font-bold text-amber-500 mb-2">{formatUsd(digitalConcierge.price)}</div>
-              <p className="text-zinc-300">Digital Link Only</p>
-            </div>
-            <div className="bg-zinc-900 rounded-lg p-6 flex-1 max-w-xs">
-              <div className="text-3xl font-bold text-amber-500 mb-2">{formatUsd(plaqueConcierge.price)}</div>
-              <p className="text-zinc-300">+ Physical Plaque</p>
+              <p className="text-zinc-300">Digital memorial, nothing shipped</p>
             </div>
           </div>
         </div>
@@ -82,8 +77,8 @@ export function ConciergePageClient() {
             <div className="flex gap-4">
               <div className="text-2xl">📱</div>
               <div>
-                <h3 className="font-semibold text-white mb-2">QR Code Plaque</h3>
-                <p className="text-zinc-400">Choose digital link or physical plaque with QR code</p>
+                <h3 className="font-semibold text-white mb-2">Shareable Link</h3>
+                <p className="text-zinc-400">A link your family can open on any phone</p>
               </div>
             </div>
             <div className="flex gap-4">
@@ -133,7 +128,7 @@ export function ConciergePageClient() {
               </div>
               <div>
                 <h3 className="font-bold text-white mb-2">Get Your QR Code</h3>
-                <p className="text-zinc-400">Receive your digital link or order physical plaques with the QR code</p>
+                <p className="text-zinc-400">We send the finished memorial link. Nothing is shipped.</p>
               </div>
             </div>
           </div>
@@ -149,18 +144,12 @@ export function ConciergePageClient() {
         <div className="mt-12 bg-amber-500/10 border border-amber-500/30 rounded-lg p-8 text-center">
           <h3 className="text-2xl font-bold text-white mb-4">Ready to Order Now?</h3>
           <p className="text-zinc-300 mb-6">You can also checkout directly and our team will contact you for your memorial details.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <button
-              onClick={() => handleCheckout("concierge-digital")}
+              onClick={handleCheckout}
               className="bg-white text-black font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              Checkout - Digital Link ({formatUsd(digitalConcierge.price)})
-            </button>
-            <button
-              onClick={() => handleCheckout("concierge-plaque")}
-              className="bg-amber-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-amber-700 transition-colors"
-            >
-              Checkout - With Plaque ({formatUsd(plaqueConcierge.price)})
+              Checkout - Digital Memorial ({formatUsd(digitalConcierge.price)})
             </button>
           </div>
         </div>

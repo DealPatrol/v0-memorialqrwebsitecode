@@ -4,7 +4,7 @@ import Link from "next/link"
 import { QrCode, Heart, PawPrint, HelpCircle, ShoppingBag } from "lucide-react"
 
 const quickLinks = [
-  { href: "#product-selector", label: "Shop", icon: ShoppingBag },
+  { href: "/store", label: "Hosting", icon: ShoppingBag },
   { href: "/human-memorials", label: "Human", icon: Heart },
   { href: "/pet-memorials", label: "Pets", icon: PawPrint },
   { href: "/how-it-works", label: "How It Works", icon: QrCode },

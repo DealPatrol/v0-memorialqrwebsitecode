@@ -1,5 +1,4 @@
 import Link from "next/link"
-import Image from "next/image"
 import type { Metadata } from "next"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
@@ -10,7 +9,7 @@ import { Check, Star, Shield, Smartphone, Heart, Clock, ArrowRight } from "lucid
 export const metadata: Metadata = {
   title: "Memorial QR Codes for Tombstones & Headstones | Digital Gravestone Tributes",
   description:
-    "Memorial QR products for tombstones and headstones with weather-resistant plaques and $4.99 monthly digital hosting.",
+    "Digital memorial pages for people remembered at a graveside. Hosting is $4.99 per month.",
   keywords:
     "memorial QR codes for tombstones, QR code for headstone, gravestone QR code, cemetery memorial QR, tombstone QR plaque, headstone memorial tag, QR code cemetery marker, digital gravestone memorial, interactive tombstone, memorial QR tag",
   openGraph: {
@@ -45,7 +44,7 @@ export default function MemorialQRCodesTombstonesPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-xl">
                 <Link href="/store">
-                  Shop Memorial QR Products
+                  Create a Memorial Page
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -85,16 +84,7 @@ export default function MemorialQRCodesTombstonesPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-bold text-center mb-12">What Are Memorial QR Codes for Tombstones?</h2>
-            <div className="grid md:grid-cols-2 gap-8 items-center mb-12">
-              <div>
-                <Image
-                  src="/images/41730040-9590-452b-80df.jpeg"
-                  alt="Memorial QR codes for tombstones and headstones"
-                  width={600}
-                  height={600}
-                  className="rounded-lg shadow-xl"
-                />
-              </div>
+            <div className="max-w-3xl mx-auto mb-12">
               <div className="space-y-6">
                 <p className="text-lg text-gray-700 leading-relaxed">
                   A <strong>memorial QR code for tombstones</strong> is a permanent, weather-resistant plaque or tag
@@ -147,12 +137,12 @@ export default function MemorialQRCodesTombstonesPage() {
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                     <Shield className="w-6 h-6 text-purple-600" />
                   </div>
-                  <CardTitle className="text-xl">Weather-Resistant & Permanent</CardTitle>
+                  <CardTitle className="text-xl">A Page They Can Open</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">
-                    Our headstone QR code plaques are laser-engraved on premium materials designed for cemetery use.
-                    Withstands rain, snow, UV rays, and extreme temperatures for decades.
+                    The memorial is a web page of photos, videos, and stories. Hosting keeps it online. Nothing is
+                    shipped.
                   </p>
                 </CardContent>
               </Card>
@@ -211,8 +201,8 @@ export default function MemorialQRCodesTombstonesPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">
-                    Digital memorial hosting is billed separately at $4.99 per month per memorial. The printed QR code
-                    remains on your physical product.
+                    Digital memorial hosting is $4.99 per month per memorial. The page stays online while hosting is
+                    active.
                   </p>
                 </CardContent>
               </Card>
@@ -241,13 +231,6 @@ export default function MemorialQRCodesTombstonesPage() {
                     cemetery use. All QR code plaques are weather-resistant and laser-engraved for permanent durability
                     on tombstones.
                   </p>
-                  <Image
-                    src="/images/adc4c31b-2080-4d10-809a.jpeg"
-                    alt="Memorial QR code tags for tombstones in multiple finishes"
-                    width={600}
-                    height={400}
-                    className="rounded-lg shadow-md"
-                  />
                 </div>
               </div>
 
@@ -300,119 +283,32 @@ export default function MemorialQRCodesTombstonesPage() {
                 <div>
                   <h3 className="text-2xl font-bold mb-2">Attach to Headstone & Share</h3>
                   <p className="text-lg text-gray-700 mb-4">
-                    Receive your custom QR code plaque with mounting hardware. Attach to the tombstone, gravestone, or
-                    cemetery marker. Visitors scan the QR tag to instantly access the full digital memorial tribute.
+                    Share the memorial link with anyone who visits. The page holds the photos and stories. Hosting keeps
+                    it online. Nothing is shipped.
                   </p>
-                  <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
-                    <p className="text-blue-900 font-medium text-lg">
-                      Ships within 3-5 business days with free shipping. Includes detailed installation instructions and
-                      all mounting hardware for easy headstone attachment.
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
 
             <div className="mt-12 text-center">
               <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 px-12 py-6 text-xl">
-                <Link href="/store">Get Started - Shop Memorial QR Products</Link>
+                <Link href="/create-memorial">Create a Memorial Page</Link>
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Showcase */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-4xl font-bold text-center mb-4">Premium Memorial QR Code Products for Tombstones</h2>
-            <p className="text-xl text-center text-gray-600 mb-12">
-              Weather-resistant headstone tags and cemetery memorial plaques
+          <div className="max-w-xl mx-auto text-center">
+            <h2 className="text-4xl font-bold mb-4">A Digital Page for the Graveside Visit</h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Host the photos and stories for $4.99 per month. Nothing is shipped.
             </p>
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="overflow-hidden border-2 hover:border-blue-500 transition-colors">
-                <div className="relative h-64">
-                  <Image
-                    src="/images/adc4c31b-2080-4d10-809a.jpeg"
-                    alt="Stainless steel memorial QR code for tombstone"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardHeader>
-                  <CardTitle>Stainless Steel Headstone Tag</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Premium memorial QR code for tombstones. Weather-resistant stainless steel with laser-engraved QR
-                    code.
-                  </p>
-                  <div className="text-2xl font-bold text-blue-600 mb-4">
-                    $19.99 <span className="text-sm text-gray-500">+ $4.99/mo hosting</span>
-                  </div>
-                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-                    <Link href="/store">Shop Now</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="overflow-hidden border-2 hover:border-blue-500 transition-colors">
-                <div className="relative h-64">
-                  <Image
-                    src="/images/1e1eb652-cd3d-4fa5-86c5.jpeg"
-                    alt="Memorial garden stone with QR code for cemetery"
-                    fill
-                    className="object-cover"
-                  />
-                  <Badge className="absolute top-3 left-3 bg-orange-500 text-white">Popular</Badge>
-                </div>
-                <CardHeader>
-                  <CardTitle>Garden Memorial Stone</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Large memorial stone with QR plaque. Perfect for cemetery plots, gardens, or memorial spaces.
-                  </p>
-                  <div className="text-2xl font-bold text-blue-600 mb-4">
-                    $59.99 <span className="text-sm text-gray-500">+ $4.99/mo hosting</span>
-                  </div>
-                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-                    <Link href="/store">Shop Now</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="overflow-hidden border-2 hover:border-blue-500 transition-colors">
-                <div className="relative h-64">
-                  <Image
-                    src="/images/5a066d02-9fa2-4039-8ac7.jpeg"
-                    alt="Memorial slate coaster with QR code"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardHeader>
-                  <CardTitle>Memorial Slate Coaster</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Elegant engraved slate with QR code. Perfect keepsake for home memorials and remembrance gifts.
-                  </p>
-                  <div className="text-2xl font-bold text-blue-600 mb-4">
-                    $16.99 <span className="text-sm text-gray-500">+ $4.99/mo hosting</span>
-                  </div>
-                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-                    <Link href="/store">Shop Now</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="mt-8 text-center">
-              <Button asChild size="lg" variant="outline" className="border-blue-600 text-blue-600 bg-transparent">
-                <Link href="/store">View All Memorial QR Products →</Link>
-              </Button>
-            </div>
+            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <Link href="/store">See Hosting</Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -484,7 +380,7 @@ export default function MemorialQRCodesTombstonesPage() {
                 Create a digital tribute that connects visitors to your loved one&apos;s photos, videos, and stories.
               </p>
               <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Link href="/store">Shop Memorial QR Products Now</Link>
+                <Link href="/store">Create a Memorial Page Now</Link>
               </Button>
             </div>
 
@@ -531,7 +427,7 @@ export default function MemorialQRCodesTombstonesPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100 px-12 py-6 text-xl">
-              <Link href="/store">Shop Memorial QR Products</Link>
+              <Link href="/store">Create a Memorial Page</Link>
             </Button>
             <Button
               asChild

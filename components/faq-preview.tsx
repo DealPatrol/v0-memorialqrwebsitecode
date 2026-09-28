@@ -9,7 +9,7 @@ const faqs = [
   {
     question: "How long does a memorial QR code last?",
     answer:
-      "The physical QR product is designed for long-term use. The linked digital memorial remains available while its $4.99 monthly hosting plan is active.",
+      "The digital memorial remains available while its $4.99 monthly hosting plan is active.",
   },
   {
     question: "Can multiple family members contribute to a memorial?",
@@ -19,7 +19,7 @@ const faqs = [
   {
     question: "What happens if I cancel my hosting subscription?",
     answer:
-      "Future renewals stop. The physical product remains yours, but the hosted page may become unavailable after the paid period ends. Contact support before canceling if you need help preserving your content.",
+      "Future renewals stop. The hosted page may become unavailable after the paid period ends. Contact support before canceling if you need help preserving your content.",
   },
 ]
 

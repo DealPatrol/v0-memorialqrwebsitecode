@@ -24,7 +24,7 @@ export default async function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", fontSize: 28, letterSpacing: 6, textTransform: "uppercase", opacity: 0.85 }}>
-          QR memorial plaques
+          Digital memorial pages
         </div>
         <div
           style={{

@@ -156,7 +156,7 @@ export default function AboutPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/store" className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-zinc-800 transition-colors">
-              Shop Memorial Plaques
+              See Memorial Hosting
             </a>
             <a href="/contact" className="bg-zinc-200 text-black px-8 py-3 rounded-lg font-semibold hover:bg-zinc-300 transition-colors">
               Contact Us

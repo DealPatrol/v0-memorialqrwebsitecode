@@ -89,7 +89,7 @@ export async function POST(request: Request) {
         <p>${obituary}</p>
         
         <h3>Delivery Options</h3>
-        <p><strong>Type:</strong> ${deliveryType === 'plaque' ? `Plaque (${plaqueColor})` : 'Digital Link Only'}</p>
+        <p><strong>Type:</strong> Digital memorial link</p>
         
         <hr>
         <p><a href="https://memorialsqr.com/admin/concierge/${conciergeRequest.id}">View Request in Admin Dashboard</a></p>
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
           <li>Our team will review your materials within 24 hours</li>
           <li>We'll organize your photos, integrate videos, and write a polished biography</li>
           <li>You'll receive a preview of the memorial for approval</li>
-          <li>We'll deliver your ${deliveryType === 'plaque' ? `${plaqueColor} plaque with QR code` : 'digital link'}</li>
+          <li>We'll send your digital memorial link</li>
         </ol>
         
         <p>If you have any questions, please reply to this email or contact us at ${SUPPORT_EMAIL}</p>

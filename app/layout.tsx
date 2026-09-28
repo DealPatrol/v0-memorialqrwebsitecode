@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ExitIntentPopup } from "@/components/exit-intent-popup"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
-import { STORE_PRODUCTS } from "@/lib/catalog"
+import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 const inter = Inter({
@@ -36,7 +36,7 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
   title: "Memorial QR Codes | Digital Tombstone & Pet Memorials",
   description:
-    "Transform cemetery tombstones and pet memorials with weather-resistant QR plaques and digital hosting for $4.99 per month per memorial.",
+    "Digital memorial pages for people and pets. Hosting is $4.99 per month per memorial.",
   keywords:
     "memorial QR codes, QR code tombstones, headstone memorial tags, cemetery QR codes, gravestone QR plaque, digital memorial, pet memorial QR, tombstone QR code, headstone memorial, memorial services",
   authors: [{ name: "Memorial QR" }],
@@ -52,9 +52,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "MemorialsQR | Digital Memorial Plaques",
+    title: "MemorialsQR | Digital Memorial Pages",
     description:
-      "Weather-resistant QR memorials that ship anywhere in the United States from Alabama. Digital hosting is $4.99 per month.",
+      "A digital memorial page for photos, stories, and messages. Hosting is $4.99 per month.",
     url: SITE_URL,
     siteName: SITE_NAME,
     locale: "en_US",
@@ -121,8 +121,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "USD",
-      lowPrice: Math.min(...STORE_PRODUCTS.map((product) => product.price)).toFixed(2),
-      highPrice: Math.max(...STORE_PRODUCTS.map((product) => product.price)).toFixed(2),
+      lowPrice: HOSTING_MONTHLY_PRICE.toFixed(2),
+      highPrice: HOSTING_MONTHLY_PRICE.toFixed(2),
       availability: "https://schema.org/InStock",
     },
   }

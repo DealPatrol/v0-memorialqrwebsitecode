@@ -23,7 +23,7 @@ import {
 export const metadata: Metadata = {
   title: "How Memorial QR Codes Work | Digital Tombstone Memorials",
   description:
-    "Learn how Memorial QR products and $4.99 monthly digital memorial hosting work for human and pet memorials. Ships anywhere in the United States from Alabama.",
+    "Learn how digital memorial pages and $4.99 monthly hosting work for human and pet memorials.",
   keywords:
     "how memorial QR works, QR code tombstone setup, headstone QR installation, cemetery QR plaque guide, pet memorial QR process, digital memorial creation",
   alternates: {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "How Memorial QR Codes Work",
     description:
-      "Complete guide to creating digital memorials with QR codes. Weather-resistant memorial products ship anywhere in the United States from Alabama.",
+      "Complete guide to creating a digital memorial page. Hosting is $4.99 per month.",
     url: `${SITE_URL}/how-it-works`,
   },
 }
@@ -102,21 +102,20 @@ export default function HowItWorksPage() {
                   <h2 className="text-3xl font-bold text-gray-900">Choose Your Memorial</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  Select the type of memorial you want to create — for a loved one or a beloved pet. Choose from
-                  headstone plaques, wall displays, collar tags, garden stones, or keepsake boxes.
+                  Choose a memorial page for a loved one or a pet. Hosting keeps that page online.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Human memorials with dignified plaques</span>
+                    <span>Human memorial pages</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Pet memorials with collar tags or garden stones</span>
+                    <span>Pet memorial pages</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>All products include custom QR code</span>
+                    <span>Hosting is $4.99 per month for each memorial</span>
                   </li>
                 </ul>
               </div>
@@ -125,8 +124,8 @@ export default function HowItWorksPage() {
                   <CardContent className="p-0">
                     <div className="text-center">
                       <ShoppingCart className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Select Your Package</h3>
-                      <p className="text-gray-600">Choose the perfect memorial products</p>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Start the Page</h3>
+                      <p className="text-gray-600">A digital memorial, with monthly hosting</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -181,24 +180,23 @@ export default function HowItWorksPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                     3
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Receive Your Memorial</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">Share the Page</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  We'll ship your custom engraved QR plaque or tag. Our products are designed to withstand outdoor
-                  conditions for headstones, gardens, or wherever you choose to place them.
+                  Send the memorial link to family and friends. Hosting keeps the page available. Nothing is shipped.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Custom QR code engraved on plaque or tag</span>
+                    <span>One link opens the memorial</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Weather-resistant and durable materials</span>
+                    <span>Family members can add memories</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Free shipping on all orders</span>
+                    <span>Hosting is $4.99 per month</span>
                   </li>
                 </ul>
               </div>
@@ -207,8 +205,8 @@ export default function HowItWorksPage() {
                   <CardContent className="p-0">
                     <div className="text-center">
                       <QrCode className="w-16 h-16 text-green-600 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Custom QR Memorial</h3>
-                      <p className="text-gray-600">Beautiful, durable, and meaningful</p>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Shareable Memorial</h3>
+                      <p className="text-gray-600">A page family can open anywhere</p>
                     </div>
                   </CardContent>
                 </Card>

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
 
-export default function CheckoutDetailsPage() {
+export default function CheckoutIndexPage() {
   redirect("/store")
 }

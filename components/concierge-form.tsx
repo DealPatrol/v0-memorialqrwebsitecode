@@ -10,7 +10,6 @@ import { getCheckoutProduct } from "@/lib/catalog"
 import { SUPPORT_EMAIL, formatUsd } from "@/lib/site"
 
 const digitalConcierge = getCheckoutProduct("concierge-digital")!
-const plaqueConcierge = getCheckoutProduct("concierge-plaque")!
 
 export function ConciergeForm() {
   const [formData, setFormData] = useState({
@@ -22,7 +21,6 @@ export function ConciergeForm() {
     deathDate: '',
     obituary: '',
     deliveryType: 'digital',
-    plaqueColor: 'gold',
   })
 
   const [files, setFiles] = useState<{
@@ -82,7 +80,6 @@ export function ConciergeForm() {
           deathDate: '',
           obituary: '',
           deliveryType: 'digital',
-          plaqueColor: 'gold',
         })
         setFiles({ photos: [], videos: [], documents: [] })
       } else {
@@ -222,49 +219,11 @@ export function ConciergeForm() {
         </div>
       </div>
 
-      {/* Delivery Options */}
       <div>
-        <h3 className="font-semibold text-white mb-4">How Do You Want Your QR Code?</h3>
-        <div className="space-y-3">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="radio"
-              name="deliveryType"
-              value="digital"
-              checked={formData.deliveryType === 'digital'}
-              onChange={handleInputChange}
-              className="w-4 h-4"
-            />
-            <span className="text-white">Digital Link Only ({formatUsd(digitalConcierge.price)})</span>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="radio"
-              name="deliveryType"
-              value="plaque"
-              checked={formData.deliveryType === 'plaque'}
-              onChange={handleInputChange}
-              className="w-4 h-4"
-            />
-            <span className="text-white">Physical Plaque with QR Code (+{formatUsd(plaqueConcierge.price - digitalConcierge.price)})</span>
-          </label>
-        </div>
-
-        {formData.deliveryType === 'plaque' && (
-          <div className="mt-4">
-            <label className="block text-sm text-zinc-300 mb-2">Plaque Color</label>
-            <select
-              name="plaqueColor"
-              value={formData.plaqueColor}
-              onChange={handleInputChange}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded text-white px-3 py-2"
-            >
-              <option value="gold">Gold</option>
-              <option value="silver">Silver</option>
-              <option value="black">Black</option>
-            </select>
-          </div>
-        )}
+        <h3 className="font-semibold text-white mb-2">Digital memorial</h3>
+        <p className="text-zinc-300">
+          We build the page and send you the link. The service is {formatUsd(digitalConcierge.price)}. Nothing is shipped.
+        </p>
       </div>
 
       {/* Status Messages */}

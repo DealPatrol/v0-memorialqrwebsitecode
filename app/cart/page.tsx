@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -93,7 +92,7 @@ export default function CartPage() {
               <h1 className="text-3xl font-bold text-slate-900 mb-4">Your Cart is Empty</h1>
               <p className="text-slate-600 mb-8">Ready to create a beautiful memorial for your loved one?</p>
               <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700">
-                <Link href="/products">View Memorial Plaque</Link>
+                <Link href="/store">See Digital Memorial Hosting</Link>
               </Button>
             </div>
           </div>
@@ -111,7 +110,7 @@ export default function CartPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Shopping Cart</h1>
-            <p className="text-slate-600">Review your memorial plaque order before checkout</p>
+            <p className="text-slate-600">Physical products are not for sale. Start a digital memorial instead.</p>
           </div>
         </div>
       </section>
@@ -133,10 +132,6 @@ export default function CartPage() {
                   <CardContent className="space-y-6">
                     {items.map((item) => (
                       <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-4 p-4 border rounded-lg">
-                        <div className="w-24 h-24 relative overflow-hidden rounded-lg bg-white">
-                          <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
-                        </div>
-
                         <div className="flex-1">
                           <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
 
@@ -317,8 +312,8 @@ export default function CartPage() {
                     </div>
 
                     <Button asChild size="lg" className="w-full bg-purple-600 hover:bg-purple-700">
-                      <Link href="/checkout">
-                        Proceed to Checkout
+                      <Link href="/store">
+                        See Digital Memorial Hosting
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>
                     </Button>

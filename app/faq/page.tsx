@@ -48,7 +48,7 @@ const faqCategories = [
       {
         question: "How long does it take to set up?",
         answer:
-          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, your digital memorial is live immediately, and your QR code plaque ships within 3-5 business days.",
+          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, your digital memorial is live immediately.",
       },
     ],
   },
@@ -58,17 +58,17 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "Physical products are one-time purchases. Digital memorial hosting is billed separately at $4.99 per month per memorial.",
+          "Digital memorial hosting is $4.99 per month per memorial. The page itself is what you create. Nothing is shipped.",
       },
       {
         question: "What's included in the product price?",
         answer:
-          "The price shown in the store covers the physical product in your cart. Digital memorial hosting is a separate $4.99 monthly charge per memorial.",
+          "Hosting is $4.99 per month for each memorial page. That covers photos, videos, and stories on the page.",
       },
       {
         question: "What happens if I cancel my hosting subscription?",
         answer:
-          "You will not be charged for another billing period. The physical product remains yours, but the hosted memorial may become unavailable after the paid period ends. Contact support before canceling if you need help preserving a copy of your content.",
+          "You will not be charged for another billing period. The hosted memorial may become unavailable after the paid period ends. Contact support before canceling if you need help preserving a copy of your content.",
       },
       {
         question: "Do you offer refunds?",
@@ -83,32 +83,17 @@ const faqCategories = [
     ],
   },
   {
-    title: "QR Code & Plaque",
+    title: "Hosting",
     faqs: [
       {
-        question: "How durable is the QR code plaque?",
+        question: "Is anything shipped?",
         answer:
-          "Our QR code plaques are made from weatherproof metal with UV-resistant coating and professional laser engraving. They're designed to withstand rain, snow, sun, and extreme temperatures for decades. We offer a 5-year durability guarantee.",
+          "No. The current offer is the digital memorial page and monthly hosting. Physical products are not for sale.",
       },
       {
-        question: "What size is the QR code plaque?",
+        question: "What if the memorial page will not load?",
         answer:
-          "The standard plaque is 4 inches by 6 inches, perfect for mounting on headstones, memorial benches, or display stands. The QR code is large enough to scan easily from 2-3 feet away.",
-      },
-      {
-        question: "How do I mount the plaque?",
-        answer:
-          "Each plaque comes with multiple mounting options including adhesive backing, screw holes, and magnetic backing. We include detailed instructions and all necessary hardware for secure installation.",
-      },
-      {
-        question: "What if the QR code stops working?",
-        answer:
-          "The printed QR code does not expire, but it links to the hosted memorial and needs an active hosting plan. Contact support if an active memorial is not loading.",
-      },
-      {
-        question: "How long does shipping take?",
-        answer:
-          "QR code plaques ship within 3-5 business days via USPS Priority Mail (2-3 day delivery). Rush shipping options are available for an additional fee if you need it faster.",
+          "The page needs an active hosting plan. Contact support if an active memorial is not loading.",
       },
     ],
   },
@@ -342,7 +327,7 @@ export default function FAQPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/store">Shop Memorial Products</Link>
+              <Link href="/store">See Memorial Hosting</Link>
             </Button>
 
             <Button

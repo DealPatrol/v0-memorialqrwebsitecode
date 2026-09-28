@@ -22,12 +22,10 @@ export interface CheckoutProduct {
 }
 
 /**
- * Sellable store catalog. Prices are the amounts /checkout/simple charges
- * for each product id. The slate coaster is $24.99 here (store Buy Now id
- * slate-memorial-coaster). The homepage previously listed the same coaster
- * as slate-coaster at $46.99; that id is an alias of this product.
+ * Physical catalog kept in code so it can be sold again, but not shown or
+ * charged. None of these ids have an automatic supplier order on payment.
  */
-export const STORE_PRODUCTS: StoreProduct[] = [
+const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
   {
     id: "memorial-locket",
     name: "Vintage Flower of Life Urn Necklace with Mini Jar Cremation Locket",
@@ -234,14 +232,19 @@ export const STORE_PRODUCTS: StoreProduct[] = [
   },
 ]
 
-/** Standard metal plaques. Homepage and checkout both charge this amount. */
+/** Nothing physical is listed for sale until a supplier can fulfill it. */
+export const STORE_PRODUCTS: StoreProduct[] = []
+
+/** Standard metal plaque price, retained for the withheld catalog. */
 export const PLAQUE_PRICE = 29.99
 
-export const PLAQUE_PRODUCTS: CheckoutProduct[] = [
+const WITHHELD_PLAQUE_PRODUCTS: CheckoutProduct[] = [
   { id: "gold-plaque", name: "Gold Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
   { id: "silver-plaque", name: "Silver Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
   { id: "black-plaque", name: "Black Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
 ]
+
+export const PLAQUE_PRODUCTS: CheckoutProduct[] = []
 
 /**
  * Concierge checkout charges $299.99 and $329.99. The marketing cards rounded
@@ -260,35 +263,68 @@ export const CONCIERGE_PRODUCTS: CheckoutProduct[] = [
     price: 299.99,
     monthlyFee: HOSTING_MONTHLY_PRICE,
   },
-  {
-    id: "concierge-plaque",
-    name: "Concierge Service - Physical Plaque",
-    price: 329.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
-  },
 ]
 
-/** Older homepage ids that refer to a current store product. */
-const PRODUCT_ALIASES: Record<string, string> = {
-  "slate-coaster": "slate-memorial-coaster",
-  "wooden-keychain": "wooden-keychain-necklace",
-  "photo-frame": "memorial-photo-frame",
+const WITHHELD_CONCIERGE_PLAQUE: CheckoutProduct = {
+  id: "concierge-plaque",
+  name: "Concierge Service - Physical Plaque",
+  price: 329.99,
+  monthlyFee: HOSTING_MONTHLY_PRICE,
 }
 
-const CHECKOUT_PRODUCTS: CheckoutProduct[] = [
-  ...STORE_PRODUCTS.map(({ id, name, price, monthlyFee }) => ({ id, name, price, monthlyFee })),
-  ...PLAQUE_PRODUCTS,
-  ...CONCIERGE_PRODUCTS,
-]
+/** The digital page itself. Hosting is billed monthly and nothing is shipped. */
+export const DIGITAL_MEMORIAL: CheckoutProduct = {
+  id: "digital-memorial",
+  name: "Digital Memorial Page",
+  price: 0,
+  monthlyFee: HOSTING_MONTHLY_PRICE,
+}
+
+const REMOVED_PHYSICAL_IDS = new Set<string>([
+  ...WITHHELD_PHYSICAL_PRODUCTS.map((product) => product.id),
+  ...WITHHELD_PLAQUE_PRODUCTS.map((product) => product.id),
+  WITHHELD_CONCIERGE_PLAQUE.id,
+  "slate-coaster",
+  "wooden-keychain",
+  "photo-frame",
+  "basic",
+  "standard",
+  "premium",
+  "picture_plaque",
+  "picture-plaque",
+  "stone-qr",
+  "stone_qr",
+])
+
+const CHECKOUT_PRODUCTS: CheckoutProduct[] = [...CONCIERGE_PRODUCTS]
 
 const CHECKOUT_BY_ID = new Map(CHECKOUT_PRODUCTS.map((product) => [product.id, product]))
 
 export function getCheckoutProduct(id: string): CheckoutProduct | undefined {
-  const canonicalId = PRODUCT_ALIASES[id] ?? id
-  return CHECKOUT_BY_ID.get(canonicalId)
+  if (REMOVED_PHYSICAL_IDS.has(id)) return undefined
+  return CHECKOUT_BY_ID.get(id)
 }
 
 export function getStoreProduct(id: string): StoreProduct | undefined {
-  const canonicalId = PRODUCT_ALIASES[id] ?? id
-  return STORE_PRODUCTS.find((product) => product.id === canonicalId)
+  if (REMOVED_PHYSICAL_IDS.has(id)) return undefined
+  return STORE_PRODUCTS.find((product) => product.id === id)
+}
+
+export type ResolvedCheckoutItem = CheckoutProduct & { quantity: number }
+
+/** Paid checkout lines. Physical and unknown ids return null so the order is rejected. */
+export function resolvePaidCheckoutItems(items: unknown): ResolvedCheckoutItem[] | null {
+  if (!Array.isArray(items) || items.length === 0) return null
+
+  const resolved = items.flatMap((item): ResolvedCheckoutItem[] => {
+    if (!item || typeof item !== "object" || !("id" in item) || typeof item.id !== "string") return []
+    const product = getCheckoutProduct(item.id)
+    if (!product) return []
+    const rawQuantity = "quantity" in item && typeof item.quantity === "number" ? item.quantity : 1
+    const quantity = Math.floor(rawQuantity)
+    if (!Number.isFinite(quantity) || quantity < 1 || quantity > 99) return []
+    return [{ ...product, quantity }]
+  })
+
+  return resolved.length === items.length ? resolved : null
 }

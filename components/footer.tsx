@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Shield, Lock, Award, Clock, Mail, MapPin } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
-import { SUPPORT_EMAIL, US_SHIPPING_COPY } from "@/lib/site"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export function Footer() {
   return (
@@ -54,9 +54,9 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4">Products</h3>
             <ul className="space-y-2 text-sm text-zinc-400">
-              <li><Link href="/store" className="hover:text-white transition-colors">Shop All Products</Link></li>
-              <li><Link href="/store#human-memorials" className="hover:text-white transition-colors">Human Memorials</Link></li>
-              <li><Link href="/store#pet-memorials" className="hover:text-white transition-colors">Pet Memorials</Link></li>
+              <li><Link href="/store" className="hover:text-white transition-colors">Digital Memorial</Link></li>
+              <li><Link href="/human-memorials" className="hover:text-white transition-colors">Human Memorials</Link></li>
+              <li><Link href="/pet-memorials" className="hover:text-white transition-colors">Pet Memorials</Link></li>
               <li><Link href="/how-it-works" className="hover:text-white transition-colors">How It Works</Link></li>
             </ul>
           </div>
@@ -92,7 +92,7 @@ export function Footer() {
             <div>
               <h4 className="font-semibold mb-3">Simple, transparent service</h4>
               <div className="space-y-2 text-xs text-zinc-400">
-                <p>Physical products are charged once.</p>
+                <p>The memorial page is hosted online.</p>
                 <p>Digital hosting is $4.99/month per memorial.</p>
                 <p>Secure online payments are processed by Square.</p>
               </div>
@@ -104,7 +104,7 @@ export function Footer() {
               <div className="space-y-2 text-sm text-zinc-400">
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-amber-500" />
-                  <span>Based in the United States<br />{US_SHIPPING_COPY}</span>
+                  <span>Based in the United States</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-amber-500" />

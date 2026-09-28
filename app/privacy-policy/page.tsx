@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">How We Use Your Information</h2>
             <p className="text-gray-700 mb-4">
               We use the information to create and maintain digital memorials, process orders and payments, ship
-              physical products, provide customer support, send important updates about your memorial, and improve our
+              memorial hosting, provide customer support, send important updates about your memorial, and improve our
               services. We will never sell your personal information to third parties.
             </p>
 

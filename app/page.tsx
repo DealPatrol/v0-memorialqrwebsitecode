@@ -2,7 +2,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
-import { ProductSelector } from "@/components/product-selector"
 import { ScrollProgressBar } from "@/components/scroll-progress-bar"
 import { QuickLinksBar } from "@/components/quick-links-bar"
 import { FeaturedMemorialPreview } from "@/components/featured-memorial-preview"
@@ -24,13 +23,8 @@ import {
   Star,
   CheckCircle,
 } from "lucide-react"
-import { getCheckoutProduct, PLAQUE_PRICE } from "@/lib/catalog"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { formatUsd } from "@/lib/site"
-
-const keychainPrice = getCheckoutProduct("wooden-keychain")!.price
-const coasterPrice = getCheckoutProduct("slate-coaster")!.price
-const framePrice = getCheckoutProduct("photo-frame")!.price
 
 export default function HomePage() {
   return (
@@ -51,7 +45,8 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
-              Weather-resistant QR plaques transform cemetery headstones into interactive digital tributes. Share photos, videos, and memories—one scan away.
+              A digital memorial page for photos, videos, and stories. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)} per
+              month, and nothing needs to be shipped.
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -66,7 +61,28 @@ export default function HomePage() {
             </div>
           </div>
 
-          <ProductSelector />
+          <div id="digital-memorial" className="max-w-xl mx-auto">
+            <Card className="bg-white border-border shadow-lg">
+              <CardContent className="p-8 text-center">
+                <h2 className="text-2xl font-bold text-foreground mb-3">Digital Memorial Page</h2>
+                <p className="text-muted-foreground mb-6">
+                  Create the page yourself, or have our team build it. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)}{" "}
+                  per month for each memorial.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button asChild size="lg">
+                    <Link href="/create-memorial">
+                      Create a Memorial Page
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline">
+                    <Link href="/store">See Hosting</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
@@ -89,9 +105,8 @@ export default function HomePage() {
 
             <div className="prose prose-lg max-w-none text-muted-foreground space-y-8">
               <p className="text-base leading-relaxed text-foreground">
-                Memorial QR codes are revolutionizing how we honor and remember loved ones. Our weather-resistant
-                plaques attach securely to headstones, grave markers, and pet memorials, providing instant access to
-                rich digital tributes that traditional engraved memorials cannot offer.
+                A digital memorial holds the photos, videos, and stories that a name and two dates cannot. Family and
+                friends open one page and can add their own memories over time.
               </p>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">The Future of Cemetery Memorials</h3>
@@ -136,20 +151,11 @@ export default function HomePage() {
                 </Card>
               </div>
 
-              <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Durable, Weather-Resistant Technology</h3>
-              <p className="text-base leading-relaxed text-foreground">
-                Our memorial QR plaques are engineered for permanence. Made from UV-resistant materials with sealed QR
-                codes, they withstand harsh weather conditions including snow, rain, extreme heat, and freezing
-                temperatures. Whether mounted on granite headstones in outdoor cemeteries or displayed indoors at
-                memorial gardens, our plaques maintain perfect scan-ability for decades.
-              </p>
-
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Easy Setup, Ongoing Access</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Creating a memorial QR code is simple. Choose your plaque style (Gold, Silver, or Black finish), create
-                your digital memorial page by uploading photos and stories, and receive your custom QR plaque ready to
-                install. Family members can scan the QR code with any smartphone camera—no special apps required—to
-                instantly view the memorial page and contribute their own memories.
+                Create the memorial page by uploading photos and stories. Family members open the link on any phone and
+                can add their own memories. Hosting keeps the page online for {formatUsd(HOSTING_MONTHLY_PRICE)} per
+                month.
               </p>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Privacy Controls & Family Collaboration</h3>
@@ -163,20 +169,15 @@ export default function HomePage() {
               <div className="bg-secondary/50 border border-border rounded-lg p-6 my-10">
                 <h4 className="font-semibold text-lg mb-3 text-foreground">Perfect for All Memorial Types</h4>
                 <p className="text-muted-foreground mb-4">
-                  Memorial QR codes work beautifully for traditional cemetery headstones, cremation urns, memorial
-                  benches, pet grave markers, military veteran memorials, roadside memorials, and memorial gardens.
-                  They're also ideal for memorial jewelry, keychains, photo frames, and coasters that keep memories
-                  close to your heart.
+                  The page works for a person or a pet. Share the link with family, or keep it private. Hosting is{" "}
+                  {formatUsd(HOSTING_MONTHLY_PRICE)} per month for each memorial.
                 </p>
               </div>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Our memorial QR codes start at just {formatUsd(keychainPrice)} for keychains, {formatUsd(coasterPrice)}{" "}
-                for slate coasters, {formatUsd(PLAQUE_PRICE)} for premium plaques, and {formatUsd(framePrice)} for photo
-                frames. Digital memorial hosting is a separate {formatUsd(HOSTING_MONTHLY_PRICE)} monthly charge per
-                memorial, not per physical product. Order multiple items for the same loved one and pay only one
-                monthly hosting fee.
+                The memorial page is the offer. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)} per month for each
+                memorial, with no product to ship.
               </p>
             </div>
           </div>
@@ -208,9 +209,9 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
                 <Heart className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">2. Get Your Memorial</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-3">2. Keep It Online</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Receive a custom QR code plaque that links directly to their memorial page.
+                Hosting at {formatUsd(HOSTING_MONTHLY_PRICE)} per month keeps the memorial page available.
               </p>
             </div>
 
@@ -310,8 +311,8 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
-              <Link href="/store">
-                Shop Plaques
+              <Link href="/create-memorial">
+                Create a Memorial
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

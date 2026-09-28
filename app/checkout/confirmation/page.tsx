@@ -203,10 +203,9 @@ export default function OrderConfirmationPage() {
                 <Package className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Shipping Timeline</h3>
+                <h3 className="font-semibold mb-2">Your Memorial Page</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your memorial plaque will be carefully crafted and shipped within 3-5 business days. You'll receive
-                  tracking information via email.
+                  Your digital memorial is ready to build. Nothing is shipped.
                 </p>
               </div>
             </div>
@@ -219,7 +218,7 @@ export default function OrderConfirmationPage() {
               <h2 className="text-2xl font-bold mb-3">Create Your Memorial Now</h2>
               <p className="text-muted-foreground mb-6">
                 Start building your loved one's memorial page. Add photos, stories, and memories that will be accessible
-                through your QR code plaque.
+                on the memorial page.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>

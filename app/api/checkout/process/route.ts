@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
+import { resolvePaidCheckoutItems } from "@/lib/catalog"
+import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
 
     const {
-      // New individual product fields
       planType,
-      package: packageOrProductId,
-      productName,
-      productPrice,
-      monthlyFee,
+      items,
 
       // Shared fields
       customerName,
@@ -27,21 +25,14 @@ export async function POST(req: Request) {
       customization,
       cardId,
       squareCustomerId,
-
-      // Old package fields (keep for backwards compatibility)
-      plaqueColor,
-      boxPersonalization,
-      addonWoodenQr,
-      addonPicturePlaque,
-      addonStoneQR,
-      stoneEngravingText,
-      picturePlaqueUrl,
     } = body
 
+    const resolvedCustomerName = customerName || customerEmail
+
     // Validate required fields
-    if (!customerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId) {
+    if (!resolvedCustomerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId) {
       const missing = []
-      if (!customerName) missing.push("customerName")
+      if (!resolvedCustomerName) missing.push("customerName")
       if (!customerEmail) missing.push("customerEmail")
       if (!addressLine1) missing.push("addressLine1")
       if (!city) missing.push("city")
@@ -55,36 +46,25 @@ export async function POST(req: Request) {
       )
     }
 
+    if (planType !== "cart-checkout") {
+      return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
+    }
+
+    const resolvedItems = resolvePaidCheckoutItems(items)
+    if (!resolvedItems) {
+      return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
+    }
+
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
 
-    let totalAmountCents = 0
-    let monthlyAmountCents = 0
-    let finalProductName = productName || "Memorial QR Product"
-    let finalPlanType = planType || "individual-product"
-
-    if (planType === "individual-product") {
-      // Individual product purchase
-      totalAmountCents = Math.round((productPrice || 0) * 100)
-      monthlyAmountCents = Math.round((monthlyFee || 4.99) * 100)
-      finalProductName = productName || "Memorial QR Product"
-    } else {
-      // Legacy package purchase
-      const packagePrices: Record<string, number> = {
-        basic: 8989,
-        standard: 12989,
-        premium: 19989,
-      }
-      const baseAmount = packagePrices[packageOrProductId as string] || packagePrices.standard
-
-      let addonAmount = 0
-      if (addonWoodenQr) addonAmount += 1989
-      if (addonPicturePlaque) addonAmount += 2989
-      if (addonStoneQR) addonAmount += 3998
-      totalAmountCents = baseAmount + addonAmount
-      monthlyAmountCents = 499 // $4.99/month
-      finalProductName = `Memorial QR ${packageOrProductId || "standard"} Package${plaqueColor ? ` - ${plaqueColor} plaque` : ""}`
-      finalPlanType = "package"
-    }
+    const totalAmountCents = resolvedItems.reduce(
+      (total, item) => total + Math.round(item.price * 100) * item.quantity,
+      0,
+    )
+    const monthlyAmountCents = Math.round(HOSTING_MONTHLY_PRICE * 100)
+    const finalProductName = resolvedItems.map((item) => `[${item.id}] ${item.name} × ${item.quantity}`).join(", ")
+    const finalPlanType = "cart-checkout"
+    const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
 
     const supabaseAuth = await createClient()
     const {
@@ -139,7 +119,7 @@ export async function POST(req: Request) {
 
     const orderData = {
       order_number: orderNumber,
-      customer_name: customerName,
+      customer_name: resolvedCustomerName,
       customer_email: customerEmail,
       customer_phone: customerPhone || null,
       shipping_address_line1: addressLine1,
@@ -155,21 +135,20 @@ export async function POST(req: Request) {
       currency: "USD",
       product_type: finalPlanType,
       product_name: finalProductName,
-      quantity: 1,
+      quantity: totalQuantity,
       status: "processing",
-      special_instructions: customization || boxPersonalization || null,
+      special_instructions: customization || null,
       plan_type: finalPlanType,
       subscription_id: subscriptionId,
       subscription_plan_id: process.env.SQUARE_SUBSCRIPTION_PLAN_ID || null,
 
-      // Keep legacy fields for backwards compatibility
-      plaque_color: plaqueColor || null,
-      box_personalization: boxPersonalization || null,
-      addon_wooden_qr: addonWoodenQr || false,
-      addon_picture_plaque: addonPicturePlaque || false,
-      addon_stone_qr: addonStoneQR || false,
-      stone_engraving_text: stoneEngravingText || null,
-      picture_plaque_url: picturePlaqueUrl || null,
+      plaque_color: null,
+      box_personalization: null,
+      addon_wooden_qr: false,
+      addon_picture_plaque: false,
+      addon_stone_qr: false,
+      stone_engraving_text: null,
+      picture_plaque_url: null,
 
       user_id: userId,
       square_customer_id: finalSquareCustomerId,
@@ -205,7 +184,7 @@ export async function POST(req: Request) {
           orderId: order.id,
           orderNumber: order.order_number,
           customerEmail: customerEmail,
-          customerName: customerName,
+          customerName: resolvedCustomerName,
           productName: finalProductName,
           amount: (totalAmountCents / 100).toFixed(2),
           monthlyFee: (monthlyAmountCents / 100).toFixed(2),

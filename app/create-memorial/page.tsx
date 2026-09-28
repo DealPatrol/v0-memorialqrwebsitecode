@@ -822,22 +822,17 @@ export default function CreateMemorialPage() {
               <h4 className="font-semibold mb-4">Products</h4>
               <ul className="space-y-2 text-sm text-slate-400">
                 <li>
-                  <Link href="/products?category=plaques" className="hover:text-white">
-                    Memorial Plaques
+                  <Link href="/store" className="hover:text-white">
+                    Memorial Hosting
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products?category=stones" className="hover:text-white">
-                    Memorial Stones
+                  <Link href="/human-memorials" className="hover:text-white">
+                    Human Memorials
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products?category=monuments" className="hover:text-white">
-                    Monuments
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products?category=pet" className="hover:text-white">
+                  <Link href="/pet-memorials" className="hover:text-white">
                     Pet Memorials
                   </Link>
                 </li>

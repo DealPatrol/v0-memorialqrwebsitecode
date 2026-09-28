@@ -366,7 +366,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
-                    <Link href="/store">Browse Memorial Products</Link>
+                    <Link href="/store">See Memorial Hosting</Link>
                   </Button>
                   <Button asChild variant="outline" size="lg">
                     <Link href="/pricing">View Pricing</Link>

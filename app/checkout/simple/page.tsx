@@ -14,21 +14,17 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
+import Link from "next/link"
 import { getCheckoutProduct } from "@/lib/catalog"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
-import { formatUsd, US_SHIPPING_COPY } from "@/lib/site"
+import { formatUsd } from "@/lib/site"
 
 type CartLine = { id: string; name: string; price: number; quantity: number }
 
-function lineFromCatalog(id: string, quantity: number, fallbackName?: string, fallbackPrice?: number): CartLine | null {
+function lineFromCatalog(id: string, quantity: number): CartLine | null {
   const product = getCheckoutProduct(id)
-  if (product) {
-    return { id: product.id, name: product.name, price: product.price, quantity }
-  }
-  if (fallbackName != null && fallbackPrice != null) {
-    return { id, name: fallbackName, price: fallbackPrice, quantity }
-  }
-  return null
+  if (!product) return null
+  return { id: product.id, name: product.name, price: product.price, quantity }
 }
 
 function CheckoutForm() {
@@ -38,26 +34,36 @@ function CheckoutForm() {
 
   const [cartItems, setCartItems] = useState<CartLine[]>([])
   const [orderTotal, setOrderTotal] = useState(0)
+  const [checkoutBlocked, setCheckoutBlocked] = useState(true)
+  const [rejectedProduct, setRejectedProduct] = useState(false)
 
   useEffect(() => {
     const storedItems = localStorage.getItem("checkoutItems")
     let items: CartLine[] = []
+    let rejected = false
 
     if (storedItems) {
       const parsed = JSON.parse(storedItems) as Array<{ id: string; name: string; price: number; quantity: number }>
       items = parsed.flatMap((item) => {
-        const line = lineFromCatalog(item.id, item.quantity, item.name, item.price)
+        const line = lineFromCatalog(item.id, item.quantity)
+        if (!line) rejected = true
         return line ? [line] : []
       })
     } else {
-      const productId = searchParams.get("product") || "gold-plaque"
-      const line = lineFromCatalog(productId, 1)
-      if (line) items = [line]
+      const productId = searchParams.get("product")
+      if (productId) {
+        const line = lineFromCatalog(productId, 1)
+        if (line) items = [line]
+        else rejected = true
+      }
     }
 
+    if (rejected) localStorage.removeItem("checkoutItems")
+    setRejectedProduct(rejected)
+    setCheckoutBlocked(items.length === 0)
     setCartItems(items)
     setOrderTotal(items.reduce((sum, item) => sum + item.price * item.quantity, 0))
-    // Prices always come from the catalog so Square is charged the store amount.
+    // Prices always come from the catalog. Unknown and physical ids are rejected.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -83,6 +89,7 @@ function CheckoutForm() {
 
   const validateForm = () => {
     if (
+      !formData.email ||
       !formData.address ||
       !formData.city ||
       !formData.state ||
@@ -180,12 +187,37 @@ function CheckoutForm() {
     }
   }
 
+  if (checkoutBlocked) {
+    return (
+      <section className="py-20 px-4">
+        <div className="max-w-xl mx-auto text-center">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
+            {rejectedProduct ? "This product is not available" : "Start with a digital memorial"}
+          </h1>
+          <p className="text-muted-foreground mb-8">
+            {rejectedProduct
+              ? "We are not selling that item. The memorial page and monthly hosting do not need to be shipped."
+              : `Create a memorial page and keep it online for ${formatUsd(HOSTING_MONTHLY_PRICE)} per month.`}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/create-memorial" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground">
+              Create a Memorial Page
+            </Link>
+            <Link href="/store" className="inline-flex items-center justify-center rounded-md border px-6 py-3">
+              See Hosting
+            </Link>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Purchase</h1>
-          <p className="text-lg text-muted-foreground">Secure checkout for your memorial products</p>
+          <p className="text-lg text-muted-foreground">Secure checkout for your digital memorial</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -216,8 +248,7 @@ function CheckoutForm() {
                     <span className="font-semibold text-blue-900 dark:text-blue-100">{formatUsd(HOSTING_MONTHLY_PRICE)}/mo</span>
                   </div>
                   <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                    This fee is <strong>per memorial page</strong>, not per product. If you order multiple products for
-                    the same person's memorial, you only pay this fee once.
+                    This fee is <strong>per memorial page</strong>.
                   </p>
                   <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
                     Includes: Unlimited photos, videos & memorial content hosting
@@ -232,7 +263,6 @@ function CheckoutForm() {
                 <p className="text-xs text-muted-foreground text-center">
                   Then {formatUsd(HOSTING_MONTHLY_PRICE)}/month per memorial starting next month
                 </p>
-                <p className="text-xs text-muted-foreground text-center">{US_SHIPPING_COPY}</p>
               </div>
 
               <Separator />
@@ -241,7 +271,7 @@ function CheckoutForm() {
                 <p className="font-semibold text-foreground text-xs mb-2">What's Included:</p>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Personalized memorial product with QR code</span>
+                  <span>A digital memorial page for photos, stories, and messages</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -253,7 +283,7 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>One monthly fee covers all products for same memorial</span>
+                  <span>Hosting billed once per memorial</span>
                 </div>
               </div>
 
@@ -273,7 +303,9 @@ function CheckoutForm() {
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address (Optional)</Label>
+                    <Label htmlFor="email">
+                      Email Address <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="email"
                       name="email"
@@ -302,8 +334,7 @@ function CheckoutForm() {
                 <Separator />
 
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-sm">Shipping Address</h3>
-                  <p className="text-sm text-muted-foreground">{US_SHIPPING_COPY}</p>
+                  <h3 className="font-semibold text-sm">Billing Address</h3>
                   <div className="space-y-2">
                     <Label htmlFor="address">
                       Street Address <span className="text-red-500">*</span>
@@ -387,12 +418,11 @@ function CheckoutForm() {
                     name="customization"
                     value={formData.customization}
                     onChange={handleInputChange}
-                    placeholder="For keychain/necklace: specify which you prefer. For slate coaster or photo frame: provide name, dates, and any special text..."
+                    placeholder="Names, dates, and anything our team should know about the memorial."
                     rows={4}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Let us know personalization details: names, dates, memorial text, or special requests for your
-                    order.
+                    Share names, dates, or notes for the memorial page.
                   </p>
                 </div>
               </CardContent>

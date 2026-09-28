@@ -33,7 +33,7 @@ export function FeaturedMemorialPreview() {
                   <div className="space-y-4">
                     <p className="text-zinc-300">
                       This memorial showcases photos, life stories, and cherished memories shared by family and friends.
-                      Scan the QR code or click to visit.
+                      Open the page to see how a memorial looks.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-3 pt-4">
@@ -44,7 +44,7 @@ export function FeaturedMemorialPreview() {
                         </Link>
                       </Button>
                       <Button asChild variant="outline" className="gap-2 border-zinc-600 bg-transparent">
-                        <Link href="#product-selector">
+                        <Link href="/create-memorial">
                           <ExternalLink className="w-4 h-4" />
                           Create Your Own
                         </Link>
