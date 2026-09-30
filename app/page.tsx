@@ -40,12 +40,20 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance leading-tight">
-              Digital Memorials That Last Forever
+              A Memorial Page That Stays Online: 10 Years of Hosting Included With Our Plaque
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
               Personalized QR keepsakes connect family and friends to an online memorial filled with photos, videos, and
               memories—one scan away.
+            </p>
+
+            <p className="text-base text-foreground mb-8 max-w-3xl mx-auto">
+              <span className="font-semibold">Plain pricing:</span> our Slate Desk Plaque is{" "}
+              <span className="font-semibold">$49, one-time, with 10 years of memorial page hosting included</span>
+              {" "}(no monthly fee). Other keepsakes start at $19.99, one-time, plus $4.99/month per memorial for
+              hosting (one fee even if you order several keepsakes for the same person). You can stop future renewals
+              at any time.
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -55,7 +63,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">$4.99/month Hosting</span>
+                <span className="text-sm font-medium text-foreground">Plaque: 10 Years Hosting Included</span>
               </div>
             </div>
           </div>
@@ -160,7 +168,8 @@ export default function HomePage() {
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Physical products start at $19.99. Digital memorial hosting is a separate $4.99 monthly charge per
+                The Slate Desk Plaque is $49 with 10 years of memorial page hosting included. Other physical
+                products start at $19.99, and their digital memorial hosting is a separate $4.99 monthly charge per
                 memorial, not per physical product. Order multiple items for the same loved one and pay only one monthly
                 hosting fee.
               </p>

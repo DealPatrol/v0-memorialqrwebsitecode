@@ -13,12 +13,12 @@ export const metadata: Metadata = {
   description:
     "Answers to frequently asked questions about Memorial QR products, fulfillment, pricing, and $4.99 monthly digital hosting.",
   keywords:
-    "memorial QR FAQ Calgary, print-on-demand memorial products, pet memorial QR answers, digital memorial hosting Alberta",
+    "memorial QR FAQ, print-on-demand memorial products, pet memorial QR answers, digital memorial hosting",
   alternates: {
     canonical: "/faq",
   },
   openGraph: {
-    title: "Memorial QR FAQ | Calgary Northeast",
+    title: "Memorial QR FAQ | Memorial QR",
     description:
       "Get answers about memorial QR codes, installation, product pricing, and monthly digital hosting.",
     url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/faq`,
@@ -57,12 +57,12 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "Physical products are one-time purchases. Digital memorial hosting is billed separately at $4.99 per month per memorial.",
+          "Physical products are one-time purchases. The Slate Desk Plaque ($49) includes 10 years of memorial page hosting. For other products, digital memorial hosting is billed separately at $4.99 per month per memorial.",
       },
       {
         question: "What's included in the product price?",
         answer:
-          "The price shown in the store covers the physical product in your cart. Digital memorial hosting is a separate $4.99 monthly charge per memorial.",
+          "The price shown in the store covers the physical product in your cart. Digital memorial hosting is a separate $4.99 monthly charge per memorial, except when your order includes the Slate Desk Plaque, which includes 10 years of hosting.",
       },
       {
         question: "What happens if I cancel my hosting subscription?",
@@ -331,8 +331,7 @@ export default function FAQPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Start honoring your loved one today with a beautiful digital memorial that will preserve their memory
-            forever.
+            Start a digital memorial where family and friends can share photos, stories, and memories in one place.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -362,7 +361,7 @@ export default function FAQPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and online memorial pages.</p>
             </div>
 
             <div>

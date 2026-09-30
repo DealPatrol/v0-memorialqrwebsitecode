@@ -22,12 +22,12 @@ export function TrustBadges() {
         <div className="flex flex-col items-center text-center gap-2 hidden md:flex">
           <Clock className="h-8 w-8 text-yellow-500" />
           <p className="text-sm font-semibold text-white">Digital Hosting</p>
-          <p className="text-xs text-zinc-500">$4.99/month per memorial</p>
+          <p className="text-xs text-zinc-500">10 yrs included with plaque; otherwise $4.99/mo</p>
         </div>
         <div className="flex flex-col items-center text-center gap-2 hidden lg:flex">
           <Award className="h-8 w-8 text-orange-500" />
-          <p className="text-sm font-semibold text-white">Weather-Resistant</p>
-          <p className="text-xs text-zinc-500">Built to last decades</p>
+          <p className="text-sm font-semibold text-white">Made to Order</p>
+          <p className="text-xs text-zinc-500">Printed by Printful or Printify</p>
         </div>
       </div>
     </div>

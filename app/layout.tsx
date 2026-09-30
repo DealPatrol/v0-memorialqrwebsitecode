@@ -119,7 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     },
     offers: {
       "@type": "AggregateOffer",
-      priceCurrency: "CAD",
+      priceCurrency: "USD",
       lowPrice: "19.99",
       highPrice: "59.99",
       availability: "https://schema.org/InStock",
@@ -128,7 +128,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html
-      lang="en-CA"
+      lang="en-US"
       suppressHydrationWarning
       className={`${inter.variable} ${dancingScript.variable} ${greatVibes.variable} bg-background`}
     >

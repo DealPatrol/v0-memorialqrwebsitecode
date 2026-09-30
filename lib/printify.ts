@@ -127,7 +127,7 @@ export async function submitPrintifyOrder(
         last_name: lastName,
         email: request.recipient.email,
         phone: request.recipient.phone || undefined,
-        country: request.recipient.country || "CA",
+        country: request.recipient.country || "US",
         region: request.recipient.region || undefined,
         address1: request.recipient.address1,
         address2: request.recipient.address2 || undefined,

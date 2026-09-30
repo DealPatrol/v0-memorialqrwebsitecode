@@ -140,7 +140,7 @@ export default function OrderConfirmationPage() {
               <CardContent className="pt-6">
                 <Package className="h-8 w-8 text-purple-600 mb-2" />
                 <h3 className="font-semibold mb-1">Shipping</h3>
-                <p className="text-sm text-gray-600">Your plaque will ship within 3-5 business days</p>
+                <p className="text-sm text-gray-600">Your keepsake will ship within 3-7 business days</p>
               </CardContent>
             </Card>
           </div>

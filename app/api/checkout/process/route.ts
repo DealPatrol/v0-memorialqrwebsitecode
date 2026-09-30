@@ -11,6 +11,7 @@ import {
   getFulfillmentProvider,
   isMissingPodOrderSchema,
 } from "@/lib/pod-orders"
+import { cartIncludesHosting } from "@/lib/store-products"
 
 export async function POST(req: Request) {
   try {
@@ -62,7 +63,9 @@ export async function POST(req: Request) {
 
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
     const totalAmountCents = getCheckoutTotalCents(resolvedItems)
-    const monthlyAmountCents = 499
+    // Carts containing a hosting-included product (e.g. the $49 plaque, 10 years included)
+    // must NOT create the $4.99/mo Square subscription.
+    const monthlyAmountCents = cartIncludesHosting(resolvedItems) ? 0 : 499
     const finalProductName = resolvedItems
       .map((item) => `[${item.id}] ${item.name} × ${item.quantity}`)
       .join(", ")
@@ -89,7 +92,7 @@ export async function POST(req: Request) {
         !paymentResponse.ok ||
         payment?.status !== "COMPLETED" ||
         payment?.amount_money?.amount !== totalAmountCents ||
-        payment?.amount_money?.currency !== "CAD" ||
+        payment?.amount_money?.currency !== "USD" ||
         payment?.location_id !== locationId
       ) {
         return NextResponse.json({ success: false, error: "Payment does not match the order total" }, { status: 400 })
@@ -160,7 +163,7 @@ export async function POST(req: Request) {
       payment_status: "completed",
       amount_cents: totalAmountCents,
       monthly_amount_cents: monthlyAmountCents,
-      currency: "CAD",
+      currency: "USD",
       product_type: finalPlanType,
       product_name: finalProductName,
       quantity: totalQuantity,

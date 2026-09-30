@@ -21,8 +21,10 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Description</h2>
             <p className="text-gray-700 mb-4">
               Memorial QR provides digital memorial services including online memorial pages and QR code products
-              (plaques, tags, stones, and accessories) to honor deceased individuals and pets. All products include a
-              one-time purchase price plus a monthly website hosting fee of $4.99.
+              (plaques, tags, stones, and accessories) to honor deceased individuals and pets. Products include a
+              one-time purchase price plus a monthly website hosting fee of $4.99, except the Slate Desk Plaque, which
+              includes 10 years of memorial page hosting for the memorial it is linked to, starting on the purchase
+              date.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
@@ -34,14 +36,14 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
-              Payment is required at the time of order for physical products. Monthly hosting fees of $4.99 will be
-              charged automatically to maintain your digital memorial website. We offer a 30-day money-back guarantee
+              Payment is required at the time of order for physical products. Where hosting is not included, monthly
+              hosting fees of $4.99 will be charged automatically to maintain your digital memorial website. We offer a 30-day money-back guarantee
               for physical products. Monthly hosting fees are non-refundable but can be canceled at any time.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
             <p className="text-gray-700 mb-4">
-              Physical memorial products ship within 3-5 business days. Free shipping is included on all orders within
+              Physical memorial products ship within 3-7 business days. Free shipping is included on all orders within
               the United States. International shipping rates apply for orders outside the US.
             </p>
 
@@ -98,7 +100,7 @@ export default function TermsOfServicePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and online memorial pages.</p>
             </div>
 
             <div>

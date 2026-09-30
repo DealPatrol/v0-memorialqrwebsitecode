@@ -17,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { CHECKOUT_PRODUCTS, resolveCheckoutItems } from "@/lib/checkout-products"
 import type { CheckoutProduct } from "@/lib/checkout-products"
 import { createClient } from "@/lib/supabase/client"
+import { trackPurchase } from "@/lib/track"
+import { cartIncludesHosting } from "@/lib/store-products"
 
 type CheckoutItem = CheckoutProduct & { id: string; quantity: number }
 
@@ -27,6 +29,7 @@ function CheckoutForm() {
 
   const [cartItems, setCartItems] = useState<CheckoutItem[]>([])
   const [orderTotal, setOrderTotal] = useState(0)
+  const hostingIncluded = cartIncludesHosting(cartItems)
 
   useEffect(() => {
     const selectedProductId = searchParams.get("product")
@@ -146,7 +149,7 @@ function CheckoutForm() {
         planType: "cart-checkout",
         items: cartItems,
         totalAmount: orderTotal,
-        monthlyFee: 4.99,
+        monthlyFee: hostingIncluded ? 0 : 4.99,
         customerName: formData.name,
         customerEmail: formData.email,
         customerPhone: formData.phone || "",
@@ -174,6 +177,13 @@ function CheckoutForm() {
       }
 
       localStorage.removeItem("checkoutItems")
+
+      trackPurchase({
+        transactionId: String(result.order.id),
+        value: orderTotal,
+        currency: "USD",
+        items: cartItems.map((item) => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity })),
+      })
       
       // Store payment data in session storage for account creation
       sessionStorage.setItem("postPaymentData", JSON.stringify({
@@ -246,6 +256,18 @@ function CheckoutForm() {
                   </div>
                 ))}
 
+                {hostingIncluded ? (
+                  <div className="p-3 bg-green-50 dark:bg-green-950 rounded-md border border-green-200 dark:border-green-800">
+                    <div className="flex justify-between items-center text-sm mb-1">
+                      <span className="text-green-900 dark:text-green-100 font-medium">Memorial Page Hosting:</span>
+                      <span className="font-semibold text-green-900 dark:text-green-100">10 years included</span>
+                    </div>
+                    <p className="text-xs text-green-700 dark:text-green-300 leading-relaxed">
+                      Your order includes a memorial plaque, so this memorial&apos;s page hosting is included for 10 years.
+                      No monthly hosting charge.
+                    </p>
+                  </div>
+                ) : (
                 <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
                   <div className="flex justify-between items-center text-sm mb-1">
                     <span className="text-blue-900 dark:text-blue-100 font-medium">Monthly Hosting Fee:</span>
@@ -259,6 +281,7 @@ function CheckoutForm() {
                     Includes: Unlimited photos, videos & memorial content hosting
                   </p>
                 </div>
+                )}
 
                 <Separator />
                 <div className="flex justify-between items-center pt-2">
@@ -266,7 +289,9 @@ function CheckoutForm() {
                   <span className="text-2xl font-bold text-blue-600">${orderTotal.toFixed(2)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Then $4.99/month per memorial starting next month
+                  {hostingIncluded
+                    ? "No monthly hosting charge: 10 years of memorial page hosting included"
+                    : "Then $4.99/month per memorial starting next month"}
                 </p>
               </div>
 
@@ -280,7 +305,11 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Lifetime digital memorial website</span>
+                  <span>
+                    {hostingIncluded
+                      ? "Digital memorial page (10 years of hosting included)"
+                      : "Digital memorial page (hosting $4.99/month per memorial)"}
+                  </span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -288,7 +317,11 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>One monthly fee covers all products for same memorial</span>
+                  <span>
+                    {hostingIncluded
+                      ? "Other keepsakes for the same memorial are covered by the included hosting"
+                      : "One monthly fee covers all products for same memorial"}
+                  </span>
                 </div>
               </div>
 

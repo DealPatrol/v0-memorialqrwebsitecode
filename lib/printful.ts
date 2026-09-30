@@ -58,7 +58,7 @@ export async function submitPrintfulOrder(
         address2: request.recipient.address2 || undefined,
         city: request.recipient.city,
         state_code: request.recipient.state_code || undefined,
-        country_code: request.recipient.country_code || "CA",
+        country_code: request.recipient.country_code || "US",
         zip: request.recipient.zip,
         phone: request.recipient.phone || undefined,
         email: request.recipient.email,

@@ -217,7 +217,7 @@ export default function SampleMemorialCreatedPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and online memorial pages.</p>
             </div>
 
             <div>

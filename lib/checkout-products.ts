@@ -26,7 +26,7 @@ export type PodOrderLineItem = {
   quantity: number
   unit_amount_cents: number
   line_total_cents: number
-  currency: "CAD"
+  currency: "USD"
   fulfillment_provider: FulfillmentProvider
   fulfillment_product: string
   provider_template_id: string | null
@@ -90,7 +90,7 @@ export function createPodOrderLineItems(
         quantity: item.quantity,
         unit_amount_cents: unitAmountCents,
         line_total_cents: unitAmountCents * item.quantity,
-        currency: "CAD",
+        currency: "USD",
         fulfillment_provider: item.fulfillment.provider,
         fulfillment_product: item.fulfillment.product,
         provider_template_id: getTemplateId(item.fulfillment.templateIdEnvironment),

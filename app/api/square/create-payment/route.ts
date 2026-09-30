@@ -107,7 +107,7 @@ export async function POST(req: Request) {
         idempotency_key: idempotencyKey,
         amount_money: {
           amount: amountInCents,
-          currency: "CAD",
+          currency: "USD",
         },
         location_id: locationId,
         reference_id: orderId,
