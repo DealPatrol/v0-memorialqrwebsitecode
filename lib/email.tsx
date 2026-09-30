@@ -498,7 +498,7 @@ Hi ${data.recipientName},
 ${data.senderName} has sent you a thoughtful gift from Memorial QR: ${data.productName}
 
 ${data.giftMessage ? `PERSONAL MESSAGE:\n"${data.giftMessage}"\n\n` : ""}WHAT'S INCLUDED
-- Digital Memorial Website with $4.99/month hosting
+- Digital Memorial Website with 10 years of basic hosting included
 - Beautiful QR code memorial plaque
 - Luxury presentation box
 - Free shipping to your address
@@ -580,7 +580,7 @@ Memorial QR - Creating Lasting Digital Memorials
                             <td style="padding: 20px;">
                               <h2 style="color: #667eea; margin: 0 0 15px 0; font-size: 18px;">What's Included</h2>
                               <ul style="margin: 0; padding-left: 20px; color: #333; font-size: 14px; line-height: 1.8;">
-                                <li>Digital Memorial Website with $4.99/month hosting</li>
+                                <li>Digital Memorial Website with 10 years of basic hosting included</li>
                                 <li>Beautiful QR code memorial plaque</li>
                                 <li>Luxury presentation box</li>
                               </ul>

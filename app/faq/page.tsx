@@ -11,7 +11,7 @@ import { JsonLd } from "@/components/json-ld"
 export const metadata: Metadata = {
   title: "Memorial QR FAQ | Print-on-Demand Keepsakes | Common Questions",
   description:
-    "Answers to frequently asked questions about Memorial QR products, fulfillment, pricing, and $4.99 monthly digital hosting.",
+    "Answers to frequently asked questions about Memorial QR products, fulfillment, pricing, and the 10 years of basic hosting included with physical keepsakes.",
   keywords:
     "memorial QR FAQ Calgary, print-on-demand memorial products, pet memorial QR answers, digital memorial hosting Alberta",
   alternates: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Memorial QR FAQ | Calgary Northeast",
     description:
-      "Get answers about memorial QR codes, installation, product pricing, and monthly digital hosting.",
+      "Get answers about memorial QR codes, installation, product pricing, and memorial hosting.",
     url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"}/faq`,
   },
 }
@@ -57,17 +57,17 @@ const faqCategories = [
       {
         question: "Are there any monthly fees?",
         answer:
-          "Physical products are one-time purchases. Digital memorial hosting is billed separately at $4.99 per month per memorial.",
+          "Not with a physical keepsake. Every physical product includes 10 years of basic hosting for its memorial page. After 10 years you can optionally renew at $4.99/month. Digital-only memorials (no physical product) are $4.99/month.",
       },
       {
         question: "What's included in the product price?",
         answer:
-          "The price shown in the store covers the physical product in your cart. Digital memorial hosting is a separate $4.99 monthly charge per memorial.",
+          "The price shown in the store covers the physical product plus 10 years of basic hosting for the linked memorial page. The 10 years start on your order date.",
       },
       {
-        question: "What happens if I cancel my hosting subscription?",
+        question: "What happens when hosting ends or I cancel?",
         answer:
-          "You will not be charged for another billing period. The physical product remains yours, but the hosted memorial may become unavailable after the paid period ends. Contact support before canceling if you need help preserving a copy of your content.",
+          "Digital-only plans are not charged for another billing period after you cancel. If hosting is not renewed (after a digital-only plan is canceled, or after the included 10 years on a physical keepsake), the page shows a gentle \"memorial paused\" notice and is restored when you renew at $4.99/month. Your memorial link is never reassigned to anyone else. Contact support if you need help preserving a copy of your content.",
       },
       {
         question: "Do you offer refunds?",
@@ -102,7 +102,7 @@ const faqCategories = [
       {
         question: "What if the QR code stops working?",
         answer:
-          "The printed QR code does not expire, but it links to the hosted memorial and needs an active hosting plan. Contact support if an active memorial is not loading.",
+          "The printed QR code itself does not expire; it links to your memorial page, which is hosted for the 10 years included with your keepsake (or while a digital-only plan is active). Contact support if an active memorial is not loading.",
       },
       {
         question: "How long does shipping take?",
@@ -187,7 +187,7 @@ const faqCategories = [
       {
         question: "Can I order more than one product for the same memorial?",
         answer:
-          "Yes. Multiple products can link to the same digital memorial, and the site charges one hosting fee per memorial rather than per physical product.",
+          "Yes. Multiple products can link to the same digital memorial and share one 10-year hosting term; terms do not stack.",
       },
       {
         question: "Can I update the memorial after the product is printed?",
@@ -331,8 +331,8 @@ export default function FAQPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Start honoring your loved one today with a beautiful digital memorial that will preserve their memory
-            forever.
+            Start honoring your loved one today with a beautiful digital memorial that family and friends can
+            visit for years to come.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -362,7 +362,7 @@ export default function FAQPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and digital memorials.</p>
             </div>
 
             <div>

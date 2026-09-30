@@ -21,22 +21,28 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Description</h2>
             <p className="text-gray-700 mb-4">
               Memorial QR provides digital memorial services including online memorial pages and QR code products
-              (plaques, tags, stones, and accessories) to honor deceased individuals and pets. All products include a
-              one-time purchase price plus a monthly website hosting fee of $4.99.
+              (plaques, tags, stones, and accessories) to honor deceased individuals and pets. Physical products are a
+              one-time purchase that includes 10 years of basic hosting for the linked memorial page, starting on the
+              order date. Digital-only memorials (no physical product) are billed at $4.99 per month.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
             <p className="text-gray-700 mb-4">
               You are responsible for providing accurate information and ensuring you have the right to create memorials
-              for the individuals or pets represented. You must maintain accurate payment information for monthly
-              hosting fees.
+              for the individuals or pets represented. If you choose monthly hosting (digital-only or a renewal),
+              you must maintain accurate payment information.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
-              Payment is required at the time of order for physical products. Monthly hosting fees of $4.99 will be
-              charged automatically to maintain your digital memorial website. We offer a 30-day money-back guarantee
-              for physical products. Monthly hosting fees are non-refundable but can be canceled at any time.
+              Payment is required at the time of order for physical products. No monthly hosting fee is charged during
+              the 10 years of basic hosting included with a physical product. Multiple products linked to the same
+              memorial share one 10-year term. After the included term, hosting can be renewed at the then-current
+              monthly rate (currently $4.99/month). Digital-only memorials are charged $4.99 per month automatically.
+              We do not promise perpetual hosting. If hosting lapses, the memorial page displays a &quot;memorial
+              paused&quot; notice and is restored upon renewal; the memorial link is not reassigned. We offer a 30-day
+              money-back guarantee for physical products. Monthly hosting fees are non-refundable but can be canceled
+              at any time.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
@@ -63,7 +69,7 @@ export default function TermsOfServicePage() {
             <p className="text-gray-700 mb-4">
               Physical products can be returned within 30 days for a full refund. Monthly hosting subscriptions can be
               canceled at any time through your account dashboard. Upon cancellation, your memorial website will remain
-              active until the end of your current billing period.
+              active until the end of your current billing period or any included hosting term, whichever is later.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitation of Liability</h2>
@@ -98,7 +104,7 @@ export default function TermsOfServicePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and digital memorials.</p>
             </div>
 
             <div>

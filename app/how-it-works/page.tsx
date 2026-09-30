@@ -22,7 +22,7 @@ import {
 export const metadata: Metadata = {
   title: "How Memorial QR Codes Work | Print-on-Demand Keepsakes",
   description:
-    "Learn how Memorial QR products and $4.99 monthly digital memorial hosting work for human and pet memorials.",
+    "Learn how Memorial QR products work, including 10 years of basic hosting with every physical keepsake, for human and pet memorials.",
   keywords:
     "how memorial QR works Calgary, custom QR keepsakes, print-on-demand memorial products, pet memorial QR process, digital memorial creation Alberta",
   alternates: {
@@ -289,7 +289,7 @@ export default function HowItWorksPage() {
               <CardContent className="p-0">
                 <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Digital Memorial Hosting</h3>
-                <p className="text-sm text-gray-600">$4.99 per month for each hosted memorial</p>
+                <p className="text-sm text-gray-600">10 years included with physical keepsakes, then optional $4.99/month</p>
               </CardContent>
             </Card>
 
@@ -309,7 +309,7 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Create a Memorial?</h2>
           <p className="text-xl text-white/90 mb-8">
-            Start honoring your loved ones today with a beautiful digital memorial that lasts forever.
+            Start honoring your loved ones today with a beautiful digital memorial your family can visit for years.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

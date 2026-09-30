@@ -66,9 +66,9 @@ async function handleSubscriptionCharged(data: any) {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2D1B4E;">Payment Received</h2>
         <p>Hi ${order.customer_name},</p>
-        <p>We've successfully processed your monthly payment of $4.99 for your Memorial QR hosting and maintenance.</p>
+        <p>We've successfully processed your monthly memorial hosting payment of $${((order.monthly_amount_cents || 499) / 100).toFixed(2)}.</p>
         <p><strong>Order Number:</strong> ${order.order_number}</p>
-        <p><strong>Amount:</strong> $4.99</p>
+        <p><strong>Amount:</strong> $${((order.monthly_amount_cents || 499) / 100).toFixed(2)}</p>
         <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
         <p>Your memorial will continue to be hosted and maintained without interruption.</p>
         <p>Thank you for your continued trust in Memorial QR.</p>
@@ -114,7 +114,7 @@ async function handleSubscriptionPaymentFailed(data: any) {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #DC2626;">Payment Failed</h2>
         <p>Hi ${order.customer_name},</p>
-        <p>We were unable to process your monthly payment of $4.99 for your Memorial QR subscription.</p>
+        <p>We were unable to process your monthly memorial hosting payment of $${((order.monthly_amount_cents || 499) / 100).toFixed(2)}.</p>
         <p><strong>Order Number:</strong> ${order.order_number}</p>
         <p><strong>Reason:</strong> ${data.object?.errors?.[0]?.detail || "Payment declined"}</p>
         <p>Please update your payment method to avoid service interruption.</p>

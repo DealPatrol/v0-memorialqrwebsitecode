@@ -148,7 +148,7 @@ export default function OurStoryPage() {
                 <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-4">Excellence</h3>
                 <p className="text-gray-600">
-                  Every memorial we create is crafted with attention to detail and built to last forever.
+                  Every memorial we create is crafted with attention to detail and built to last.
                 </p>
               </CardContent>
             </Card>
@@ -198,7 +198,7 @@ export default function OurStoryPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and digital memorials.</p>
             </div>
 
             <div>

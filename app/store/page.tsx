@@ -19,10 +19,11 @@ export default function StorePage() {
             <h2 className="text-lg font-semibold text-blue-900">How Pricing Works</h2>
           </div>
           <p className="text-sm text-blue-800 leading-relaxed">
-            Each product includes a <span className="font-semibold">one-time purchase price</span> plus{" "}
-            <span className="font-semibold">$4.99/month per memorial</span> for unlimited hosting, photos, and videos.{" "}
-            <span className="font-semibold">Ordering multiple products for the same memorial?</span> You only pay{" "}
-            <span className="font-semibold">one monthly fee</span>.
+            Each product is a <span className="font-semibold">one-time purchase</span> that includes{" "}
+            <span className="font-semibold">10 years of basic hosting</span> for its memorial page. After 10 years you
+            can optionally renew at $4.99/month.{" "}
+            <span className="font-semibold">Ordering multiple products for the same memorial?</span> They share{" "}
+            <span className="font-semibold">one hosting term</span>.
           </p>
         </div>
       </section>

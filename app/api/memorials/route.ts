@@ -183,6 +183,23 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      // Best-effort: copy the included-hosting end date from the physical order onto the memorial.
+      // Never blocks memorial setup (column may not exist until scripts/026 is applied).
+      try {
+        const { data: linkedOrder } = await serviceRole.from("orders").select("*").eq("id", paidOrderId).maybeSingle()
+        const hostingIncludedUntil =
+          linkedOrder?.hosting_included_until ?? linkedOrder?.fulfillment_data?.hosting_included_until ?? null
+        if (hostingIncludedUntil) {
+          const { error: hostingError } = await serviceRole
+            .from("memorials")
+            .update({ hosting_included_until: hostingIncludedUntil })
+            .eq("id", memorial.id)
+          if (hostingError) console.warn("[v0] Could not store hosting_included_until on memorial:", hostingError.message)
+        }
+      } catch (hostingErr) {
+        console.warn("[v0] Could not copy hosting_included_until to memorial:", hostingErr)
+      }
+
       if (printAssetUrl) {
         try {
           await dispatchOrderFulfillment(paidOrderId, printAssetUrl)

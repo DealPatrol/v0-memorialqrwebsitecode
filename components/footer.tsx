@@ -29,7 +29,7 @@ export function Footer() {
             <div className="text-center">
               <Clock className="w-8 h-8 text-green-500 mx-auto mb-3" />
               <h3 className="font-bold mb-1">Digital Hosting</h3>
-              <p className="text-sm text-zinc-400">$4.99/month per memorial</p>
+              <p className="text-sm text-zinc-400">10 years included with keepsakes</p>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@ export function Footer() {
               <h4 className="font-semibold mb-3">Simple, transparent service</h4>
               <div className="space-y-2 text-xs text-zinc-400">
                 <p>Physical products are charged once.</p>
-                <p>Digital hosting is $4.99/month per memorial.</p>
+                <p>Physical keepsakes include 10 years of basic hosting, then optional $4.99/month renewal. Digital-only memorials are $4.99/month.</p>
                 <p>Secure online payments are processed by Square.</p>
               </div>
             </div>

@@ -27,7 +27,7 @@ export default function AboutPage() {
     {
       icon: Award,
       title: "Clear Commitments",
-      description: "Physical product prices and monthly digital hosting are presented separately.",
+      description: "Physical keepsakes include 10 years of basic hosting; digital-only hosting is clearly priced at $4.99/month.",
     },
     {
       icon: Users,
@@ -40,7 +40,7 @@ export default function AboutPage() {
     "30-Day Money-Back Guarantee",
     "SSL Encryption for All Data",
     "PCI-DSS Payment Security",
-    "$4.99 Monthly Digital Hosting",
+    "10 Years Hosting Included with Keepsakes",
   ]
 
   return (
@@ -129,7 +129,7 @@ export default function AboutPage() {
             <div className="text-center">
               <Award className="w-12 h-12 text-green-500 mx-auto mb-4" />
               <h3 className="font-bold text-lg mb-2">Ongoing Hosting</h3>
-              <p className="text-zinc-400">Digital memorial hosting is $4.99 per month per memorial.</p>
+              <p className="text-zinc-400">10 years of basic hosting included with physical keepsakes, then optional $4.99/month renewal. Digital-only memorials are $4.99/month.</p>
             </div>
           </div>
 

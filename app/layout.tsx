@@ -34,7 +34,7 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
   title: "Memorial QR Codes | Personalized Keepsakes & Digital Memorials",
   description:
-    "Personalized print-on-demand QR keepsakes linked to digital memorials with hosting for $4.99 per month per memorial.",
+    "Personalized print-on-demand QR keepsakes linked to digital memorials. 10 years of basic hosting included with every physical keepsake, then optional $4.99/month renewal.",
   keywords:
     "memorial QR codes, personalized memorial keepsakes, digital memorial, pet memorial QR, memorial photo block, QR keyring, memorial services",
   authors: [{ name: "Memorial QR" }],
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Memorial QR Codes | Personalized Keepsakes & Digital Memorials",
     description:
-      "Print-on-demand QR keepsakes linked to digital memorials with hosting for $4.99 per month.",
+      "Print-on-demand QR keepsakes linked to digital memorials, with 10 years of basic hosting included.",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com",
     siteName: "Memorial QR",
     locale: "en_CA",

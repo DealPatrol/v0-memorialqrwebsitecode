@@ -117,7 +117,7 @@ export function ProductSelector() {
                 <div>
                   <p className="text-sm text-gray-400">Products Total</p>
                   <p className="text-3xl font-bold text-white">${cartTotal.toFixed(2)} CAD</p>
-                  <p className="text-xs text-gray-400 mt-1">+ $4.99/month per memorial for hosting</p>
+                  <p className="text-xs text-gray-400 mt-1">Includes 10 years of basic hosting, then optional $4.99/month renewal</p>
                 </div>
 
                 <Button size="lg" onClick={handleCheckout} className="gap-2 px-8 py-6 text-lg">

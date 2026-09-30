@@ -362,7 +362,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               <CardContent className="p-8 text-center">
                 <h3 className="text-2xl font-bold mb-4">Ready to Create a Lasting Memorial?</h3>
                 <p className="text-muted-foreground mb-6">
-                  Honor your loved ones with a beautiful QR memorial that preserves their legacy forever.
+                  Honor your loved ones with a beautiful QR memorial that preserves their legacy.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">

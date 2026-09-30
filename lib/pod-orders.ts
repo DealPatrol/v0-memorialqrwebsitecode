@@ -36,3 +36,12 @@ export function isMissingPodOrderSchema(error: unknown): boolean {
   const normalizedMessage = message?.toLowerCase() || ""
   return POD_ORDER_COLUMNS.some((column) => normalizedMessage.includes(column))
 }
+
+export function isMissingHostingSchema(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false
+
+  const { code, message } = error as DatabaseError
+  if (code !== "PGRST204" && code !== "42703") return false
+
+  return (message?.toLowerCase() || "").includes("hosting_included_until")
+}

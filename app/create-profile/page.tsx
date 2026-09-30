@@ -25,7 +25,7 @@ const steps = [
 
 const plans = {
   basic: { name: "Basic Memorial", price: 149, photoLimit: 10, videoLimit: 3 },
-  premium: { name: "Premium Memorial", price: 299, photoLimit: -1, videoLimit: 10 },
+  premium: { name: "Standard Memorial", price: 299, photoLimit: -1, videoLimit: 10 },
   family: { name: "Family Memorial", price: 499, photoLimit: -1, videoLimit: -1 },
 }
 
@@ -640,7 +640,7 @@ export default function CreateProfilePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and digital memorials.</p>
             </div>
 
             <div>

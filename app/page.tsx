@@ -40,7 +40,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance leading-tight">
-              Digital Memorials That Last Forever
+              Digital Memorials Your Family Can Visit for Years
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
@@ -55,7 +55,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">$4.99/month Hosting</span>
+                <span className="text-sm font-medium text-foreground">10 Years Hosting Included</span>
               </div>
             </div>
           </div>
@@ -160,9 +160,9 @@ export default function HomePage() {
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
-                Physical products start at $19.99. Digital memorial hosting is a separate $4.99 monthly charge per
-                memorial, not per physical product. Order multiple items for the same loved one and pay only one monthly
-                hosting fee.
+                Physical products start at $19.99 and include 10 years of basic hosting for the memorial page, with no
+                monthly fee. After 10 years, renewal is optional at $4.99/month. Digital-only memorials (no physical
+                product) are $4.99/month. Multiple items for the same loved one share one hosting term.
               </p>
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function HomePage() {
                 <Shield className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Digital Memorial Hosting</h3>
                 <p className="text-muted-foreground text-sm">
-                  Keep the memorial page available with hosting billed at $4.99 per month per memorial.
+                  10 years of basic hosting included with physical keepsakes, then optional $4.99/month renewal.
                 </p>
               </CardContent>
             </Card>
@@ -290,8 +290,8 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Create a Lasting Memorial?</h2>
           <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Whether honoring a loved one or a beloved pet, create a beautiful digital memorial that keeps their memory
-            alive forever.
+            Whether honoring a loved one or a beloved pet, create a beautiful digital memorial that family and friends
+            can visit for years to come.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

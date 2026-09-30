@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 export const metadata: Metadata = {
   title: "Pricing | Memorial QR",
   description:
-    "Physical Memorial QR products are one-time purchases. Digital memorial hosting is $4.99 per month per memorial.",
+    "Physical Memorial QR products are one-time purchases that include 10 years of basic hosting, then optional $4.99/month renewal. Digital-only memorials are $4.99 per month.",
   alternates: {
     canonical: "/pricing",
   },
@@ -22,7 +22,7 @@ export default function PricingPage() {
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-4xl font-bold text-slate-900">Clear Memorial QR Pricing</h1>
           <p className="mx-auto max-w-2xl text-lg text-slate-600">
-            Buy the physical product once, then pay one hosting fee for each digital memorial you keep online.
+            Buy a physical keepsake once and get 10 years of basic hosting included. Digital-only memorials are $4.99/month.
           </p>
         </div>
 
@@ -45,6 +45,10 @@ export default function PricingPage() {
                   <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
                   Your exact product total is shown before Square checkout
                 </li>
+                <li className="flex gap-2">
+                  <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
+                  10 years of basic memorial hosting included, with no monthly fee
+                </li>
               </ul>
               <Button asChild className="w-full">
                 <Link href="/store">Shop Products</Link>
@@ -62,11 +66,13 @@ export default function PricingPage() {
                 <span className="text-slate-600"> per month, per memorial</span>
               </div>
               <p className="text-slate-700">
-                Hosting is a recurring charge separate from the physical product price. Multiple products can point to
-                the same memorial without adding another hosting fee.
+                Applies to digital-only memorials (no physical product) and to optional renewals after the 10 years of
+                basic hosting included with a physical keepsake. Multiple products for the same memorial share one
+                hosting term.
               </p>
               <p className="text-sm text-slate-600">
-                You can stop future renewals. See the FAQ for what cancellation means for the hosted page.
+                If hosting lapses, the page shows a gentle &quot;memorial paused&quot; notice and is restored when
+                renewed. Your memorial link is never reassigned.
               </p>
               <Button asChild variant="outline" className="w-full">
                 <Link href="/faq">Read Hosting FAQ</Link>

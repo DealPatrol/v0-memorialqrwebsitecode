@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { CHECKOUT_PRODUCTS, resolveCheckoutItems } from "@/lib/checkout-products"
 import type { CheckoutProduct } from "@/lib/checkout-products"
 import { createClient } from "@/lib/supabase/client"
+import { HOSTING_INCLUDED_YEARS, HOSTING_MONTHLY_PRICE_LABEL, getHostingTerms } from "@/lib/hosting"
 
 type CheckoutItem = CheckoutProduct & { id: string; quantity: number }
 
@@ -39,6 +40,7 @@ function CheckoutForm() {
             name: selectedProduct.name,
             price: selectedProduct.price,
             monthlyFee: selectedProduct.monthlyFee,
+            hostingIncludedYears: selectedProduct.hostingIncludedYears,
             quantity: 1,
           },
         ])
@@ -75,7 +77,16 @@ function CheckoutForm() {
     const productId = "keep-card"
     const product = CHECKOUT_PRODUCTS[productId]
     if (product) {
-      setCartItems([{ id: productId, name: product.name, price: product.price, monthlyFee: product.monthlyFee, quantity: 1 }])
+      setCartItems([
+        {
+          id: productId,
+          name: product.name,
+          price: product.price,
+          monthlyFee: product.monthlyFee,
+          hostingIncludedYears: product.hostingIncludedYears,
+          quantity: 1,
+        },
+      ])
       setOrderTotal(product.price)
     } else {
       setCartItems([])
@@ -97,6 +108,8 @@ function CheckoutForm() {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const hostingTerms = getHostingTerms(cartItems)
+  const includesKeepsake = hostingTerms.includesPhysicalKeepsake
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -146,7 +159,7 @@ function CheckoutForm() {
         planType: "cart-checkout",
         items: cartItems,
         totalAmount: orderTotal,
-        monthlyFee: 4.99,
+        monthlyFee: hostingTerms.monthlyAmountCents / 100,
         customerName: formData.name,
         customerEmail: formData.email,
         customerPhone: formData.phone || "",
@@ -247,17 +260,33 @@ function CheckoutForm() {
                 ))}
 
                 <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
-                  <div className="flex justify-between items-center text-sm mb-1">
-                    <span className="text-blue-900 dark:text-blue-100 font-medium">Monthly Hosting Fee:</span>
-                    <span className="font-semibold text-blue-900 dark:text-blue-100">$4.99/mo</span>
-                  </div>
-                  <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                    This fee is <strong>per memorial page</strong>, not per product. If you order multiple products for
-                    the same person's memorial, you only pay this fee once.
-                  </p>
-                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                    Includes: Unlimited photos, videos & memorial content hosting
-                  </p>
+                  {includesKeepsake ? (
+                    <>
+                      <div className="flex justify-between items-center text-sm mb-1">
+                        <span className="text-blue-900 dark:text-blue-100 font-medium">Memorial Hosting:</span>
+                        <span className="font-semibold text-blue-900 dark:text-blue-100">
+                          {HOSTING_INCLUDED_YEARS} years included
+                        </span>
+                      </div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                        {HOSTING_INCLUDED_YEARS} years of basic hosting for this memorial are included with your physical
+                        keepsake. No monthly fee. After {HOSTING_INCLUDED_YEARS} years you can optionally renew at{" "}
+                        {HOSTING_MONTHLY_PRICE_LABEL}/month.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center text-sm mb-1">
+                        <span className="text-blue-900 dark:text-blue-100 font-medium">Monthly Hosting Fee:</span>
+                        <span className="font-semibold text-blue-900 dark:text-blue-100">
+                          {HOSTING_MONTHLY_PRICE_LABEL}/mo
+                        </span>
+                      </div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                        Digital-only memorials are billed <strong>per memorial page</strong>, not per product.
+                      </p>
+                    </>
+                  )}
                 </div>
 
                 <Separator />
@@ -266,7 +295,9 @@ function CheckoutForm() {
                   <span className="text-2xl font-bold text-blue-600">${orderTotal.toFixed(2)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Then $4.99/month per memorial starting next month
+                  {includesKeepsake
+                    ? `One-time payment. ${HOSTING_INCLUDED_YEARS} years of basic hosting included; renewal optional after year ${HOSTING_INCLUDED_YEARS}.`
+                    : `Then ${HOSTING_MONTHLY_PRICE_LABEL}/month per memorial starting next month`}
                 </p>
               </div>
 
@@ -280,15 +311,19 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Lifetime digital memorial website</span>
+                  <span>
+                    {includesKeepsake
+                      ? `Digital memorial website with ${HOSTING_INCLUDED_YEARS} years of basic hosting`
+                      : "Digital memorial website"}
+                  </span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Unlimited photos, videos & memories</span>
+                  <span>Photos, videos & memories</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>One monthly fee covers all products for same memorial</span>
+                  <span>Multiple keepsakes for the same memorial share one hosting term</span>
                 </div>
               </div>
 

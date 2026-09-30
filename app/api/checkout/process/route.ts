@@ -9,8 +9,10 @@ import {
 import {
   getConfiguredTemplateId,
   getFulfillmentProvider,
+  isMissingHostingSchema,
   isMissingPodOrderSchema,
 } from "@/lib/pod-orders"
+import { getHostingTerms } from "@/lib/hosting"
 
 export async function POST(req: Request) {
   try {
@@ -62,7 +64,10 @@ export async function POST(req: Request) {
 
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
     const totalAmountCents = getCheckoutTotalCents(resolvedItems)
-    const monthlyAmountCents = 499
+    // Physical keepsake orders include 10 years of basic hosting (no monthly subscription).
+    // Digital-only orders keep the $4.99/month hosting subscription.
+    const hostingTerms = getHostingTerms(resolvedItems)
+    const monthlyAmountCents = hostingTerms.monthlyAmountCents
     const finalProductName = resolvedItems
       .map((item) => `[${item.id}] ${item.name} × ${item.quantity}`)
       .join(", ")
@@ -110,9 +115,9 @@ export async function POST(req: Request) {
 
     let subscriptionId = null
 
-    // Only create subscription if monthly fee exists and payment info is available
-    // Note: In future enhancement, check if customer already has subscription for this memorial
-    if (monthlyAmountCents > 0 && cardId && finalSquareCustomerId) {
+    // Only create a subscription for digital-only orders (monthly fee > 0) when payment info is available.
+    // Physical keepsake orders never create a subscription: hosting is included until hostingIncludedUntil.
+    if (!hostingTerms.includesPhysicalKeepsake && monthlyAmountCents > 0 && cardId && finalSquareCustomerId) {
       console.log("[v0] Creating monthly subscription for memorial hosting (per-memorial, not per-product)...")
 
       try {
@@ -168,7 +173,7 @@ export async function POST(req: Request) {
       special_instructions: customization || null,
       plan_type: finalPlanType,
       subscription_id: subscriptionId,
-      subscription_plan_id: process.env.SQUARE_SUBSCRIPTION_PLAN_ID || null,
+      subscription_plan_id: subscriptionId ? process.env.SQUARE_SUBSCRIPTION_PLAN_ID || null : null,
 
       plaque_color: null,
       box_personalization: null,
@@ -189,11 +194,25 @@ export async function POST(req: Request) {
         fulfillment_provider: getFulfillmentProvider(podLineItems),
         fulfillment_id: null,
         fulfillment_status: podLineItems.length > 0 ? "awaiting_memorial_setup" : "not_required",
-        fulfillment_data: { schema_version: 1 },
+        fulfillment_data: {
+          schema_version: 1,
+          hosting_plan: hostingTerms.hostingPlan,
+          hosting_included_until: hostingTerms.hostingIncludedUntil,
+        },
         print_file_url: null,
       }
 
-      let insertResult = await supabase.from("orders").insert(podOrderData).select().single()
+      // Prefer storing hosting_included_until as a first-class column (scripts/026_add_hosting_included_until.sql).
+      let insertResult = await supabase
+        .from("orders")
+        .insert({ ...podOrderData, hosting_included_until: hostingTerms.hostingIncludedUntil })
+        .select()
+        .single()
+
+      if (insertResult.error && isMissingHostingSchema(insertResult.error)) {
+        console.warn("[v0] hosting_included_until column is not available; storing it in fulfillment_data")
+        insertResult = await supabase.from("orders").insert(podOrderData).select().single()
+      }
 
       if (insertResult.error && isMissingPodOrderSchema(insertResult.error)) {
         console.warn("[v0] POD order migration is not available; saving legacy order fields")
@@ -235,6 +254,7 @@ export async function POST(req: Request) {
           productName: finalProductName,
           amount: (totalAmountCents / 100).toFixed(2),
           monthlyFee: (monthlyAmountCents / 100).toFixed(2),
+          hostingIncludedUntil: hostingTerms.hostingIncludedUntil,
         }),
       })
     } catch (emailError) {

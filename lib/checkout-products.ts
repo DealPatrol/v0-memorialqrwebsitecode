@@ -6,6 +6,8 @@ export type CheckoutProduct = {
   name: string
   price: number
   monthlyFee: number
+  /** Years of basic hosting included with this product (physical keepsakes: 10). */
+  hostingIncludedYears?: number
   fulfillment?: {
     provider: FulfillmentProvider
     product: string
@@ -40,6 +42,7 @@ export const CHECKOUT_PRODUCTS: Record<string, CheckoutProduct> = {
         name: product.name,
         price: product.price,
         monthlyFee: product.monthlyFee,
+        hostingIncludedYears: product.hostingIncludedYears,
         fulfillment: {
           provider: product.provider === "Printful" ? "printful" : "printify",
           product: product.fulfillmentProduct,
@@ -48,6 +51,7 @@ export const CHECKOUT_PRODUCTS: Record<string, CheckoutProduct> = {
       },
     ]),
   ),
+  // Concierge SKUs have no physical fulfillment line, so they are treated as digital-only ($4.99/mo).
   "concierge-service": { name: "Concierge Memorial Service", price: 299.99, monthlyFee: 4.99 },
   "concierge-digital": { name: "Concierge Service - Digital Link", price: 299.99, monthlyFee: 4.99 },
 }

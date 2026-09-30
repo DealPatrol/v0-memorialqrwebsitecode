@@ -30,7 +30,7 @@ export default function PetMemorialsPage() {
           </h1>
           <p className="text-xl text-amber-100 mb-8 max-w-3xl mx-auto">
             Create heartfelt digital memorials for dogs, cats, horses, and all the furry friends who gave us
-            unconditional love. A scannable QR code keeps their memory alive forever.
+            unconditional love. A scannable QR code keeps their memory close.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -65,7 +65,7 @@ export default function PetMemorialsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-amber-600" />
-              <span>Hosting $4.99/month per memorial</span>
+              <span>10 Years Hosting Included with Keepsakes</span>
             </div>
             <div className="flex items-center gap-2">
               <PawPrint className="w-5 h-5 text-orange-600" />
@@ -196,7 +196,7 @@ export default function PetMemorialsPage() {
                   A favorite pet photo and unique QR code combined in an indoor display.
                 </p>
                 <Badge variant="outline" className="border-amber-400 text-amber-700">
-                  Premium
+                  Indoor Display
                 </Badge>
               </CardContent>
             </Card>

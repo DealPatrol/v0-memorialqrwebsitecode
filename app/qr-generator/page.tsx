@@ -160,7 +160,7 @@ export default function QrGeneratorPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Create Your Memorial?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Start with a custom QR code, then build a beautiful digital memorial that lasts forever.
+            Start with a custom QR code, then build a beautiful digital memorial your family can visit for years.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">

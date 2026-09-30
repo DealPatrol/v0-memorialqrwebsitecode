@@ -26,7 +26,7 @@ export default function HumanMemorialsPage() {
             Human Memorials
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Honor Their <span className="text-blue-400">Legacy</span> Forever
+            Honor Their <span className="text-blue-400">Legacy</span>
           </h1>
           <p className="text-xl text-slate-200 mb-8 max-w-3xl mx-auto">
             Create dignified digital memorials for parents, grandparents, veterans, and all those who touched our lives.
@@ -65,7 +65,7 @@ export default function HumanMemorialsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-600" />
-              <span>Hosting $4.99/month per memorial</span>
+              <span>10 Years Hosting Included with Keepsakes</span>
             </div>
             <div className="flex items-center gap-2">
               <Flag className="w-5 h-5 text-red-600" />
@@ -195,7 +195,7 @@ export default function HumanMemorialsPage() {
                 <p className="text-muted-foreground mb-4">
                   A favorite photo and unique QR code combined in an indoor display.
                 </p>
-                <Badge variant="outline">Premium Option</Badge>
+                <Badge variant="outline">Indoor Display</Badge>
               </CardContent>
             </Card>
           </div>
