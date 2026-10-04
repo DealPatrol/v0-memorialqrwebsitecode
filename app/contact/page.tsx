@@ -167,7 +167,7 @@ export default function ContactPage() {
                         <SelectItem value="technical">Technical Support</SelectItem>
                         <SelectItem value="billing">Billing & Payment</SelectItem>
                         <SelectItem value="memorial">Memorial Creation Help</SelectItem>
-                        <SelectItem value="plaque">QR Code Plaque Issues</SelectItem>
+                        <SelectItem value="sharing">Sharing the Memorial Page</SelectItem>
                         <SelectItem value="refund">Refund Request</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>

@@ -106,6 +106,7 @@ function BrowseMemorialsContent() {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">Browse Memorials</h1>
           <p className="text-gray-600">Loading memorials...</p>
         </div>
       </div>
@@ -370,6 +371,7 @@ export default function BrowseMemorials() {
         <div className="min-h-screen bg-gray-50">
           <Header />
           <div className="container mx-auto px-4 py-16 text-center">
+            <h1 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">Browse Memorials</h1>
             <p className="text-gray-600">Loading memorials...</p>
           </div>
         </div>

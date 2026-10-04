@@ -1,14 +1,8 @@
-import type { Metadata } from "next"
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { pageMetadata, publicPages } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Cookie Policy | Memorial QR",
-  description: "How Memorial QR uses cookies and similar browser storage.",
-  alternates: {
-    canonical: "/cookies",
-  },
-}
+export const metadata = pageMetadata(publicPages.cookies)
 
 export default function CookiePolicyPage() {
   return (
@@ -39,7 +33,7 @@ export default function CookiePolicyPage() {
             <h2 className="mb-2 text-2xl font-semibold text-slate-900">Questions</h2>
             <p>
               For more information, read our{" "}
-              <Link href="/privacy" className="text-purple-700 underline">
+              <Link href="/privacy-policy" className="text-purple-700 underline">
                 Privacy Policy
               </Link>{" "}
               or{" "}

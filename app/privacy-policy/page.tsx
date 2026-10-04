@@ -1,5 +1,8 @@
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { pageMetadata, publicPages } from "@/lib/seo"
+
+export const metadata = pageMetadata(publicPages.privacy)
 
 export default function PrivacyPolicyPage() {
   return (

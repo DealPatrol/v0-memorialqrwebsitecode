@@ -1,16 +1,9 @@
 import { Header } from "@/components/header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Shield, Lock, Award, Users, Heart, CheckCircle2 } from "lucide-react"
-import type { Metadata } from "next"
+import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "About Memorial QR | Our Mission & Team",
-  description: "Learn about Memorial QR's mission and Cole Collins' reason for creating digital memorials.",
-  openGraph: {
-    title: "About Memorial QR",
-    description: "Our mission to preserve legacies with digital memorials",
-  },
-}
+export const metadata = pageMetadata(publicPages.about)
 
 export default function AboutPage() {
   const values = [
@@ -27,7 +20,7 @@ export default function AboutPage() {
     {
       icon: Award,
       title: "Clear Commitments",
-      description: "Physical product prices and monthly digital hosting are presented separately.",
+      description: `Hosting is ${HOSTING_PRICE_LABEL} a month. The concierge service is ${CONCIERGE_PRICE_LABEL}. Nothing is shipped.`,
     },
     {
       icon: Users,
@@ -40,7 +33,7 @@ export default function AboutPage() {
     "30-Day Money-Back Guarantee",
     "SSL Encryption for All Data",
     "PCI-DSS Payment Security",
-    "$4.99 Monthly Digital Hosting",
+    `${HOSTING_PRICE_LABEL} Monthly Digital Hosting`,
   ]
 
   return (
@@ -66,7 +59,7 @@ export default function AboutPage() {
               When someone passes away, their digital footprint is lost. Photos disappear. Videos vanish. Stories fade. We created Memorial QR to ensure that the people we love—and the moments we cherish—are never forgotten.
             </p>
             <p>
-              Our platform transforms headstones from static plaques into interactive digital memorials. A simple QR code opens a world of possibilities: unlimited photos, videos, life stories, military service records, and messages from loved ones. What used to fit on a few inches of granite can now encompass an entire life story.
+              The memorial is an online page for photos, videos, life stories, and messages from loved ones. A QR code can open that page. We host the page. Nothing is shipped.
             </p>
             <p>
               Memorial QR honors both tradition and innovation, respecting cemetery practices while embracing technology that helps families celebrate lives across time and distance.

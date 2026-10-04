@@ -8,7 +8,12 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { blogPosts } from "@/lib/blog-posts"
-import { SITE_URL } from "@/lib/site"
+import { assertMetadataLength, CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata } from "@/lib/seo"
+import { SITE_NAME, SITE_URL } from "@/lib/site"
+
+for (const post of blogPosts) {
+  assertMetadataLength(post.seoTitle, post.seoDescription, `/blog/${post.slug}`)
+}
 
 // Full blog post content
 const blogPostsContent: Record<
@@ -25,7 +30,7 @@ In today's digital age, the way we honor and remember our loved ones is evolving
 
 ## What Are Memorial QR Codes?
 
-Memorial QR codes are specialized QR codes engraved on plaques, headstones, or keepsakes that link to digital memorial pages. When scanned with a smartphone, these codes instantly connect visitors to a rich multimedia tribute featuring photos, videos, stories, and memories of the departed.
+A QR code memorial is a code that opens an online memorial page. The page holds photos, videos, stories, and messages. MemorialsQR hosts that page. Nothing is shipped.
 
 ## Why Choose a QR Memorial?
 
@@ -52,18 +57,12 @@ The process is beautifully simple:
 
 1. **Create the Memorial**: Upload photos, videos, and stories to create a digital memorial page
 2. **Generate the QR Code**: A unique QR code is created that links to your memorial
-3. **Physical Display**: The QR code is engraved on your chosen memorial product (plaque, headstone tag, pendant, etc.)
-4. **Easy Access**: Anyone can scan the code with their smartphone to view the full memorial
+3. **Share the page**: Download a QR code or send the link. MemorialsQR does not engrave or ship a physical product.
+4. **Easy Access**: Anyone with the link can open the memorial page
 
-## Choosing the Right Memorial QR Product
+## What MemorialsQR Sells Today
 
-### Memorial Plaques
-Perfect for headstones, garden displays, or home memorials. Available in Gold, Silver, and Black finishes with weather-resistant materials.
-
-### Personal Keepsakes
-- **Necklaces and Pendants**: Keep memories close to your heart
-- **Keychains**: Carry remembrance with you daily
-- **Slate Coasters**: Beautiful memorial keepsakes for the home
+Hosting for one online memorial page is ${HOSTING_PRICE_LABEL} a month. The concierge memorial service is ${CONCIERGE_PRICE_LABEL} if you want the page built for you. Nothing is shipped.
 
 ## Best Practices for Creating a Memorial QR Page
 
@@ -89,17 +88,16 @@ Perfect for headstones, garden displays, or home memorials. Available in Gold, S
 
 Creating a memorial QR tribute is easier than you might think:
 
-1. Choose your memorial product
-2. Gather photos, videos, and stories
-3. Create your digital memorial page
-4. Receive your custom QR memorial product
-5. Share with family and friends
+1. Gather photos, videos, and stories
+2. Create the online memorial page
+3. Share the link, or download a QR code
+4. Keep the page online with monthly hosting
 
-Memorial QR codes represent the perfect balance between honoring tradition and embracing innovation. They allow us to create rich, lasting tributes that can be shared across generations, ensuring that the memories of those we love never fade.
+A digital memorial can be shared with family wherever they are.
 
 ---
 
-*Ready to create a lasting memorial? Explore our collection of memorial QR products and start building a beautiful digital tribute today.*
+*Ready to create a lasting memorial? Start an online memorial page. Nothing is shipped.*
     `,
   },
   "pet-memorial-ideas-honoring-furry-friends": {
@@ -119,11 +117,13 @@ Pets aren't "just animals"—they're family members who hold irreplaceable place
 
 ## Physical Memorial Ideas
 
+These are things a family might make on their own. MemorialsQR does not sell them, and nothing is shipped.
+
 ### 1. **Memorial Garden Stone**
 Create a peaceful garden memorial with a custom engraved stone. Add a QR code that links to photos and videos of your pet playing in that very garden.
 
-### 2. **Pet Memorial Plaque**
-Weather-resistant memorial plaques can be placed anywhere—in your yard, on your patio, or beside their favorite napping spot.
+### 2. **A marker the family already has**
+A stone or marker already in the yard can sit beside a favorite spot. MemorialsQR does not sell it.
 
 ### 3. **Slate Memorial Coaster**
 Beautiful slate coasters with personalized engravings and QR codes make touching keepsakes you can display in your home.
@@ -158,30 +158,48 @@ Your pet gave you years of unconditional love, loyalty, and companionship. They 
 
 ---
 
-*Ready to create a lasting memorial for your beloved pet? Explore our pet memorial products and create a beautiful tribute that celebrates their life and legacy.*
+*Ready to create a pet memorial page? MemorialsQR hosts the page. Collar tags, garden stones, and plaques are not for sale.*
+    `,
+  },
+  "memorial-headstone-plaques-buying-guide": {
+    content: `
+MemorialsQR hosts an online memorial page. Physical plaques, headstone tags, collar tags, and garden stones are not for sale, and nothing is shipped.
+
+Hosting is ${HOSTING_PRICE_LABEL} per month for one memorial website. The concierge memorial service is ${CONCIERGE_PRICE_LABEL} when you want the page built for you.
+
+You can download a QR code that opens the page and share that link with family.
     `,
   },
 }
 
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({ slug: post.slug }))
+}
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = blogPosts.find((p) => p.slug === params.slug)
+  const post = blogPosts.find((item) => item.slug === params.slug)
 
   if (!post) {
-    return {
-      title: "Article Not Found",
-    }
+    return pageMetadata({
+      title: "Article Not Found | MemorialsQR",
+      description: "This memorial guide is not available.",
+      path: `/blog/${params.slug}`,
+      index: false,
+    })
   }
 
-  const siteUrl = SITE_URL
+  const metadata = pageMetadata({
+    title: post.seoTitle,
+    description: post.seoDescription,
+    path: `/blog/${params.slug}`,
+    ogType: "article",
+  })
 
   return {
-    title: `${post.title} | Memorial QR Blog`,
-    description: post.excerpt,
-    keywords: `${post.category.toLowerCase()}, memorial QR, digital memorials, ${post.slug.replace(/-/g, " ")}`,
+    ...metadata,
     authors: [{ name: post.author }],
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      ...metadata.openGraph,
       type: "article",
       publishedTime: post.date,
       authors: [post.author],
@@ -193,27 +211,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
           alt: post.title,
         },
       ],
-      url: `${siteUrl}/blog/${params.slug}`,
     },
     twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.excerpt,
+      ...metadata.twitter,
       images: [post.image],
-    },
-    alternates: {
-      canonical: `/blog/${params.slug}`,
     },
   }
 }
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find((p) => p.slug === params.slug)
+  const post = blogPosts.find((item) => item.slug === params.slug)
   const postContent = blogPostsContent[params.slug]
 
-  if (!post || !postContent) {
+  if (!post) {
     notFound()
   }
+
+  const articleBody = postContent?.content ?? post.excerpt
 
   const articleStructuredData = {
     "@context": "https://schema.org",
@@ -229,10 +243,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     },
     publisher: {
       "@type": "Organization",
-      name: "Memorial QR",
+      name: SITE_NAME,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/images/41730040-9590-452b-80df.jpeg`,
+        url: `${SITE_URL}/icon.svg`,
       },
     },
     mainEntityOfPage: {
@@ -314,12 +328,12 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
             {/* Article Content */}
             <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-blue-600 prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground">
-              {postContent.content.split("\n").map((paragraph, index) => {
+              {articleBody.split("\n").map((paragraph, index) => {
                 if (paragraph.startsWith("# ")) {
                   return (
-                    <h1 key={index} className="text-4xl font-bold mt-8 mb-4">
+                    <h2 key={index} className="text-3xl font-bold mt-8 mb-4">
                       {paragraph.replace("# ", "")}
-                    </h1>
+                    </h2>
                   )
                 }
                 if (paragraph.startsWith("## ")) {

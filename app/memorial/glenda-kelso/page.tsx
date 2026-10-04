@@ -1,17 +1,11 @@
-import type { Metadata } from "next"
 import Link from "next/link"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import { Calendar, Heart } from "lucide-react"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
-export const metadata: Metadata = {
-  title: "Glenda Jane Kelso Memorial | Memorial QR",
-  description: "In loving memory of Glenda Jane Kelso, July 27, 1952 – August 27, 2025.",
-  alternates: {
-    canonical: "/memorial/glenda-kelso",
-  },
-}
+export const metadata = pageMetadata(publicPages.glenda)
 
 export default function GlendaKelsoMemorialPage() {
   return (

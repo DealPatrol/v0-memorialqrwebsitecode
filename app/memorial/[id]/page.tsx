@@ -1,71 +1,50 @@
 import type { Metadata } from "next"
 import { MemorialClientPage } from "./MemorialClientPage"
+import { isIndexableMemorial } from "@/lib/memorial-indexing"
+import { assertMetadataLength, pageMetadata } from "@/lib/seo"
 import { SITE_URL } from "@/lib/site"
 
-interface Memorial {
-  id: string
-  full_name: string
-  slug: string
-  biography: string | null
-  birth_date: string | null
-  death_date: string | null
-  location: string | null
-  profile_image_url: string | null
-  theme: string | null // Added theme field
+function clip(value: string, max: number): string {
+  if (value.length <= max) return value
+  return `${value.slice(0, max - 1).trimEnd()}…`
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const memorialPath = `/memorial/${params.id}`
+  const hidden = pageMetadata({
+    title: "Private Memorial | MemorialsQR",
+    description: "This memorial page is not published for search.",
+    path: memorialPath,
+    index: false,
+  })
+
   try {
-    const memorialId = params.id
-    const baseUrl = SITE_URL
+    const response = await fetch(`${SITE_URL}/api/memorials/${params.id}`, { cache: "no-store" })
+    if (!response.ok) return hidden
+    const payload = (await response.json()) as { memorial?: Record<string, unknown> }
+    const memorial = payload.memorial
+    if (!memorial || !isIndexableMemorial(memorial)) return hidden
 
-    // Fetch memorial data for accurate metadata
-    const memorial = await fetch(`${baseUrl}/api/memorials/${memorialId}`, {
-      cache: "no-store",
-    })
-      .then((res) => res.json())
-      .catch(() => null)
-
-    const memorialName = memorial?.memorial?.full_name || "Loved One"
-    const memorialBio =
-      memorial?.memorial?.biography || `Visit this memorial page to honor and remember ${memorialName}`
-    const memorialImage = memorial?.memorial?.profile_image_url || `${baseUrl}/og-image.jpg`
-    const memorialUrl = `${baseUrl}/memorial/${memorialId}`
+    const name = typeof memorial.full_name === "string" && memorial.full_name.trim() ? memorial.full_name.trim() : "a loved one"
+    const title = clip(`Memorial for ${name} | MemorialsQR`, 60)
+    const biography = typeof memorial.biography === "string" ? memorial.biography.trim() : ""
+    const description = clip(
+      biography || `Online memorial page for ${name}, with photos, stories, and messages.`,
+      155,
+    )
+    assertMetadataLength(title, description, memorialPath)
+    const metadata = pageMetadata({ title, description, path: memorialPath, index: true })
+    const image = typeof memorial.profile_image_url === "string" ? memorial.profile_image_url : undefined
 
     return {
-      title: `Memorial for ${memorialName} | Memorial QR`,
-      description: memorialBio.slice(0, 155),
+      ...metadata,
       openGraph: {
-        title: `Memorial for ${memorialName}`,
-        description: `Visit this memorial page to honor and remember ${memorialName}`,
-        url: memorialUrl,
-        siteName: "Memorial QR",
-        images: [
-          {
-            url: memorialImage,
-            width: 1200,
-            height: 630,
-            alt: `Memorial for ${memorialName}`,
-          },
-        ],
-        locale: "en_US",
-        type: "website",
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: `Memorial for ${memorialName}`,
-        description: `Visit this memorial page to honor and remember ${memorialName}`,
-        images: [memorialImage],
-      },
-      alternates: {
-        canonical: memorialUrl,
+        ...metadata.openGraph,
+        images: image ? [{ url: image, alt: title }] : undefined,
       },
     }
-  } catch (error) {
-    return {
-      title: "Memorial | Memorial QR",
-      description: "Visit this memorial page",
-    }
+  } catch {
+    return hidden
   }
 }
 

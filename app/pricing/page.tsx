@@ -1,19 +1,13 @@
-import type { Metadata } from "next"
 import Link from "next/link"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
 import { CheckCircle } from "lucide-react"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export const metadata: Metadata = {
-  title: "Pricing | Memorial QR",
-  description: `Digital memorial hosting is ${formatUsd(HOSTING_MONTHLY_PRICE)} per month per memorial.`,
-  alternates: {
-    canonical: "/pricing",
-  },
-}
+export const metadata = pageMetadata(publicPages.pricing)
 
 export default function PricingPage() {
   return (

@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { Heart, Star, Users, ArrowRight } from "lucide-react"
+import { pageMetadata, publicPages } from "@/lib/seo"
+
+export const metadata = pageMetadata(publicPages.ourStory)
 
 export default function OurStoryPage() {
   return (

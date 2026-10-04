@@ -26,7 +26,10 @@ import {
 } from "lucide-react"
 import { getSellablePodProducts } from "@/lib/fulfillment-availability"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
+
+export const metadata = pageMetadata(publicPages.home)
 
 export const dynamic = "force-dynamic"
 

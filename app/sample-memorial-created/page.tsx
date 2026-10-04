@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
 import { CheckCircle, Sparkles, QrCode, Share2, Eye, Download, ArrowRight } from "lucide-react"
+import { HOSTING_PRICE_LABEL } from "@/lib/seo"
 
 export default function SampleMemorialCreatedPage() {
   const searchParams = useSearchParams()
@@ -185,8 +186,8 @@ export default function SampleMemorialCreatedPage() {
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-8 rounded-lg">
               <h3 className="text-2xl font-bold mb-4">Ready to Create a Real Memorial?</h3>
               <p className="text-lg opacity-90 mb-6">
-                When you're ready to create an actual memorial with physical QR plaque, check out our pricing plans and
-                complete the purchase process.
+                When you are ready for a real online memorial page, hosting is {HOSTING_PRICE_LABEL} a month. Nothing is
+                shipped.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

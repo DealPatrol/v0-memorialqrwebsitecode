@@ -1,6 +1,9 @@
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
+
+export const metadata = pageMetadata(publicPages.terms)
 
 export default function TermsOfServicePage() {
   return (

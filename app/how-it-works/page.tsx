@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import type { Metadata } from "next"
-import { SITE_URL } from "@/lib/site"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import {
   QrCode,
   Upload,
@@ -20,22 +19,7 @@ import {
   PawPrint,
 } from "lucide-react"
 
-export const metadata: Metadata = {
-  title: "How Memorial QR Codes Work | Digital Tombstone Memorials",
-  description:
-    "Learn how digital memorial pages and $4.99 monthly hosting work for human and pet memorials.",
-  keywords:
-    "how memorial QR works, QR code tombstone setup, headstone QR installation, cemetery QR plaque guide, pet memorial QR process, digital memorial creation",
-  alternates: {
-    canonical: "/how-it-works",
-  },
-  openGraph: {
-    title: "How Memorial QR Codes Work",
-    description:
-      "Complete guide to creating a digital memorial page. Hosting is $4.99 per month.",
-    url: `${SITE_URL}/how-it-works`,
-  },
-}
+export const metadata = pageMetadata(publicPages.howItWorks)
 
 export default function HowItWorksPage() {
   return (

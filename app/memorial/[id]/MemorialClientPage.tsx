@@ -400,6 +400,7 @@ export function MemorialClientPage() {
         <Header />
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
+            <h1 className="mb-4 text-3xl font-bold text-slate-900">Memorial</h1>
             <p className="text-slate-600">Loading memorial...</p>
           </div>
         </div>

@@ -5,26 +5,11 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
-import type { Metadata } from "next"
 import { JsonLd } from "@/components/json-ld"
-import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
+import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
-export const metadata: Metadata = {
-  title: "Memorial QR FAQ | Common Questions",
-  description:
-    "Answers to frequently asked questions about Memorial QR products, installation, pricing, durability, and $4.99 monthly digital hosting. Ships anywhere in the United States from Alabama.",
-  keywords:
-    "memorial QR FAQ, tombstone QR questions, headstone QR code durability, cemetery plaque, pet memorial QR answers, gravestone QR installation guide",
-  alternates: {
-    canonical: "/faq",
-  },
-  openGraph: {
-    title: "Memorial QR FAQ",
-    description:
-      "Get answers about memorial QR codes, installation, product pricing, and monthly digital hosting.",
-    url: `${SITE_URL}/faq`,
-  },
-}
+export const metadata = pageMetadata(publicPages.faq)
 
 const faqCategories = [
   {
@@ -153,32 +138,29 @@ const faqCategories = [
     ],
   },
   {
-    title: "Memorial QR Codes for Tombstones",
+    title: "QR codes and what we sell",
     faqs: [
       {
-        question: "What is a memorial QR code for tombstones?",
+        question: "Do you ship a plaque, tag, or garden stone?",
         answer:
-          "A memorial QR code for tombstones is a weather-resistant plaque or tag that attaches to a headstone or gravestone. When scanned with a smartphone, it links to a digital memorial website with photos, videos, life stories, and guest messages. It transforms traditional cemetery markers into interactive tributes.",
+          "No. The current offer is the online memorial page and the concierge memorial service. Nothing is shipped.",
       },
       {
-        question: "How durable are headstone QR code tags for cemetery use?",
+        question: "What is a QR code memorial?",
         answer:
-          "Our tombstone QR code plaques are laser-engraved on premium metal with UV-resistant coating. They're specifically designed for outdoor cemetery use and withstand rain, snow, extreme temperatures, and direct sunlight. We offer a 5-year durability guarantee, and most remain perfectly scannable for 10+ years.",
+          "It is a QR code that opens an online memorial page of photos, stories, and messages. You can download the code and share it. We do not sell the physical marker.",
       },
       {
-        question: "Will the QR code work in all weather conditions at the cemetery?",
-        answer:
-          "Yes! Our memorial QR codes for headstones are engineered for permanent outdoor installation. The laser engraving won't fade, the protective coating prevents weather damage, and they remain scannable in rain, snow, heat, and cold. Cemetery visitors can scan the gravestone QR tag year-round.",
+        question: "What does memorial hosting cost?",
+        answer: `Digital memorial hosting is ${HOSTING_PRICE_LABEL} per month for each memorial page.`,
       },
       {
-        question: "Do cemeteries allow QR codes on tombstones and headstones?",
-        answer:
-          "Most modern cemeteries and memorial parks permit memorial QR code tags on headstones. Our discreet, professional designs comply with typical cemetery regulations. We recommend checking with your specific cemetery, but the vast majority approve our products for gravestone installation.",
+        question: "What does the concierge memorial service cost?",
+        answer: `The concierge memorial service is ${CONCIERGE_PRICE_LABEL}. We build the page. Nothing is shipped.`,
       },
       {
-        question: "How do I attach the QR code plaque to a tombstone?",
-        answer:
-          "Each headstone QR tag includes multiple mounting options: industrial-strength adhesive for permanent attachment, screw holes for bolt-mounting on stone, or magnetic backing for temporary placement. Detailed instructions are included. Most families complete cemetery installation in under 10 minutes.",
+        question: "Where is MemorialsQR based?",
+        answer: `MemorialsQR is a US business in Hanceville, Alabama. Email ${SUPPORT_EMAIL} for help.`,
       },
     ],
   },
@@ -215,7 +197,7 @@ export default function FAQPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Find answers to common questions about creating digital memorials, QR code plaques, pricing, and more. Can't
+            Find answers to common questions about online memorial pages, hosting, and the concierge memorial service. Can't
             find what you're looking for? Contact our support team for help.
           </p>
 

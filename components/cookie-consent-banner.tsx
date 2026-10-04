@@ -80,7 +80,7 @@ export function CookieConsentBanner() {
           <div className="flex-1">
             <p className="text-sm text-gray-700 leading-relaxed">
               <strong>Cookies & Privacy:</strong> We use cookies to enhance your experience, analyze site traffic, and improve our services. By clicking "Accept All," you consent to our use of cookies. View our{' '}
-              <a href="/privacy" className="text-blue-600 hover:text-blue-700 underline font-medium">
+              <a href="/privacy-policy" className="text-blue-600 hover:text-blue-700 underline font-medium">
                 Privacy Policy
               </a>{' '}
               for more details.

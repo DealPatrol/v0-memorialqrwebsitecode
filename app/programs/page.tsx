@@ -4,7 +4,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Users, Music, ImageIcon, MessageCircle, Share2, Download, Smartphone } from "lucide-react"
 import Link from "next/link"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
+
+export const metadata = pageMetadata(publicPages.programs)
 
 const features = [
   { icon: Heart, title: "Beautiful Memorial Page", description: "Personalized tribute with photos and memories" },

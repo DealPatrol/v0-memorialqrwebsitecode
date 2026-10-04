@@ -1,12 +1,9 @@
 import { Header } from "@/components/header"
 import { Shield, Lock, Eye, Zap } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import type { Metadata } from "next"
+import { pageMetadata, publicPages } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Security & Trust | Memorial QR",
-  description: "Learn about Memorial QR's security measures, compliance, and commitment to protecting your memorial data.",
-}
+export const metadata = pageMetadata(publicPages.security)
 
 export default function SecurityPage() {
   const securityMeasures = [

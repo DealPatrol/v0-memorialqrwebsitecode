@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,7 @@ const steps = [
   { id: 6, title: "Review & Submit", icon: CheckCircle },
 ]
 
-export default function CreateMemorialPage() {
+function CreateMemorialForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { toast } = useToast()
@@ -287,6 +287,7 @@ export default function CreateMemorialPage() {
       <div className="min-h-screen bg-black flex items-center justify-center">
         <Card className="max-w-md mx-auto text-center bg-zinc-900 border-zinc-800">
           <CardContent className="p-8">
+            <h1 className="mb-4 text-2xl font-bold text-white">Create Your Digital Memorial</h1>
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4" />
             <p className="text-zinc-400">Loading...</p>
           </CardContent>
@@ -296,7 +297,20 @@ export default function CreateMemorialPage() {
   }
 
   if (!orderData) {
-    return null
+    return (
+      <div className="min-h-screen bg-black">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="mb-4 text-3xl font-bold text-white">Create Your Digital Memorial</h1>
+          <p className="mx-auto mb-8 max-w-xl text-zinc-400">
+            Start with memorial page hosting. Nothing is shipped.
+          </p>
+          <Button asChild>
+            <Link href="/pricing">View Hosting</Link>
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -893,5 +907,19 @@ export default function CreateMemorialPage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+export default function CreateMemorialPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-black">
+          <h1 className="text-3xl font-bold text-white">Create Your Digital Memorial</h1>
+        </div>
+      }
+    >
+      <CreateMemorialForm />
+    </Suspense>
   )
 }

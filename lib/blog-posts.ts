@@ -1,9 +1,15 @@
+import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+
+const hosting = `$${HOSTING_MONTHLY_PRICE.toFixed(2)}`
+
 export const blogPosts = [
   {
     slug: "complete-guide-to-memorial-qr-codes",
     title: "The Complete Guide to Memorial QR Codes: Honoring Loved Ones in the Digital Age",
     excerpt:
       "Discover how QR code memorials are revolutionizing the way we remember and honor those we've lost. Learn everything about creating lasting digital tributes.",
+    seoTitle: "QR Code Memorial Guide | MemorialsQR",
+    seoDescription: "How a QR code memorial opens an online memorial page of photos and stories. Nothing is shipped.",
     category: "Guides",
     author: "Sarah Mitchell",
     date: "2024-12-15",
@@ -16,6 +22,8 @@ export const blogPosts = [
     title: "25 Beautiful Pet Memorial Ideas to Honor Your Furry Friend",
     excerpt:
       "Losing a pet is heartbreaking. Explore creative and touching ways to memorialize your beloved companion and keep their memory alive forever.",
+    seoTitle: "Pet Memorial Page Ideas | MemorialsQR",
+    seoDescription: `Ideas for a pet memorial page with photos and stories. Hosting is ${hosting} a month. Nothing is shipped.`,
     category: "Pet Memorials",
     author: "Dr. Emily Rogers",
     date: "2024-12-10",
@@ -28,6 +36,8 @@ export const blogPosts = [
     title: "How to Create a Meaningful Digital Memorial: Step-by-Step Guide",
     excerpt:
       "Creating a digital memorial doesn't have to be overwhelming. Follow our comprehensive guide to build a beautiful tribute that honors your loved one's legacy.",
+    seoTitle: "Create a Digital Memorial | MemorialsQR",
+    seoDescription: `Steps to create a digital memorial for a loved one on a memorial website. Hosting is ${hosting} a month.`,
     category: "Guides",
     author: "Michael Chen",
     date: "2024-12-05",
@@ -39,6 +49,8 @@ export const blogPosts = [
     title: "Coping with Loss: A Guide to Grief Support and Healing",
     excerpt:
       "Grieving is a personal journey. Find helpful resources, coping strategies, and support for navigating the difficult path of losing someone you love.",
+    seoTitle: "Coping with Loss | MemorialsQR",
+    seoDescription: "A short guide to grief support while you build an online memorial page for someone you love.",
     category: "Grief Support",
     author: "Dr. Jennifer Walsh",
     date: "2024-12-01",
@@ -47,9 +59,11 @@ export const blogPosts = [
   },
   {
     slug: "memorial-headstone-plaques-buying-guide",
-    title: "Memorial Headstone Plaques: Everything You Need to Know Before You Buy",
+    title: "A Digital Memorial Page Instead of a Plaque",
     excerpt:
-      "Choosing a memorial plaque is an important decision. Learn about materials, customization options, installation, and how to select the perfect tribute.",
+      "MemorialsQR hosts an online memorial page. Physical plaques, headstone tags, and garden stones are not for sale.",
+    seoTitle: "Digital Pages, Not Plaques | MemorialsQR",
+    seoDescription: `MemorialsQR sells an online memorial page, not physical plaques. Hosting is ${hosting} a month.`,
     category: "Product Guides",
     author: "Robert Thompson",
     date: "2024-11-28",
@@ -61,6 +75,8 @@ export const blogPosts = [
     title: "20 Personalized Memorial Gifts That Bring Comfort and Remembrance",
     excerpt:
       "Looking for a thoughtful memorial gift? Discover meaningful, personalized options that help keep cherished memories alive and provide comfort during difficult times.",
+    seoTitle: "Memorial Gift Ideas | MemorialsQR",
+    seoDescription: "Thoughtful ways to remember someone, including a memorial website their family can share.",
     category: "Gift Ideas",
     author: "Lisa Anderson",
     date: "2024-11-25",
@@ -72,6 +88,8 @@ export const blogPosts = [
     title: "How QR Code Technology is Transforming Memorial Services",
     excerpt:
       "QR codes are bridging the physical and digital worlds in memorial services. Explore the innovative technology making memorials more accessible and interactive.",
+    seoTitle: "QR Code Memorial Technology | MemorialsQR",
+    seoDescription: "How a QR code memorial connects a visit to an online memorial page of photos and stories.",
     category: "Technology",
     author: "David Martinez",
     date: "2024-11-20",
@@ -83,6 +101,8 @@ export const blogPosts = [
     title: "Honoring Veterans: Memorial Ideas for Military Service Members",
     excerpt:
       "Veterans deserve special recognition. Discover meaningful ways to honor military service members with patriotic memorial tributes and digital memorials.",
+    seoTitle: "Veteran Memorial Ideas | MemorialsQR",
+    seoDescription: "Ways to honor a veteran's service on a digital memorial page with photos, stories, and messages.",
     category: "Special Tributes",
     author: "Colonel James Wilson (Ret.)",
     date: "2024-11-15",
@@ -94,6 +114,8 @@ export const blogPosts = [
     title: "Preserving Family History Through Digital Memorials",
     excerpt:
       "Digital memorials are more than tributes—they're family archives. Learn how to preserve stories, photos, and memories for future generations.",
+    seoTitle: "Preserve Family History | MemorialsQR",
+    seoDescription: "Use a memorial website to keep family photos and stories together for the next generation.",
     category: "Family Legacy",
     author: "Margaret Sullivan",
     date: "2024-11-10",

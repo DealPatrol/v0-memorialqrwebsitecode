@@ -139,8 +139,8 @@ export default function OrderConfirmationPage() {
             <Card>
               <CardContent className="pt-6">
                 <Package className="h-8 w-8 text-purple-600 mb-2" />
-                <h3 className="font-semibold mb-1">Shipping</h3>
-                <p className="text-sm text-gray-600">Your plaque will ship within 3-5 business days</p>
+                <h3 className="font-semibold mb-1">Nothing Shipped</h3>
+                <p className="text-sm text-gray-600">The memorial page is hosted online. Nothing is shipped.</p>
               </CardContent>
             </Card>
           </div>
@@ -169,7 +169,7 @@ export default function OrderConfirmationPage() {
 
           <div className="text-center space-y-4">
             <p className="text-gray-600">
-              We'll send you an email when your memorial is ready and another when your plaque ships.
+              We'll send you an email when your memorial page is ready. Nothing is shipped.
             </p>
             <div className="flex gap-4 justify-center">
               <Link href="/">

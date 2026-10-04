@@ -7,7 +7,10 @@ import { DIGITAL_MEMORIAL } from "@/lib/catalog"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { getSellablePodProducts } from "@/lib/fulfillment-availability"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
+
+export const metadata = pageMetadata(publicPages.store)
 
 export const dynamic = "force-dynamic"
 

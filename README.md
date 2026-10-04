@@ -22,6 +22,12 @@ Continue building your app on:
 
 **[https://v0.app/chat/projects/y6f7ywF0kMl](https://v0.app/chat/projects/y6f7ywF0kMl)**
 
+## Google Shopping
+
+Subscriptions and services are not allowed in Google Shopping, so this site does not publish a merchant product feed. `/feed.xml` is the blog RSS feed and should keep working.
+
+Add a `/merchant-feed.xml` endpoint only once physical products are purchasable.
+
 ## How It Works
 
 1. Create and modify your project using [v0.app](https://v0.app)

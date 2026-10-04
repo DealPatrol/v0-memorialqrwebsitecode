@@ -4,13 +4,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Globe, Lock, User, Flag, Music, Camera } from "lucide-react"
-import type { Metadata } from "next"
+import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Human Memorials - Memorial QR",
-  description:
-    "Create beautiful digital memorials for loved ones. QR code headstone plaques, wall tributes, and lasting digital legacies.",
-}
+export const metadata = pageMetadata(publicPages.humanMemorials)
 
 export default function HumanMemorialsPage() {
   return (
@@ -81,7 +77,7 @@ export default function HumanMemorialsPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Everything to Honor Their Memory</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Our human memorial packages include features designed for dignified remembrance
+              The memorial page includes features designed for dignified remembrance
             </p>
           </div>
 
@@ -149,13 +145,12 @@ export default function HumanMemorialsPage() {
         </div>
       </section>
 
-      {/* Product Options */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Memorial Products</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">What you can buy today</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose from headstone plaques, wall tributes, or keepsake items
+              An online memorial page and a concierge memorial service. Nothing is shipped.
             </p>
           </div>
 
@@ -165,11 +160,11 @@ export default function HumanMemorialsPage() {
                 <div className="w-24 h-24 bg-slate-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-slate-600" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Headstone Plaque</h3>
+                <h3 className="text-xl font-semibold mb-2">Online memorial page</h3>
                 <p className="text-muted-foreground mb-4">
-                  Weather-resistant aluminum plaque designed to mount on headstones and grave markers.
+                  Photos, stories, and messages for a loved one. Hosting is {HOSTING_PRICE_LABEL} a month.
                 </p>
-                <Badge>Most Popular</Badge>
+                <Badge>Hosting</Badge>
               </CardContent>
             </Card>
 
@@ -178,11 +173,11 @@ export default function HumanMemorialsPage() {
                 <div className="w-24 h-24 bg-slate-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-slate-600" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Wall Memorial</h3>
+                <h3 className="text-xl font-semibold mb-2">QR code memorial</h3>
                 <p className="text-muted-foreground mb-4">
-                  Elegant framed QR display for home, funeral homes, or memorial walls.
+                  Download a QR code that opens the page. Share or print it yourself.
                 </p>
-                <Badge variant="outline">Indoor Display</Badge>
+                <Badge variant="outline">Download</Badge>
               </CardContent>
             </Card>
 
@@ -191,11 +186,11 @@ export default function HumanMemorialsPage() {
                 <div className="w-24 h-24 bg-slate-200 rounded-lg mx-auto mb-6 flex items-center justify-center">
                   <QrCode className="w-12 h-12 text-slate-600" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Keepsake Box</h3>
+                <h3 className="text-xl font-semibold mb-2">Concierge memorial service</h3>
                 <p className="text-muted-foreground mb-4">
-                  Beautiful wooden box with engraved QR code lid for storing cherished mementos.
+                  We build the page for you for {CONCIERGE_PRICE_LABEL}. Nothing is shipped.
                 </p>
-                <Badge variant="outline">Premium Option</Badge>
+                <Badge variant="outline">Service</Badge>
               </CardContent>
             </Card>
           </div>
@@ -213,7 +208,7 @@ export default function HumanMemorialsPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
               <Link href="/pricing?type=human">
-                View Packages
+                View Hosting
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

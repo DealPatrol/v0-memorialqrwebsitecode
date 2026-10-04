@@ -7,8 +7,17 @@ import { Toaster } from "@/components/ui/toaster"
 import { ExitIntentPopup } from "@/components/exit-intent-popup"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
+import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
+
+const conciergeOffer = CONCIERGE_PRODUCTS.find((product) => product.id === "concierge-digital")
+
+if (!conciergeOffer) {
+  throw new Error("Concierge digital offer is missing from the catalog")
+}
+
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,28 +43,22 @@ const greatVibes = Great_Vibes({
 })
 
 export const metadata: Metadata = {
-  title: "Memorial QR Codes | Digital Tombstone & Pet Memorials",
-  description:
-    "Digital memorial pages for people and pets. Hosting is $4.99 per month per memorial.",
+  title: {
+    default: "MemorialsQR",
+  },
+  description: "MemorialsQR hosts digital memorial pages. Nothing is shipped.",
   keywords:
-    "memorial QR codes, QR code tombstones, headstone memorial tags, cemetery QR codes, gravestone QR plaque, digital memorial, pet memorial QR, tombstone QR code, headstone memorial, memorial services",
-  authors: [{ name: "Memorial QR" }],
-  creator: "Memorial QR",
-  publisher: "Memorial QR",
+    "online memorial page, digital memorial for loved one, QR code memorial, pet memorial page, memorial website, concierge memorial service",
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
   metadataBase: new URL(SITE_URL),
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
-    title: "MemorialsQR | Digital Memorial Pages",
-    description:
-      "A digital memorial page for photos, stories, and messages. Hosting is $4.99 per month.",
-    url: SITE_URL,
     siteName: SITE_NAME,
     locale: "en_US",
     type: "website",
@@ -65,9 +68,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MemorialsQR | Digital Memorial Plaques",
-    description:
-      "Weather-resistant QR memorials that ship anywhere in the United States from Alabama.",
   },
   robots: {
     index: true,
@@ -80,9 +80,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION,
-  },
+  ...(googleSiteVerification ? { verification: { google: googleSiteVerification } } : {}),
   applicationName: SITE_NAME,
 }
 
@@ -96,35 +94,75 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: "Memorial QR",
-    description: "Premium memorial QR code service providing digital tombstone memorials and cemetery tributes",
-    url: SITE_URL,
-    email: SUPPORT_EMAIL,
-    priceRange: "$$",
-    servesCuisine: null,
-    paymentAccepted: ["Credit Card", "Debit Card"],
-    openingHours: "Mo-Su 00:00-23:59",
-    sameAs: [],
-  }
-
-  const productStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: "Memorial QR Code Services",
-    description:
-      "Premium memorial QR codes for tombstones, headstones, and pet memorials. Weather-resistant digital memorial solutions.",
-    brand: {
-      "@type": "Brand",
-      name: "Memorial QR",
-    },
-    offers: {
-      "@type": "AggregateOffer",
-      priceCurrency: "USD",
-      lowPrice: HOSTING_MONTHLY_PRICE.toFixed(2),
-      highPrice: HOSTING_MONTHLY_PRICE.toFixed(2),
-      availability: "https://schema.org/InStock",
-    },
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: {
+          "@type": "ImageObject",
+          url: `${SITE_URL}/icon.svg`,
+        },
+        email: SUPPORT_EMAIL,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Hanceville",
+          addressRegion: "AL",
+          addressCountry: "US",
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+      {
+        "@type": "Product",
+        name: "Online memorial page hosting",
+        description: "A digital memorial page for photos, stories, and messages. Billed monthly. Nothing is shipped.",
+        sku: "digital-memorial",
+        brand: {
+          "@type": "Brand",
+          name: SITE_NAME,
+        },
+        offers: {
+          "@type": "Offer",
+          url: `${SITE_URL}/pricing`,
+          price: HOSTING_MONTHLY_PRICE.toFixed(2),
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            price: HOSTING_MONTHLY_PRICE.toFixed(2),
+            priceCurrency: "USD",
+            unitCode: "MON",
+            billingDuration: 1,
+            referenceQuantity: {
+              "@type": "QuantitativeValue",
+              value: 1,
+              unitCode: "MON",
+            },
+          },
+        },
+      },
+      {
+        "@type": "Service",
+        name: "Concierge memorial service",
+        description: "We build the memorial page. Nothing is shipped.",
+        serviceType: "Concierge memorial service",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        offers: {
+          "@type": "Offer",
+          url: `${SITE_URL}/concierge`,
+          price: conciergeOffer.price.toFixed(2),
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+        },
+      },
+    ],
   }
 
   return (
@@ -139,14 +177,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Memorial QR Blog RSS Feed"
+          title="MemorialsQR Blog RSS Feed"
           href={`${SITE_URL}/feed.xml`}
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
-        />
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>

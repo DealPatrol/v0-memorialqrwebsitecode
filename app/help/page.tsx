@@ -5,7 +5,10 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from 'lucide-react'
+import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
+
+export const metadata = pageMetadata(publicPages.help)
 
 const helpCategories = [
   {
@@ -13,7 +16,7 @@ const helpCategories = [
     icon: Book,
     articles: [
       "How to create your first memorial",
-      "Understanding QR code plaques",
+      "How a QR code memorial works",
       "Setting up memorial privacy",
       "Adding photos and stories",
     ],
@@ -43,7 +46,7 @@ const helpCategories = [
     icon: FileText,
     articles: [
       "Understanding your invoice",
-      "Tracking your QR plaque order",
+      "Understanding monthly hosting",
       "Requesting refunds",
       "Updating billing information",
     ],
@@ -166,12 +169,10 @@ export default function HelpPage() {
           <div className="max-w-4xl mx-auto space-y-6">
             <Card className="border-2 border-gray-200">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  How long does it take to receive my QR code plaque?
-                </h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Is anything shipped?</h3>
                 <p className="text-gray-600">
-                  QR code plaques are professionally engraved and ship within 3-5 business days via USPS Priority Mail.
-                  You'll receive tracking information once your order ships.
+                  No. MemorialsQR hosts the online memorial page. Nothing is shipped. Hosting is {HOSTING_PRICE_LABEL} a
+                  month, and the concierge memorial service is {CONCIERGE_PRICE_LABEL} if you want us to build the page.
                 </p>
               </CardContent>
             </Card>
@@ -190,10 +191,10 @@ export default function HelpPage() {
 
             <Card className="border-2 border-gray-200">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">What if the QR code gets damaged?</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">What if I need a new QR code?</h3>
                 <p className="text-gray-600">
-                  Our QR codes are weatherproof and designed to last for decades. If your plaque is damaged within 5
-                  years, we'll replace it free of charge under our durability guarantee.
+                  Download another code from the QR generator. It opens the same memorial page. We do not sell or ship
+                  replacement plaques.
                 </p>
               </CardContent>
             </Card>
