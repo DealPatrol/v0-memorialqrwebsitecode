@@ -31,19 +31,14 @@ export async function POST(req: Request) {
 
     const resolvedCustomerName = customerName || customerEmail
 
-    // Validate required fields
-    if (!resolvedCustomerName || !customerEmail || !addressLine1 || !city || !state || !zip || !paymentId) {
-      const missing = []
-      if (!resolvedCustomerName) missing.push("customerName")
-      if (!customerEmail) missing.push("customerEmail")
-      if (!addressLine1) missing.push("addressLine1")
-      if (!city) missing.push("city")
-      if (!state) missing.push("state")
-      if (!zip) missing.push("zip")
-      if (!paymentId) missing.push("paymentId")
-
+    // Validate required fields. A shipping address is only required when the cart ships something.
+    const baseMissing = []
+    if (!resolvedCustomerName) baseMissing.push("customerName")
+    if (!customerEmail) baseMissing.push("customerEmail")
+    if (!paymentId) baseMissing.push("paymentId")
+    if (baseMissing.length > 0) {
       return NextResponse.json(
-        { success: false, error: `Missing required fields: ${missing.join(", ")}` },
+        { success: false, error: `Missing required fields: ${baseMissing.join(", ")}` },
         { status: 400 },
       )
     }
@@ -58,6 +53,17 @@ export async function POST(req: Request) {
     }
 
     const shipsPhysical = resolvedItems.some((item) => item.ships)
+    if (shipsPhysical && (!addressLine1 || !city || !state || !zip)) {
+      const missing = []
+      if (!addressLine1) missing.push("addressLine1")
+      if (!city) missing.push("city")
+      if (!state) missing.push("state")
+      if (!zip) missing.push("zip")
+      return NextResponse.json(
+        { success: false, error: `Missing required fields: ${missing.join(", ")}` },
+        { status: 400 },
+      )
+    }
     if (shipsPhysical && !/^[A-Za-z]{2}$/.test(state.trim())) {
       return NextResponse.json({ success: false, error: "Use a 2-letter US state code" }, { status: 400 })
     }
@@ -132,11 +138,12 @@ export async function POST(req: Request) {
       customer_name: resolvedCustomerName,
       customer_email: customerEmail,
       customer_phone: customerPhone || null,
-      shipping_address_line1: addressLine1,
+      // Digital-only carts collect no address; empty strings keep the NOT NULL columns valid.
+      shipping_address_line1: shipsPhysical ? addressLine1 : addressLine1 || "",
       shipping_address_line2: addressLine2 || null,
-      shipping_city: city,
-      shipping_state: state,
-      shipping_zip: zip,
+      shipping_city: shipsPhysical ? city : city || "",
+      shipping_state: shipsPhysical ? state : state || "",
+      shipping_zip: shipsPhysical ? zip : zip || "",
       shipping_country: "US",
       payment_id: paymentId,
       payment_status: "completed",

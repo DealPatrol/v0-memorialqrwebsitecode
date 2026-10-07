@@ -45,6 +45,7 @@
     "@react-email/render": "latest",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@vercel/analytics": "1.6.1",
     "@vercel/blob": "latest",
     "ai": "6.0.39",
     "class-variance-authority": "^0.7.1",

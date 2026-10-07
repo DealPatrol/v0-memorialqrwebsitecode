@@ -26,7 +26,7 @@ export default function PetMemorialsPage() {
           </h1>
           <p className="text-xl text-amber-100 mb-8 max-w-3xl mx-auto">
             Create heartfelt digital memorials for dogs, cats, horses, and all the furry friends who gave us
-            unconditional love. A scannable QR code keeps their memory alive forever.
+            unconditional love. A scannable QR code opens their memorial page, kept online as long as your plan is active.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button

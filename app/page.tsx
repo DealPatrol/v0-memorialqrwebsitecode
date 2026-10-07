@@ -49,7 +49,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance leading-tight">
-              Digital Memorials That Last Forever
+              Digital Memorial Pages for Photos, Videos, and Stories
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
@@ -318,8 +318,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Create a Lasting Memorial?</h2>
           <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Whether honoring a loved one or a beloved pet, create a beautiful digital memorial that keeps their memory
-            alive forever.
+            Whether honoring a loved one or a beloved pet, create a beautiful digital memorial, kept online as long as your plan is active.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

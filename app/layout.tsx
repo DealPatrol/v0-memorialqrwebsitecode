@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ExitIntentPopup } from "@/components/exit-intent-popup"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
+import { Analytics } from "@vercel/analytics/next"
 import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
@@ -190,6 +191,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ExitIntentPopup />
           <LiveChatButton />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )

@@ -6,9 +6,9 @@ export async function GET(request: Request) {
   const email = requestUrl.searchParams.get("email")
   const token = requestUrl.searchParams.get("token")
 
-  // Security check - validate admin token
-  const adminToken = process.env.ADMIN_BYPASS_TOKEN || "admin_memorial_qr_2025"
-  if (token !== adminToken) {
+  // Security check - validate admin token. With no ADMIN_BYPASS_TOKEN configured, access is always denied.
+  const adminToken = process.env.ADMIN_BYPASS_TOKEN
+  if (!adminToken || !token || token !== adminToken) {
     return NextResponse.redirect(new URL("/auth/login?error=Invalid admin token", requestUrl.origin))
   }
 

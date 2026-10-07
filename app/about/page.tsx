@@ -45,7 +45,7 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">About Memorial QR</h1>
           <p className="text-xl text-zinc-300 max-w-3xl">
-            We're building a kinder way to remember. Memorial QR codes bridge the gap between traditional memorials and modern needs, allowing families to create lasting digital tributes that preserve stories, celebrate lives, and honor memories forever.
+            We're building a kinder way to remember. Memorial QR codes bridge the gap between traditional memorials and modern needs, allowing families to create lasting digital tributes that preserve stories, celebrate lives, and honor memories, kept online as long as your plan is active.
           </p>
         </div>
       </section>

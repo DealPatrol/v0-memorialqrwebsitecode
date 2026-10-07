@@ -21,7 +21,7 @@ export const blogPosts = [
     slug: "pet-memorial-ideas-honoring-furry-friends",
     title: "25 Beautiful Pet Memorial Ideas to Honor Your Furry Friend",
     excerpt:
-      "Losing a pet is heartbreaking. Explore creative and touching ways to memorialize your beloved companion and keep their memory alive forever.",
+      "Losing a pet is heartbreaking. Explore creative and touching ways to memorialize your beloved companion and keep their memory close.",
     seoTitle: "Pet Memorial Page Ideas | MemorialsQR",
     seoDescription: `Ideas for a pet memorial page with photos and stories. Hosting is ${hosting} a month. Nothing is shipped.`,
     category: "Pet Memorials",

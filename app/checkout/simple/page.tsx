@@ -101,18 +101,23 @@ function CheckoutForm() {
     })
   }
 
+  // Digital-only carts ship nothing, so the address block is hidden and not required.
+  const needsShipping = cartItems.some((item) => item.ships)
+
   const validateForm = () => {
-    const needsShipping = cartItems.some((item) => item.ships)
-    if (
-      !formData.email ||
-      !formData.address ||
-      !formData.city ||
-      !formData.state ||
-      !formData.zipCode
-    ) {
+    if (!formData.email) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required address fields before proceeding with payment.",
+        description: "Please enter your email address before proceeding with payment.",
+        variant: "destructive",
+      })
+      return false
+    }
+
+    if (needsShipping && (!formData.address || !formData.city || !formData.state || !formData.zipCode)) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required shipping address fields before proceeding with payment.",
         variant: "destructive",
       })
       return false
@@ -162,11 +167,11 @@ function CheckoutForm() {
         monthlyFee: HOSTING_MONTHLY_PRICE,
         customerEmail: formData.email || "",
         customerPhone: formData.phone || "",
-        addressLine1: formData.address,
-        addressLine2: formData.address2 || "",
-        city: formData.city,
-        state: formData.state,
-        zip: formData.zipCode,
+        addressLine1: needsShipping ? formData.address : "",
+        addressLine2: needsShipping ? formData.address2 || "" : "",
+        city: needsShipping ? formData.city : "",
+        state: needsShipping ? formData.state : "",
+        zip: needsShipping ? formData.zipCode : "",
         paymentId: paymentId,
         customization: formData.customization || "",
         cardId: cardId,
@@ -307,7 +312,7 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Lifetime digital memorial website</span>
+                  <span>Memorial website kept online as long as your plan is active</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -330,7 +335,7 @@ function CheckoutForm() {
           <div className="space-y-6 lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Shipping & Contact Information</CardTitle>
+                <CardTitle>{needsShipping ? "Shipping & Contact Information" : "Contact Information"}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -365,13 +370,15 @@ function CheckoutForm() {
 
                 <Separator />
 
+                {!needsShipping ? (
+                  <p className="text-sm text-muted-foreground">
+                    Nothing is shipped for this order, so no mailing address is needed. Enter your card details and
+                    billing ZIP code in the secure payment form below.
+                  </p>
+                ) : (
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-sm">
-                    {cartItems.some((item) => item.ships) ? "US shipping address" : "Billing Address"}
-                  </h3>
-                  {cartItems.some((item) => item.ships) ? (
-                    <p className="text-sm text-muted-foreground">Ships to United States addresses only.</p>
-                  ) : null}
+                  <h3 className="font-semibold text-sm">US shipping address</h3>
+                  <p className="text-sm text-muted-foreground">Ships to United States addresses only.</p>
                   <div className="space-y-2">
                     <Label htmlFor="address">
                       Street Address <span className="text-red-500">*</span>
@@ -445,6 +452,7 @@ function CheckoutForm() {
                     </div>
                   </div>
                 </div>
+                )}
 
                 <Separator />
 

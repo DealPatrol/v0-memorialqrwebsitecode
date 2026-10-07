@@ -45,7 +45,7 @@ Traditional memorials are limited by physical space. QR memorials allow you to s
 ### 2. **Always Accessible**
 Family and friends can access the memorial anytime, anywhere in the world. No need to visit a physical location—memories are just a scan away.
 
-### 3. **Forever Updating**
+### 3. **Always Updatable**
 Unlike traditional memorials that are permanent and unchanging, digital memorials can be updated with new memories, photos, and tributes as time goes on.
 
 ### 4. **Eco-Friendly**
@@ -376,7 +376,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               <CardContent className="p-8 text-center">
                 <h3 className="text-2xl font-bold mb-4">Ready to Create a Lasting Memorial?</h3>
                 <p className="text-muted-foreground mb-6">
-                  Honor your loved ones with a beautiful QR memorial that preserves their legacy forever.
+                  Honor your loved ones with a beautiful QR memorial that shares their story with family and friends.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">

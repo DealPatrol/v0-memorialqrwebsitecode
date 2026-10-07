@@ -299,8 +299,7 @@ export default function FAQPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Start honoring your loved one today with a beautiful digital memorial that will preserve their memory
-            forever.
+            Start honoring your loved one today with a beautiful digital memorial, kept online as long as your plan is active.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -330,7 +329,7 @@ export default function FAQPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
             </div>
 
             <div>

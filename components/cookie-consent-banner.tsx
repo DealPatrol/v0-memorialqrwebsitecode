@@ -59,15 +59,9 @@ export function CookieConsentBanner() {
     setShowBanner(false)
   }
 
-  const loadAnalytics = () => {
-    // Load Google Analytics or other tracking scripts
-    if (window.gtag) {
-      window.gtag('consent', 'update', {
-        analytics_storage: 'granted',
-        marketing_storage: 'granted',
-      })
-    }
-  }
+  // Vercel Web Analytics is cookieless and loads from the root layout, so no
+  // consent-gated scripts are started here.
+  const loadAnalytics = () => {}
 
   if (!showBanner) {
     return null
@@ -79,7 +73,7 @@ export function CookieConsentBanner() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex-1">
             <p className="text-sm text-gray-700 leading-relaxed">
-              <strong>Cookies & Privacy:</strong> We use cookies to enhance your experience, analyze site traffic, and improve our services. By clicking "Accept All," you consent to our use of cookies. View our{' '}
+              <strong>Cookies & Privacy:</strong> We use essential cookies and local storage to keep you signed in and remember your cart. We count page views with Vercel Web Analytics, which does not use cookies or track you across other sites. View our{' '}
               <a href="/privacy-policy" className="text-blue-600 hover:text-blue-700 underline font-medium">
                 Privacy Policy
               </a>{' '}
@@ -126,8 +120,3 @@ export function CookieConsentBanner() {
   )
 }
 
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void
-  }
-}

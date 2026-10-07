@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og"
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 
-export const alt = "MemorialsQR — Digital memorials that last forever"
+export const alt = "MemorialsQR — Online memorial pages for photos, videos, and stories"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -37,7 +37,7 @@ export default async function OpenGraphImage() {
         >
           MemorialsQR
         </div>
-        <div style={{ display: "flex", fontSize: 40, marginTop: 28 }}>Digital memorials that last forever</div>
+        <div style={{ display: "flex", fontSize: 40, marginTop: 28 }}>Online memorial pages for photos, videos, and stories</div>
       </div>
     ),
     {

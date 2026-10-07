@@ -218,7 +218,7 @@ function OrderSuccessContent() {
               </Button>
             ) : (
               <Button asChild variant="outline" className="flex-1 bg-transparent">
-                <Link href="/login">Sign In to Dashboard</Link>
+                <Link href="/auth/login">Sign In to Dashboard</Link>
               </Button>
             )}
             <Button asChild variant="outline" className="flex-1 bg-transparent">

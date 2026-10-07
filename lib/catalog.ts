@@ -257,7 +257,7 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
       "Durable nylon or leather collar",
       "Stainless steel QR code tag",
       "Adjustable sizing for all breeds",
-      "Weather-resistant QR memorial",
+      "QR code opens the memorial page",
     ],
     description:
       "Keep your pet's memory close with this memorial collar featuring a durable QR code tag. Perfect for displaying on a photo or shadow box as a lasting tribute to your beloved companion.",

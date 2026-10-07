@@ -23,7 +23,7 @@ const slides = [
   {
     image: "/images/92623621-9554-4f8b-a5be.jpeg",
     alt: "Memorial QR plaque with custom engraving",
-    description: "Custom engraved plaques with lifetime QR memorial access",
+    description: "Custom engraved plaques with a QR code that opens the memorial page",
   },
   {
     image: "/images/adc4c31b-2080-4d10-809a.jpeg",

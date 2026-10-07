@@ -22,7 +22,7 @@ export default function HumanMemorialsPage() {
             Human Memorials
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Honor Their <span className="text-blue-400">Legacy</span> Forever
+            Honor Their <span className="text-blue-400">Legacy</span>
           </h1>
           <p className="text-xl text-slate-200 mb-8 max-w-3xl mx-auto">
             Create dignified digital memorials for parents, grandparents, veterans, and all those who touched our lives.

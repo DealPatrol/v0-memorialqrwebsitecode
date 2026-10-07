@@ -25,8 +25,9 @@ export default function CookiePolicyPage() {
           <section>
             <h2 className="mb-2 text-2xl font-semibold text-slate-900">Analytics</h2>
             <p>
-              We may use analytics to understand page visits and improve the service. Your browser settings can block
-              or remove cookies.
+              We use Vercel Web Analytics to count page views and see which pages are visited, so we can improve the
+              site. It does not set cookies, does not track you across other websites, and reports only aggregated
+              visit data. Your browser settings can block or remove cookies and local storage.
             </p>
           </section>
           <section>

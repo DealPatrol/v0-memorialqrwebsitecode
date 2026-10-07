@@ -54,9 +54,10 @@ export default function PrivacyPolicyPage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Cookies and Tracking</h2>
             <p className="text-gray-700 mb-4">
-              We use cookies and similar technologies to improve user experience, analyze site usage, and remember your
-              preferences. You can control cookie settings through your browser, though some features may not function
-              properly if cookies are disabled.
+              We use cookies and local storage to keep you signed in, run checkout, and remember your cart. We use
+              Vercel Web Analytics to count page views; it does not use cookies or track you across other websites.
+              You can control cookie settings through your browser, though some features may not function properly if
+              cookies are disabled.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Children's Privacy</h2>
@@ -93,7 +94,7 @@ export default function PrivacyPolicyPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
             </div>
 
             <div>

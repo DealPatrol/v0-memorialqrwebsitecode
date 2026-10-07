@@ -292,7 +292,7 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Create a Memorial?</h2>
           <p className="text-xl text-white/90 mb-8">
-            Start honoring your loved ones today with a beautiful digital memorial that lasts forever.
+            Start honoring your loved ones today with a beautiful digital memorial, kept online as long as your plan is active.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
