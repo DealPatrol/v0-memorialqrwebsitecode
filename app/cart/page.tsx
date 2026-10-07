@@ -319,7 +319,7 @@ export default function CartPage() {
                     </Button>
 
                     <Button asChild variant="outline" size="lg" className="w-full bg-transparent">
-                      <Link href="/products">Continue Shopping</Link>
+                      <Link href="/store">Continue Shopping</Link>
                     </Button>
 
                     {/* Trust Indicators */}
@@ -358,7 +358,7 @@ export default function CartPage() {
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm text-slate-400">
                 <li>
-                  <Link href="/products" className="hover:text-white">
+                  <Link href="/store" className="hover:text-white">
                     Memorial Plaque
                   </Link>
                 </li>

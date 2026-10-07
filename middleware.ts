@@ -17,8 +17,13 @@ export async function middleware(request: NextRequest) {
     "/signup": "/auth/sign-up",
     "/browse": "/browse-memorials",
     "/memorials": "/browse-memorials",
+    "/checkout": "/store",
+    "/checkout/details": "/store",
+    "/products": "/store",
   }
-  const legacyDestination = LEGACY_REDIRECTS[request.nextUrl.pathname]
+  const legacyDestination =
+    LEGACY_REDIRECTS[request.nextUrl.pathname] ??
+    (request.nextUrl.pathname.startsWith("/products/") ? "/store" : undefined)
   if (legacyDestination) {
     return NextResponse.redirect(new URL(`${legacyDestination}${request.nextUrl.search}`, request.url), 301)
   }

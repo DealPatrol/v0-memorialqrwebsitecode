@@ -4,7 +4,6 @@ import { Inter, Dancing_Script, Great_Vibes } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { ExitIntentPopup } from "@/components/exit-intent-popup"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
 import { Analytics } from "@vercel/analytics/next"
@@ -188,7 +187,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Footer />
           <Toaster />
-          <ExitIntentPopup />
           <LiveChatButton />
         </ThemeProvider>
         <Analytics />
