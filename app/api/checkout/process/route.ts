@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { resolveConfiguredCheckoutItems } from "@/lib/fulfillment-availability"
 import { fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
 import { isMissingHostingSchema, isMissingPodOrderSchema } from "@/lib/pod-orders"
+import { sendOrderConfirmationEmail } from "@/lib/order-confirmation-email"
 import { paymentMatchesQuote, quoteCheckout } from "@/lib/checkout-quote"
 import { CHECKOUT_CURRENCY } from "@/lib/site"
 import {
@@ -314,19 +315,15 @@ export async function POST(req: Request) {
     }
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/send-order-confirmation`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: order.id,
-          orderNumber: order.order_number,
-          customerEmail: customerEmail,
-          customerName: resolvedCustomerName,
-          productName: finalProductName,
-          amount: (totalAmountCents / 100).toFixed(2),
-          monthlyFee: (monthlyAmountCents / 100).toFixed(2),
-          hostingIncludedUntil: hostingTerms.hostingIncludedUntil,
-        }),
+      await sendOrderConfirmationEmail({
+        customerEmail,
+        customerName: resolvedCustomerName,
+        orderNumber: order.order_number,
+        productName: finalProductName,
+        amount: (totalAmountCents / 100).toFixed(2),
+        monthlyFee: (monthlyAmountCents / 100).toFixed(2),
+        shipsPhysical,
+        hostingIncludedUntil: hostingTerms.hostingIncludedUntil,
       })
     } catch (emailError) {
       console.error("[checkout] Failed to send order confirmation email:", emailError)

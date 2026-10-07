@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Badge } from "@/components/ui/badge"
-import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Globe, Lock, User, Flag, Music, Camera } from "lucide-react"
+import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Globe, Lock, User, Music, Camera } from "lucide-react"
 import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.humanMemorials)
@@ -62,10 +62,6 @@ export default function HumanMemorialsPage() {
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-600" />
               <span>Hosting $4.99/month per memorial</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Flag className="w-5 h-5 text-red-600" />
-              <span>Veteran Discounts Available</span>
             </div>
           </div>
         </div>
