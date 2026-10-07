@@ -5,6 +5,7 @@ import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { resolveConfiguredCheckoutItems } from "@/lib/fulfillment-availability"
 import { fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
+import { sendOrderConfirmationEmail } from "@/lib/order-confirmation-email"
 
 export async function POST(req: Request) {
   try {
@@ -231,18 +232,14 @@ export async function POST(req: Request) {
     }
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/send-order-confirmation`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: order.id,
-          orderNumber: order.order_number,
-          customerEmail: customerEmail,
-          customerName: resolvedCustomerName,
-          productName: finalProductName,
-          amount: (totalAmountCents / 100).toFixed(2),
-          monthlyFee: (monthlyAmountCents / 100).toFixed(2),
-        }),
+      await sendOrderConfirmationEmail({
+        customerEmail,
+        customerName: resolvedCustomerName,
+        orderNumber: order.order_number,
+        productName: finalProductName,
+        amount: (totalAmountCents / 100).toFixed(2),
+        monthlyFee: (monthlyAmountCents / 100).toFixed(2),
+        shipsPhysical,
       })
     } catch (emailError) {
       console.error("[v0] Failed to send order confirmation email:", emailError)
