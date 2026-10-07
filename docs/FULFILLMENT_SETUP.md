@@ -33,7 +33,7 @@ Blanks were checked against the public Printful and Printify catalogs on 2026-10
 | Voice Keychain | $24.99 | Same keychain blank, second shop product | $3.93 | $5.89 | $14.15 | `PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID`, `PRINTIFY_VOICE_KEYCHAIN_VARIANT_ID` |
 | Slate Desk Plaque (indoor) | $49.99 | Printify Slate Desk Plaque, Pic The Gift (blueprint 5344, provider 92, variant 243924, 8×8 in) | $17.43 | $12.49 | $18.32 | `PRINTIFY_SLATE_PLAQUE_PRODUCT_ID`, `PRINTIFY_SLATE_PLAQUE_VARIANT_ID` |
 | Pet QR Tag | $29.99 | Printify Pet Tag, Printify Choice (blueprint 566, provider 99, variant 70870, 1 in) | $11.46 | $5.69 | $11.67 | `PRINTIFY_PET_TAG_PRODUCT_ID`, `PRINTIFY_PET_TAG_VARIANT_ID` |
-| Acrylic Photo Block | $79.99 | Printify Photo Block, Acrylic Idea Factory (blueprint 1471, provider 104, variant 106189, 7×5 in) | $36.12 | $16.69 | $24.50 | `PRINTIFY_PHOTO_BLOCK_PRODUCT_ID`, `PRINTIFY_PHOTO_BLOCK_VARIANT_ID` |
+| Acrylic Photo Block | $79.99 | Printify Photo Block, Acrylic Idea Factory (blueprint 1471, provider 104, variant 106189, 7×5 in) | $36.12 | $16.69 | $24.56 | `PRINTIFY_PHOTO_BLOCK_PRODUCT_ID`, `PRINTIFY_PHOTO_BLOCK_VARIANT_ID` |
 
 The Printify variant id to put in the env var is the **shop product's** variant id. For these blanks it normally equals the catalog variant id above; confirm it in the shop product.
 
