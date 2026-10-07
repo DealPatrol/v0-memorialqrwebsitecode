@@ -3,7 +3,7 @@ import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { getSellablePodProducts } from "@/lib/fulfillment-availability"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 
 export function SellableProductGrid() {
@@ -15,8 +15,8 @@ export function SellableProductGrid() {
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-3">Keepsakes that ship</h2>
         <p className="text-center text-muted-foreground mb-10">
-          Printed after payment and shipped to United States addresses. Hosting is still{" "}
-          {formatUsd(HOSTING_MONTHLY_PRICE)} per month.
+          Printed after payment and shipped to United States addresses, shipping included. Each keepsake includes{" "}
+          {HOSTING_INCLUDED_YEARS} years of hosting for its memorial page, with no monthly fee.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (

@@ -26,3 +26,8 @@ export function isPodProductConfigured(product: PodProduct, env: EnvSource): boo
 export function configuredPodProducts(env: EnvSource): PodProduct[] {
   return POD_PRODUCTS.filter((product) => isPodProductConfigured(product, env))
 }
+
+/** The monthly digital page can be sold only when a Square subscription plan variation is configured. */
+export function isDigitalSubscriptionConfigured(env: EnvSource): boolean {
+  return envValue(env, "SQUARE_SUBSCRIPTION_PLAN_ID").length > 0
+}

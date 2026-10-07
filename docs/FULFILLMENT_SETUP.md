@@ -22,15 +22,24 @@ For **Printful**, create a store product, then copy the numeric **sync variant i
 
 For **Printify**, create a shop product from the blank below and publish it in the shop. Copy the **shop product id** and the numeric **variant id** of the size you want. At checkout the site reads that product’s blueprint, print provider, and placement, uploads this order’s QR, creates a new shop product so other orders are not overwritten, places the order, and sends it to production.
 
-| Our product | Price | Supplier | Blank to create | Id to copy | Env var |
-| --- | --- | --- | --- | --- | --- |
-| Keep Card | $39.99 | Printful | Kiss-cut vinyl sticker, **3×3 in** | Sync variant id | `PRINTFUL_KEEP_CARD_TEMPLATE_ID` |
-| Cork Memorial Coaster | $19.99 | Printful | Cork-back coaster (the single coaster size in the Printful catalog, about 3.74×3.74 in) | Sync variant id | `PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID` |
-| Acrylic QR Keyring | $19.99 | Printify | Acrylic keychain / acrylic keyring. Pick one size and one print provider that ships to the US | Shop product id and variant id | `PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID`, `PRINTIFY_ACRYLIC_KEYRING_VARIANT_ID` |
-| Voice Keychain | $24.99 | Printify | The **same acrylic keyring blank**. Make a second shop product so this item has its own ids. The voice recording is added on the memorial page after checkout; the print is the QR | Shop product id and variant id | `PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID`, `PRINTIFY_VOICE_KEYCHAIN_VARIANT_ID` |
-| Slate Desk Plaque | $39.99 | Printify | Slate / rock-slate desk plaque, indoor. Pick one size | Shop product id and variant id | `PRINTIFY_SLATE_PLAQUE_PRODUCT_ID`, `PRINTIFY_SLATE_PLAQUE_VARIANT_ID` |
-| Pet QR Tag | $24.99 | Printify | Pet tag / dog tag blank that ships to the US | Shop product id and variant id | `PRINTIFY_PET_TAG_PRODUCT_ID`, `PRINTIFY_PET_TAG_VARIANT_ID` |
-| Memorial Photo Block | $59.99 | Printify | Acrylic photo block. Confirm a provider with a USD price before enabling it | Shop product id and variant id | `PRINTIFY_PHOTO_BLOCK_PRODUCT_ID`, `PRINTIFY_PHOTO_BLOCK_VARIANT_ID` |
+Blanks were checked against the public Printful and Printify catalogs on 2026-10-07. Base and shipping are what the supplier bills us for one item to a US address (Printify without Premium). Square fees are 2.9% + $0.30. Margin is before the cost of hosting the page for 10 years.
+
+| Our product | Price | Supplier and blank (catalog ids) | Base | Ship | Margin | Env vars |
+| --- | --- | --- | --- | --- | --- | --- |
+| Keep Card (QR sticker) | $39.99 | Printful Kiss-Cut Stickers 3×3 in (product 358, variant 10163) | $2.34 | $4.49 | $31.70 | `PRINTFUL_KEEP_CARD_TEMPLATE_ID` |
+| Cork Memorial Coaster | $19.99 | Printful Cork-Back Coaster (product 611, variant 15662) | $5.55 | $4.09 | $9.47 | `PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID` |
+| Metal Memorial Ornament | $24.99 | Printful Metal Ornaments, rectangle (product 794, variant 20255) | $8.27 | $5.49 | $10.21 | `PRINTFUL_MEMORIAL_ORNAMENT_TEMPLATE_ID` |
+| Acrylic QR Keychain | $19.99 | Printify Custom Shape Acrylic Keychain, SwiftPOD (blueprint 12784, provider 39, variant 465172, 2×2 in) | $3.93 | $5.89 | $9.29 | `PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID`, `PRINTIFY_ACRYLIC_KEYRING_VARIANT_ID` |
+| Voice Keychain | $24.99 | Same keychain blank, second shop product | $3.93 | $5.89 | $14.15 | `PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID`, `PRINTIFY_VOICE_KEYCHAIN_VARIANT_ID` |
+| Slate Desk Plaque (indoor) | $49.99 | Printify Slate Desk Plaque, Pic The Gift (blueprint 5344, provider 92, variant 243924, 8×8 in) | $17.43 | $12.49 | $18.32 | `PRINTIFY_SLATE_PLAQUE_PRODUCT_ID`, `PRINTIFY_SLATE_PLAQUE_VARIANT_ID` |
+| Pet QR Tag | $29.99 | Printify Pet Tag, Printify Choice (blueprint 566, provider 99, variant 70870, 1 in) | $11.46 | $5.69 | $11.67 | `PRINTIFY_PET_TAG_PRODUCT_ID`, `PRINTIFY_PET_TAG_VARIANT_ID` |
+| Acrylic Photo Block | $79.99 | Printify Photo Block, Acrylic Idea Factory (blueprint 1471, provider 104, variant 106189, 7×5 in) | $36.12 | $16.69 | $24.50 | `PRINTIFY_PHOTO_BLOCK_PRODUCT_ID`, `PRINTIFY_PHOTO_BLOCK_VARIANT_ID` |
+
+The Printify variant id to put in the env var is the **shop product's** variant id. For these blanks it normally equals the catalog variant id above; confirm it in the shop product.
+
+**Outdoor use:** none of these blanks is sold by the supplier as weatherproof or rated for a grave marker. Do not describe any of them as outdoor or weatherproof. The closest POD items are Printful's aluminum Vanity Plate (product 875) and Printify's aluminum-composite Metal Art Sign (blueprint 1206), and neither supplier gives an outdoor or UV rating for them.
+
+**What gets printed:** each order prints only the memorial QR code. Customer photos are not placed on the product.
 
 Where to read the ids:
 
@@ -57,6 +66,7 @@ Add these as Production (and Preview, if you want them on preview deploys). Leav
 PRINTFUL_API_TOKEN
 PRINTFUL_KEEP_CARD_TEMPLATE_ID
 PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID
+PRINTFUL_MEMORIAL_ORNAMENT_TEMPLATE_ID
 PRINTIFY_API_TOKEN
 PRINTIFY_SHOP_ID
 PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID
@@ -129,3 +139,20 @@ That script mocks Printful and Printify. It checks that products stay hidden wit
 - Registering the optional shipment webhooks.
 - Confirming pet-tag and photo-block USD cost before those products are turned on.
 - Carrier transit time after the supplier accepts the order.
+
+Then review and run `scripts/026_add_hosting_included_until.sql`. It adds a nullable `hosting_included_until` column to `orders` and `memorials`. Until it runs, checkout still works and writes the date into `orders.admin_notes`.
+
+## 5. Hosting rules
+
+- Physical keepsakes include 10 years of basic hosting for the memorial page, starting on the order date. No subscription is created for an order that contains a keepsake.
+- A memorial page on its own (`digital-memorial`) costs $4.99 per month. The first month is charged at checkout and a Square subscription bills $4.99 monthly from one month later.
+- A cart cannot contain both a keepsake and the monthly page.
+
+## 6. Monthly subscription (Square)
+
+1. In Square Dashboard → Items → Subscription plans, create a plan "Memorial page hosting" with one variation billed **$4.99 every month**, no trial and no end date.
+2. Copy the **plan variation id** (not the plan id). `GET /v2/catalog/list?types=SUBSCRIPTION_PLAN` returns it as `subscription_plan_data.subscription_plan_variations[].id`.
+3. Add it to Vercel as `SQUARE_SUBSCRIPTION_PLAN_ID` (Production; Preview only if Preview uses a sandbox Square account).
+4. Redeploy. "Create a Memorial Page" then opens `/checkout/simple?product=digital-memorial`. Without the variable the monthly page stays hidden and the button keeps opening the free builder.
+
+Checkout creates a Square customer from the email, charges the server-computed total, saves the card from that payment, verifies the payment with Square, and then creates the subscription. A failure after the charge is written to `orders.admin_notes` as `SUBSCRIPTION NOT CREATED`.

@@ -20,6 +20,7 @@ const readyEnv = {
   PRINTFUL_API_TOKEN: "printful-token",
   PRINTFUL_KEEP_CARD_TEMPLATE_ID: "1001",
   PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID: "1002",
+  PRINTFUL_MEMORIAL_ORNAMENT_TEMPLATE_ID: "1003",
   PRINTIFY_API_TOKEN: "printify-token",
   PRINTIFY_SHOP_ID: "42",
   PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID: "prod-keyring",
@@ -201,11 +202,11 @@ describe("Printify production order", () => {
 })
 
 describe("catalog coverage", () => {
-  it("lists the seven supplier products", () => {
+  it("lists the eight supplier products", () => {
     assert.deepEqual(
       POD_PRODUCTS.map((product) => product.id),
-      ["keep-card", "memorial-coaster", "acrylic-keyring", "voice-keychain", "slate-plaque", "pet-tag", "photo-block"],
+      ["keep-card", "memorial-coaster", "memorial-ornament", "acrylic-keyring", "voice-keychain", "slate-plaque", "pet-tag", "photo-block"],
     )
-    assert.equal(configuredPodProducts(readyEnv).length, 7)
+    assert.equal(configuredPodProducts(readyEnv).length, 8)
   })
 })

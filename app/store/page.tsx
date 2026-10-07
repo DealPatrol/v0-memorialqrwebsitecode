@@ -5,7 +5,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Check } from "lucide-react"
 import { DIGITAL_MEMORIAL } from "@/lib/catalog"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
-import { getSellablePodProducts } from "@/lib/fulfillment-availability"
+import { getSellablePodProducts, memorialStartHref } from "@/lib/fulfillment-availability"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
@@ -16,6 +17,7 @@ export const dynamic = "force-dynamic"
 
 export default function StorePage() {
   const physicalProducts = getSellablePodProducts()
+  const startHref = memorialStartHref()
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <Header />
@@ -28,7 +30,7 @@ export default function StorePage() {
             for each memorial.
             {physicalProducts.length === 0
               ? " Nothing is shipped."
-              : " Printed keepsakes ship to United States addresses."}
+              : ` Printed keepsakes ship to United States addresses and include ${HOSTING_INCLUDED_YEARS} years of hosting with no monthly fee.`}
           </p>
         </div>
       </section>
@@ -61,7 +63,7 @@ export default function StorePage() {
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
               <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-                <Link href="/create-memorial">Create a Memorial Page</Link>
+                <Link href={startHref}>Create a Memorial Page</Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link href="/concierge">Have us build it</Link>

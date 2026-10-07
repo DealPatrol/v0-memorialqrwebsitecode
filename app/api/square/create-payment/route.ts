@@ -1,144 +1,100 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
 import { CHECKOUT_CURRENCY } from "@/lib/site"
+import { resolveConfiguredCheckoutItems } from "@/lib/fulfillment-availability"
+import { quoteCheckout } from "@/lib/checkout-quote"
+import { createSquareCustomer, createSquarePayment, getSquareConfig, saveCardFromPayment } from "@/lib/square-api"
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/**
+ * Charges the card token for the server-computed cart total.
+ * When the cart needs monthly hosting, a Square customer is created first and the card
+ * is saved from the completed payment so /api/checkout/process can start the subscription.
+ */
 export async function POST(req: Request) {
   try {
-    const { sourceId, amount, orderId, verificationToken, customerEmail, customerName } = await req.json()
+    const { sourceId, verificationToken, items, orderId, customerEmail, customerName } = await req.json()
 
-    // Validate inputs
-    if (!sourceId || !amount || !orderId) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
+    if (!sourceId || typeof sourceId !== "string") {
+      return NextResponse.json({ success: false, error: "Missing card details" }, { status: 400 })
+    }
+    if (!customerEmail || typeof customerEmail !== "string" || !EMAIL_PATTERN.test(customerEmail)) {
+      return NextResponse.json({ success: false, error: "Enter a valid email address" }, { status: 400 })
     }
 
-    // Check environment variables
-    const accessToken = process.env.SQUARE_ACCESS_TOKEN
-    const locationId = process.env.SQUARE_LOCATION_ID
-    const environment = process.env.SQUARE_ENVIRONMENT || "sandbox"
+    const resolvedItems = resolveConfiguredCheckoutItems(items)
+    if (!resolvedItems) {
+      return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
+    }
+    const quoted = quoteCheckout(resolvedItems)
+    if (!quoted.ok) {
+      return NextResponse.json({ success: false, error: quoted.error }, { status: 400 })
+    }
+    const { quote } = quoted
 
-    if (!accessToken || !locationId) {
+    const square = getSquareConfig()
+    if (!square) {
       return NextResponse.json({ success: false, error: "Square not configured" }, { status: 500 })
     }
 
-    const idempotencyKey = randomUUID()
-    const amountInCents = Math.round(Number.parseFloat(amount) * 100)
+    const referenceId = typeof orderId === "string" && orderId ? orderId : `order_${Date.now()}`
 
-    if (amountInCents <= 0 || !Number.isFinite(amountInCents)) {
-      return NextResponse.json({ success: false, error: "Invalid payment amount" }, { status: 400 })
-    }
-
-    // Determine API URL
-    const baseUrl =
-      environment === "production" ? "https://connect.squareup.com" : "https://connect.squareupsandbox.com"
-
-    let customerId = null
-    let cardId = null
-
-    if (customerEmail && customerName) {
-      try {
-        const [givenName, ...familyNameParts] = customerName.split(" ")
-        const familyName = familyNameParts.join(" ")
-
-        const customerResponse = await fetch(`${baseUrl}/v2/customers`, {
-          method: "POST",
-          headers: {
-            "Square-Version": "2025-09-24",
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            idempotency_key: `customer-${orderId}`,
-            email_address: customerEmail,
-            given_name: givenName,
-            family_name: familyName,
-          }),
-        })
-
-        const customerData = await customerResponse.json()
-
-        if (customerResponse.ok && customerData.customer) {
-          customerId = customerData.customer.id
-          console.log("[v0] Square customer created:", customerId)
-
-          const cardResponse = await fetch(`${baseUrl}/v2/cards`, {
-            method: "POST",
-            headers: {
-              "Square-Version": "2025-09-24",
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              idempotency_key: `card-${orderId}`,
-              source_id: sourceId,
-              card: {
-                customer_id: customerId,
-              },
-            }),
-          })
-
-          const cardData = await cardResponse.json()
-
-          if (cardResponse.ok && cardData.card) {
-            cardId = cardData.card.id
-            console.log("[v0] Card stored on file:", cardId)
-          }
-        }
-      } catch (customerError) {
-        console.error("[v0] Customer/Card creation error:", customerError)
-        // Continue with payment even if customer creation fails
+    let customerId: string | null = null
+    if (quote.needsSubscription) {
+      const customer = await createSquareCustomer(square, {
+        email: customerEmail,
+        name: typeof customerName === "string" ? customerName : undefined,
+        idempotencyKey: randomUUID(),
+        referenceId,
+      })
+      if (!customer.ok) {
+        console.error("[checkout] Square customer creation failed before charging:", customer.error)
+        return NextResponse.json(
+          { success: false, error: "We could not set up monthly billing. Your card was not charged. Please try again." },
+          { status: 502 },
+        )
       }
+      customerId = customer.data.customer.id
     }
 
-    // Call Square API
-    const squareResponse = await fetch(`${baseUrl}/v2/payments`, {
-      method: "POST",
-      headers: {
-        "Square-Version": "2024-12-18",
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        source_id: sourceId,
-        idempotency_key: idempotencyKey,
-        amount_money: {
-          amount: amountInCents,
-          currency: CHECKOUT_CURRENCY,
-        },
-        location_id: locationId,
-        reference_id: orderId,
-        ...(customerId && { customer_id: customerId }),
-      }),
+    const payment = await createSquarePayment(square, {
+      sourceId,
+      verificationToken: typeof verificationToken === "string" ? verificationToken : undefined,
+      amountCents: quote.totalCents,
+      currency: CHECKOUT_CURRENCY,
+      idempotencyKey: randomUUID(),
+      referenceId,
+      customerId,
+      buyerEmail: customerEmail,
+      note: resolvedItems.map((item) => `${item.id} x${item.quantity}`).join(", "),
     })
 
-    const squareData = await squareResponse.json()
+    if (!payment.ok) {
+      let userMessage = payment.error || "Payment failed"
+      if (payment.code === "INVALID_CARD_DATA") userMessage = "Invalid card information. Please check your card details."
+      if (payment.code === "CARD_DECLINED") userMessage = "Your card was declined. Please try a different payment method."
+      return NextResponse.json({ success: false, error: userMessage, errorCode: payment.code || "UNKNOWN" }, { status: 400 })
+    }
 
-    if (!squareResponse.ok) {
-      const errorDetail = squareData.errors?.[0]?.detail || "Payment failed"
-      const errorCode = squareData.errors?.[0]?.code || "UNKNOWN"
-
-      let userMessage = errorDetail
-      if (errorCode === "INVALID_CARD_DATA") {
-        userMessage = "Invalid card information. Please check your card details."
-      } else if (errorCode === "CARD_DECLINED") {
-        userMessage = "Your card was declined. Please try a different payment method."
+    let cardId: string | null = null
+    if (quote.needsSubscription && customerId) {
+      const card = await saveCardFromPayment(square, {
+        paymentId: payment.data.payment.id,
+        customerId,
+        idempotencyKey: randomUUID(),
+      })
+      if (card.ok) {
+        cardId = card.data.card.id
+      } else {
+        // The charge succeeded. Checkout records the order and flags the missing subscription.
+        console.error("[checkout] Card could not be saved after payment:", card.error)
       }
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: userMessage,
-          errorCode,
-        },
-        { status: 400 },
-      )
     }
 
     return NextResponse.json({
       success: true,
-      payment: {
-        id: squareData.payment?.id,
-        status: squareData.payment?.status,
-      },
+      payment: { id: payment.data.payment.id, status: payment.data.payment.status },
       customerId,
       cardId,
     })

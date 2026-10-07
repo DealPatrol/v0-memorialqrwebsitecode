@@ -8,10 +8,14 @@ import { HelpCircle, Phone, Mail } from "lucide-react"
 import { JsonLd } from "@/components/json-ld"
 import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
+import { getSellablePodProducts } from "@/lib/fulfillment-availability"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 export const metadata = pageMetadata(publicPages.faq)
 
-const faqCategories = [
+export const dynamic = "force-dynamic"
+
+const baseFaqCategories = [
   {
     title: "Getting Started",
     faqs: [
@@ -63,7 +67,7 @@ const faqCategories = [
       {
         question: "What payment methods do you accept?",
         answer:
-          "We accept all major credit cards (Visa, MasterCard, American Express, Discover), PayPal, and Apple Pay. All payments are processed securely.",
+          "We accept major credit and debit cards through Square's secure payment form. Card details go to Square, not to our servers.",
       },
     ],
   },
@@ -166,7 +170,30 @@ const faqCategories = [
   },
 ]
 
+type FaqCategory = (typeof baseFaqCategories)[number]
+
+/** Answers that change once printed keepsakes are actually for sale. */
+function faqCategoriesFor(keepsakesOnSale: boolean): FaqCategory[] {
+  if (!keepsakesOnSale) return baseFaqCategories
+  const overrides: Record<string, string> = {
+    "Are there any monthly fees?": `Not with a printed keepsake. Each keepsake includes ${HOSTING_INCLUDED_YEARS} years of basic hosting for its memorial page, starting on the order date, and renewal is optional after that. A memorial page on its own is ${HOSTING_PRICE_LABEL} per month.`,
+    "Is anything shipped?":
+      "Yes, if you buy a printed keepsake. Keepsakes are printed by our print partners (Printful or Printify) after payment and shipped to US addresses. A memorial page on its own ships nothing.",
+  }
+  return baseFaqCategories.map((category) => {
+    const faqs = category.faqs.map((faq) => (overrides[faq.question] ? { ...faq, answer: overrides[faq.question] } : faq))
+    if (category.title === "Hosting") {
+      faqs.push({
+        question: `What happens after the ${HOSTING_INCLUDED_YEARS} included years?`,
+        answer: `You can renew hosting at the then-current monthly rate. If it is not renewed, the memorial page may stop loading. Contact support before then if you want a copy of your photos and stories.`,
+      })
+    }
+    return { ...category, faqs }
+  })
+}
+
 export default function FAQPage() {
+  const faqCategories = faqCategoriesFor(getSellablePodProducts().length > 0)
   const allFaqs = faqCategories.flatMap((category) => category.faqs)
   const faqSchema = {
     "@context": "https://schema.org",

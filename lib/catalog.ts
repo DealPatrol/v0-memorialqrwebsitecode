@@ -1,4 +1,5 @@
 import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 export type StoreCategory = "Human" | "Pet"
 
@@ -17,20 +18,48 @@ export interface StoreProduct {
 export interface CheckoutProduct {
   id: string
   name: string
+  /** Charged today. */
   price: number
+  /** Billed monthly by a Square subscription, starting one month after checkout. */
   monthlyFee: number
+  /** Years of hosting included (physical keepsakes only). */
+  hostingIncludedYears?: number
 }
 
 export type FulfillmentProvider = "printful" | "printify"
+
+/**
+ * The supplier blank a product is built on, checked against the public Printful and
+ * Printify catalogs on 2026-10-07. Costs are USD to a US address, before Printify
+ * Premium or any discount. Re-check before enabling: suppliers change prices.
+ */
+export interface SupplierBlank {
+  /** Printful catalog product id, or Printify blueprint id. */
+  catalogProductId: number
+  /** Printify print provider id. Printful leaves this null. */
+  printProviderId: number | null
+  /** Printful catalog variant id, or Printify blueprint variant id, for the size we sell. */
+  catalogVariantId: number
+  size: string
+  baseCostUsd: number
+  /** First-item standard US shipping the supplier bills us. */
+  shippingUsd: number
+  /** Supplier-stated use. Nothing in this catalog is rated for permanent outdoor use. */
+  use: "indoor" | "everyday carry" | "pet collar"
+}
 
 /** A physical product that can be sold only when every requiredEnv name is set. */
 export interface PodProduct {
   id: string
   name: string
   price: number
+  /** Physical keepsakes include hosting, so no monthly fee is charged. */
   monthlyFee: number
+  /** Years of basic hosting included for the linked memorial page. */
+  hostingIncludedYears: number
   provider: FulfillmentProvider
   fulfillmentProduct: string
+  blank: SupplierBlank
   /** Env var holding the Printful sync variant id or the Printify product id. */
   templateEnv: string
   /** Printify variant id. Printful leaves this null. */
@@ -44,110 +73,143 @@ export interface PodProduct {
 const PRINTFUL_SHARED = ["PRINTFUL_API_TOKEN"] as const
 const PRINTIFY_SHARED = ["PRINTIFY_API_TOKEN", "PRINTIFY_SHOP_ID"] as const
 
+const INCLUDED_HOSTING_FEATURE = `${HOSTING_INCLUDED_YEARS} years of memorial page hosting included`
+
 /**
- * The only physical products that may be sold. Prices are USD.
+ * The only physical products that may be sold. Prices are USD and include US shipping.
  * A product stays hidden until its requiredEnv values are present on the server.
  */
 export const POD_PRODUCTS: PodProduct[] = [
   {
     id: "keep-card",
-    name: "Keep Card — Sticker + Online Memorial Profile",
+    name: "Keep Card — QR Sticker + Memorial Page",
     price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printful",
-    fulfillmentProduct: "Kiss-cut vinyl sticker, 3×3 in.",
+    fulfillmentProduct: "Printful Kiss-Cut Stickers, 3×3 in",
+    blank: { catalogProductId: 358, printProviderId: null, catalogVariantId: 10163, size: "3×3 in", baseCostUsd: 2.34, shippingUsd: 4.49, use: "indoor" },
     templateEnv: "PRINTFUL_KEEP_CARD_TEMPLATE_ID",
     variantEnv: null,
     requiredEnv: [...PRINTFUL_SHARED, "PRINTFUL_KEEP_CARD_TEMPLATE_ID"],
     category: "Human",
     description:
-      "A peel-and-stick memorial QR sticker for smooth indoor surfaces, paired with an online memorial page.",
-    features: ["Unique QR for this memorial", "Kiss-cut vinyl sticker", "Printed by Printful", "Ships in the United States"],
+      "A peel-and-stick vinyl QR sticker for smooth indoor surfaces such as a photo frame, urn, or album. The QR opens the memorial page.",
+    features: ["Unique QR for this memorial", "3×3 in kiss-cut vinyl sticker", INCLUDED_HOSTING_FEATURE, "Printed and shipped by Printful in the US"],
   },
   {
     id: "memorial-coaster",
     name: "Cork Memorial Coaster",
     price: 19.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printful",
-    fulfillmentProduct: "Cork-back coaster",
+    fulfillmentProduct: "Printful Cork-Back Coaster, 3.74×3.74 in",
+    blank: { catalogProductId: 611, printProviderId: null, catalogVariantId: 15662, size: "3.74×3.74 in", baseCostUsd: 5.55, shippingUsd: 4.09, use: "indoor" },
     templateEnv: "PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID",
     variantEnv: null,
     requiredEnv: [...PRINTFUL_SHARED, "PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID"],
     category: "Human",
-    description: "A cork-back coaster printed with a QR code that opens the memorial page.",
-    features: ["Unique QR for this memorial", "Cork backing", "Printed by Printful", "Ships in the United States"],
+    description: "A glossy hardboard coaster with a cork back, printed with a QR code that opens the memorial page.",
+    features: ["Unique QR for this memorial", "Hardboard top, cork back", INCLUDED_HOSTING_FEATURE, "Printed and shipped by Printful in the US"],
+  },
+  {
+    id: "memorial-ornament",
+    name: "Metal Memorial Ornament",
+    price: 24.99,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
+    provider: "printful",
+    fulfillmentProduct: "Printful Metal Ornaments, rectangle 3×4 in",
+    blank: { catalogProductId: 794, printProviderId: null, catalogVariantId: 20255, size: "Rectangle 3×4 in", baseCostUsd: 8.27, shippingUsd: 5.49, use: "indoor" },
+    templateEnv: "PRINTFUL_MEMORIAL_ORNAMENT_TEMPLATE_ID",
+    variantEnv: null,
+    requiredEnv: [...PRINTFUL_SHARED, "PRINTFUL_MEMORIAL_ORNAMENT_TEMPLATE_ID"],
+    category: "Human",
+    description: "An aluminum hanging ornament with a ribbon, printed with a QR code that opens the memorial page.",
+    features: ["Unique QR for this memorial", "Aluminum, red ribbon included", INCLUDED_HOSTING_FEATURE, "Printed and shipped by Printful in the US"],
   },
   {
     id: "acrylic-keyring",
-    name: "Acrylic QR Keyring",
+    name: "Acrylic QR Keychain",
     price: 19.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
-    fulfillmentProduct: "Acrylic keyring",
+    fulfillmentProduct: "Printify Custom Shape Acrylic Keychain (SwiftPOD), 2×2 in",
+    blank: { catalogProductId: 12784, printProviderId: 39, catalogVariantId: 465172, size: "2×2 in", baseCostUsd: 3.93, shippingUsd: 5.89, use: "everyday carry" },
     templateEnv: "PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID",
     variantEnv: "PRINTIFY_ACRYLIC_KEYRING_VARIANT_ID",
     requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID", "PRINTIFY_ACRYLIC_KEYRING_VARIANT_ID"],
     category: "Human",
-    description: "A lightweight acrylic keyring printed with a QR code for the memorial page.",
-    features: ["Unique QR for this memorial", "Acrylic keepsake", "Printed by Printify", "Ships in the United States"],
+    description: "A lightweight clear acrylic keychain printed with a QR code for the memorial page.",
+    features: ["Unique QR for this memorial", "2×2 in clear acrylic", INCLUDED_HOSTING_FEATURE, "Printed and shipped by SwiftPOD (US) via Printify"],
   },
   {
     id: "voice-keychain",
     name: "Voice Keychain",
     price: 24.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
-    fulfillmentProduct: "Acrylic keyring",
+    fulfillmentProduct: "Printify Custom Shape Acrylic Keychain (SwiftPOD), 2×2 in",
+    blank: { catalogProductId: 12784, printProviderId: 39, catalogVariantId: 465172, size: "2×2 in", baseCostUsd: 3.93, shippingUsd: 5.89, use: "everyday carry" },
     templateEnv: "PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID",
     variantEnv: "PRINTIFY_VOICE_KEYCHAIN_VARIANT_ID",
     requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID", "PRINTIFY_VOICE_KEYCHAIN_VARIANT_ID"],
     category: "Human",
     description:
-      "An acrylic QR keychain for a memorial page where a voice recording can be added after checkout.",
-    features: ["Unique QR for this memorial", "Same acrylic keyring blank", "Printed by Printify", "Ships in the United States"],
+      "The same acrylic QR keychain, for a memorial page where a voice recording can be added after checkout.",
+    features: ["Unique QR for this memorial", "Same 2×2 in acrylic blank", INCLUDED_HOSTING_FEATURE, "Printed and shipped by SwiftPOD (US) via Printify"],
   },
   {
     id: "slate-plaque",
     name: "Slate Desk Plaque",
-    price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
+    price: 49.99,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
-    fulfillmentProduct: "Slate desk plaque",
+    fulfillmentProduct: "Printify Slate Desk Plaque (Pic The Gift), 8×8 in",
+    blank: { catalogProductId: 5344, printProviderId: 92, catalogVariantId: 243924, size: "8×8 in", baseCostUsd: 17.43, shippingUsd: 12.49, use: "indoor" },
     templateEnv: "PRINTIFY_SLATE_PLAQUE_PRODUCT_ID",
     variantEnv: "PRINTIFY_SLATE_PLAQUE_VARIANT_ID",
     requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_SLATE_PLAQUE_PRODUCT_ID", "PRINTIFY_SLATE_PLAQUE_VARIANT_ID"],
     category: "Human",
-    description: "An indoor slate desk plaque printed with a QR code that opens the memorial page.",
-    features: ["Unique QR for this memorial", "Indoor desk display", "Printed by Printify", "Ships in the United States"],
+    description:
+      "A natural slate plaque with chiseled edges and a display stand, printed with a QR code that opens the memorial page. Made for a desk, shelf, or mantel indoors.",
+    features: ["Unique QR for this memorial", "8×8 in natural slate with stand", INCLUDED_HOSTING_FEATURE, "Indoor display"],
   },
   {
     id: "pet-tag",
     name: "Pet QR Tag",
-    price: 24.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
+    price: 29.99,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
-    fulfillmentProduct: "Pet tag",
+    fulfillmentProduct: "Printify Pet Tag (Printify Choice), 1 in",
+    blank: { catalogProductId: 566, printProviderId: 99, catalogVariantId: 70870, size: "1 in", baseCostUsd: 11.46, shippingUsd: 5.69, use: "pet collar" },
     templateEnv: "PRINTIFY_PET_TAG_PRODUCT_ID",
     variantEnv: "PRINTIFY_PET_TAG_VARIANT_ID",
     requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_PET_TAG_PRODUCT_ID", "PRINTIFY_PET_TAG_VARIANT_ID"],
     category: "Pet",
-    description: "A pet tag printed with a QR code that opens the pet's memorial page.",
-    features: ["Unique QR for this memorial", "Pet tag blank", "Printed by Printify", "Ships in the United States"],
+    description: "A 1-inch metal pet tag with a clip, printed with a QR code that opens the pet's memorial page.",
+    features: ["Unique QR for this memorial", "1 in metal tag and clip", INCLUDED_HOSTING_FEATURE, "Printed and shipped in the US via Printify"],
   },
   {
     id: "photo-block",
-    name: "Memorial Photo Block",
-    price: 59.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
+    name: "Acrylic Memorial Photo Block",
+    price: 79.99,
+    monthlyFee: 0,
+    hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
-    fulfillmentProduct: "Acrylic photo block",
+    fulfillmentProduct: "Printify Photo Block (Acrylic Idea Factory), 7×5 in",
+    blank: { catalogProductId: 1471, printProviderId: 104, catalogVariantId: 106189, size: "7×5 in horizontal", baseCostUsd: 36.12, shippingUsd: 16.69, use: "indoor" },
     templateEnv: "PRINTIFY_PHOTO_BLOCK_PRODUCT_ID",
     variantEnv: "PRINTIFY_PHOTO_BLOCK_VARIANT_ID",
     requiredEnv: [...PRINTIFY_SHARED, "PRINTIFY_PHOTO_BLOCK_PRODUCT_ID", "PRINTIFY_PHOTO_BLOCK_VARIANT_ID"],
     category: "Human",
-    description: "An indoor photo block printed with this order's memorial QR code.",
-    features: ["Unique QR for this memorial", "Indoor display", "Printed by Printify", "Ships in the United States"],
+    description: "A free-standing 1-inch-thick acrylic block printed with the QR code that opens the memorial page, where the photos live.",
+    features: ["Unique QR for this memorial", "7×5 in acrylic block", INCLUDED_HOSTING_FEATURE, "Indoor display"],
   },
 ]
 
@@ -272,12 +334,12 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     category: "Pet",
     features: [
       "Durable resin or composite stone",
-      "Weather-proof outdoor display",
+      "Outdoor garden display",
       "Brass QR code memorial plaque",
       "Garden or grave site marker",
     ],
     description:
-      "Beautiful outdoor pet memorial stone perfect for gardens or grave sites. Features a permanent brass QR code plaque that links to your pet's digital memorial tribute.",
+      "Beautiful outdoor pet memorial stone perfect for gardens or grave sites. Features a brass QR code plaque that links to your pet's digital memorial tribute.",
   },
   {
     id: "pet-cremation-urn-wood",
@@ -406,11 +468,15 @@ const WITHHELD_CONCIERGE_PLAQUE: CheckoutProduct = {
   monthlyFee: HOSTING_MONTHLY_PRICE,
 }
 
-/** The digital page itself. Hosting is billed monthly and nothing is shipped. */
+/**
+ * The digital page itself. Nothing is shipped. The first month is charged at checkout;
+ * the Square subscription then bills the same amount monthly starting one month later.
+ * Sellable only when SQUARE_SUBSCRIPTION_PLAN_ID is set (see isDigitalSubscriptionConfigured).
+ */
 export const DIGITAL_MEMORIAL: CheckoutProduct = {
   id: "digital-memorial",
-  name: "Digital Memorial Page",
-  price: 0,
+  name: "Digital Memorial Page (monthly)",
+  price: HOSTING_MONTHLY_PRICE,
   monthlyFee: HOSTING_MONTHLY_PRICE,
 }
 

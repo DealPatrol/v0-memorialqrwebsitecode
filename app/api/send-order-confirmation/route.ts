@@ -5,8 +5,18 @@ import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 export async function POST(request: NextRequest) {
   try {
     const resend = getResend()
-    const { email, orderDetails, customerName, orderId, orderNumber, productName, amount, monthlyFee, customerEmail } =
-      await request.json()
+    const {
+      email,
+      orderDetails,
+      customerName,
+      orderId,
+      orderNumber,
+      productName,
+      amount,
+      monthlyFee,
+      customerEmail,
+      hostingIncludedUntil,
+    } = await request.json()
 
     const finalEmail = email || customerEmail
     const finalOrderDetails =
@@ -15,7 +25,13 @@ export async function POST(request: NextRequest) {
       <p><strong>Order Number:</strong> ${orderNumber || "N/A"}</p>
       <p><strong>Product:</strong> ${productName || "Memorial QR Product"}</p>
       <p><strong>Amount Paid:</strong> $${amount || "0.00"}</p>
-      ${monthlyFee && Number.parseFloat(monthlyFee) > 0 ? `<p><strong>Monthly Hosting:</strong> $${monthlyFee}/month (starting next month)</p>` : ""}
+      ${
+        hostingIncludedUntil
+          ? `<p><strong>Memorial Hosting:</strong> 10 years of basic hosting included with your keepsake (through ${new Date(hostingIncludedUntil).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}). No monthly fee. You can renew at the monthly rate after that.</p>`
+          : monthlyFee && Number.parseFloat(monthlyFee) > 0
+            ? `<p><strong>Monthly Hosting:</strong> $${monthlyFee}/month starting next month. Cancel anytime.</p>`
+            : ""
+      }
     `
 
     if (!finalEmail) {

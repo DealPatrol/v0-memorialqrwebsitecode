@@ -1,11 +1,17 @@
 import {
   CONCIERGE_PRODUCTS,
+  DIGITAL_MEMORIAL,
   getPodProduct,
   type CheckoutProduct,
   type FulfillmentProvider,
   type PodProduct,
 } from "@/lib/catalog"
-import { configuredPodProducts, envValue, type EnvSource } from "@/lib/fulfillment-readiness"
+import {
+  configuredPodProducts,
+  envValue,
+  isDigitalSubscriptionConfigured,
+  type EnvSource,
+} from "@/lib/fulfillment-readiness"
 
 export type SellableProduct = CheckoutProduct & {
   ships: boolean
@@ -24,8 +30,13 @@ export type ConfiguredLine = CheckoutProduct & {
   variantId: string | null
 }
 
+/** Digital products sold without a supplier. The monthly page needs a Square plan id. */
+function digitalProducts(env: EnvSource): CheckoutProduct[] {
+  return isDigitalSubscriptionConfigured(env) ? [DIGITAL_MEMORIAL, ...CONCIERGE_PRODUCTS] : [...CONCIERGE_PRODUCTS]
+}
+
 export function listSellableProducts(env: EnvSource = process.env): SellableProduct[] {
-  const digital = CONCIERGE_PRODUCTS.map((product) => ({
+  const digital = digitalProducts(env).map((product) => ({
     ...product,
     ships: false,
     provider: null,
@@ -35,6 +46,7 @@ export function listSellableProducts(env: EnvSource = process.env): SellableProd
     name: product.name,
     price: product.price,
     monthlyFee: product.monthlyFee,
+    hostingIncludedYears: product.hostingIncludedYears,
     ships: true,
     provider: product.provider,
     description: product.description,
@@ -52,6 +64,7 @@ export function getSellablePodProducts(env: EnvSource = process.env): PodProduct
 export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = process.env): ConfiguredLine[] | null {
   if (!Array.isArray(items) || items.length === 0) return null
 
+  const digitalCatalog = digitalProducts(env)
   const resolved: ConfiguredLine[] = []
   for (const item of items) {
     if (!item || typeof item !== "object" || !("id" in item) || typeof item.id !== "string") return null
@@ -59,7 +72,7 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
     const quantity = Math.floor(rawQuantity)
     if (!Number.isFinite(quantity) || quantity < 1 || quantity > 99) return null
 
-    const digital = CONCIERGE_PRODUCTS.find((product) => product.id === item.id)
+    const digital = digitalCatalog.find((product) => product.id === item.id)
     if (digital) {
       resolved.push({
         ...digital,
@@ -82,6 +95,7 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
       name: pod.name,
       price: pod.price,
       monthlyFee: pod.monthlyFee,
+      hostingIncludedYears: pod.hostingIncludedYears,
       quantity,
       ships: true,
       provider: pod.provider,
@@ -92,4 +106,12 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
   }
 
   return resolved.length === items.length ? resolved : null
+}
+
+/**
+ * Where "Create a Memorial Page" goes. With a Square plan configured it opens the
+ * monthly checkout; without one it falls back to the free page builder.
+ */
+export function memorialStartHref(env: EnvSource = process.env): string {
+  return isDigitalSubscriptionConfigured(env) ? `/checkout/simple?product=${DIGITAL_MEMORIAL.id}` : "/create-memorial"
 }

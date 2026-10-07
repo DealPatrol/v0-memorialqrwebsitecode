@@ -2,10 +2,15 @@ import Link from "next/link"
 import { Header } from "@/components/header"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
+import { getSellablePodProducts } from "@/lib/fulfillment-availability"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 export const metadata = pageMetadata(publicPages.terms)
 
+export const dynamic = "force-dynamic"
+
 export default function TermsOfServicePage() {
+  const keepsakesOnSale = getSellablePodProducts().length > 0
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -24,8 +29,10 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Description</h2>
             <p className="text-gray-700 mb-4">
-              Memorial QR provides digital memorial pages. Hosting is $4.99 per month for each memorial. Physical
-              products are not currently for sale.
+              Memorial QR provides digital memorial pages. A memorial page on its own is hosted for $4.99 per month.{" "}
+              {keepsakesOnSale
+                ? `Printed QR keepsakes are a one-time purchase that includes ${HOSTING_INCLUDED_YEARS} years of basic hosting for the linked memorial page, starting on the order date. Several keepsakes for the same memorial share one hosting term. We do not promise hosting beyond the included term or an active plan.`
+                : "Physical products are not currently for sale."}
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
@@ -37,13 +44,19 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
-              Monthly hosting fees of $4.99 are charged to keep a digital memorial website online. Hosting can be
-              canceled at any time. Concierge setup, when purchased, is paid at checkout.
+              For a memorial page on its own, the first month ($4.99) is charged at checkout and the same amount is then
+              billed monthly to the card you used, through Square, until you cancel. Hosting can be canceled at any time.
+              Concierge setup, when purchased, is paid at checkout.
+              {keepsakesOnSale
+                ? ` Keepsakes are paid once at checkout, US shipping included. No monthly hosting fee is charged during the ${HOSTING_INCLUDED_YEARS} included years; after that, hosting can be renewed at the then-current monthly rate.`
+                : ""}
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
             <p className="text-gray-700 mb-4">
-              The memorial page is digital. There is no shipment.
+              {keepsakesOnSale
+                ? "Memorial pages are digital and are not shipped. Printed keepsakes are made to order by our print partners after payment and shipped to United States addresses only."
+                : "The memorial page is digital. There is no shipment."}
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Digital Memorial Content</h2>
