@@ -1,11 +1,21 @@
-import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 
-// Square test page. It must never be reachable on the production site.
-export const dynamic = "force-dynamic"
+export const metadata: Metadata = {
+  title: "Not available",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+}
 
 export default function TestSquarePage() {
-  if (process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production") {
-    notFound()
-  }
-  return null
+  return (
+    <main className="mx-auto max-w-xl px-4 py-24 text-center">
+      <h1 className="text-2xl font-bold">This page is not available.</h1>
+    </main>
+  )
 }

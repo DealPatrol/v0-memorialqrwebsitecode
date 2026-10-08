@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { blogPosts } from "@/lib/blog-posts"
 import { fileLastModified } from "@/lib/content-dates"
+import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { isIndexableMemorial, memorialPublicPath } from "@/lib/memorial-indexing"
 import { publicPages } from "@/lib/seo"
 import { SITE_URL } from "@/lib/site"
@@ -16,6 +17,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: page.priority,
     }))
 
+  const keepsakeUpdated = fileLastModified("lib/catalog.ts")
+  const keepsakes: MetadataRoute.Sitemap = getSellableKeepsakes().map((product) => ({
+    url: `${SITE_URL}/store/${product.id}`,
+    lastModified: keepsakeUpdated,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }))
+
   const posts: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
     lastModified: new Date(`${post.date}T00:00:00.000Z`),
@@ -26,7 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const memorials = await indexableMemorialEntries()
   const seen = new Set<string>()
 
-  return [...staticEntries, ...posts, ...memorials].filter((entry) => {
+  return [...staticEntries, ...keepsakes, ...posts, ...memorials].filter((entry) => {
     if (seen.has(entry.url)) return false
     seen.add(entry.url)
     return true

@@ -24,7 +24,7 @@ import {
   Star,
   CheckCircle,
 } from "lucide-react"
-import { getSellablePodProducts } from "@/lib/fulfillment-availability"
+import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
 
@@ -33,7 +33,7 @@ export const metadata = pageMetadata(publicPages.home)
 export const dynamic = "force-dynamic"
 
 export default function HomePage() {
-  const physicalProducts = getSellablePodProducts()
+  const physicalProducts = getSellableKeepsakes()
   return (
     <div className="min-h-screen pb-16 md:pb-0">
       <ScrollProgressBar />

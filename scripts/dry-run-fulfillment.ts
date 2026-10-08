@@ -1,10 +1,13 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { POD_PRODUCTS } from "../lib/catalog"
-import { resolveConfiguredCheckoutItems } from "../lib/fulfillment-availability"
+import { PLAQUE_PRICE, POD_PRODUCTS } from "../lib/catalog"
+import { getSellableKeepsake, resolveConfiguredCheckoutItems } from "../lib/fulfillment-availability"
 import { configuredPodProducts } from "../lib/fulfillment-readiness"
+import { keepsakeProductJsonLd } from "../lib/keepsake-jsonld"
+import { buildManualFulfillmentNotice, manualFulfillmentRecipients } from "../lib/manual-fulfillment-email"
 import { submitPrintfulOrder } from "../lib/printful"
 import { submitPrintifyOrder } from "../lib/printify"
+import { googleSiteVerificationTag } from "../lib/seo"
 import { dispatchSupplierLines } from "../lib/supplier-dispatch"
 
 const recipient = {
@@ -35,10 +38,23 @@ const readyEnv = {
 }
 
 describe("supplier env gating", () => {
-  it("hides every physical product when env vars are missing", () => {
+  it("hides every supplier product when env vars are missing", () => {
     assert.equal(configuredPodProducts({}).length, 0)
     assert.equal(resolveConfiguredCheckoutItems([{ id: "keep-card", quantity: 1 }], {}), null)
     assert.equal(resolveConfiguredCheckoutItems([{ id: "gold-plaque", quantity: 1 }], readyEnv), null)
+  })
+
+  it("sells the QR memorial plaque with no supplier env vars", () => {
+    const lines = resolveConfiguredCheckoutItems([{ id: "qr-memorial-plaque", quantity: 1 }], {})
+    assert.ok(lines)
+    assert.equal(lines[0].price, PLAQUE_PRICE)
+    assert.equal(lines[0].price, 29.99)
+    assert.equal(lines[0].ships, true)
+    assert.equal(lines[0].provider, "manual")
+    assert.equal(lines[0].syncVariantId, null)
+    const page = getSellableKeepsake("qr-memorial-plaque", {})
+    assert.ok(page)
+    assert.equal(page.name, "QR Memorial Plaque")
   })
 
   it("sells a product only after its own ids are set, at the catalog price", () => {
@@ -197,6 +213,83 @@ describe("Printify production order", () => {
     assert.equal(result.status, "failed")
     assert.equal(result.fulfillmentId, "order-8")
     assert.match(result.error || "", /production/)
+  })
+})
+
+describe("manual fulfillment notice", () => {
+  it("emails Cole the ship-to address and says no supplier order was placed", () => {
+    const notice = buildManualFulfillmentNotice(
+      {
+        order: {
+          order_number: "MQR-PLAQUE-1",
+          customer_name: "Ada Lovelace",
+          customer_email: "ada@example.com",
+          customer_phone: "555-0100",
+          shipping_address_line1: "1 Main St",
+          shipping_address_line2: null,
+          shipping_city: "Hanceville",
+          shipping_state: "AL",
+          shipping_zip: "35077",
+          special_instructions: "Ada Lovelace\n1940-2024\ngold",
+          payment_id: "pay_123",
+          amount_cents: 2999,
+        },
+        lines: [
+          {
+            id: "qr-memorial-plaque",
+            name: "QR Memorial Plaque",
+            price: 29.99,
+            quantity: 1,
+            ships: true,
+            provider: "manual",
+            syncVariantId: null,
+            templateProductId: null,
+            variantId: null,
+          },
+        ],
+        memorialUrl: "https://memorialsqr.com/memorial/mqr-plaque-1",
+        printFileUrl: "https://memorialsqr.com/api/print-file/mqr-plaque-1",
+        memorialError: null,
+      },
+      { ADMIN_EMAIL: "cole@example.com" },
+    )
+
+    assert.deepEqual(notice.to, ["support@memorialsqr.com", "cole@example.com"])
+    assert.match(notice.subject, /MQR-PLAQUE-1/)
+    assert.match(notice.text, /No Printful or Printify order was placed/)
+    assert.match(notice.text, /1 Main St/)
+    assert.match(notice.text, /Hanceville/)
+    assert.match(notice.text, /QR Memorial Plaque/)
+    assert.match(notice.text, /pay_123/)
+    assert.match(notice.text, /\$29\.99/)
+    assert.deepEqual(manualFulfillmentRecipients({}), ["support@memorialsqr.com"])
+    assert.deepEqual(manualFulfillmentRecipients({ ADMIN_EMAIL: "support@memorialsqr.com" }), [
+      "support@memorialsqr.com",
+    ])
+  })
+})
+
+describe("keepsake structured data", () => {
+  it("emits Product and Offer JSON-LD for the plaque", () => {
+    const product = getSellableKeepsake("qr-memorial-plaque", {})
+    assert.ok(product)
+    const data = keepsakeProductJsonLd(product)
+    assert.equal(data["@type"], "Product")
+    assert.equal(data.name, "QR Memorial Plaque")
+    assert.equal(data.offers["@type"], "Offer")
+    assert.equal(data.offers.price, "29.99")
+    assert.equal(data.offers.priceCurrency, "USD")
+    assert.equal(data.offers.availability, "https://schema.org/InStock")
+    assert.equal(data.offers.url, "https://memorialsqr.com/store/qr-memorial-plaque")
+  })
+})
+
+describe("Google site verification", () => {
+  it("emits the verification token only when the env value is non-empty", () => {
+    assert.equal(googleSiteVerificationTag(undefined), undefined)
+    assert.equal(googleSiteVerificationTag(""), undefined)
+    assert.equal(googleSiteVerificationTag("   "), undefined)
+    assert.deepEqual(googleSiteVerificationTag(" abc123 "), { google: "abc123" })
   })
 })
 

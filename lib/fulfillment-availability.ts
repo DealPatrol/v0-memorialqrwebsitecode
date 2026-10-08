@@ -1,9 +1,13 @@
 import {
   CONCIERGE_PRODUCTS,
+  getManualKeepsake,
   getPodProduct,
+  MANUAL_KEEPSAKES,
   type CheckoutProduct,
   type FulfillmentProvider,
+  type ManualKeepsake,
   type PodProduct,
+  type StoreCategory,
 } from "@/lib/catalog"
 import { configuredPodProducts, envValue, type EnvSource } from "@/lib/fulfillment-readiness"
 
@@ -24,13 +28,65 @@ export type ConfiguredLine = CheckoutProduct & {
   variantId: string | null
 }
 
+export type SellableKeepsake = {
+  id: string
+  name: string
+  price: number
+  provider: FulfillmentProvider
+  category: StoreCategory
+  description: string
+  features: string[]
+  image: string
+  imageAlt: string
+}
+
+const SUPPLIER_IMAGE = "/memorial-qr-code-products.jpg"
+const SUPPLIER_IMAGE_ALT = "QR memorial keepsake"
+
+function keepsakeFromManual(product: ManualKeepsake): SellableKeepsake {
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    provider: product.provider,
+    category: product.category,
+    description: product.description,
+    features: product.features,
+    image: product.image,
+    imageAlt: product.imageAlt,
+  }
+}
+
+function keepsakeFromPod(product: PodProduct): SellableKeepsake {
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    provider: product.provider,
+    category: product.category,
+    description: product.description,
+    features: product.features,
+    image: SUPPLIER_IMAGE,
+    imageAlt: SUPPLIER_IMAGE_ALT,
+  }
+}
+
+/** Manual keepsakes are always listed. Printful and Printify keepsakes need their env vars. */
+export function getSellableKeepsakes(env: EnvSource = process.env): SellableKeepsake[] {
+  return [...MANUAL_KEEPSAKES.map(keepsakeFromManual), ...getSellablePodProducts(env).map(keepsakeFromPod)]
+}
+
+export function getSellableKeepsake(id: string, env: EnvSource = process.env): SellableKeepsake | undefined {
+  return getSellableKeepsakes(env).find((product) => product.id === id)
+}
+
 export function listSellableProducts(env: EnvSource = process.env): SellableProduct[] {
   const digital = CONCIERGE_PRODUCTS.map((product) => ({
     ...product,
     ships: false,
     provider: null,
   }))
-  const physical = configuredPodProducts(env).map((product) => ({
+  const physical = getSellableKeepsakes(env).map((product) => ({
     id: product.id,
     name: product.name,
     price: product.price,
@@ -65,6 +121,22 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
         quantity,
         ships: false,
         provider: null,
+        syncVariantId: null,
+        templateProductId: null,
+        variantId: null,
+      })
+      continue
+    }
+
+    const manual = getManualKeepsake(item.id)
+    if (manual) {
+      resolved.push({
+        id: manual.id,
+        name: manual.name,
+        price: manual.price,
+        quantity,
+        ships: true,
+        provider: "manual",
         syncVariantId: null,
         templateProductId: null,
         variantId: null,

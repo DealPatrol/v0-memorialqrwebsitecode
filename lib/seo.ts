@@ -3,6 +3,18 @@ import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 
+/**
+ * Search Console HTML-tag verification. Next.js renders this as
+ * `<meta name="google-site-verification" content="...">`.
+ * An empty or whitespace-only value omits the tag.
+ * The root layout reads this at build time.
+ */
+export function googleSiteVerificationTag(raw: string | undefined): { google: string } | undefined {
+  const token = raw?.trim()
+  if (!token) return undefined
+  return { google: token }
+}
+
 const conciergeOffer = CONCIERGE_PRODUCTS.find((product) => product.id === "concierge-digital")
 
 if (!conciergeOffer) {

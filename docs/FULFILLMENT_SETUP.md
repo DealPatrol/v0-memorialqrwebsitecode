@@ -1,6 +1,45 @@
 # Same-day keepsake fulfillment
 
-Physical products stay hidden until the env vars below are set on the Vercel project **`v0-memorialqrwebsitecode-90`**. Saving the vars is not a code change. Vercel only gives a running deployment the new values after you redeploy that same commit. Do not deploy this branch until you intend to replace the digital-only site.
+## QR Memorial Plaque (manual, no supplier)
+
+The **QR Memorial Plaque** (`qr-memorial-plaque`, **$29.99**) is listed and sold without Printful or Printify. The store and homepage show a **Buy** button that opens the existing Square checkout. Shipping is not added at checkout. United States addresses only.
+
+After Square captures payment, checkout:
+
+1. Saves an `orders` row with `fulfillment_provider` `manual` and `fulfillment_status` `manual`.
+2. Creates the memorial page and a QR image at `/api/print-file/{slug}`.
+3. Emails a make-and-ship notice with the order number, payment id, amount, line items, ship-to address, order notes, memorial URL, and QR image URL.
+
+No supplier order is placed. Cole makes the plaque (gold, silver, or black, from the order notes) and ships it. If the pod columns from `scripts/025_add_pod_order_fulfillment_fields.sql` are missing, the same notice is written into `special_instructions`.
+
+### Env vars Cole must set
+
+Project: **`v0-memorialqrwebsitecode-90`**. Set them for Production, then redeploy. The plaque does **not** use any `PRINTFUL_*` or `PRINTIFY_*` variable.
+
+Square, so the Buy button can charge the card (the same variables the concierge checkout already uses):
+
+```
+NEXT_PUBLIC_SQUARE_APPLICATION_ID
+NEXT_PUBLIC_SQUARE_LOCATION_ID
+SQUARE_ACCESS_TOKEN
+SQUARE_LOCATION_ID
+SQUARE_ENVIRONMENT=production
+```
+
+Email, so the make-and-ship notice is delivered:
+
+```
+RESEND_API_KEY
+ADMIN_EMAIL
+```
+
+`ADMIN_EMAIL` is the extra inbox, besides `support@memorialsqr.com`. If it is unset, the notice goes only to `support@memorialsqr.com`. `RESEND_FROM_EMAIL` is optional. If it is unset, the sender is `Memorial QR <orders@memorialqr.com>`.
+
+`GOOGLE_SITE_VERIFICATION` is optional and unrelated to checkout. The site emits the Google Search Console meta tag only when that variable is a non-empty string at build time.
+
+## Supplier keepsakes
+
+Printful and Printify keepsakes stay hidden until the env vars below are set on the Vercel project **`v0-memorialqrwebsitecode-90`**. Saving the vars is not a code change. Vercel only gives a running deployment the new values after you redeploy that same commit. The QR Memorial Plaque does not wait on these vars.
 
 “Same day” means the supplier receives a **confirmed production order during checkout**. It does not mean the carrier delivers the same day. Printful and Printify still print and ship on their own schedule.
 

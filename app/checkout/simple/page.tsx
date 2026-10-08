@@ -82,6 +82,7 @@ function CheckoutForm() {
   }, [])
 
   const [formData, setFormData] = useState({
+    fullName: "",
     email: "",
     phone: "",
     address: "",
@@ -114,10 +115,10 @@ function CheckoutForm() {
       return false
     }
 
-    if (needsShipping && (!formData.address || !formData.city || !formData.state || !formData.zipCode)) {
+    if (needsShipping && (!formData.fullName.trim() || !formData.address || !formData.city || !formData.state || !formData.zipCode)) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required shipping address fields before proceeding with payment.",
+        description: "Please enter the recipient name and the full US shipping address before payment.",
         variant: "destructive",
       })
       return false
@@ -164,6 +165,7 @@ function CheckoutForm() {
         planType: "cart-checkout",
         items: cartItems,
         totalAmount: orderTotal,
+        customerName: needsShipping ? formData.fullName.trim() : "",
         customerEmail: formData.email || "",
         customerPhone: formData.phone || "",
         addressLine1: needsShipping ? formData.address : "",
@@ -337,6 +339,23 @@ function CheckoutForm() {
                 <CardTitle>{needsShipping ? "Shipping & Contact Information" : "Contact Information"}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {needsShipping && (
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">
+                      Full name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="fullName"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                      placeholder="Jane Doe"
+                      autoComplete="name"
+                    />
+                    <p className="text-xs text-muted-foreground">Name for the keepsake shipment</p>
+                  </div>
+                )}
+
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">
@@ -466,7 +485,9 @@ function CheckoutForm() {
                     rows={4}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Share names, dates, or notes for the memorial page.
+                    {cartItems.some((item) => item.id === "qr-memorial-plaque")
+                      ? "For the QR Memorial Plaque, put the name on the first line, then the dates and the finish: gold, silver, or black."
+                      : "Share names, dates, or notes for the memorial page."}
                   </p>
                 </div>
               </CardContent>
@@ -505,7 +526,7 @@ function CheckoutForm() {
                   onBeforePayment={validateForm}
                   disabled={isSubmitting}
                   customerEmail={formData.email}
-                  customerName=""
+                  customerName={needsShipping ? formData.fullName.trim() : ""}
                 />
               </CardContent>
             </Card>

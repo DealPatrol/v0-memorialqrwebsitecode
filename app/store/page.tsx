@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
-import { getSellablePodProducts } from "@/lib/fulfillment-availability"
+import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
@@ -14,7 +14,7 @@ export const metadata = pageMetadata(publicPages.store)
 export const dynamic = "force-dynamic"
 
 export default function StorePage() {
-  const physicalProducts = getSellablePodProducts()
+  const physicalProducts = getSellableKeepsakes()
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <Header />

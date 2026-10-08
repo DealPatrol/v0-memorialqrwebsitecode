@@ -7,8 +7,10 @@ import { Toaster } from "@/components/ui/toaster"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import { googleSiteVerificationTag } from "@/lib/seo"
 import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 const conciergeOffer = CONCIERGE_PRODUCTS.find((product) => product.id === "concierge-digital")
@@ -17,7 +19,7 @@ if (!conciergeOffer) {
   throw new Error("Concierge digital offer is missing from the catalog")
 }
 
-const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION
+const googleSiteVerification = googleSiteVerificationTag(process.env.GOOGLE_SITE_VERIFICATION)
 
 const inter = Inter({
   subsets: ["latin"],
@@ -80,7 +82,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  ...(googleSiteVerification ? { verification: { google: googleSiteVerification } } : {}),
+  ...(googleSiteVerification ? { verification: googleSiteVerification } : {}),
   applicationName: SITE_NAME,
 }
 
@@ -161,6 +163,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LiveChatButton />
         </ThemeProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

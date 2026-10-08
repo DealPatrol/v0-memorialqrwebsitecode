@@ -73,7 +73,7 @@ const faqCategories = [
       {
         question: "Is anything shipped?",
         answer:
-          "Yes. QR keepsakes are printed after payment and ship to United States addresses. The store shows which keepsakes can be ordered right now.",
+          "Yes. QR keepsakes ship to United States addresses. The store lists the keepsakes you can order, including the QR Memorial Plaque.",
       },
       {
         question: "What if the memorial page will not load?",

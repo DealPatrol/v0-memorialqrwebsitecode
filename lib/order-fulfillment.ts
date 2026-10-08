@@ -1,6 +1,7 @@
 import { SUPPORT_EMAIL } from "@/lib/site"
 import { memorialPageUrl, memorialSlugForOrder, printFileUrl } from "@/lib/memorial-urls"
 import { sendEmail } from "@/lib/email"
+import { sendManualFulfillmentNotice } from "@/lib/manual-fulfillment-email"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 import { dispatchSupplierLines, type DispatchLine, type DispatchOutcome } from "@/lib/supplier-dispatch"
 import type { ConfiguredLine } from "@/lib/fulfillment-availability"
@@ -19,6 +20,40 @@ type OrderRow = {
   shipping_zip: string | null
   special_instructions: string | null
   user_id: string | null
+  payment_id?: string | null
+  amount_cents?: number | null
+}
+
+function orderStatusForOutcome(status: DispatchOutcome["status"]): string {
+  switch (status) {
+    case "submitted":
+      return "in_production"
+    case "failed":
+      return "fulfillment_failed"
+    case "manual":
+      return "processing"
+    case "not_required":
+      return "processing"
+    default: {
+      const exhaustive: never = status
+      return exhaustive
+    }
+  }
+}
+
+function fulfillmentSucceeded(status: DispatchOutcome["status"]): boolean {
+  switch (status) {
+    case "submitted":
+    case "not_required":
+    case "manual":
+      return true
+    case "failed":
+      return false
+    default: {
+      const exhaustive: never = status
+      return exhaustive
+    }
+  }
 }
 
 type SupabaseLike = {
@@ -55,7 +90,7 @@ async function saveFulfillmentLog(
   memorialSlug: string | null,
 ) {
   const log = {
-    success: outcome.status === "submitted" || outcome.status === "not_required",
+    success: fulfillmentSucceeded(outcome.status),
     supplier_order_id: outcome.fulfillmentId,
     error: outcome.error ?? null,
     status: outcome.status,
@@ -65,7 +100,7 @@ async function saveFulfillmentLog(
     dispatched_at: new Date().toISOString(),
     details: outcome.details,
   }
-  const status = outcome.status === "submitted" ? "in_production" : outcome.status === "failed" ? "fulfillment_failed" : "processing"
+  const status = orderStatusForOutcome(outcome.status)
   const update = await supabase
     .from("orders")
     .update({
@@ -79,13 +114,16 @@ async function saveFulfillmentLog(
     .eq("id", order.id)
 
   if (update.error && isMissingPodOrderSchema(update.error)) {
-    const note = `FULFILLMENT ${JSON.stringify({
-      success: log.success,
-      supplierOrderId: outcome.fulfillmentId,
-      error: outcome.error ?? null,
-      printFileUrl: printUrl,
-      memorialSlug,
-    })}`
+    const summary = typeof outcome.details.summary === "string" ? outcome.details.summary : null
+    const note = summary
+      ? `FULFILLMENT ${summary}`
+      : `FULFILLMENT ${JSON.stringify({
+          success: log.success,
+          supplierOrderId: outcome.fulfillmentId,
+          error: outcome.error ?? null,
+          printFileUrl: printUrl,
+          memorialSlug,
+        })}`
     await supabase
       .from("orders")
       .update({
@@ -143,6 +181,33 @@ export async function fulfillPaidPhysicalOrder(
   }
 }
 
+function isSupplierProvider(provider: ConfiguredLine["provider"]): provider is "printful" | "printify" {
+  return provider === "printful" || provider === "printify"
+}
+
+function manualSummary(
+  order: OrderRow,
+  lines: ConfiguredLine[],
+  memorialUrl: string | null,
+  printFileUrl: string | null,
+  emailSent: boolean,
+  emailError: string | null,
+): string {
+  const items = lines.map((line) => `${line.name} × ${line.quantity}`).join(", ")
+  return [
+    `manual fulfillment for ${order.order_number}`,
+    "No supplier order was placed.",
+    `Items: ${items}`,
+    `Ship to: ${order.customer_name || ""}, ${order.shipping_address_line1 || ""}, ${order.shipping_city || ""} ${order.shipping_state || ""} ${order.shipping_zip || ""}`.trim(),
+    `Email: ${order.customer_email || ""}`,
+    `Phone: ${order.customer_phone || ""}`,
+    `Notes: ${order.special_instructions || "none"}`,
+    `Memorial: ${memorialUrl || "not created"}`,
+    `QR: ${printFileUrl || "not created"}`,
+    emailSent ? "Fulfillment email sent." : `Fulfillment email failed: ${emailError || "unknown error"}`,
+  ].join("\n")
+}
+
 async function placePhysicalOrder(
   supabase: SupabaseLike,
   order: OrderRow,
@@ -153,6 +218,21 @@ async function placePhysicalOrder(
   if (physical.length === 0) {
     const outcome: DispatchOutcome = { status: "not_required", provider: null, fulfillmentId: null, details: {} }
     await saveFulfillmentLog(supabase, order, outcome, null, null)
+    return outcome
+  }
+
+  const supplierItems = physical.filter((item) => isSupplierProvider(item.provider))
+  const manualItems = physical.filter((item) => item.provider === "manual")
+  if (supplierItems.length + manualItems.length !== physical.length) {
+    const outcome: DispatchOutcome = {
+      status: "failed",
+      provider: null,
+      fulfillmentId: null,
+      error: "A keepsake in this order has no fulfillment path",
+      details: {},
+    }
+    await saveFulfillmentLog(supabase, order, outcome, null, null)
+    await alertSupport(order, outcome)
     return outcome
   }
 
@@ -174,12 +254,17 @@ async function placePhysicalOrder(
     .select()
     .single()
 
-  if (inserted.error || !inserted.data) {
+  const memorialOk = !inserted.error && !!inserted.data
+  const memorialError = memorialOk
+    ? null
+    : inserted.error?.message || "Memorial page was not created, so the QR print file could not be made"
+
+  if (!memorialOk && supplierItems.length > 0) {
     const outcome: DispatchOutcome = {
       status: "failed",
       provider: null,
       fulfillmentId: null,
-      error: inserted.error?.message || "Memorial page was not created, so the QR print file could not be made",
+      error: memorialError ?? undefined,
       details: {},
     }
     await saveFulfillmentLog(supabase, order, outcome, null, null)
@@ -187,7 +272,68 @@ async function placePhysicalOrder(
     return outcome
   }
 
-  await supabase.from("orders").update({ memorial_id: inserted.data.id }).eq("id", order.id)
+  if (memorialOk && inserted.data?.id) {
+    await supabase.from("orders").update({ memorial_id: inserted.data.id }).eq("id", order.id)
+  }
+
+  const memorialUrl = memorialOk ? pageUrl : null
+  const printUrl = memorialOk ? fileUrl : null
+
+  if (manualItems.length > 0) {
+    const notice = await sendManualFulfillmentNotice(
+      {
+        order,
+        lines: manualItems,
+        memorialUrl,
+        printFileUrl: printUrl,
+        memorialError,
+      },
+      env,
+    )
+    if (supplierItems.length === 0) {
+      const outcome: DispatchOutcome = {
+        status: "manual",
+        provider: "manual",
+        fulfillmentId: null,
+        error: notice.sent ? undefined : notice.error || "Fulfillment email was not sent",
+        details: {
+          memorialUrl,
+          printFileUrl: printUrl,
+          manualFulfillment: notice,
+          note: "Fulfill by hand. No supplier order was placed.",
+          summary: manualSummary(order, manualItems, memorialUrl, printUrl, notice.sent, notice.error),
+        },
+      }
+      await saveFulfillmentLog(supabase, order, outcome, printUrl, memorialOk ? slug : null)
+      if (!notice.sent) console.error("[Fulfillment] Manual fulfillment email was not sent:", notice.error)
+      return outcome
+    }
+
+    const recipient: ShipTo = {
+      name: order.customer_name || "Customer",
+      address1: order.shipping_address_line1 || "",
+      address2: order.shipping_address_line2,
+      city: order.shipping_city || "",
+      state: (order.shipping_state || "").toUpperCase(),
+      zip: order.shipping_zip || "",
+      email: order.customer_email || "",
+      phone: order.customer_phone,
+    }
+    const outcome = await dispatchSupplierLines({
+      orderNumber: order.order_number,
+      recipient,
+      lines: linesForSupplier(supplierItems, printUrl || fileUrl),
+      env,
+    })
+    outcome.provider = "mixed"
+    outcome.details.memorialUrl = memorialUrl
+    outcome.details.printFileUrl = printUrl
+    outcome.details.manualFulfillment = notice
+    outcome.details.summary = manualSummary(order, manualItems, memorialUrl, printUrl, notice.sent, notice.error)
+    await saveFulfillmentLog(supabase, order, outcome, printUrl, memorialOk ? slug : null)
+    if (outcome.status === "failed") await alertSupport(order, outcome)
+    return outcome
+  }
 
   const recipient: ShipTo = {
     name: order.customer_name || "Customer",
@@ -200,14 +346,12 @@ async function placePhysicalOrder(
     phone: order.customer_phone,
   }
 
-  const outcome = await dispatchSupplierLines(
-    {
-      orderNumber: order.order_number,
-      recipient,
-      lines: linesForSupplier(physical, fileUrl),
-      env,
-    },
-  )
+  const outcome = await dispatchSupplierLines({
+    orderNumber: order.order_number,
+    recipient,
+    lines: linesForSupplier(supplierItems, fileUrl),
+    env,
+  })
   outcome.details.memorialUrl = pageUrl
   outcome.details.printFileUrl = fileUrl
   await saveFulfillmentLog(supabase, order, outcome, fileUrl, slug)
