@@ -10,7 +10,7 @@ export type BuyerIntentFaq = {
 export type BuyerIntentId = "headstone" | "plaque" | "urn" | "pet" | "program" | "digital"
 
 export type BuyerIntent = {
-  id: BuyerIntentId
+  id: string
   path: string
   h1: string
   ogTitle: string
@@ -19,6 +19,8 @@ export type BuyerIntent = {
   faqs: BuyerIntentFaq[]
   /** Show the concierge purchase beside the plaque. */
   showConcierge: boolean
+  /** Show the memorial-page guide form on this page. */
+  showGuide?: boolean
 }
 
 export const PRIMARY_KEEPSAKE_ID = "qr-memorial-plaque"

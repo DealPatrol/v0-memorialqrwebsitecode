@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
 import { KeepsakePurchaseDetails } from "@/components/keepsake-purchase-details"
+import { MemorialGuideSection } from "@/components/memorial-guide-section"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -14,10 +15,18 @@ import { getSellableKeepsake, getSellableKeepsakes } from "@/lib/fulfillment-ava
 import { CONCIERGE_PRICE_LABEL } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
 
-export function BuyerIntentView({ page }: { page: BuyerIntent }) {
+export function BuyerIntentView({
+  page,
+  related = buyerIntentList.filter((item) => item.id !== page.id),
+  relatedHeading = "Other ways families remember",
+}: {
+  page: BuyerIntent
+  related?: BuyerIntent[]
+  relatedHeading?: string
+}) {
   const product = getSellableKeepsake(PRIMARY_KEEPSAKE_ID)
   const others = getSellableKeepsakes().filter((item) => item.id !== PRIMARY_KEEPSAKE_ID)
-  const related = buyerIntentList.filter((item) => item.id !== page.id)
+  const linksSympathy = related.every((item) => item.path !== "/sympathy-gift-ideas") && page.path !== "/sympathy-gift-ideas"
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
@@ -47,7 +56,7 @@ export function BuyerIntentView({ page }: { page: BuyerIntent }) {
               ))}
             </section>
             <nav aria-label="Related memorial pages" className="space-y-3">
-              <h2 className="text-2xl font-semibold text-foreground">Other ways families remember</h2>
+              <h2 className="text-2xl font-semibold text-foreground">{relatedHeading}</h2>
               <ul className="space-y-2">
                 {related.map((item) => (
                   <li key={item.path}>
@@ -56,13 +65,28 @@ export function BuyerIntentView({ page }: { page: BuyerIntent }) {
                     </Link>
                   </li>
                 ))}
+                {linksSympathy ? (
+                  <li>
+                    <Link href="/sympathy-gift-ideas" className="underline">
+                      Sympathy gift ideas
+                    </Link>
+                  </li>
+                ) : null}
                 <li>
                   <Link href="/funeral-homes" className="underline">
                     For funeral homes
                   </Link>
                 </li>
+                {page.showGuide ? null : (
+                  <li>
+                    <Link href="/#memorial-guide" className="underline">
+                      Free guide: how to create a meaningful memorial page
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
+            {page.showGuide ? <MemorialGuideSection /> : null}
           </article>
           <Card>
             <CardContent className="space-y-4 p-6">

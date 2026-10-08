@@ -12,8 +12,13 @@ export const CHECKOUT_COUNTRY = "US"
 
 export const US_SHIPPING_COPY = "Ships anywhere in the United States from Alabama."
 
-/** Handling time for the hand-made QR Memorial Plaque, before the carrier takes it. */
-export const KEEPSAKE_HANDLING_TIME = "7 to 10 business days"
+/**
+ * Handling time for the hand-made QR Memorial Plaque, before the carrier takes it.
+ * Business days. Carrier transit is not included.
+ */
+export const KEEPSAKE_HANDLING_MIN_DAYS = 7
+export const KEEPSAKE_HANDLING_MAX_DAYS = 10
+export const KEEPSAKE_HANDLING_TIME = `${KEEPSAKE_HANDLING_MIN_DAYS} to ${KEEPSAKE_HANDLING_MAX_DAYS} business days`
 
 export const KEEPSAKE_SHIPPING_COPY = `Made to order in Alabama. We ship within ${KEEPSAKE_HANDLING_TIME} to United States addresses. Shipping is included in the price. Carrier transit starts after it ships.`
 

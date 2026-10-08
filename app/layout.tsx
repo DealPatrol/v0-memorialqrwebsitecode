@@ -1,10 +1,10 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter, Dancing_Script, Great_Vibes } from "next/font/google"
+import dynamic from "next/dynamic"
+import { Inter, Great_Vibes } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -12,6 +12,8 @@ import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { googleSiteVerificationTag } from "@/lib/seo"
 import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
+
+const LiveChatButton = dynamic(() => import("@/components/live-chat-button").then((mod) => mod.LiveChatButton))
 
 const conciergeOffer = CONCIERGE_PRODUCTS.find((product) => product.id === "concierge-digital")
 
@@ -26,14 +28,6 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
   preload: true,
-})
-
-const dancingScript = Dancing_Script({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-dancing-script",
-  display: "swap",
-  preload: false,
 })
 
 const greatVibes = Great_Vibes({
@@ -142,7 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en-US"
       suppressHydrationWarning
-      className={`${inter.variable} ${dancingScript.variable} ${greatVibes.variable} bg-background`}
+      className={`${inter.variable} ${greatVibes.variable} bg-background`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />

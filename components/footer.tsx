@@ -61,6 +61,8 @@ export function Footer() {
               <li><Link href="/pet-memorial-qr-code" className="hover:text-white transition-colors">Pet Memorial QR Code</Link></li>
               <li><Link href="/funeral-program-qr-code" className="hover:text-white transition-colors">Funeral Program QR Code</Link></li>
               <li><Link href="/digital-memorial-page" className="hover:text-white transition-colors">Digital Memorial Page</Link></li>
+              <li><Link href="/sympathy-gift-ideas" className="hover:text-white transition-colors">Sympathy Gift Ideas</Link></li>
+              <li><Link href="/personalized-memorial-gift" className="hover:text-white transition-colors">Personalized Memorial Gift</Link></li>
               <li><Link href="/funeral-homes" className="hover:text-white transition-colors">Funeral Homes</Link></li>
             </ul>
           </div>

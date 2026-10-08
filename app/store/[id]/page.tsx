@@ -5,15 +5,19 @@ import { notFound } from "next/navigation"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
 import { KeepsakePurchaseDetails } from "@/components/keepsake-purchase-details"
+import { ProductReviews } from "@/components/product-reviews"
 import { Card, CardContent } from "@/components/ui/card"
 import { buyerIntentList } from "@/lib/buyer-intent"
-import { getSellableKeepsake } from "@/lib/fulfillment-availability"
+import { giftIntentList } from "@/lib/gift-intent"
+import { getSellableKeepsake, getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { keepsakeProductJsonLd } from "@/lib/keepsake-jsonld"
 import { assertMetadataLength, pageMetadata } from "@/lib/seo"
 import { formatUsd, SITE_NAME } from "@/lib/site"
 
-export const dynamic = "force-dynamic"
+export function generateStaticParams() {
+  return getSellableKeepsakes().map((product) => ({ id: product.id }))
+}
 
 function clip(value: string, max: number): string {
   if (value.length <= max) return value
@@ -56,14 +60,17 @@ export default function KeepsakePage({ params }: { params: { id: string } }) {
           </Link>
         </p>
         <div className="grid items-start gap-8 md:grid-cols-2">
-          <Image
-            src={product.image}
-            alt={product.imageAlt}
-            width={960}
-            height={720}
-            className="h-auto w-full rounded-xl border bg-white object-contain"
-            priority
-          />
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white">
+            <Image
+              src={product.image}
+              alt={product.imageAlt}
+              fill
+              sizes="(min-width: 768px) 480px, 100vw"
+              className="object-contain"
+              priority
+              quality={60}
+            />
+          </div>
           <Card>
             <CardContent className="space-y-5 p-6">
               <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
@@ -80,10 +87,21 @@ export default function KeepsakePage({ params }: { params: { id: string } }) {
                     </li>
                   ))}
                 </ul>
+                <h2 className="pt-2 text-sm font-semibold">Gift ideas</h2>
+                <ul className="space-y-1 text-sm">
+                  {giftIntentList.map((item) => (
+                    <li key={item.path}>
+                      <Link href={item.path} className="underline">
+                        {item.h1}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </nav>
             </CardContent>
           </Card>
         </div>
+        <ProductReviews productId={product.id} />
       </main>
     </div>
   )

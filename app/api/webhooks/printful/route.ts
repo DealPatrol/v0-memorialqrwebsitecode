@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { sendReviewRequestForOrder } from "@/lib/review-request"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(req: NextRequest) {
@@ -41,6 +42,12 @@ export async function POST(req: NextRequest) {
         },
       })
       .eq("id", order.id)
+
+    try {
+      await sendReviewRequestForOrder(supabase, order.id)
+    } catch (reviewError) {
+      console.error("[printful] Review request failed:", reviewError)
+    }
 
     return NextResponse.json({ success: true, received: true })
   } catch (error) {

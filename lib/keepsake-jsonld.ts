@@ -1,5 +1,48 @@
 import type { SellableKeepsake } from "@/lib/fulfillment-availability"
-import { SITE_NAME, SITE_URL } from "@/lib/site"
+import { KEEPSAKE_HANDLING_MAX_DAYS, KEEPSAKE_HANDLING_MIN_DAYS, SITE_NAME, SITE_URL } from "@/lib/site"
+
+function includeHandlingTime(provider: SellableKeepsake["provider"]): boolean {
+  switch (provider) {
+    case "manual":
+      return true
+    case "printful":
+    case "printify":
+      return false
+    default: {
+      const exhaustive: never = provider
+      return exhaustive
+    }
+  }
+}
+
+function shippingDetails(product: SellableKeepsake) {
+  const details: Record<string, unknown> = {
+    "@type": "OfferShippingDetails",
+    shippingRate: {
+      "@type": "MonetaryAmount",
+      value: "0.00",
+      currency: "USD",
+    },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: "US",
+    },
+  }
+
+  if (includeHandlingTime(product.provider)) {
+    details.deliveryTime = {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: {
+        "@type": "QuantitativeValue",
+        minValue: KEEPSAKE_HANDLING_MIN_DAYS,
+        maxValue: KEEPSAKE_HANDLING_MAX_DAYS,
+        unitCode: "DAY",
+      },
+    }
+  }
+
+  return details
+}
 
 /** Product + Offer structured data for one keepsake page. */
 export function keepsakeProductJsonLd(product: SellableKeepsake) {
@@ -21,6 +64,7 @@ export function keepsakeProductJsonLd(product: SellableKeepsake) {
       price: product.price.toFixed(2),
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
+      shippingDetails: shippingDetails(product),
       eligibleRegion: {
         "@type": "Country",
         name: "US",

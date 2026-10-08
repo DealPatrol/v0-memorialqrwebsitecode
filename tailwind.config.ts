@@ -69,7 +69,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        cursive: ["var(--font-dancing-script)", "cursive"],
+        cursive: ["var(--font-great-vibes)", "cursive"],
         script: ["var(--font-great-vibes)", "cursive"],
       },
     },

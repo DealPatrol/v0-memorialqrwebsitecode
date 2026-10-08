@@ -4,12 +4,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { ScrollProgressBar } from "@/components/scroll-progress-bar"
-import { QuickLinksBar } from "@/components/quick-links-bar"
 import { FeaturedMemorialPreview } from "@/components/featured-memorial-preview"
 import { TrustBadges } from "@/components/trust-badges"
 import { FAQPreview } from "@/components/faq-preview"
 import { RelatedContentLinks } from "@/components/related-content-links"
-import { EmailCollectionPopup } from "@/components/email-collection-popup"
+import { MemorialGuideSection } from "@/components/memorial-guide-section"
 import {
   Heart,
   QrCode,
@@ -21,17 +20,15 @@ import {
   Lock,
   PawPrint,
   User,
-  Star,
   CheckCircle,
 } from "lucide-react"
 import { buyerIntentList } from "@/lib/buyer-intent"
+import { giftIntentList } from "@/lib/gift-intent"
 import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.home)
-
-export const dynamic = "force-dynamic"
 
 export default function HomePage() {
   const physicalProducts = getSellableKeepsakes()
@@ -41,14 +38,14 @@ export default function HomePage() {
       <Header />
 
       {/* Hero Section with Product Selector */}
-      <section className="memorial-bg py-20 md:py-32">
+      <section className="memorial-bg py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-12">
             <div className="inline-block mb-6 px-4 py-2 rounded-full bg-secondary/50 border border-border">
               <span className="text-sm font-medium text-foreground">Honor and Remember</span>
             </div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
               QR Memorial Keepsakes With 10 Years of Hosting Included
             </h1>
 
@@ -102,6 +99,16 @@ export default function HomePage() {
           <h2 className="mb-3 text-2xl font-semibold text-foreground">Ways families use a memorial QR</h2>
           <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
             {buyerIntentList.map((item) => (
+              <li key={item.path}>
+                <Link href={item.path} className="underline">
+                  {item.h1}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <h2 className="mb-3 mt-8 text-2xl font-semibold text-foreground">Remembrance gifts</h2>
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
+            {giftIntentList.map((item) => (
               <li key={item.path}>
                 <Link href={item.path} className="underline">
                   {item.h1}
@@ -325,6 +332,12 @@ export default function HomePage() {
 
       <FAQPreview />
 
+      <section className="bg-white px-4 py-12">
+        <div className="mx-auto max-w-3xl">
+          <MemorialGuideSection />
+        </div>
+      </section>
+
       <RelatedContentLinks />
 
       {/* CTA Section */}
@@ -457,8 +470,6 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* Email Collection Popup */}
-      <EmailCollectionPopup />
     </div>
   )
 }
