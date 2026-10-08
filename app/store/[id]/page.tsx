@@ -2,8 +2,10 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
+import { TrackViewContent } from "@/components/track-view-content"
 import { KeepsakePurchaseDetails } from "@/components/keepsake-purchase-details"
 import { ProductReviews } from "@/components/product-reviews"
 import { Card, CardContent } from "@/components/ui/card"
@@ -52,13 +54,16 @@ export default function KeepsakePage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <JsonLd data={keepsakeProductJsonLd(product)} />
+      <TrackViewContent contentId={product.id} contentName={product.name} value={product.price} />
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-12">
-        <p className="mb-6 text-sm text-muted-foreground">
-          <Link href="/store" className="underline">
-            QR Memorial Keepsakes
-          </Link>
-        </p>
+        <Breadcrumbs
+          items={[
+            { href: "/", label: "Home" },
+            { href: "/store", label: "QR Memorial Keepsakes" },
+            { href: `/store/${product.id}`, label: product.name },
+          ]}
+        />
         <div className="grid items-start gap-8 md:grid-cols-2">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white">
             <Image
@@ -77,6 +82,15 @@ export default function KeepsakePage({ params }: { params: { id: string } }) {
               <p className="text-muted-foreground">{product.description}</p>
               <KeepsakePurchaseDetails product={product} />
               <nav aria-label="Ways to use this keepsake" className="space-y-2 border-t pt-4">
+                <p className="text-sm">
+                  <Link href="/guides" className="underline">
+                    Memorial guides
+                  </Link>
+                  {" · "}
+                  <Link href="/gifts" className="underline">
+                    Gift ideas
+                  </Link>
+                </p>
                 <h2 className="text-sm font-semibold">Ways families use it</h2>
                 <ul className="space-y-1 text-sm">
                   {buyerIntentList.map((item) => (

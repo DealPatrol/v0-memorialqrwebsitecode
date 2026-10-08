@@ -53,7 +53,7 @@ export default function FuneralHomesPage() {
             </ul>
           </nav>
         </article>
-        <Card>
+        <Card id="inquiry">
           <CardContent className="space-y-4 p-6">
             <h2 className="text-xl font-semibold">Wholesale inquiry</h2>
             <FuneralHomeInquiryForm />

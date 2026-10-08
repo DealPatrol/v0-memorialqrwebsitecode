@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { attributionFromUnknown, formatAttribution } from "@/lib/attribution"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
 import { resolveConfiguredCheckoutItems } from "@/lib/fulfillment-availability"
@@ -26,7 +27,11 @@ export async function POST(req: Request) {
       paymentId,
       customization,
       squareCustomerId,
+      attribution: rawAttribution,
     } = body
+
+    const attribution = attributionFromUnknown(rawAttribution)
+    const attributionNote = formatAttribution(attribution) || null
 
     const resolvedCustomerName = customerName || customerEmail
 
@@ -132,6 +137,7 @@ export async function POST(req: Request) {
 
       user_id: userId,
       square_customer_id: finalSquareCustomerId,
+      admin_notes: attributionNote,
     }
 
     const lineItems = resolvedItems.map((item) => ({
@@ -149,7 +155,7 @@ export async function POST(req: Request) {
       fulfillment_provider: shipsPhysical ? (new Set(resolvedItems.map((item) => item.provider).filter(Boolean)).size > 1 ? "mixed" : resolvedItems.find((item) => item.provider)?.provider) : null,
       fulfillment_id: null,
       fulfillment_status: shipsPhysical ? "pending" : "not_required",
-      fulfillment_data: { schema_version: 1 },
+      fulfillment_data: { schema_version: 1, ...(attribution ? { attribution } : {}) },
       print_file_url: null,
     }
 
@@ -216,6 +222,8 @@ export async function POST(req: Request) {
         status: order.status,
         fulfillmentStatus,
         memorialUrl,
+        amount: totalAmountCents / 100,
+        currency: "USD",
       },
     })
   } catch (error: any) {

@@ -15,6 +15,7 @@ export type ManualOrderRecord = {
   special_instructions: string | null
   payment_id?: string | null
   amount_cents?: number | null
+  admin_notes?: string | null
 }
 
 export type ManualFulfillmentNotice = {
@@ -82,7 +83,7 @@ export function buildManualFulfillmentNotice(
     "",
     "Order notes:",
     order.special_instructions?.trim() || "None",
-    "",
+    ...(order.admin_notes?.trim() ? ["", "Attribution:", order.admin_notes.trim(), ""] : [""]),
     `Memorial page: ${input.memorialUrl || "not created"}`,
     `QR image: ${input.printFileUrl || "not created"}`,
     input.memorialError ? `Memorial error: ${input.memorialError}` : "",
@@ -107,6 +108,7 @@ export function buildManualFulfillmentNotice(
 <pre>${escapeHtml(address || "No shipping address recorded")}</pre>
 <p><strong>Order notes</strong></p>
 <pre>${escapeHtml(order.special_instructions?.trim() || "None")}</pre>
+${order.admin_notes?.trim() ? `<p><strong>Attribution</strong></p><pre>${escapeHtml(order.admin_notes.trim())}</pre>` : ""}
 <p>Memorial page: ${input.memorialUrl ? `<a href="${escapeHtml(input.memorialUrl)}">${escapeHtml(input.memorialUrl)}</a>` : "not created"}</p>
 <p>QR image: ${input.printFileUrl ? `<a href="${escapeHtml(input.printFileUrl)}">${escapeHtml(input.printFileUrl)}</a>` : "not created"}</p>
 ${input.memorialError ? `<p>Memorial error: ${escapeHtml(input.memorialError)}</p>` : ""}

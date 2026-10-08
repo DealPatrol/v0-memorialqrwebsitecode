@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
 import { KeepsakePurchaseDetails } from "@/components/keepsake-purchase-details"
@@ -12,6 +13,7 @@ import {
   type BuyerIntent,
 } from "@/lib/buyer-intent"
 import { getSellableKeepsake, getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { giftIntentList } from "@/lib/gift-intent"
 import { CONCIERGE_PRICE_LABEL } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
 
@@ -27,17 +29,22 @@ export function BuyerIntentView({
   const product = getSellableKeepsake(PRIMARY_KEEPSAKE_ID)
   const others = getSellableKeepsakes().filter((item) => item.id !== PRIMARY_KEEPSAKE_ID)
   const linksSympathy = related.every((item) => item.path !== "/sympathy-gift-ideas") && page.path !== "/sympathy-gift-ideas"
+  const section = giftIntentList.some((item) => item.path === page.path)
+    ? { href: "/gifts", label: "Gifts" }
+    : { href: "/guides", label: "Guides" }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       {product ? <JsonLd data={buyerIntentJsonLd(page, product)} /> : null}
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-12">
-        <p className="mb-6 text-sm text-muted-foreground">
-          <Link href="/store" className="underline">
-            QR Memorial Keepsakes
-          </Link>
-        </p>
+        <Breadcrumbs
+          items={[
+            { href: "/", label: "Home" },
+            section,
+            { href: page.path, label: page.h1 },
+          ]}
+        />
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <article className="space-y-6">
             <h1 className="text-4xl font-bold text-foreground">{page.h1}</h1>
@@ -65,6 +72,23 @@ export function BuyerIntentView({
                     </Link>
                   </li>
                 ))}
+                {(page.links ?? []).map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="underline">
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/guides" className="underline">
+                    All memorial guides
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/gifts" className="underline">
+                    Memorial gift ideas
+                  </Link>
+                </li>
                 {linksSympathy ? (
                   <li>
                     <Link href="/sympathy-gift-ideas" className="underline">

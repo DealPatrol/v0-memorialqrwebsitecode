@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { buildGuideEmail, parseGuideEmail } from "@/lib/memorial-guide"
+import { buildGuideEmail, buildGuideLeadNote, parseGuideEmail } from "@/lib/memorial-guide"
+import { manualFulfillmentRecipients } from "@/lib/manual-fulfillment-email"
 import { getResend } from "@/lib/resend"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { SUPPORT_EMAIL } from "@/lib/site"
@@ -45,6 +46,19 @@ export async function POST(request: Request) {
     })
     if (error) {
       return NextResponse.json({ error: `We could not send the guide. Email ${SUPPORT_EMAIL} instead.` }, { status: 500 })
+    }
+    try {
+      const lead = buildGuideLeadNote(email, parsed.attribution)
+      await resend.emails.send({
+        from,
+        to: manualFulfillmentRecipients(process.env),
+        replyTo: email,
+        subject: lead.subject,
+        html: lead.html,
+        text: lead.text,
+      })
+    } catch (leadError) {
+      console.error("[guide] Lead note failed:", leadError)
     }
   } catch (error) {
     console.error("[guide] Email failed:", error)

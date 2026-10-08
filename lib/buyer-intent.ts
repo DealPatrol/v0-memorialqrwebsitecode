@@ -21,6 +21,8 @@ export type BuyerIntent = {
   showConcierge: boolean
   /** Show the memorial-page guide form on this page. */
   showGuide?: boolean
+  /** Extra internal links that clarify a nearby page. */
+  links?: { href: string; label: string }[]
 }
 
 export const PRIMARY_KEEPSAKE_ID = "qr-memorial-plaque"
@@ -145,6 +147,12 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    links: [
+      {
+        href: "/memorial-gift-loss-of-pet",
+        label: "A gift for someone grieving a pet",
+      },
+    ],
   },
   program: {
     id: "program",

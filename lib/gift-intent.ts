@@ -123,6 +123,12 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    links: [
+      {
+        href: "/pet-memorial-qr-code",
+        label: "The pet's own memorial QR page",
+      },
+    ],
   },
   personalized: {
     id: "personalized",
