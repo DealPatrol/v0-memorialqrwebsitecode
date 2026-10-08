@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
+import { buyerIntentList } from "@/lib/buyer-intent"
 import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
@@ -72,6 +73,26 @@ export default function StorePage() {
             </CardFooter>
           </Card>
         </div>
+      </section>
+
+      <section className="px-4 pb-4">
+        <nav aria-label="Keepsake guides" className="mx-auto max-w-3xl text-center">
+          <h2 className="mb-3 text-lg font-semibold">Find the keepsake you need</h2>
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
+            {buyerIntentList.map((item) => (
+              <li key={item.path}>
+                <Link href={item.path} className="underline">
+                  {item.h1}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link href="/funeral-homes" className="underline">
+                Funeral homes
+              </Link>
+            </li>
+          </ul>
+        </nav>
       </section>
 
       <SellableProductGrid />

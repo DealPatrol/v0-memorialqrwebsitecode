@@ -117,6 +117,12 @@ export function Header() {
                     <ListItem href="/programs" title="Memorial Pages">
                       Memorial page features, hosting included with keepsakes
                     </ListItem>
+                    <ListItem href="/qr-code-for-headstone" title="QR for a Headstone">
+                      A plaque visitors can scan at the grave
+                    </ListItem>
+                    <ListItem href="/funeral-homes" title="Funeral Homes">
+                      Wholesale inquiry for funeral homes
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -192,6 +198,12 @@ export function Header() {
               </Link>
               <Link href="/programs" className="text-muted-foreground hover:text-foreground pl-2">
                 Memorial Pages
+              </Link>
+              <Link href="/qr-code-for-headstone" className="text-muted-foreground hover:text-foreground pl-2">
+                QR for a Headstone
+              </Link>
+              <Link href="/funeral-homes" className="text-muted-foreground hover:text-foreground pl-2">
+                Funeral Homes
               </Link>
               <div className="border-t my-2" />
               <Link href="/store" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">

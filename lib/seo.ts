@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
+import { CONCIERGE_PRODUCTS, PLAQUE_PRICE } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 
@@ -42,6 +42,7 @@ export type SeoPage = {
 
 const years = HOSTING_INCLUDED_YEARS
 const concierge = CONCIERGE_PRICE_LABEL
+const plaque = `$${PLAQUE_PRICE.toFixed(2)}`
 
 export const publicPages = {
   home: {
@@ -269,6 +270,76 @@ export const publicPages = {
     title: "Glenda Jane Kelso Memorial | MemorialsQR",
     description: "Public online memorial page for Glenda Jane Kelso, July 27, 1952 to August 27, 2025.",
     file: "app/memorial/glenda-kelso/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.6,
+    index: true,
+    inSitemap: true,
+  },
+  headstoneQr: {
+    path: "/qr-code-for-headstone",
+    title: "QR Code for a Headstone | MemorialsQR",
+    description: `Visitors at a headstone can open photos and stories with a QR code. The QR Memorial Plaque is ${plaque} and includes ${years} years of hosting.`,
+    file: "app/qr-code-for-headstone/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  plaqueQr: {
+    path: "/memorial-qr-code-plaque",
+    title: "Memorial QR Code Plaque | MemorialsQR",
+    description: `A memorial QR code plaque in gold, silver, or black opens a page of photos and stories. ${plaque} once, with ${years} years of hosting included.`,
+    file: "app/memorial-qr-code-plaque/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  urnQr: {
+    path: "/qr-code-for-urn",
+    title: "QR Code for an Urn | MemorialsQR",
+    description: `A QR code beside an urn opens the memorial page when words are hard to find. The plaque is ${plaque} and includes ${years} years of hosting.`,
+    file: "app/qr-code-for-urn/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  petQr: {
+    path: "/pet-memorial-qr-code",
+    title: "Pet Memorial QR Code | MemorialsQR",
+    description: `A pet memorial QR code opens photos and stories of a companion you miss. The plaque is ${plaque} and includes ${years} years of hosting.`,
+    file: "app/pet-memorial-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  programQr: {
+    path: "/funeral-program-qr-code",
+    title: "Funeral Program QR Code | MemorialsQR",
+    description: `A funeral program QR code lets guests open the memorial page during the service. The plaque is ${plaque}, with ${years} years of hosting.`,
+    file: "app/funeral-program-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  digitalPage: {
+    path: "/digital-memorial-page",
+    title: "Digital Memorial Page | MemorialsQR",
+    description: `A digital memorial page holds photos, stories, and messages. It comes with the ${plaque} QR plaque and ${years} years of hosting.`,
+    file: "app/digital-memorial-page/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  funeralHomes: {
+    path: "/funeral-homes",
+    title: "Funeral Home Partners | MemorialsQR",
+    description: "Funeral homes can ask about offering MemorialsQR keepsakes to families. Tell us about your funeral home and we will reply by email.",
+    file: "app/funeral-homes/page.tsx",
     changeFrequency: "monthly",
     priority: 0.6,
     index: true,

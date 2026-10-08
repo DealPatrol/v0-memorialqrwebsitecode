@@ -2,11 +2,11 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Check } from "lucide-react"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
-import { Button } from "@/components/ui/button"
+import { KeepsakePurchaseDetails } from "@/components/keepsake-purchase-details"
 import { Card, CardContent } from "@/components/ui/card"
+import { buyerIntentList } from "@/lib/buyer-intent"
 import { getSellableKeepsake } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { keepsakeProductJsonLd } from "@/lib/keepsake-jsonld"
@@ -33,7 +33,10 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
   }
 
   const title = clip(`${product.name} | ${SITE_NAME}`, 60)
-  const description = clip(product.description, 155)
+  const description = clip(
+    `${product.name} is ${formatUsd(product.price)} once. Shipping is included, with ${HOSTING_INCLUDED_YEARS} years of hosting. Ships in the United States.`,
+    155,
+  )
   assertMetadataLength(title, description, path)
   return pageMetadata({ title, description, path })
 }
@@ -64,23 +67,20 @@ export default function KeepsakePage({ params }: { params: { id: string } }) {
           <Card>
             <CardContent className="space-y-5 p-6">
               <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
-              <p className="text-3xl font-bold">{formatUsd(product.price)}</p>
               <p className="text-muted-foreground">{product.description}</p>
-              <ul className="space-y-2">
-                {product.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-sm text-muted-foreground">
-                One payment of {formatUsd(product.price)}. {HOSTING_INCLUDED_YEARS} years of hosting included. Ships to
-                United States addresses.
-              </p>
-              <Button asChild className="w-full" size="lg">
-                <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
-              </Button>
+              <KeepsakePurchaseDetails product={product} />
+              <nav aria-label="Ways to use this keepsake" className="space-y-2 border-t pt-4">
+                <h2 className="text-sm font-semibold">Ways families use it</h2>
+                <ul className="space-y-1 text-sm">
+                  {buyerIntentList.map((item) => (
+                    <li key={item.path}>
+                      <Link href={item.path} className="underline">
+                        {item.h1}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
             </CardContent>
           </Card>
         </div>
