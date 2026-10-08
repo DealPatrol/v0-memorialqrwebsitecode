@@ -85,7 +85,7 @@ export function ConciergePageClient() {
               <div className="text-2xl">🕊️</div>
               <div>
                 <h3 className="font-semibold text-white mb-2">Ongoing Access</h3>
-                <p className="text-zinc-400">Kept online as long as your plan is active</p>
+                <p className="text-zinc-400">10 years of hosting included</p>
               </div>
             </div>
           </div>

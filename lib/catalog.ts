@@ -1,4 +1,3 @@
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 export type StoreCategory = "Human" | "Pet"
@@ -7,7 +6,6 @@ export interface StoreProduct {
   id: string
   name: string
   price: number
-  monthlyFee: number
   image: string
   badge: string
   category: StoreCategory
@@ -20,8 +18,6 @@ export interface CheckoutProduct {
   name: string
   /** Charged today. */
   price: number
-  /** Billed monthly by a Square subscription, starting one month after checkout. */
-  monthlyFee: number
   /** Years of hosting included (physical keepsakes only). */
   hostingIncludedYears?: number
 }
@@ -53,8 +49,6 @@ export interface PodProduct {
   id: string
   name: string
   price: number
-  /** Physical keepsakes include hosting, so no monthly fee is charged. */
-  monthlyFee: number
   /** Years of basic hosting included for the linked memorial page. */
   hostingIncludedYears: number
   provider: FulfillmentProvider
@@ -84,7 +78,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "keep-card",
     name: "Keep Card — QR Sticker + Memorial Page",
     price: 39.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printful",
     fulfillmentProduct: "Printful Kiss-Cut Stickers, 3×3 in",
@@ -101,7 +94,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "memorial-coaster",
     name: "Cork Memorial Coaster",
     price: 19.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printful",
     fulfillmentProduct: "Printful Cork-Back Coaster, 3.74×3.74 in",
@@ -117,7 +109,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "memorial-ornament",
     name: "Metal Memorial Ornament",
     price: 24.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printful",
     fulfillmentProduct: "Printful Metal Ornaments, rectangle 3×4 in",
@@ -133,7 +124,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "acrylic-keyring",
     name: "Acrylic QR Keychain",
     price: 19.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
     fulfillmentProduct: "Printify Custom Shape Acrylic Keychain (SwiftPOD), 2×2 in",
@@ -149,7 +139,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "voice-keychain",
     name: "Voice Keychain",
     price: 24.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
     fulfillmentProduct: "Printify Custom Shape Acrylic Keychain (SwiftPOD), 2×2 in",
@@ -166,7 +155,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "slate-plaque",
     name: "Slate Desk Plaque",
     price: 49.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
     fulfillmentProduct: "Printify Slate Desk Plaque (Pic The Gift), 8×8 in",
@@ -183,7 +171,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "pet-tag",
     name: "Pet QR Tag",
     price: 29.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
     fulfillmentProduct: "Printify Pet Tag (Printify Choice), 1 in",
@@ -199,7 +186,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "photo-block",
     name: "Acrylic Memorial Photo Block",
     price: 79.99,
-    monthlyFee: 0,
     hostingIncludedYears: HOSTING_INCLUDED_YEARS,
     provider: "printify",
     fulfillmentProduct: "Printify Photo Block (Acrylic Idea Factory), 7×5 in",
@@ -226,7 +212,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "memorial-locket",
     name: "Vintage Flower of Life Urn Necklace with Mini Jar Cremation Locket",
     price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/04933625-2735-47aa-b480-d34dc7292a74.jpeg",
     badge: "Most Popular",
     category: "Human",
@@ -243,7 +228,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "wooden-keychain-necklace",
     name: "Memorial QR Code Wooden Keychain or Necklace",
     price: 14.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/17c80bbb-d33f-4068-8656.jpeg",
     badge: "Best Seller",
     category: "Human",
@@ -260,7 +244,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "slate-memorial-coaster",
     name: "Memorial Slate Coaster with QR Code",
     price: 24.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/slate-memorial-coaster.jpeg",
     badge: "Popular",
     category: "Human",
@@ -277,7 +260,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "memorial-photo-frame",
     name: "Memorial Photo Frame with QR Code",
     price: 49.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/0d120a50-1c8d-4a75-a564.jpeg",
     badge: "Premium",
     category: "Human",
@@ -294,7 +276,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "human-cremation-urn-wood",
     name: "Wooden Cremation Urn with QR Memorial Plaque",
     price: 89.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/human-cremation-urn-wood.jpg",
     badge: "Premium",
     category: "Human",
@@ -311,7 +292,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-collar-memorial-tag",
     name: "Pet Memorial Collar with QR Code Tag",
     price: 19.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-collar-memorial.jpg",
     badge: "Pet",
     category: "Pet",
@@ -328,7 +308,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-garden-tombstone",
     name: "Pet Memorial Garden Stone with QR Code",
     price: 44.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-tombstone-garden.jpg",
     badge: "Pet",
     category: "Pet",
@@ -345,7 +324,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-cremation-urn-wood",
     name: "Wooden Pet Cremation Urn with QR Code",
     price: 34.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-cremation-urn-wood.jpg",
     badge: "Best Seller",
     category: "Pet",
@@ -362,7 +340,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-cremation-urn-ceramic",
     name: "Ceramic Pet Cremation Urn with QR Memorial",
     price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-urn-ceramic.jpg",
     badge: "Pet",
     category: "Pet",
@@ -379,7 +356,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-photo-frame-qr",
     name: "Pet Memorial Photo Frame with QR Code",
     price: 29.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-frame-dog-photo.jpg",
     badge: "Pet",
     category: "Pet",
@@ -396,7 +372,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "custom-pet-portrait-drawing",
     name: "Custom Pet Portrait Drawing with QR Code",
     price: 54.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/custom-dog-portrait-drawing.jpg",
     badge: "Premium",
     category: "Pet",
@@ -413,7 +388,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-shadow-box-collar",
     name: "Pet Memorial Shadow Box with Collar Display",
     price: 64.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-shadow-box-collar.jpg",
     badge: "Premium",
     category: "Pet",
@@ -435,9 +409,9 @@ export const STORE_PRODUCTS: StoreProduct[] = []
 export const PLAQUE_PRICE = 29.99
 
 const WITHHELD_PLAQUE_PRODUCTS: CheckoutProduct[] = [
-  { id: "gold-plaque", name: "Gold Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
-  { id: "silver-plaque", name: "Silver Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
-  { id: "black-plaque", name: "Black Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
+  { id: "gold-plaque", name: "Gold Memorial Plaque", price: PLAQUE_PRICE },
+  { id: "silver-plaque", name: "Silver Memorial Plaque", price: PLAQUE_PRICE },
+  { id: "black-plaque", name: "Black Memorial Plaque", price: PLAQUE_PRICE },
 ]
 
 export const PLAQUE_PRODUCTS: CheckoutProduct[] = []
@@ -451,13 +425,11 @@ export const CONCIERGE_PRODUCTS: CheckoutProduct[] = [
     id: "concierge-digital",
     name: "Concierge Service - Digital Link",
     price: 299.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
   },
   {
     id: "concierge-service",
     name: "Concierge Memorial Service",
     price: 299.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
   },
 ]
 
@@ -465,19 +437,6 @@ const WITHHELD_CONCIERGE_PLAQUE: CheckoutProduct = {
   id: "concierge-plaque",
   name: "Concierge Service - Physical Plaque",
   price: 329.99,
-  monthlyFee: HOSTING_MONTHLY_PRICE,
-}
-
-/**
- * The digital page itself. Nothing is shipped. The first month is charged at checkout;
- * the Square subscription then bills the same amount monthly starting one month later.
- * Sellable only when SQUARE_SUBSCRIPTION_PLAN_ID is set (see isDigitalSubscriptionConfigured).
- */
-export const DIGITAL_MEMORIAL: CheckoutProduct = {
-  id: "digital-memorial",
-  name: "Digital Memorial Page (monthly)",
-  price: HOSTING_MONTHLY_PRICE,
-  monthlyFee: HOSTING_MONTHLY_PRICE,
 }
 
 const REMOVED_PHYSICAL_IDS = new Set<string>([

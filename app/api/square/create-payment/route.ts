@@ -3,18 +3,17 @@ import { randomUUID } from "crypto"
 import { CHECKOUT_CURRENCY } from "@/lib/site"
 import { resolveConfiguredCheckoutItems } from "@/lib/fulfillment-availability"
 import { quoteCheckout } from "@/lib/checkout-quote"
-import { createSquareCustomer, createSquarePayment, getSquareConfig, saveCardFromPayment } from "@/lib/square-api"
+import { createSquarePayment, getSquareConfig } from "@/lib/square-api"
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
- * Charges the card token for the server-computed cart total.
- * When the cart needs monthly hosting, a Square customer is created first and the card
- * is saved from the completed payment so /api/checkout/process can start the subscription.
+ * Charges the card token once for the server-computed cart total. Keepsakes include
+ * 10 years of hosting, so no customer profile, saved card, or subscription is created.
  */
 export async function POST(req: Request) {
   try {
-    const { sourceId, verificationToken, items, orderId, customerEmail, customerName } = await req.json()
+    const { sourceId, verificationToken, items, orderId, customerEmail } = await req.json()
 
     if (!sourceId || typeof sourceId !== "string") {
       return NextResponse.json({ success: false, error: "Missing card details" }, { status: 400 })
@@ -40,24 +39,6 @@ export async function POST(req: Request) {
 
     const referenceId = typeof orderId === "string" && orderId ? orderId : `order_${Date.now()}`
 
-    let customerId: string | null = null
-    if (quote.needsSubscription) {
-      const customer = await createSquareCustomer(square, {
-        email: customerEmail,
-        name: typeof customerName === "string" ? customerName : undefined,
-        idempotencyKey: randomUUID(),
-        referenceId,
-      })
-      if (!customer.ok) {
-        console.error("[checkout] Square customer creation failed before charging:", customer.error)
-        return NextResponse.json(
-          { success: false, error: "We could not set up monthly billing. Your card was not charged. Please try again." },
-          { status: 502 },
-        )
-      }
-      customerId = customer.data.customer.id
-    }
-
     const payment = await createSquarePayment(square, {
       sourceId,
       verificationToken: typeof verificationToken === "string" ? verificationToken : undefined,
@@ -65,7 +46,6 @@ export async function POST(req: Request) {
       currency: CHECKOUT_CURRENCY,
       idempotencyKey: randomUUID(),
       referenceId,
-      customerId,
       buyerEmail: customerEmail,
       note: resolvedItems.map((item) => `${item.id} x${item.quantity}`).join(", "),
     })
@@ -77,26 +57,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: userMessage, errorCode: payment.code || "UNKNOWN" }, { status: 400 })
     }
 
-    let cardId: string | null = null
-    if (quote.needsSubscription && customerId) {
-      const card = await saveCardFromPayment(square, {
-        paymentId: payment.data.payment.id,
-        customerId,
-        idempotencyKey: randomUUID(),
-      })
-      if (card.ok) {
-        cardId = card.data.card.id
-      } else {
-        // The charge succeeded. Checkout records the order and flags the missing subscription.
-        console.error("[checkout] Card could not be saved after payment:", card.error)
-      }
-    }
-
     return NextResponse.json({
       success: true,
       payment: { id: payment.data.payment.id, status: payment.data.payment.status },
-      customerId,
-      cardId,
     })
   } catch (error) {
     console.error("Payment error:", error)

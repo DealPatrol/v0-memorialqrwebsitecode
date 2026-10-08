@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
 import { CheckCircle, Sparkles, QrCode, Share2, Eye, Download, ArrowRight } from "lucide-react"
-import { HOSTING_PRICE_LABEL } from "@/lib/seo"
 
 export default function SampleMemorialCreatedPage() {
   const searchParams = useSearchParams()
@@ -186,14 +185,14 @@ export default function SampleMemorialCreatedPage() {
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-8 rounded-lg">
               <h3 className="text-2xl font-bold mb-4">Ready to Create a Real Memorial?</h3>
               <p className="text-lg opacity-90 mb-6">
-                When you are ready for a real online memorial page, hosting is {HOSTING_PRICE_LABEL} a month. Nothing is
-                shipped.
+                When you are ready for a real memorial page, choose a QR keepsake. Every keepsake includes 10 years of
+                hosting.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-                  <Link href="/pricing">
-                    View Pricing Plans
+                  <Link href="/store">
+                    See Keepsakes
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Link>
                 </Button>
@@ -218,7 +217,7 @@ export default function SampleMemorialCreatedPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

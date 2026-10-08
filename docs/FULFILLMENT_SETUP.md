@@ -144,15 +144,6 @@ Then review and run `scripts/026_add_hosting_included_until.sql`. It adds a null
 
 ## 5. Hosting rules
 
-- Physical keepsakes include 10 years of basic hosting for the memorial page, starting on the order date. No subscription is created for an order that contains a keepsake.
-- A memorial page on its own (`digital-memorial`) costs $4.99 per month. The first month is charged at checkout and a Square subscription bills $4.99 monthly from one month later.
-- A cart cannot contain both a keepsake and the monthly page.
-
-## 6. Monthly subscription (Square)
-
-1. In Square Dashboard → Items → Subscription plans, create a plan "Memorial page hosting" with one variation billed **$4.99 every month**, no trial and no end date.
-2. Copy the **plan variation id** (not the plan id). `GET /v2/catalog/list?types=SUBSCRIPTION_PLAN` returns it as `subscription_plan_data.subscription_plan_variations[].id`.
-3. Add it to Vercel as `SQUARE_SUBSCRIPTION_PLAN_ID` (Production; Preview only if Preview uses a sandbox Square account).
-4. Redeploy. "Create a Memorial Page" then opens `/checkout/simple?product=digital-memorial`. Without the variable the monthly page stays hidden and the button keeps opening the free builder.
-
-Checkout creates a Square customer from the email, charges the server-computed total, saves the card from that payment, verifies the payment with Square, and then creates the subscription. A failure after the charge is written to `orders.admin_notes` as `SUBSCRIPTION NOT CREATED`.
+- Every keepsake includes 10 years of hosting for its memorial page, starting on the order date. The concierge service also includes 10 years.
+- There is no monthly plan. Checkout charges the server-computed total once and never creates a Square customer profile, saved card, or subscription.
+- `SQUARE_SUBSCRIPTION_PLAN_ID` is not used. Leave it unset.

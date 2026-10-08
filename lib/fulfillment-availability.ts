@@ -1,17 +1,11 @@
 import {
   CONCIERGE_PRODUCTS,
-  DIGITAL_MEMORIAL,
   getPodProduct,
   type CheckoutProduct,
   type FulfillmentProvider,
   type PodProduct,
 } from "@/lib/catalog"
-import {
-  configuredPodProducts,
-  envValue,
-  isDigitalSubscriptionConfigured,
-  type EnvSource,
-} from "@/lib/fulfillment-readiness"
+import { configuredPodProducts, envValue, type EnvSource } from "@/lib/fulfillment-readiness"
 
 export type SellableProduct = CheckoutProduct & {
   ships: boolean
@@ -30,9 +24,9 @@ export type ConfiguredLine = CheckoutProduct & {
   variantId: string | null
 }
 
-/** Digital products sold without a supplier. The monthly page needs a Square plan id. */
-function digitalProducts(env: EnvSource): CheckoutProduct[] {
-  return isDigitalSubscriptionConfigured(env) ? [DIGITAL_MEMORIAL, ...CONCIERGE_PRODUCTS] : [...CONCIERGE_PRODUCTS]
+/** Digital products sold without a supplier (concierge only; there is no monthly page). */
+function digitalProducts(_env: EnvSource): CheckoutProduct[] {
+  return [...CONCIERGE_PRODUCTS]
 }
 
 export function listSellableProducts(env: EnvSource = process.env): SellableProduct[] {
@@ -45,7 +39,6 @@ export function listSellableProducts(env: EnvSource = process.env): SellableProd
     id: product.id,
     name: product.name,
     price: product.price,
-    monthlyFee: product.monthlyFee,
     hostingIncludedYears: product.hostingIncludedYears,
     ships: true,
     provider: product.provider,
@@ -94,7 +87,6 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
       id: pod.id,
       name: pod.name,
       price: pod.price,
-      monthlyFee: pod.monthlyFee,
       hostingIncludedYears: pod.hostingIncludedYears,
       quantity,
       ships: true,
@@ -108,10 +100,3 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
   return resolved.length === items.length ? resolved : null
 }
 
-/**
- * Where "Create a Memorial Page" goes. With a Square plan configured it opens the
- * monthly checkout; without one it falls back to the free page builder.
- */
-export function memorialStartHref(env: EnvSource = process.env): string {
-  return isDigitalSubscriptionConfigured(env) ? `/checkout/simple?product=${DIGITAL_MEMORIAL.id}` : "/create-memorial"
-}

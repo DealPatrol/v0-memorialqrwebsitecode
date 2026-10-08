@@ -36,8 +36,8 @@ export default function HowItWorksPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-              <Link href="/pricing">
-                Get Started Now
+              <Link href="/store">
+                Shop Keepsakes
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -83,10 +83,10 @@ export default function HowItWorksPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                     1
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Choose Your Memorial</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">Choose a Keepsake</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  Choose a memorial page for a loved one or a pet. Hosting keeps that page online.
+                  Choose a QR keepsake for a loved one or a pet. It includes 10 years of hosting for the memorial page.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
@@ -99,7 +99,7 @@ export default function HowItWorksPage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Hosting is $4.99 per month for each memorial</span>
+                    <span>10 years of hosting included</span>
                   </li>
                 </ul>
               </div>
@@ -109,7 +109,7 @@ export default function HowItWorksPage() {
                     <div className="text-center">
                       <ShoppingCart className="w-16 h-16 text-purple-600 mx-auto mb-4" />
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">Start the Page</h3>
-                      <p className="text-gray-600">A digital memorial, with monthly hosting</p>
+                      <p className="text-gray-600">A QR keepsake with 10 years of hosting included</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -167,7 +167,7 @@ export default function HowItWorksPage() {
                   <h2 className="text-3xl font-bold text-gray-900">Share the Page</h2>
                 </div>
                 <p className="text-lg text-gray-600 mb-6">
-                  Send the memorial link to family and friends. Hosting keeps the page available. Nothing is shipped.
+                  Send the memorial link to family and friends, or let them scan the QR code on the keepsake.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
@@ -180,7 +180,7 @@ export default function HowItWorksPage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Hosting is $4.99 per month</span>
+                    <span>No recurring fees</span>
                   </li>
                 </ul>
               </div>
@@ -271,8 +271,8 @@ export default function HowItWorksPage() {
             <Card className="text-center p-6">
               <CardContent className="p-0">
                 <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Digital Memorial Hosting</h3>
-                <p className="text-sm text-gray-600">$4.99 per month for each hosted memorial</p>
+                <h3 className="font-semibold text-gray-900 mb-2">Hosting Included</h3>
+                <p className="text-sm text-gray-600">10 years of hosting with every keepsake</p>
               </CardContent>
             </Card>
 
@@ -292,13 +292,13 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Create a Memorial?</h2>
           <p className="text-xl text-white/90 mb-8">
-            Start honoring your loved ones today with a beautiful digital memorial, kept online as long as your plan is active.
+            Start honoring your loved ones today with a QR keepsake and memorial page, with 10 years of hosting included.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-              <Link href="/pricing">
-                View Packages
+              <Link href="/store">
+                See Keepsakes
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

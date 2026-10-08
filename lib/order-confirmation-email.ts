@@ -1,15 +1,14 @@
 import { getResend } from "@/lib/resend"
 import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 export type OrderConfirmationInput = {
   customerEmail: string
   customerName?: string | null
   orderNumber: string
   productName: string
-  /** Dollars, e.g. "4.99". */
+  /** Dollars, e.g. "24.99". */
   amount: string
-  /** Dollars per month; "0.00" when no subscription. */
-  monthlyFee?: string
   shipsPhysical: boolean
   hostingIncludedUntil?: string | null
 }
@@ -25,14 +24,12 @@ function escapeHtml(value: string): string {
 export async function sendOrderConfirmationEmail(input: OrderConfirmationInput): Promise<void> {
   const resend = getResend()
   const name = escapeHtml(input.customerName || "Valued Customer")
-  const monthly = input.monthlyFee ? Number.parseFloat(input.monthlyFee) : 0
-  const hostingLine = input.hostingIncludedUntil
-    ? `<p><strong>Memorial Hosting:</strong> 10 years of basic hosting included with your keepsake (through ${new Date(
-        input.hostingIncludedUntil,
-      ).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}). No monthly fee. You can renew at the monthly rate after that.</p>`
-    : monthly > 0
-      ? `<p><strong>Monthly Hosting:</strong> $${monthly.toFixed(2)}/month starting next month. Cancel anytime.</p>`
-      : ""
+  const includedUntil = input.hostingIncludedUntil ? new Date(input.hostingIncludedUntil) : new Date()
+  if (!input.hostingIncludedUntil) includedUntil.setUTCFullYear(includedUntil.getUTCFullYear() + HOSTING_INCLUDED_YEARS)
+  const hostingLine = `<p><strong>Memorial Hosting:</strong> ${HOSTING_INCLUDED_YEARS} years of hosting included (through ${includedUntil.toLocaleDateString(
+    "en-US",
+    { year: "numeric", month: "long", day: "numeric" },
+  )}). One-time payment, no recurring charges.</p>`
 
   const intro = input.shipsPhysical
     ? "We've received your order. Your keepsake is printed after payment and we'll email tracking when it ships."

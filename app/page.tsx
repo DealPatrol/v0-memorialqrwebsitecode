@@ -25,9 +25,8 @@ import {
   CheckCircle,
 } from "lucide-react"
 import { getSellablePodProducts } from "@/lib/fulfillment-availability"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
-import { formatUsd } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.home)
 
@@ -49,15 +48,15 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance leading-tight">
-              Digital Memorial Pages for Photos, Videos, and Stories
+              QR Memorial Keepsakes With 10 Years of Hosting Included
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
-              A digital memorial page for photos, videos, and stories. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)} per
-              month.
+              Each keepsake carries a QR code that opens a memorial page for photos, videos, and stories. Every keepsake
+              includes {HOSTING_INCLUDED_YEARS} years of hosting. One payment, no recurring fees.
               {physicalProducts.length === 0
-                ? " Nothing needs to be shipped."
-                : " Printed keepsakes ship to United States addresses when a supplier is connected."}
+                ? " Keepsakes are not available to order online right now."
+                : " Keepsakes ship to United States addresses."}
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -67,7 +66,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">{formatUsd(HOSTING_MONTHLY_PRICE)}/month Hosting</span>
+                <span className="text-sm font-medium text-foreground">{HOSTING_INCLUDED_YEARS} Years of Hosting Included</span>
               </div>
             </div>
           </div>
@@ -75,20 +74,20 @@ export default function HomePage() {
           <div id="digital-memorial" className="max-w-xl mx-auto">
             <Card className="bg-white border-border shadow-lg">
               <CardContent className="p-8 text-center">
-                <h2 className="text-2xl font-bold text-foreground mb-3">Digital Memorial Page</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-3">QR Memorial Keepsakes</h2>
                 <p className="text-muted-foreground mb-6">
-                  Create the page yourself, or have our team build it. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)}{" "}
-                  per month for each memorial.
+                  Choose a keepsake, then set up the memorial page yourself or have our team build it. Hosting for{" "}
+                  {HOSTING_INCLUDED_YEARS} years is included.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg">
-                    <Link href="/create-memorial">
-                      Create a Memorial Page
+                    <Link href="/store">
+                      Shop Keepsakes
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
                   </Button>
                   <Button asChild size="lg" variant="outline">
-                    <Link href="/store">See Hosting</Link>
+                    <Link href="/concierge">Have Us Build It</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -167,8 +166,7 @@ export default function HomePage() {
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Easy Setup, Ongoing Access</h3>
               <p className="text-base leading-relaxed text-foreground">
                 Create the memorial page by uploading photos and stories. Family members open the link on any phone and
-                can add their own memories. Hosting keeps the page online for {formatUsd(HOSTING_MONTHLY_PRICE)} per
-                month.
+                can add their own memories. Every keepsake includes {HOSTING_INCLUDED_YEARS} years of hosting for the page.
               </p>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Privacy Controls & Family Collaboration</h3>
@@ -182,15 +180,15 @@ export default function HomePage() {
               <div className="bg-secondary/50 border border-border rounded-lg p-6 my-10">
                 <h4 className="font-semibold text-lg mb-3 text-foreground">Perfect for All Memorial Types</h4>
                 <p className="text-muted-foreground mb-4">
-                  The page works for a person or a pet. Share the link with family, or keep it private. Hosting is{" "}
-                  {formatUsd(HOSTING_MONTHLY_PRICE)} per month for each memorial.
+                  The page works for a person or a pet. Share the link with family, or keep it private. Each keepsake
+                  includes {HOSTING_INCLUDED_YEARS} years of hosting for its memorial.
                 </p>
               </div>
 
               <h3 className="text-2xl font-semibold text-foreground mt-8 mb-4">Affordable, Transparent Pricing</h3>
               <p className="text-base leading-relaxed text-foreground">
-                The memorial page is the offer. Hosting is {formatUsd(HOSTING_MONTHLY_PRICE)} per month for each
-                memorial, with no product to ship.
+                You pay once for the keepsake. {HOSTING_INCLUDED_YEARS} years of memorial page hosting is included, with
+                no subscription and no recurring charges.
               </p>
             </div>
           </div>
@@ -212,9 +210,9 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
                 <QrCode className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">1. Create Their Profile</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-3">1. Choose a Keepsake</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Upload photos, videos, and cherished memories to create a beautiful digital memorial page.
+                Pick a QR keepsake, then upload photos, videos, and memories to build the memorial page.
               </p>
             </div>
 
@@ -222,9 +220,9 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
                 <Heart className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">2. Keep It Online</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-3">2. Hosting Included</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Hosting at {formatUsd(HOSTING_MONTHLY_PRICE)} per month keeps the memorial page available.
+                Every keepsake includes {HOSTING_INCLUDED_YEARS} years of hosting for the memorial page.
               </p>
             </div>
 
@@ -299,9 +297,9 @@ export default function HomePage() {
             <Card className="bg-white border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <Shield className="w-10 h-10 text-primary mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Digital Memorial Hosting</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{HOSTING_INCLUDED_YEARS} Years of Hosting</h3>
                 <p className="text-muted-foreground text-sm">
-                  Keep the memorial page available with hosting billed at {formatUsd(HOSTING_MONTHLY_PRICE)} per month per memorial.
+                  Every keepsake includes {HOSTING_INCLUDED_YEARS} years of memorial page hosting. No recurring fees.
                 </p>
               </CardContent>
             </Card>
@@ -318,13 +316,13 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Create a Lasting Memorial?</h2>
           <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Whether honoring a loved one or a beloved pet, create a beautiful digital memorial, kept online as long as your plan is active.
+            Whether honoring a loved one or a beloved pet, choose a QR keepsake with {HOSTING_INCLUDED_YEARS} years of memorial page hosting included.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
-              <Link href="/create-memorial">
-                Create a Memorial
+              <Link href="/store">
+                Shop Keepsakes
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

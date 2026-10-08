@@ -140,12 +140,6 @@ export default function OrderConfirmationPage() {
                   <span className="text-muted-foreground">Plan:</span>
                   <span className="font-medium capitalize">{order.plan_type} Payment</span>
                 </div>
-                {order.plan_type === "monthly" && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Monthly:</span>
-                    <span className="font-medium">${(order.monthly_amount_cents / 100).toFixed(2)}/month</span>
-                  </div>
-                )}
                 {order.addon_wooden_qr && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Add-on:</span>
@@ -205,7 +199,7 @@ export default function OrderConfirmationPage() {
               <div>
                 <h3 className="font-semibold mb-2">Your Memorial Page</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your digital memorial is ready to build. Nothing is shipped.
+                  Your memorial page is ready to build. 10 years of hosting included.
                 </p>
               </div>
             </div>

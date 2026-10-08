@@ -8,7 +8,7 @@
     "lint": "next lint",
     "start": "next start",
     "test:fulfillment": "node --import tsx --test scripts/dry-run-fulfillment.ts",
-    "test:checkout": "node --import tsx --test scripts/checkout-subscription.test.ts"
+    "test:checkout": "node --import tsx --test scripts/checkout-keepsake.test.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "latest",

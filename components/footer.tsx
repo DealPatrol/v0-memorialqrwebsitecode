@@ -29,8 +29,8 @@ export function Footer() {
             </div>
             <div className="text-center">
               <Clock className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-bold mb-1">Digital Hosting</h3>
-              <p className="text-sm text-zinc-400">$4.99/month per memorial</p>
+              <h3 className="font-bold mb-1">Hosting Included</h3>
+              <p className="text-sm text-zinc-400">10 years with every keepsake</p>
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4">Products</h3>
             <ul className="space-y-2 text-sm text-zinc-400">
-              <li><Link href="/store" className="hover:text-white transition-colors">Digital Memorial</Link></li>
+              <li><Link href="/store" className="hover:text-white transition-colors">QR Keepsakes</Link></li>
               <li><Link href="/human-memorials" className="hover:text-white transition-colors">Human Memorials</Link></li>
               <li><Link href="/pet-memorials" className="hover:text-white transition-colors">Pet Memorials</Link></li>
               <li><Link href="/how-it-works" className="hover:text-white transition-colors">How It Works</Link></li>
@@ -92,8 +92,8 @@ export function Footer() {
             <div>
               <h4 className="font-semibold mb-3">Simple, transparent service</h4>
               <div className="space-y-2 text-xs text-zinc-400">
-                <p>The memorial page is hosted online.</p>
-                <p>Digital hosting is $4.99/month per memorial.</p>
+                <p>Every QR keepsake opens an online memorial page.</p>
+                <p>Each keepsake includes 10 years of hosting. No recurring fees.</p>
                 <p>Secure online payments are processed by Square.</p>
               </div>
             </div>

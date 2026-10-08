@@ -15,41 +15,17 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
-import { HOSTING_INCLUDED_YEARS, getHostingTerms } from "@/lib/hosting"
 
-type CartLine = {
-  id: string
-  name: string
-  price: number
-  monthlyFee: number
-  hostingIncludedYears?: number
-  quantity: number
-  ships: boolean
-}
+type CartLine = { id: string; name: string; price: number; quantity: number; ships: boolean }
 
-type SellableRow = {
-  id: string
-  name: string
-  price: number
-  monthlyFee: number
-  hostingIncludedYears?: number
-  ships: boolean
-}
+type SellableRow = { id: string; name: string; price: number; ships: boolean }
 
 function lineFromSellable(catalog: Map<string, SellableRow>, id: string, quantity: number): CartLine | null {
   const product = catalog.get(id)
   if (!product) return null
-  return {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    monthlyFee: product.monthlyFee,
-    hostingIncludedYears: product.hostingIncludedYears,
-    quantity,
-    ships: product.ships,
-  }
+  return { id: product.id, name: product.name, price: product.price, quantity, ships: product.ships }
 }
 
 function CheckoutForm() {
@@ -127,21 +103,8 @@ function CheckoutForm() {
 
   // Digital-only carts ship nothing, so the address block is hidden and not required.
   const needsShipping = cartItems.some((item) => item.ships)
-  const hostingTerms = getHostingTerms(cartItems)
-  const includesKeepsake = hostingTerms.includesPhysicalKeepsake
-  const billsMonthly = !includesKeepsake && cartItems.some((item) => item.monthlyFee > 0)
-  const hasMonthlyPage = cartItems.some((item) => item.id === "digital-memorial")
 
   const validateForm = () => {
-    if (hasMonthlyPage && needsShipping) {
-      toast({
-        title: "Hosting already included",
-        description: `Keepsakes include ${HOSTING_INCLUDED_YEARS} years of hosting. Remove the monthly memorial page from this order.`,
-        variant: "destructive",
-      })
-      return false
-    }
-
     if (!formData.email) {
       toast({
         title: "Missing Information",
@@ -192,7 +155,7 @@ function CheckoutForm() {
     return true
   }
 
-  const handlePaymentSuccess = async (paymentId: string, cardId?: string) => {
+  const handlePaymentSuccess = async (paymentId: string) => {
     if (isSubmitting) return
     setIsSubmitting(true)
 
@@ -201,7 +164,6 @@ function CheckoutForm() {
         planType: "cart-checkout",
         items: cartItems,
         totalAmount: orderTotal,
-        monthlyFee: billsMonthly ? HOSTING_MONTHLY_PRICE : 0,
         customerEmail: formData.email || "",
         customerPhone: formData.phone || "",
         addressLine1: needsShipping ? formData.address : "",
@@ -211,7 +173,6 @@ function CheckoutForm() {
         zip: needsShipping ? formData.zipCode : "",
         paymentId: paymentId,
         customization: formData.customization || "",
-        cardId: cardId,
       }
 
       const response = await fetch("/api/checkout/process", {
@@ -265,19 +226,19 @@ function CheckoutForm() {
       <section className="py-20 px-4">
         <div className="max-w-xl mx-auto text-center">
           <h1 className="text-3xl font-bold text-foreground mb-4">
-            {rejectedProduct ? "This product is not available" : "Start with a digital memorial"}
+            {rejectedProduct ? "This product is not available" : "Choose a QR memorial keepsake"}
           </h1>
           <p className="text-muted-foreground mb-8">
             {rejectedProduct
-              ? "We are not selling that item. The memorial page and monthly hosting do not need to be shipped."
-              : `Create a memorial page and keep it online for ${formatUsd(HOSTING_MONTHLY_PRICE)} per month.`}
+              ? "We are not selling that item right now. See the keepsakes that are available."
+              : `Every QR memorial keepsake includes ${HOSTING_INCLUDED_YEARS} years of hosting for its memorial page. One payment, no recurring fees.`}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/create-memorial" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground">
-              Create a Memorial Page
+            <Link href="/store" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground">
+              See Keepsakes
             </Link>
-            <Link href="/store" className="inline-flex items-center justify-center rounded-md border px-6 py-3">
-              See Hosting
+            <Link href="/concierge" className="inline-flex items-center justify-center rounded-md border px-6 py-3">
+              Have Us Build It
             </Link>
           </div>
         </div>
@@ -290,7 +251,7 @@ function CheckoutForm() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Purchase</h1>
-          <p className="text-lg text-muted-foreground">Secure checkout for your digital memorial</p>
+          <p className="text-lg text-muted-foreground">Secure one-time checkout</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -316,33 +277,16 @@ function CheckoutForm() {
                 ))}
 
                 <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
-                  {includesKeepsake ? (
-                    <>
-                      <div className="flex justify-between items-center text-sm mb-1">
-                        <span className="text-blue-900 dark:text-blue-100 font-medium">Memorial Hosting:</span>
-                        <span className="font-semibold text-blue-900 dark:text-blue-100">
-                          {HOSTING_INCLUDED_YEARS} years included
-                        </span>
-                      </div>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                        {HOSTING_INCLUDED_YEARS} years of basic hosting for this memorial page are included with your
-                        keepsake, starting today. No monthly fee. After that you can renew at the monthly rate
-                        (currently {formatUsd(HOSTING_MONTHLY_PRICE)}/month).
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex justify-between items-center text-sm mb-1">
-                        <span className="text-blue-900 dark:text-blue-100 font-medium">Monthly Hosting:</span>
-                        <span className="font-semibold text-blue-900 dark:text-blue-100">
-                          {formatUsd(HOSTING_MONTHLY_PRICE)}/mo
-                        </span>
-                      </div>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                        Billed <strong>per memorial page</strong> by Square to the card you use today. Cancel anytime.
-                      </p>
-                    </>
-                  )}
+                  <div className="flex justify-between items-center text-sm mb-1">
+                    <span className="text-blue-900 dark:text-blue-100 font-medium">Memorial Page Hosting:</span>
+                    <span className="font-semibold text-blue-900 dark:text-blue-100">{HOSTING_INCLUDED_YEARS} years included</span>
+                  </div>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                    Hosting starts on the order date. <strong>No recurring fees.</strong>
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                    Includes: Unlimited photos, videos & memorial content hosting
+                  </p>
                 </div>
 
                 <Separator />
@@ -351,11 +295,7 @@ function CheckoutForm() {
                   <span className="text-2xl font-bold text-blue-600">{formatUsd(orderTotal)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  {includesKeepsake
-                    ? `One-time payment, US shipping included. ${HOSTING_INCLUDED_YEARS} years of basic hosting included.`
-                    : hasMonthlyPage
-                      ? `Today's charge is your first month. Then ${formatUsd(HOSTING_MONTHLY_PRICE)}/month starting next month.`
-                      : `Then ${formatUsd(HOSTING_MONTHLY_PRICE)}/month per memorial starting next month`}
+                  {needsShipping ? "One-time payment, US shipping included." : "One-time payment."} Nothing else is charged later.
                 </p>
               </div>
 
@@ -369,23 +309,15 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>
-                    {includesKeepsake
-                      ? `Memorial page hosted for ${HOSTING_INCLUDED_YEARS} years, renewable after that`
-                      : "Memorial page kept online while your monthly plan is active"}
-                  </span>
+                  <span>{HOSTING_INCLUDED_YEARS} years of memorial page hosting included</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Photos, videos & memories</span>
+                  <span>Unlimited photos, videos & memories</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>
-                    {includesKeepsake
-                      ? "Several keepsakes for the same memorial share one hosting term"
-                      : "Hosting billed once per memorial"}
-                  </span>
+                  <span>No subscription and no recurring charges</span>
                 </div>
               </div>
 

@@ -6,10 +6,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
 import { JsonLd } from "@/components/json-ld"
-import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
+import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
-import { getSellablePodProducts } from "@/lib/fulfillment-availability"
-import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 export const metadata = pageMetadata(publicPages.faq)
 
@@ -45,19 +43,19 @@ const baseFaqCategories = [
     title: "Pricing & Payment",
     faqs: [
       {
-        question: "Are there any monthly fees?",
+        question: "Are there any recurring fees?",
         answer:
-          "Digital memorial hosting is $4.99 per month per memorial. The page itself is what you create. Nothing is shipped.",
+          "No. A QR keepsake is a one-time purchase, and it includes 10 years of hosting for its memorial page. There is no subscription.",
       },
       {
         question: "What's included in the product price?",
         answer:
-          "Hosting is $4.99 per month for each memorial page. That covers photos, videos, and stories on the page.",
+          "The printed QR keepsake and 10 years of hosting for the memorial page it opens, starting on the order date. That covers photos, videos, and stories on the page.",
       },
       {
-        question: "What happens if I cancel my hosting subscription?",
+        question: "What happens after the 10 included years?",
         answer:
-          "You will not be charged for another billing period. The hosted memorial may become unavailable after the paid period ends. Contact support before canceling if you need help preserving a copy of your content.",
+          "We will contact you before the included hosting ends to talk about renewal options. You can download the memorial photos at any time.",
       },
       {
         question: "Do you offer refunds?",
@@ -77,12 +75,12 @@ const baseFaqCategories = [
       {
         question: "Is anything shipped?",
         answer:
-          "No. The current offer is the digital memorial page and monthly hosting. Physical products are not for sale.",
+          "Yes. QR keepsakes are printed after payment and ship to United States addresses. The store shows which keepsakes can be ordered right now.",
       },
       {
         question: "What if the memorial page will not load?",
         answer:
-          "The page needs an active hosting plan. Contact support if an active memorial is not loading.",
+          "Contact support if a memorial page is not loading and we will look into it.",
       },
     ],
   },
@@ -147,20 +145,20 @@ const baseFaqCategories = [
       {
         question: "Do you ship a plaque, tag, or garden stone?",
         answer:
-          "No. The current offer is the online memorial page and the concierge memorial service. Nothing is shipped.",
+          "We sell printed QR keepsakes such as stickers, coasters, keyrings, desk plaques, and pet tags, each with 10 years of hosting included. The store shows what can be ordered right now. We do not sell headstones or garden stones.",
       },
       {
         question: "What is a QR code memorial?",
         answer:
-          "It is a QR code that opens an online memorial page of photos, stories, and messages. You can download the code and share it. We do not sell the physical marker.",
+          "It is a QR code that opens an online memorial page of photos, stories, and messages. Our keepsakes come with the code printed on them.",
       },
       {
         question: "What does memorial hosting cost?",
-        answer: `Digital memorial hosting is ${HOSTING_PRICE_LABEL} per month for each memorial page.`,
+        answer: "Hosting is included. Every QR keepsake comes with 10 years of hosting for its memorial page, with no recurring fees.",
       },
       {
         question: "What does the concierge memorial service cost?",
-        answer: `The concierge memorial service is ${CONCIERGE_PRICE_LABEL}. We build the page. Nothing is shipped.`,
+        answer: `The concierge memorial service is ${CONCIERGE_PRICE_LABEL}, with 10 years of hosting included. We build the page and send you the link.`,
       },
       {
         question: "Where is MemorialsQR based?",
@@ -170,30 +168,8 @@ const baseFaqCategories = [
   },
 ]
 
-type FaqCategory = (typeof baseFaqCategories)[number]
-
-/** Answers that change once printed keepsakes are actually for sale. */
-function faqCategoriesFor(keepsakesOnSale: boolean): FaqCategory[] {
-  if (!keepsakesOnSale) return baseFaqCategories
-  const overrides: Record<string, string> = {
-    "Are there any monthly fees?": `Not with a printed keepsake. Each keepsake includes ${HOSTING_INCLUDED_YEARS} years of basic hosting for its memorial page, starting on the order date, and renewal is optional after that. A memorial page on its own is ${HOSTING_PRICE_LABEL} per month.`,
-    "Is anything shipped?":
-      "Yes, if you buy a printed keepsake. Keepsakes are printed by our print partners (Printful or Printify) after payment and shipped to US addresses. A memorial page on its own ships nothing.",
-  }
-  return baseFaqCategories.map((category) => {
-    const faqs = category.faqs.map((faq) => (overrides[faq.question] ? { ...faq, answer: overrides[faq.question] } : faq))
-    if (category.title === "Hosting") {
-      faqs.push({
-        question: `What happens after the ${HOSTING_INCLUDED_YEARS} included years?`,
-        answer: `You can renew hosting at the then-current monthly rate. If it is not renewed, the memorial page may stop loading. Contact support before then if you want a copy of your photos and stories.`,
-      })
-    }
-    return { ...category, faqs }
-  })
-}
-
 export default function FAQPage() {
-  const faqCategories = faqCategoriesFor(getSellablePodProducts().length > 0)
+  const faqCategories = baseFaqCategories
   const allFaqs = faqCategories.flatMap((category) => category.faqs)
   const faqSchema = {
     "@context": "https://schema.org",
@@ -326,7 +302,7 @@ export default function FAQPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Start honoring your loved one today with a beautiful digital memorial, kept online as long as your plan is active.
+            Start honoring your loved one today with a beautiful digital memorial, with 10 years of hosting included with every keepsake.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -335,7 +311,7 @@ export default function FAQPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/store">See Memorial Hosting</Link>
+              <Link href="/store">See Keepsakes</Link>
             </Button>
 
             <Button
@@ -356,7 +332,7 @@ export default function FAQPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

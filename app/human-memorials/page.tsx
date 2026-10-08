@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Globe, Lock, User, Music, Camera } from "lucide-react"
-import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
+import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.humanMemorials)
 
@@ -61,7 +61,7 @@ export default function HumanMemorialsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-600" />
-              <span>Hosting $4.99/month per memorial</span>
+              <span>10 years of hosting included</span>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function HumanMemorialsPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">What you can buy today</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              An online memorial page and a concierge memorial service. Nothing is shipped.
+              QR keepsakes with an online memorial page, and a concierge memorial service.
             </p>
           </div>
 
@@ -158,7 +158,7 @@ export default function HumanMemorialsPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Online memorial page</h3>
                 <p className="text-muted-foreground mb-4">
-                  Photos, stories, and messages for a loved one. Hosting is {HOSTING_PRICE_LABEL} a month.
+                  Photos, stories, and messages for a loved one, opened by a QR keepsake. 10 years of hosting included.
                 </p>
                 <Badge>Hosting</Badge>
               </CardContent>
@@ -184,7 +184,7 @@ export default function HumanMemorialsPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Concierge memorial service</h3>
                 <p className="text-muted-foreground mb-4">
-                  We build the page for you for {CONCIERGE_PRICE_LABEL}. Nothing is shipped.
+                  We build the page for you for {CONCIERGE_PRICE_LABEL}, with 10 years of hosting included.
                 </p>
                 <Badge variant="outline">Service</Badge>
               </CardContent>
@@ -204,7 +204,7 @@ export default function HumanMemorialsPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
               <Link href="/pricing?type=human">
-                View Hosting
+                View Pricing
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

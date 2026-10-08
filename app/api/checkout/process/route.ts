@@ -7,13 +7,7 @@ import { isMissingHostingSchema, isMissingPodOrderSchema } from "@/lib/pod-order
 import { sendOrderConfirmationEmail } from "@/lib/order-confirmation-email"
 import { paymentMatchesQuote, quoteCheckout } from "@/lib/checkout-quote"
 import { CHECKOUT_CURRENCY } from "@/lib/site"
-import {
-  createSquareSubscription,
-  getSquareCard,
-  getSquareConfig,
-  getSquarePayment,
-  subscriptionStartDate,
-} from "@/lib/square-api"
+import { getSquareConfig, getSquarePayment } from "@/lib/square-api"
 
 type Row = Record<string, unknown>
 
@@ -56,7 +50,6 @@ export async function POST(req: Request) {
       zip,
       paymentId,
       customization,
-      cardId,
     } = body
 
     const resolvedCustomerName = customerName || customerEmail
@@ -151,7 +144,6 @@ export async function POST(req: Request) {
 
     const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
     const totalAmountCents = quote.totalCents
-    const monthlyAmountCents = quote.monthlyAmountCents
     const finalProductName = resolvedItems.map((item) => `[${item.id}] ${item.name} × ${item.quantity}`).join(", ")
     const finalPlanType = "cart-checkout"
     const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
@@ -169,43 +161,8 @@ export async function POST(req: Request) {
       adminNotes.push(`hosting_included_until=${hostingTerms.hostingIncludedUntil} (${hostingTerms.hostingPlan})`)
     }
 
-    let subscriptionId: string | null = null
-    let subscriptionStatus: "active" | "not_required" | "failed" = quote.needsSubscription ? "failed" : "not_required"
-    const planVariationId = process.env.SQUARE_SUBSCRIPTION_PLAN_ID?.trim() || ""
+    // One-time checkout only. Keepsakes include 10 years of hosting; no subscription is ever created.
 
-    if (quote.needsSubscription) {
-      let failure: string | null = null
-      if (!planVariationId) failure = "SQUARE_SUBSCRIPTION_PLAN_ID is not set"
-      else if (!squareCustomerId) failure = "payment has no Square customer"
-      else if (!cardId || typeof cardId !== "string") failure = "card was not saved after payment"
-
-      if (!failure && squareCustomerId && typeof cardId === "string") {
-        const card = await getSquareCard(square, cardId)
-        if (!card.ok || card.data.card.customer_id !== squareCustomerId || card.data.card.enabled === false) {
-          failure = "saved card does not belong to the paying customer"
-        } else {
-          const created = await createSquareSubscription(square, {
-            customerId: squareCustomerId,
-            cardId,
-            planVariationId,
-            startDate: subscriptionStartDate(orderDate),
-            // Deterministic, so a retried request cannot create a second subscription.
-            idempotencyKey: `sub-${paymentId}`.slice(0, 45),
-          })
-          if (created.ok) {
-            subscriptionId = created.data.subscription.id
-            subscriptionStatus = "active"
-          } else {
-            failure = `Square subscription error: ${created.error}`
-          }
-        }
-      }
-
-      if (failure) {
-        console.error("[checkout] Monthly hosting subscription was NOT created:", failure)
-        adminNotes.push(`SUBSCRIPTION NOT CREATED: ${failure}. Payment ${paymentId} was charged for the first month.`)
-      }
-    }
 
     const legacyOrder: Row = {
       order_number: orderNumber,
@@ -222,7 +179,7 @@ export async function POST(req: Request) {
       payment_id: paymentId,
       payment_status: "completed",
       amount_cents: totalAmountCents,
-      monthly_amount_cents: monthlyAmountCents,
+      monthly_amount_cents: 0,
       currency: CHECKOUT_CURRENCY,
       product_type: finalPlanType,
       product_name: finalProductName,
@@ -231,8 +188,8 @@ export async function POST(req: Request) {
       special_instructions: customization || null,
       admin_notes: adminNotes.length ? adminNotes.join("\n") : null,
       plan_type: finalPlanType,
-      subscription_id: subscriptionId,
-      subscription_plan_id: subscriptionId ? planVariationId : null,
+      subscription_id: null,
+      subscription_plan_id: null,
 
       plaque_color: null,
       box_personalization: null,
@@ -265,7 +222,6 @@ export async function POST(req: Request) {
         schema_version: 1,
         hosting_plan: hostingTerms.hostingPlan,
         hosting_included_until: hostingTerms.hostingIncludedUntil,
-        subscription_status: subscriptionStatus,
       },
       print_file_url: null,
     }
@@ -321,7 +277,6 @@ export async function POST(req: Request) {
         orderNumber: order.order_number,
         productName: finalProductName,
         amount: (totalAmountCents / 100).toFixed(2),
-        monthlyFee: (monthlyAmountCents / 100).toFixed(2),
         shipsPhysical,
         hostingIncludedUntil: hostingTerms.hostingIncludedUntil,
       })
@@ -337,7 +292,6 @@ export async function POST(req: Request) {
         status: order.status,
         fulfillmentStatus,
         memorialUrl,
-        subscriptionStatus,
         hostingIncludedUntil: hostingTerms.hostingIncludedUntil,
       },
     })

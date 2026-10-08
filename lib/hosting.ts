@@ -1,14 +1,10 @@
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
-
 /**
- * Hosting policy:
- * - Any physical keepsake includes 10 years of basic hosting for its memorial page,
- *   starting on the order date. Physical orders never create a monthly subscription.
- * - Digital-only memorials (no physical product) are billed monthly.
- * - After the included 10 years, hosting can be renewed at the then-current monthly rate.
+ * Hosting policy: MemorialsQR sells printed QR keepsakes. Each order includes
+ * 10 years of hosting for its memorial page, starting on the order date.
+ * There is no monthly plan and checkout never creates a subscription.
  */
 export const HOSTING_INCLUDED_YEARS = 10
-export const HOSTING_MONTHLY_PRICE_CENTS = Math.round(HOSTING_MONTHLY_PRICE * 100)
+export const HOSTING_INCLUDED_LABEL = `${HOSTING_INCLUDED_YEARS} years of hosting included`
 
 /** Returns a new Date `years` after `from` (UTC calendar years). */
 export function addYears(from: Date, years: number): Date {
@@ -20,32 +16,15 @@ export function addYears(from: Date, years: number): Date {
 export type HostingTerms = {
   /** True when the order contains at least one physical keepsake. */
   includesPhysicalKeepsake: boolean
-  /** Monthly hosting charge to set up at checkout (0 for physical orders). */
-  monthlyAmountCents: number
-  /** ISO timestamp until which basic hosting is included, or null for digital-only. */
-  hostingIncludedUntil: string | null
-  hostingPlan: "included_10_years" | "digital_monthly"
+  /** ISO timestamp until which hosting is included. */
+  hostingIncludedUntil: string
+  hostingPlan: "included_10_years"
 }
 
-export function getHostingTerms(
-  items: ReadonlyArray<{ hostingIncludedYears?: number }>,
-  orderDate: Date = new Date(),
-): HostingTerms {
-  const includedYears = Math.max(0, ...items.map((item) => item.hostingIncludedYears ?? 0))
-
-  if (includedYears > 0) {
-    return {
-      includesPhysicalKeepsake: true,
-      monthlyAmountCents: 0,
-      hostingIncludedUntil: addYears(orderDate, includedYears).toISOString(),
-      hostingPlan: "included_10_years",
-    }
-  }
-
+export function getHostingTerms(items: ReadonlyArray<{ ships?: boolean }>, orderDate: Date = new Date()): HostingTerms {
   return {
-    includesPhysicalKeepsake: false,
-    monthlyAmountCents: HOSTING_MONTHLY_PRICE_CENTS,
-    hostingIncludedUntil: null,
-    hostingPlan: "digital_monthly",
+    includesPhysicalKeepsake: items.some((item) => item.ships === true),
+    hostingIncludedUntil: addYears(orderDate, HOSTING_INCLUDED_YEARS).toISOString(),
+    hostingPlan: "included_10_years",
   }
 }

@@ -2,15 +2,10 @@ import Link from "next/link"
 import { Header } from "@/components/header"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
-import { getSellablePodProducts } from "@/lib/fulfillment-availability"
-import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 export const metadata = pageMetadata(publicPages.terms)
 
-export const dynamic = "force-dynamic"
-
 export default function TermsOfServicePage() {
-  const keepsakesOnSale = getSellablePodProducts().length > 0
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -29,34 +24,29 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Description</h2>
             <p className="text-gray-700 mb-4">
-              Memorial QR provides digital memorial pages. A memorial page on its own is hosted for $4.99 per month.{" "}
-              {keepsakesOnSale
-                ? `Printed QR keepsakes are a one-time purchase that includes ${HOSTING_INCLUDED_YEARS} years of basic hosting for the linked memorial page, starting on the order date. Several keepsakes for the same memorial share one hosting term. We do not promise hosting beyond the included term or an active plan.`
-                : "Physical products are not currently for sale."}
+              Memorial QR sells printed QR memorial keepsakes. Each keepsake is a one-time purchase that includes 10
+              years of hosting for the linked memorial page, starting on the order date. Several keepsakes for the same
+              memorial share one hosting term. The concierge memorial service also includes 10 years of hosting. We do
+              not sell a recurring hosting plan.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
             <p className="text-gray-700 mb-4">
               You are responsible for providing accurate information and ensuring you have the right to create memorials
-              for the individuals or pets represented. You must maintain accurate payment information for monthly
-              hosting fees.
+              for the individuals or pets represented.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
-              For a memorial page on its own, the first month ($4.99) is charged at checkout and the same amount is then
-              billed monthly to the card you used, through Square, until you cancel. Hosting can be canceled at any time.
-              Concierge setup, when purchased, is paid at checkout.
-              {keepsakesOnSale
-                ? ` Keepsakes are paid once at checkout, US shipping included. No monthly hosting fee is charged during the ${HOSTING_INCLUDED_YEARS} included years; after that, hosting can be renewed at the then-current monthly rate.`
-                : ""}
+              Keepsakes and concierge setup are paid once at checkout through Square. No recurring hosting fee is
+              charged during the 10 included years. Before the included hosting ends, we will contact you about
+              renewal options.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
             <p className="text-gray-700 mb-4">
-              {keepsakesOnSale
-                ? "Memorial pages are digital and are not shipped. Printed keepsakes are made to order by our print partners after payment and shipped to United States addresses only."
-                : "The memorial page is digital. There is no shipment."}
+              Memorial pages are digital and are not shipped. Printed keepsakes are made to order by our print partners
+              after payment and shipped to United States addresses only.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Digital Memorial Content</h2>
@@ -75,9 +65,8 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Cancellation and Refunds</h2>
             <p className="text-gray-700 mb-4">
-              Monthly hosting subscriptions can be
-              canceled at any time through your account dashboard. Upon cancellation, your memorial website will remain
-              active until the end of your current billing period.
+              There is no subscription to cancel. If you are not satisfied with your order, contact us within 30 days for
+              a refund under our 30-day money-back guarantee.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitation of Liability</h2>
@@ -112,7 +101,7 @@ export default function TermsOfServicePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

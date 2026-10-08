@@ -115,7 +115,7 @@ export function Header() {
                       View example memorials from our community
                     </ListItem>
                     <ListItem href="/programs" title="Memorial Pages">
-                      Digital pages and monthly hosting
+                      Memorial page features, hosting included with keepsakes
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>

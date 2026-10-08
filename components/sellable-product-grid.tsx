@@ -16,7 +16,7 @@ export function SellableProductGrid() {
         <h2 className="text-3xl font-bold text-center mb-3">Keepsakes that ship</h2>
         <p className="text-center text-muted-foreground mb-10">
           Printed after payment and shipped to United States addresses, shipping included. Each keepsake includes{" "}
-          {HOSTING_INCLUDED_YEARS} years of hosting for its memorial page, with no monthly fee.
+          {HOSTING_INCLUDED_YEARS} years of memorial page hosting.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (

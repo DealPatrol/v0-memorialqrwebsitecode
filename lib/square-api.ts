@@ -68,24 +68,6 @@ export type SquarePayment = {
   reference_id?: string
 }
 
-export type SquareCard = { id: string; customer_id?: string; enabled?: boolean }
-
-export type SquareSubscription = { id: string; status?: string; customer_id?: string; start_date?: string }
-
-export async function createSquareCustomer(
-  config: SquareConfig,
-  input: { email: string; name?: string; idempotencyKey: string; referenceId?: string },
-): Promise<SquareResult<{ customer: { id: string } }>> {
-  const [givenName, ...rest] = (input.name || "").trim().split(/\s+/).filter(Boolean)
-  return squareRequest(config, "POST", "/v2/customers", {
-    idempotency_key: input.idempotencyKey,
-    email_address: input.email,
-    ...(givenName ? { given_name: givenName } : {}),
-    ...(rest.length ? { family_name: rest.join(" ") } : {}),
-    ...(input.referenceId ? { reference_id: input.referenceId } : {}),
-  })
-}
-
 export async function createSquarePayment(
   config: SquareConfig,
   input: {
@@ -114,52 +96,6 @@ export async function createSquarePayment(
   })
 }
 
-/**
- * Saves the card used for a completed payment. A card token is single-use, so the
- * card is stored from the payment id after the charge, not from the token.
- */
-export async function saveCardFromPayment(
-  config: SquareConfig,
-  input: { paymentId: string; customerId: string; idempotencyKey: string },
-): Promise<SquareResult<{ card: SquareCard }>> {
-  return squareRequest(config, "POST", "/v2/cards", {
-    idempotency_key: input.idempotencyKey,
-    source_id: input.paymentId,
-    card: { customer_id: input.customerId },
-  })
-}
-
 export async function getSquarePayment(config: SquareConfig, paymentId: string): Promise<SquareResult<{ payment: SquarePayment }>> {
   return squareRequest(config, "GET", `/v2/payments/${encodeURIComponent(paymentId)}`)
-}
-
-export async function getSquareCard(config: SquareConfig, cardId: string): Promise<SquareResult<{ card: SquareCard }>> {
-  return squareRequest(config, "GET", `/v2/cards/${encodeURIComponent(cardId)}`)
-}
-
-export async function createSquareSubscription(
-  config: SquareConfig,
-  input: { customerId: string; cardId: string; planVariationId: string; startDate: string; idempotencyKey: string },
-): Promise<SquareResult<{ subscription: SquareSubscription }>> {
-  return squareRequest(config, "POST", "/v2/subscriptions", {
-    idempotency_key: input.idempotencyKey,
-    location_id: config.locationId,
-    customer_id: input.customerId,
-    plan_variation_id: input.planVariationId,
-    card_id: input.cardId,
-    start_date: input.startDate,
-  })
-}
-
-/**
- * The first month is paid at checkout, so billing starts one calendar month later
- * (clamped to the last day of a shorter month). Returns YYYY-MM-DD.
- */
-export function subscriptionStartDate(from: Date = new Date()): string {
-  const year = from.getUTCFullYear()
-  const month = from.getUTCMonth() + 1
-  const day = from.getUTCDate()
-  const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate()
-  const start = new Date(Date.UTC(year, month, Math.min(day, lastDay)))
-  return start.toISOString().slice(0, 10)
 }

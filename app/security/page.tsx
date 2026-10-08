@@ -104,7 +104,7 @@ export default function SecurityPage() {
             <div>
               <h3 className="font-bold text-black mb-2">Hosting Access</h3>
               <p>
-                Digital memorial access is provided while the $4.99 monthly hosting plan remains active. Contact support before cancellation if you need help preserving a copy of your content.
+                Every keepsake includes 10 years of hosting for its memorial page, starting on the order date. Contact support if you need help preserving a copy of your content.
               </p>
             </div>
           </div>
