@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
+import { readStoredAttribution } from "@/components/attribution-capture"
+import { trackCommerce } from "@/components/track-commerce"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SUPPORT_EMAIL } from "@/lib/site"
@@ -18,7 +20,7 @@ export function MemorialGuideForm() {
       const response = await fetch("/api/guide", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, attribution: readStoredAttribution() }),
       })
       const data = (await response.json()) as { error?: string }
       if (!response.ok) {
@@ -26,6 +28,7 @@ export function MemorialGuideForm() {
         setError(data.error || `Email ${SUPPORT_EMAIL} and we will send the guide.`)
         return
       }
+      trackCommerce({ name: "Lead", leadType: "memorial-guide" })
       setStatus("sent")
     } catch {
       setStatus("error")

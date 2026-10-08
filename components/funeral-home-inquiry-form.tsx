@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import type React from "react"
+import { readStoredAttribution } from "@/components/attribution-capture"
+import { trackCommerce } from "@/components/track-commerce"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -44,13 +46,14 @@ export function FuneralHomeInquiryForm() {
       const response = await fetch("/api/partners/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, attribution: readStoredAttribution() }),
       })
       const payload = (await response.json()) as { error?: string }
       if (!response.ok) {
         setError(payload.error || `We could not send that. Email ${SUPPORT_EMAIL} instead.`)
         return
       }
+      trackCommerce({ name: "Lead", leadType: "funeral-home" })
       setSent(true)
     } catch {
       setError(`We could not send that. Email ${SUPPORT_EMAIL} instead.`)

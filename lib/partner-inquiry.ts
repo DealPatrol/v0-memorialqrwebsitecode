@@ -1,3 +1,4 @@
+import { attributionFromUnknown, formatAttribution, type ClickAttribution } from "@/lib/attribution"
 import { SUPPORT_EMAIL } from "@/lib/site"
 import { manualFulfillmentRecipients } from "@/lib/manual-fulfillment-email"
 
@@ -8,6 +9,7 @@ export type PartnerInquiryInput = {
   city: string
   phone: string
   message: string
+  attribution: ClickAttribution | null
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -29,7 +31,10 @@ export function parsePartnerInquiry(body: unknown): { ok: true; value: PartnerIn
   if (phone.length > 40) return { ok: false, error: "Phone number is too long." }
   if (!message || message.length > 4000) return { ok: false, error: "Tell us what you need, in 4000 characters or fewer." }
 
-  return { ok: true, value: { name, email, funeralHome, city, phone, message } }
+  return {
+    ok: true,
+    value: { name, email, funeralHome, city, phone, message, attribution: attributionFromUnknown(record.attribution) },
+  }
 }
 
 function escapeHtml(value: string): string {
@@ -38,6 +43,7 @@ function escapeHtml(value: string): string {
 
 export function buildPartnerInquiryEmail(input: PartnerInquiryInput, env: Record<string, string | undefined> = process.env) {
   const to = manualFulfillmentRecipients(env)
+  const attribution = formatAttribution(input.attribution)
   const text = [
     "Wholesale inquiry from a funeral home.",
     "",
@@ -48,6 +54,7 @@ export function buildPartnerInquiryEmail(input: PartnerInquiryInput, env: Record
     `Phone: ${input.phone || "not provided"}`,
     "",
     input.message,
+    ...(attribution ? ["", "Attribution:", attribution] : []),
   ].join("\n")
 
   const html = `<p><strong>Wholesale inquiry from a funeral home.</strong></p>
@@ -58,7 +65,8 @@ export function buildPartnerInquiryEmail(input: PartnerInquiryInput, env: Record
   <li>City and state: ${escapeHtml(input.city || "not provided")}</li>
   <li>Phone: ${escapeHtml(input.phone || "not provided")}</li>
 </ul>
-<p style="white-space:pre-wrap">${escapeHtml(input.message)}</p>`
+<p style="white-space:pre-wrap">${escapeHtml(input.message)}</p>
+${attribution ? `<p><strong>Attribution</strong></p><pre>${escapeHtml(attribution)}</pre>` : ""}`
 
   const confirmationText = `We received your wholesale inquiry for ${input.funeralHome}. We will reply to ${input.email}. This note does not place an order and does not charge a card.`
 

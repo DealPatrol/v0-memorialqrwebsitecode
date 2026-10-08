@@ -285,7 +285,7 @@ export default function CartPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/shipping" className="hover:text-white">
+                  <Link href="/store" className="hover:text-white">
                     Shipping Info
                   </Link>
                 </li>
@@ -306,7 +306,7 @@ export default function CartPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/returns" className="hover:text-white">
+                  <Link href="/faq" className="hover:text-white">
                     Returns
                   </Link>
                 </li>

@@ -2,7 +2,7 @@
 
 import { Suspense } from "react"
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,6 +15,9 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
+import { readStoredAttribution } from "@/components/attribution-capture"
+import { trackCommerce } from "@/components/track-commerce"
+import { purchaseAfterPayment } from "@/lib/ad-events"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 
@@ -94,6 +97,13 @@ function CheckoutForm() {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const checkoutTracked = useRef(false)
+
+  useEffect(() => {
+    if (checkoutBlocked || orderTotal <= 0 || checkoutTracked.current) return
+    checkoutTracked.current = true
+    trackCommerce({ name: "InitiateCheckout", value: orderTotal, currency: "USD" })
+  }, [checkoutBlocked, orderTotal])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -177,6 +187,7 @@ function CheckoutForm() {
         customization: formData.customization || "",
         cardId: cardId,
         squareCustomerId: customerId,
+        attribution: readStoredAttribution(),
       }
 
       const response = await fetch("/api/checkout/process", {
@@ -190,6 +201,15 @@ function CheckoutForm() {
       if (!response.ok || !result.success) {
         throw new Error(result.error || "Failed to create order")
       }
+
+      const purchase = purchaseAfterPayment({
+        success: true,
+        amount: result.order?.amount,
+        currency: result.order?.currency,
+        orderNumber: result.order?.orderNumber,
+        contentId: cartItems.length === 1 ? cartItems[0].id : undefined,
+      })
+      if (purchase) trackCommerce(purchase)
 
       localStorage.removeItem("checkoutItems")
       

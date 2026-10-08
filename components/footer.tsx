@@ -1,11 +1,25 @@
 'use client'
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Shield, Lock, Award, Clock, Mail, MapPin } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
 export function Footer() {
+  const pathname = usePathname()
+  const adLanding = pathname.startsWith("/ads/")
+  if (adLanding) {
+    return (
+      <footer className="bg-black text-white">
+        <div className="mx-auto flex max-w-xl flex-wrap gap-4 px-4 py-8 text-sm text-zinc-400">
+          <Link href="/privacy-policy" className="hover:text-white">Privacy</Link>
+          <Link href="/terms-of-service" className="hover:text-white">Terms</Link>
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-white">{SUPPORT_EMAIL}</a>
+        </div>
+      </footer>
+    )
+  }
   return (
     <footer className="bg-black text-white">
       {/* Trust & Security Section */}
@@ -61,6 +75,8 @@ export function Footer() {
               <li><Link href="/pet-memorial-qr-code" className="hover:text-white transition-colors">Pet Memorial QR Code</Link></li>
               <li><Link href="/funeral-program-qr-code" className="hover:text-white transition-colors">Funeral Program QR Code</Link></li>
               <li><Link href="/digital-memorial-page" className="hover:text-white transition-colors">Digital Memorial Page</Link></li>
+              <li><Link href="/guides" className="hover:text-white transition-colors">Memorial Guides</Link></li>
+              <li><Link href="/gifts" className="hover:text-white transition-colors">Gift Ideas</Link></li>
               <li><Link href="/sympathy-gift-ideas" className="hover:text-white transition-colors">Sympathy Gift Ideas</Link></li>
               <li><Link href="/personalized-memorial-gift" className="hover:text-white transition-colors">Personalized Memorial Gift</Link></li>
               <li><Link href="/funeral-homes" className="hover:text-white transition-colors">Funeral Homes</Link></li>

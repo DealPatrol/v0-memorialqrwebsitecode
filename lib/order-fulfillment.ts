@@ -4,6 +4,7 @@ import { sendEmail } from "@/lib/email"
 import { sendManualFulfillmentNotice } from "@/lib/manual-fulfillment-email"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 import { dispatchSupplierLines, type DispatchLine, type DispatchOutcome } from "@/lib/supplier-dispatch"
+import { attributionFromUnknown } from "@/lib/attribution"
 import type { ConfiguredLine } from "@/lib/fulfillment-availability"
 import type { ShipTo } from "@/lib/printful"
 
@@ -22,6 +23,8 @@ type OrderRow = {
   user_id: string | null
   payment_id?: string | null
   amount_cents?: number | null
+  admin_notes?: string | null
+  fulfillment_data?: unknown
 }
 
 function orderStatusForOutcome(status: DispatchOutcome["status"]): string {
@@ -89,6 +92,10 @@ async function saveFulfillmentLog(
   printUrl: string | null,
   memorialSlug: string | null,
 ) {
+  const previousAttribution =
+    order.fulfillment_data && typeof order.fulfillment_data === "object"
+      ? attributionFromUnknown((order.fulfillment_data as { attribution?: unknown }).attribution)
+      : null
   const log = {
     success: fulfillmentSucceeded(outcome.status),
     supplier_order_id: outcome.fulfillmentId,
@@ -99,6 +106,7 @@ async function saveFulfillmentLog(
     memorial_slug: memorialSlug,
     dispatched_at: new Date().toISOString(),
     details: outcome.details,
+    ...(previousAttribution ? { attribution: previousAttribution } : {}),
   }
   const status = orderStatusForOutcome(outcome.status)
   const update = await supabase

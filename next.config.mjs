@@ -26,6 +26,12 @@ const nextConfig = {
   compress: true,
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: "/privacy", destination: "/privacy-policy", permanent: true },
+      { source: "/terms", destination: "/terms-of-service", permanent: true },
+    ]
+  },
 }
 
 export default nextConfig

@@ -142,6 +142,12 @@ export function Header() {
                     <ListItem href="/funeral-homes" title="Funeral Homes">
                       Wholesale inquiry for funeral homes
                     </ListItem>
+                    <ListItem href="/guides" title="Memorial Guides">
+                      Headstone, cemetery, and keepsake guides
+                    </ListItem>
+                    <ListItem href="/gifts" title="Gift Ideas">
+                      Sympathy and remembrance gifts
+                    </ListItem>
                     <ListItem href="/sympathy-gift-ideas" title="Sympathy Gifts">
                       Ideas for a family after a death
                     </ListItem>
@@ -227,6 +233,12 @@ export function Header() {
               <Link href="/funeral-homes" className="text-muted-foreground hover:text-foreground pl-2">
                 Funeral Homes
               </Link>
+              <Link href="/guides" className="text-muted-foreground hover:text-foreground pl-2">
+                Memorial Guides
+              </Link>
+              <Link href="/gifts" className="text-muted-foreground hover:text-foreground pl-2">
+                Gift Ideas
+              </Link>
               <Link href="/sympathy-gift-ideas" className="text-muted-foreground hover:text-foreground pl-2">
                 Sympathy Gifts
               </Link>
@@ -271,7 +283,7 @@ export function Header() {
                   <Link href="/dashboard">Dashboard</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/account">Account Settings</Link>
+                  <Link href="/dashboard">Account Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">

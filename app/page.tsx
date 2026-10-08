@@ -45,7 +45,7 @@ export default function HomePage() {
               <span className="text-sm font-medium text-foreground">Honor and Remember</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+            <h1 className="hero-lcp text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
               QR Memorial Keepsakes With 10 Years of Hosting Included
             </h1>
 
@@ -409,6 +409,16 @@ export default function HomePage() {
                 <li>
                   <Link href="/store" className="hover:text-primary transition-colors">
                     Store
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/guides" className="hover:text-primary transition-colors">
+                    Memorial guides
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/gifts" className="hover:text-primary transition-colors">
+                    Gift ideas
                   </Link>
                 </li>
               </ul>

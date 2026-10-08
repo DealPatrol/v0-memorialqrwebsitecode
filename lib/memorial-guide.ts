@@ -1,3 +1,4 @@
+import { attributionFromUnknown, formatAttribution, type ClickAttribution } from "@/lib/attribution"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
@@ -32,11 +33,24 @@ export const MEMORIAL_GUIDE_SECTIONS: GuideSection[] = [
   },
 ]
 
-export function parseGuideEmail(body: unknown): { ok: true; email: string } | { ok: false; error: string } {
+export function parseGuideEmail(
+  body: unknown,
+): { ok: true; email: string; attribution: ClickAttribution | null } | { ok: false; error: string } {
   if (!body || typeof body !== "object") return { ok: false, error: "Enter an email address." }
-  const email = typeof (body as { email?: unknown }).email === "string" ? (body as { email: string }).email.trim() : ""
+  const record = body as { email?: unknown; attribution?: unknown }
+  const email = typeof record.email === "string" ? record.email.trim() : ""
   if (!EMAIL_PATTERN.test(email) || email.length > 200) return { ok: false, error: "Enter a valid email address." }
-  return { ok: true, email }
+  return { ok: true, email, attribution: attributionFromUnknown(record.attribution) }
+}
+
+export function buildGuideLeadNote(email: string, attribution: ClickAttribution | null) {
+  const attributionText = formatAttribution(attribution)
+  const text = [`Guide signup: ${email}`, attributionText].filter(Boolean).join("\n")
+  return {
+    subject: "Memorial guide signup",
+    text,
+    html: `<p>Guide signup: ${escapeHtml(email)}</p>${attributionText ? `<pre>${escapeHtml(attributionText)}</pre>` : ""}`,
+  }
 }
 
 export function buildGuideEmail(email: string) {

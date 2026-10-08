@@ -10,6 +10,10 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import { AdPixels } from "@/components/ad-pixels"
+import { AttributionCapture } from "@/components/attribution-capture"
+import { readAdConfig } from "@/lib/ad-config"
+import { HERO_LCP_CSS } from "@/lib/critical-css"
 import { googleSiteVerificationTag } from "@/lib/seo"
 import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
@@ -22,6 +26,7 @@ if (!conciergeOffer) {
 }
 
 const googleSiteVerification = googleSiteVerificationTag(process.env.GOOGLE_SITE_VERIFICATION)
+const adConfig = readAdConfig(process.env)
 
 const inter = Inter({
   subsets: ["latin"],
@@ -139,8 +144,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${greatVibes.variable} bg-background`}
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <style dangerouslySetInnerHTML={{ __html: HERO_LCP_CSS }} />
         <link
           rel="alternate"
           type="application/rss+xml"
@@ -158,6 +162,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
+        <AttributionCapture />
+        <AdPixels config={adConfig} />
       </body>
     </html>
   )
