@@ -52,6 +52,8 @@ export async function POST(req: Request) {
     }
 
     const shipsPhysical = resolvedItems.some((item) => item.ships)
+    const manualFulfillment =
+      shipsPhysical && resolvedItems.every((item) => !item.ships || item.provider === "manual")
     if (shipsPhysical && (!addressLine1 || !city || !state || !zip)) {
       const missing = []
       if (!addressLine1) missing.push("addressLine1")
@@ -199,6 +201,7 @@ export async function POST(req: Request) {
         productName: finalProductName,
         amount: (totalAmountCents / 100).toFixed(2),
         shipsPhysical,
+        manualFulfillment,
       })
     } catch (emailError) {
       console.error("[v0] Failed to send order confirmation email:", emailError)

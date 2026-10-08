@@ -1,7 +1,19 @@
 import type { Metadata } from "next"
-import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
+import { CONCIERGE_PRODUCTS, PLAQUE_PRICE } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
+
+/**
+ * Search Console HTML-tag verification. Next.js renders this as
+ * `<meta name="google-site-verification" content="...">`.
+ * An empty or whitespace-only value omits the tag.
+ * The root layout reads this at build time.
+ */
+export function googleSiteVerificationTag(raw: string | undefined): { google: string } | undefined {
+  const token = raw?.trim()
+  if (!token) return undefined
+  return { google: token }
+}
 
 const conciergeOffer = CONCIERGE_PRODUCTS.find((product) => product.id === "concierge-digital")
 
@@ -30,6 +42,7 @@ export type SeoPage = {
 
 const years = HOSTING_INCLUDED_YEARS
 const concierge = CONCIERGE_PRICE_LABEL
+const plaque = `$${PLAQUE_PRICE.toFixed(2)}`
 
 export const publicPages = {
   home: {
@@ -259,6 +272,136 @@ export const publicPages = {
     file: "app/memorial/glenda-kelso/page.tsx",
     changeFrequency: "monthly",
     priority: 0.6,
+    index: true,
+    inSitemap: true,
+  },
+  headstoneQr: {
+    path: "/qr-code-for-headstone",
+    title: "QR Code for a Headstone | MemorialsQR",
+    description: `Visitors at a headstone can open photos and stories with a QR code. The QR Memorial Plaque is ${plaque} and includes ${years} years of hosting.`,
+    file: "app/qr-code-for-headstone/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  plaqueQr: {
+    path: "/memorial-qr-code-plaque",
+    title: "Memorial QR Code Plaque | MemorialsQR",
+    description: `A memorial QR code plaque in gold, silver, or black opens a page of photos and stories. ${plaque} once, with ${years} years of hosting included.`,
+    file: "app/memorial-qr-code-plaque/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  urnQr: {
+    path: "/qr-code-for-urn",
+    title: "QR Code for an Urn | MemorialsQR",
+    description: `A QR code beside an urn opens the memorial page when words are hard to find. The plaque is ${plaque} and includes ${years} years of hosting.`,
+    file: "app/qr-code-for-urn/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  petQr: {
+    path: "/pet-memorial-qr-code",
+    title: "Pet Memorial QR Code | MemorialsQR",
+    description: `A pet memorial QR code opens photos and stories of a companion you miss. The plaque is ${plaque} and includes ${years} years of hosting.`,
+    file: "app/pet-memorial-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  programQr: {
+    path: "/funeral-program-qr-code",
+    title: "Funeral Program QR Code | MemorialsQR",
+    description: `A funeral program QR code lets guests open the memorial page during the service. The plaque is ${plaque}, with ${years} years of hosting.`,
+    file: "app/funeral-program-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  digitalPage: {
+    path: "/digital-memorial-page",
+    title: "Digital Memorial Page | MemorialsQR",
+    description: `A digital memorial page holds photos, stories, and messages. It comes with the ${plaque} QR plaque and ${years} years of hosting.`,
+    file: "app/digital-memorial-page/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  funeralHomes: {
+    path: "/funeral-homes",
+    title: "Funeral Home Partners | MemorialsQR",
+    description: "Funeral homes can ask about offering MemorialsQR keepsakes to families. Tell us about your funeral home and we will reply by email.",
+    file: "app/funeral-homes/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.6,
+    index: true,
+    inSitemap: true,
+  },
+  sympathyGifts: {
+    path: "/sympathy-gift-ideas",
+    title: "Sympathy Gift Ideas | MemorialsQR",
+    description: `Sympathy can be a meal, a visit, or a QR plaque that opens photos and stories. The plaque is ${plaque} once, with ${years} years of hosting.`,
+    file: "app/sympathy-gift-ideas/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  motherGift: {
+    path: "/memorial-gift-loss-of-mother",
+    title: "Memorial Gift for a Mother | MemorialsQR",
+    description: `A gift after the loss of a mother can hold the stories her children remember. The QR plaque is ${plaque}, with ${years} years of hosting.`,
+    file: "app/memorial-gift-loss-of-mother/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  fatherGift: {
+    path: "/memorial-gift-loss-of-father",
+    title: "Memorial Gift for a Father | MemorialsQR",
+    description: `A gift after the loss of a father can keep his stories in one page. The QR plaque is ${plaque}, with ${years} years of hosting.`,
+    file: "app/memorial-gift-loss-of-father/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  petGift: {
+    path: "/memorial-gift-loss-of-pet",
+    title: "Memorial Gift for a Pet | MemorialsQR",
+    description: `When a pet dies, a gift can be a page for their photos and ordinary days. The QR plaque is ${plaque}, with ${years} years of hosting.`,
+    file: "app/memorial-gift-loss-of-pet/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  personalizedGift: {
+    path: "/personalized-memorial-gift",
+    title: "Personalized Memorial Gift | MemorialsQR",
+    description: `A personalized memorial gift can carry their name, dates, and a QR code. The plaque is ${plaque} once, with ${years} years of hosting.`,
+    file: "app/personalized-memorial-gift/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  friendGift: {
+    path: "/remembrance-gift-for-a-friend",
+    title: "Remembrance Gift for a Friend | MemorialsQR",
+    description: `A remembrance gift for a grieving friend is a page they can fill when ready. The plaque is ${plaque}, with ${years} years of hosting.`,
+    file: "app/remembrance-gift-for-a-friend/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
     index: true,
     inSitemap: true,
   },

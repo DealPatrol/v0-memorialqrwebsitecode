@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
-import { getSellablePodProducts } from "@/lib/fulfillment-availability"
+import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
 import { CheckCircle } from "lucide-react"
@@ -13,7 +13,7 @@ export const metadata = pageMetadata(publicPages.pricing)
 export const dynamic = "force-dynamic"
 
 export default function PricingPage() {
-  const keepsakes = getSellablePodProducts()
+  const keepsakes = getSellableKeepsakes()
   const lowestKeepsake = keepsakes.length ? Math.min(...keepsakes.map((product) => product.price)) : null
   return (
     <div className="min-h-screen bg-slate-50">
@@ -22,14 +22,14 @@ export default function PricingPage() {
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-4xl font-bold text-slate-900">Keepsake Pricing</h1>
           <p className="mx-auto max-w-2xl text-lg text-slate-600">
-            A printed QR keepsake is a one-time purchase. It includes {HOSTING_INCLUDED_YEARS} years of hosting for the
+            A QR keepsake is a one-time purchase. It includes {HOSTING_INCLUDED_YEARS} years of hosting for the
             memorial page it opens. There is no subscription.
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Printed QR Memorial Keepsake</CardTitle>
+            <CardTitle>QR Memorial Keepsake</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             {lowestKeepsake !== null && (

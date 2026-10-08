@@ -13,8 +13,8 @@ export type DispatchLine = {
 }
 
 export type DispatchOutcome = {
-  status: "submitted" | "failed" | "not_required"
-  provider: "printful" | "printify" | "mixed" | null
+  status: "submitted" | "failed" | "not_required" | "manual"
+  provider: "printful" | "printify" | "mixed" | "manual" | null
   fulfillmentId: string | null
   error?: string
   details: Record<string, unknown>

@@ -55,9 +55,15 @@ export function Footer() {
             <h3 className="font-bold text-lg mb-4">Products</h3>
             <ul className="space-y-2 text-sm text-zinc-400">
               <li><Link href="/store" className="hover:text-white transition-colors">QR Keepsakes</Link></li>
-              <li><Link href="/human-memorials" className="hover:text-white transition-colors">Human Memorials</Link></li>
-              <li><Link href="/pet-memorials" className="hover:text-white transition-colors">Pet Memorials</Link></li>
-              <li><Link href="/how-it-works" className="hover:text-white transition-colors">How It Works</Link></li>
+              <li><Link href="/memorial-qr-code-plaque" className="hover:text-white transition-colors">QR Memorial Plaque</Link></li>
+              <li><Link href="/qr-code-for-headstone" className="hover:text-white transition-colors">QR Code for a Headstone</Link></li>
+              <li><Link href="/qr-code-for-urn" className="hover:text-white transition-colors">QR Code for an Urn</Link></li>
+              <li><Link href="/pet-memorial-qr-code" className="hover:text-white transition-colors">Pet Memorial QR Code</Link></li>
+              <li><Link href="/funeral-program-qr-code" className="hover:text-white transition-colors">Funeral Program QR Code</Link></li>
+              <li><Link href="/digital-memorial-page" className="hover:text-white transition-colors">Digital Memorial Page</Link></li>
+              <li><Link href="/sympathy-gift-ideas" className="hover:text-white transition-colors">Sympathy Gift Ideas</Link></li>
+              <li><Link href="/personalized-memorial-gift" className="hover:text-white transition-colors">Personalized Memorial Gift</Link></li>
+              <li><Link href="/funeral-homes" className="hover:text-white transition-colors">Funeral Homes</Link></li>
             </ul>
           </div>
 

@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test:fulfillment": "node --import tsx --test scripts/dry-run-fulfillment.ts"
+    "test:fulfillment": "node --import tsx --test scripts/dry-run-fulfillment.ts scripts/buyer-intent.test.ts scripts/growth.test.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "latest",
@@ -47,6 +47,7 @@
     "@supabase/supabase-js": "latest",
     "@vercel/analytics": "1.6.1",
     "@vercel/blob": "latest",
+    "@vercel/speed-insights": "^2.0.0",
     "ai": "6.0.39",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

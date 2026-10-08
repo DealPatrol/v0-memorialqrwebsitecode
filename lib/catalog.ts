@@ -1,3 +1,5 @@
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+
 export type StoreCategory = "Human" | "Pet"
 
 export interface StoreProduct {
@@ -17,7 +19,7 @@ export interface CheckoutProduct {
   price: number
 }
 
-export type FulfillmentProvider = "printful" | "printify"
+export type FulfillmentProvider = "printful" | "printify" | "manual"
 
 /** A physical product that can be sold only when every requiredEnv name is set. */
 export interface PodProduct {
@@ -345,8 +347,48 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
 /** Legacy hand-made catalog stays empty. Printed keepsakes come from POD_PRODUCTS. */
 export const STORE_PRODUCTS: StoreProduct[] = []
 
-/** Standard metal plaque price, retained for the withheld catalog. */
+/** Standard metal plaque price. The manually fulfilled QR plaque charges this amount. */
 export const PLAQUE_PRICE = 29.99
+
+/**
+ * Keepsakes Cole makes and ships by hand. They do not need Printful or Printify
+ * env vars, and they stay listed when those vars are missing.
+ */
+export interface ManualKeepsake {
+  id: string
+  name: string
+  price: number
+  provider: "manual"
+  category: StoreCategory
+  description: string
+  features: string[]
+  image: string
+  imageAlt: string
+}
+
+export const MANUAL_KEEPSAKES: ManualKeepsake[] = [
+  {
+    id: "qr-memorial-plaque",
+    name: "QR Memorial Plaque",
+    price: PLAQUE_PRICE,
+    provider: "manual",
+    category: "Human",
+    image: "/images/plaques-gold-silver-black.jpeg",
+    imageAlt: "Gold, silver, and black metal memorial plaques, each with a QR code",
+    description: `A metal memorial plaque with a QR code that opens an online memorial page of photos and stories. In the order notes, put the name on the first line, then the dates and the finish: gold, silver, or black. We make the plaque and ship it in the United States. The price includes ${HOSTING_INCLUDED_YEARS} years of hosting for the memorial page.`,
+    features: [
+      "QR code that opens this memorial page",
+      "Gold, silver, or black finish, written in the order notes",
+      "Name and dates from the order notes",
+      `${HOSTING_INCLUDED_YEARS} years of memorial page hosting included`,
+      "Made to order and shipped in the United States",
+    ],
+  },
+]
+
+export function getManualKeepsake(id: string): ManualKeepsake | undefined {
+  return MANUAL_KEEPSAKES.find((product) => product.id === id)
+}
 
 const WITHHELD_PLAQUE_PRODUCTS: CheckoutProduct[] = [
   { id: "gold-plaque", name: "Gold Memorial Plaque", price: PLAQUE_PRICE },

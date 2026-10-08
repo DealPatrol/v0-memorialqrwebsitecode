@@ -54,27 +54,46 @@ export function Header() {
   const router = useRouter()
 
   useEffect(() => {
+    let cancelled = false
     const getUser = async () => {
       const supabase = await createClient()
       const {
         data: { user: authUser },
       } = await supabase.auth.getUser()
+      if (cancelled || !authUser) return
 
-      if (authUser) {
-        setUser(authUser)
+      setUser(authUser)
 
-        const { data: profile } = await supabase.from("profiles").select("name").eq("id", authUser.id).single()
+      const { data: profile } = await supabase.from("profiles").select("name").eq("id", authUser.id).single()
 
-        if (profile?.name) {
-          setUserName(profile.name)
-        } else {
-          // Fallback to email name if no profile name
-          setUserName(authUser.email?.split("@")[0] || "User")
-        }
+      if (cancelled) return
+      if (profile?.name) {
+        setUserName(profile.name)
+      } else {
+        setUserName(authUser.email?.split("@")[0] || "User")
       }
     }
 
-    getUser()
+    const browser = window as Window & {
+      requestIdleCallback?: (callback: () => void) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+    if (browser.requestIdleCallback) {
+      const idleId = browser.requestIdleCallback(() => {
+        void getUser()
+      })
+      return () => {
+        cancelled = true
+        browser.cancelIdleCallback?.(idleId)
+      }
+    }
+    const timeoutId = window.setTimeout(() => {
+      void getUser()
+    }, 300)
+    return () => {
+      cancelled = true
+      window.clearTimeout(timeoutId)
+    }
   }, [])
 
   const handleLogout = async () => {
@@ -116,6 +135,15 @@ export function Header() {
                     </ListItem>
                     <ListItem href="/programs" title="Memorial Pages">
                       Memorial page features, hosting included with keepsakes
+                    </ListItem>
+                    <ListItem href="/qr-code-for-headstone" title="QR for a Headstone">
+                      A plaque visitors can scan at the grave
+                    </ListItem>
+                    <ListItem href="/funeral-homes" title="Funeral Homes">
+                      Wholesale inquiry for funeral homes
+                    </ListItem>
+                    <ListItem href="/sympathy-gift-ideas" title="Sympathy Gifts">
+                      Ideas for a family after a death
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -192,6 +220,15 @@ export function Header() {
               </Link>
               <Link href="/programs" className="text-muted-foreground hover:text-foreground pl-2">
                 Memorial Pages
+              </Link>
+              <Link href="/qr-code-for-headstone" className="text-muted-foreground hover:text-foreground pl-2">
+                QR for a Headstone
+              </Link>
+              <Link href="/funeral-homes" className="text-muted-foreground hover:text-foreground pl-2">
+                Funeral Homes
+              </Link>
+              <Link href="/sympathy-gift-ideas" className="text-muted-foreground hover:text-foreground pl-2">
+                Sympathy Gifts
               </Link>
               <div className="border-t my-2" />
               <Link href="/store" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">

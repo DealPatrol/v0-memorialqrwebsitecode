@@ -1,6 +1,7 @@
 "use server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/email"
+import { sendReviewRequestForOrder } from "@/lib/review-request"
 
 export interface CreateOrderData {
   customerEmail: string
@@ -142,6 +143,14 @@ export async function updateOrderStatus(orderId: string, status: string, adminNo
     if (error) {
       console.error("Error updating order:", error)
       return { success: false, error: error.message }
+    }
+
+    if (status === "completed" || status === "shipped") {
+      try {
+        await sendReviewRequestForOrder(supabase, orderId)
+      } catch (reviewError) {
+        console.error("Review request failed after status update:", reviewError)
+      }
     }
 
     return { success: true, order }

@@ -10,6 +10,8 @@ export type OrderConfirmationInput = {
   /** Dollars, e.g. "24.99". */
   amount: string
   shipsPhysical: boolean
+  /** True when every shipped line is made and shipped by hand, with no supplier order. */
+  manualFulfillment?: boolean
   hostingIncludedUntil?: string | null
 }
 
@@ -31,9 +33,11 @@ export async function sendOrderConfirmationEmail(input: OrderConfirmationInput):
     { year: "numeric", month: "long", day: "numeric" },
   )}). One-time payment, no recurring charges.</p>`
 
-  const intro = input.shipsPhysical
-    ? "We've received your order. Your keepsake is printed after payment and we'll email tracking when it ships."
-    : "We've received your order. Nothing is shipped for this order; your memorial page is online."
+  const intro = !input.shipsPhysical
+    ? "We've received your order. Nothing is shipped for this order; your memorial page is online."
+    : input.manualFulfillment
+      ? "We've received your order. We will make your keepsake and ship it to the United States address you provided."
+      : "We've received your order. Your keepsake is printed after payment and we'll email tracking when it ships."
 
   const { error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL || "Memorial QR <orders@memorialqr.com>",
