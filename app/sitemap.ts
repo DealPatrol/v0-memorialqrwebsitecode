@@ -1,152 +1,71 @@
 import type { MetadataRoute } from "next"
+import { blogPosts } from "@/lib/blog-posts"
+import { fileLastModified } from "@/lib/content-dates"
+import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { isIndexableMemorial, memorialPublicPath } from "@/lib/memorial-indexing"
+import { publicPages } from "@/lib/seo"
+import { SITE_URL } from "@/lib/site"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
-import { BLOG_POSTS } from "@/lib/blog-posts"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialsqr.com"
+  const staticEntries: MetadataRoute.Sitemap = Object.values(publicPages)
+    .filter((page) => page.inSitemap)
+    .map((page) => ({
+      url: page.path === "/" ? SITE_URL : `${SITE_URL}${page.path}`,
+      lastModified: fileLastModified(page.file),
+      changeFrequency: page.changeFrequency,
+      priority: page.priority,
+    }))
 
-  // Static pages with priority and change frequency
-  const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/store`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/pet-memorials`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/pricing`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/how-it-works`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/browse-memorials`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/products`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/qr-code-headstone`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/memorial-plaque`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/digital-memorial`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/faq`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/our-story`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/help`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/privacy-policy`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/terms-of-service`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-  ]
-
-  // Blog posts
-  const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
+  const keepsakeUpdated = fileLastModified("lib/catalog.ts")
+  const keepsakes: MetadataRoute.Sitemap = getSellableKeepsakes().map((product) => ({
+    url: `${SITE_URL}/store/${product.id}`,
+    lastModified: keepsakeUpdated,
+    changeFrequency: "weekly",
+    priority: 0.8,
   }))
 
-  // Fetch all public memorials for dynamic sitemap entries
-  let memorialPages: MetadataRoute.Sitemap = []
+  const posts: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${SITE_URL}/blog/${post.slug}`,
+    lastModified: new Date(`${post.date}T00:00:00.000Z`),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }))
+
+  const memorials = await indexableMemorialEntries()
+  const seen = new Set<string>()
+
+  return [...staticEntries, ...keepsakes, ...posts, ...memorials].filter((entry) => {
+    if (seen.has(entry.url)) return false
+    seen.add(entry.url)
+    return true
+  })
+}
+
+async function indexableMemorialEntries(): Promise<MetadataRoute.Sitemap> {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return []
 
   try {
-    const hasSupabaseServiceRole = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
-
-    if (!hasSupabaseServiceRole) {
-      return [...staticPages, ...blogPages]
-    }
-
     const supabase = createServiceRoleClient()
-    const { data: memorials } = await supabase
-      .from("memorials")
-      .select("id, slug, updated_at, created_at")
-      .order("created_at", { ascending: false })
-      .limit(1000)
+    const { data, error } = await supabase.from("memorials").select("*")
+    if (error || !data) return []
 
-    if (memorials) {
-      memorialPages = memorials.map((memorial) => ({
-        url: `${baseUrl}/memorial/${memorial.slug || memorial.id}`,
-        lastModified: new Date(memorial.updated_at || memorial.created_at),
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      }))
-    }
-  } catch (error) {
-    console.error("Error fetching memorials for sitemap:", error)
+    return data.flatMap((row) => {
+      const record = row as Record<string, unknown>
+      const path = memorialPublicPath(record)
+      if (!path || !isIndexableMemorial(record)) return []
+      const updated = record.updated_at || record.created_at
+      const lastModified = typeof updated === "string" || updated instanceof Date ? new Date(updated) : undefined
+      return [
+        {
+          url: `${SITE_URL}${path}`,
+          lastModified: lastModified && !Number.isNaN(lastModified.getTime()) ? lastModified : undefined,
+          changeFrequency: "monthly" as const,
+          priority: 0.4,
+        },
+      ]
+    })
+  } catch {
+    return []
   }
-
-  return [...staticPages, ...blogPages, ...memorialPages]
 }

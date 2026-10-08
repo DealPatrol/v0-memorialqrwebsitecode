@@ -185,14 +185,14 @@ export default function SampleMemorialCreatedPage() {
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-8 rounded-lg">
               <h3 className="text-2xl font-bold mb-4">Ready to Create a Real Memorial?</h3>
               <p className="text-lg opacity-90 mb-6">
-                When you're ready to create an actual memorial with physical QR plaque, check out our pricing plans and
-                complete the purchase process.
+                When you are ready for a real memorial page, choose a QR keepsake. Every keepsake includes 10 years of
+                hosting.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-                  <Link href="/pricing">
-                    View Pricing Plans
+                  <Link href="/store">
+                    See Keepsakes
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Link>
                 </Button>
@@ -217,7 +217,7 @@ export default function SampleMemorialCreatedPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

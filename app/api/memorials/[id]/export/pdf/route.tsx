@@ -1,22 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
-interface Memorial {
-  id: string
-  full_name: string
-  birth_date?: string
-  death_date?: string
-  biography?: string
-}
-
-interface MemorialData {
-  photos: Array<{ id: string; url: string; caption?: string; created_at: string }>
-  videos: Array<{ id: string; url: string; title?: string; created_at: string }>
-  stories: Array<{ id: string; title: string; content: string; author_name: string; created_at: string }>
-  messages: Array<{ id: string; content: string; author_name: string; created_at: string }>
-  milestones: Array<{ id: string; date: string; title: string; description?: string }>
-}
-
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const memorialId = params.id
@@ -77,16 +61,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     const results = await Promise.all(dataPromises)
 
-    const data: MemorialData = {
+    // Generate HTML for PDF
+    const html = generateMemorialHTML(memorial, {
       photos: includePhotos ? results[0]?.data || [] : [],
       videos: includeVideos ? results[1]?.data || [] : [],
       stories: includeStories ? results[2]?.data || [] : [],
       messages: includeMessages ? results[3]?.data || [] : [],
       milestones: includeTimeline ? results[4]?.data || [] : [],
-    }
-
-    // Generate HTML for PDF
-    const html = generateMemorialHTML(memorial as Memorial, data)
+    })
 
     // In a real implementation, you would use a library like puppeteer or jsPDF
     // For now, we'll return the HTML as a simple PDF placeholder
@@ -99,12 +81,12 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       },
     })
   } catch (error) {
-    console.error("PDF export error:", error)
+    console.error("[v0] PDF export error:", error)
     return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 })
   }
 }
 
-function generateMemorialHTML(memorial: Memorial, data: MemorialData) {
+function generateMemorialHTML(memorial: any, data: any) {
   return `
     <!DOCTYPE html>
     <html>
@@ -141,10 +123,10 @@ function generateMemorialHTML(memorial: Memorial, data: MemorialData) {
             <h2>Life Timeline</h2>
             ${data.milestones
               .map(
-                (m) => `
+                (m: any) => `
               <div>
                 <strong>${new Date(m.date).toLocaleDateString()}</strong> - ${m.title}
-                ${m.description ? `<p>${m.description}</p>` : ""}
+                <p>${m.description}</p>
               </div>
             `,
               )
@@ -161,7 +143,7 @@ function generateMemorialHTML(memorial: Memorial, data: MemorialData) {
             <h2>Memories & Stories</h2>
             ${data.stories
               .map(
-                (s) => `
+                (s: any) => `
               <div>
                 <h3>${s.title}</h3>
                 <p><em>By ${s.author_name}</em></p>
@@ -182,7 +164,7 @@ function generateMemorialHTML(memorial: Memorial, data: MemorialData) {
             <h2>Messages</h2>
             ${data.messages
               .map(
-                (m) => `
+                (m: any) => `
               <div>
                 <p><strong>${m.author_name}:</strong> ${m.content}</p>
               </div>

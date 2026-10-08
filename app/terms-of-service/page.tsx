@@ -1,5 +1,9 @@
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { pageMetadata, publicPages } from "@/lib/seo"
+import { SUPPORT_EMAIL } from "@/lib/site"
+
+export const metadata = pageMetadata(publicPages.terms)
 
 export default function TermsOfServicePage() {
   return (
@@ -20,36 +24,71 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Description</h2>
             <p className="text-gray-700 mb-4">
-              Memorial QR provides digital memorial services including online memorial pages and QR code plaques to
-              honor deceased individuals.
+              Memorial QR sells printed QR memorial keepsakes. Each keepsake is a one-time purchase that includes 10
+              years of hosting for the linked memorial page, starting on the order date. Several keepsakes for the same
+              memorial share one hosting term. The concierge memorial service also includes 10 years of hosting. We do
+              not sell a recurring hosting plan.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
             <p className="text-gray-700 mb-4">
               You are responsible for providing accurate information and ensuring you have the right to create memorials
-              for the individuals represented.
+              for the individuals or pets represented.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
-              Payment is required at the time of order. We offer a 30-day money-back guarantee for our services.
+              Keepsakes and concierge setup are paid once at checkout through Square. No recurring hosting fee is
+              charged during the 10 included years. Before the included hosting ends, we will contact you about
+              renewal options.
+            </p>
+
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Shipping and Delivery</h2>
+            <p className="text-gray-700 mb-4">
+              Memorial pages are digital and are not shipped. Printed keepsakes are made to order by our print partners
+              after payment and shipped to United States addresses only.
+            </p>
+
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Digital Memorial Content</h2>
+            <p className="text-gray-700 mb-4">
+              You retain ownership of all photos, videos, and content uploaded to your memorial pages. Memorial QR has
+              the right to host and display this content as part of the memorial service. Content must comply with our
+              acceptable use policy and must not include illegal, offensive, or inappropriate material.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Prohibited Uses</h2>
             <p className="text-gray-700 mb-4">
               You may not use our service for any unlawful purpose or to create memorials without proper authorization.
+              You may not upload content that infringes on intellectual property rights, contains malware, or violates
+              privacy laws.
+            </p>
+
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Cancellation and Refunds</h2>
+            <p className="text-gray-700 mb-4">
+              There is no subscription to cancel. If you are not satisfied with your order, contact us within 30 days for
+              a refund under our 30-day money-back guarantee.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitation of Liability</h2>
             <p className="text-gray-700 mb-4">
               Memorial QR shall not be liable for any indirect, incidental, special, consequential, or punitive damages.
+              Our total liability shall not exceed the amount paid for services in the past 12 months.
+            </p>
+
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Changes to Terms</h2>
+            <p className="text-gray-700 mb-4">
+              We reserve the right to modify these terms at any time. Continued use of our services constitutes
+              acceptance of modified terms. We will notify users of significant changes via email.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Contact Information</h2>
             <p className="text-gray-700 mb-4">
               Questions about these Terms should be sent to{" "}
-              <Link href="mailto:legal@memorialqr.com" className="text-orange-600 hover:underline">
-                legal@memorialqr.com
+              <Link
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="text-orange-600 hover:underline"
+              >
+                {SUPPORT_EMAIL}
               </Link>
             </p>
           </div>
@@ -62,7 +101,7 @@ export default function TermsOfServicePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

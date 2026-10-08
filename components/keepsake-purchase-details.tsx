@@ -1,0 +1,87 @@
+import Link from "next/link"
+import { Check } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import type { SellableKeepsake } from "@/lib/fulfillment-availability"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import {
+  formatUsd,
+  KEEPSAKE_SHIPPING_COPY,
+  SAMPLE_MEMORIAL_NAME,
+  SAMPLE_MEMORIAL_PATH,
+} from "@/lib/site"
+import type { FulfillmentProvider } from "@/lib/catalog"
+
+function shippingCopy(provider: FulfillmentProvider): string {
+  switch (provider) {
+    case "manual":
+      return KEEPSAKE_SHIPPING_COPY
+    case "printful":
+    case "printify":
+      return "Printed after payment and shipped to United States addresses. Shipping is included in the price."
+    default: {
+      const exhaustive: never = provider
+      return exhaustive
+    }
+  }
+}
+
+function familyReceives(product: SellableKeepsake): string[] {
+  switch (product.provider) {
+    case "manual":
+      return [
+        "A metal QR memorial plaque in the finish you write in the order notes: gold, silver, or black",
+        "A unique QR code on that plaque",
+        "A memorial page for photos, stories, and messages, created when you order",
+        `${HOSTING_INCLUDED_YEARS} years of hosting from the order date, with no monthly fee`,
+        "An email when the plaque ships",
+      ]
+    case "printful":
+    case "printify":
+      return [
+        product.name,
+        "A unique QR code for this memorial",
+        "A memorial page for photos, stories, and messages",
+        `${HOSTING_INCLUDED_YEARS} years of hosting from the order date, with no monthly fee`,
+      ]
+    default: {
+      const exhaustive: never = product.provider
+      return exhaustive
+    }
+  }
+}
+
+export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake }) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-3xl font-bold">{formatUsd(product.price)}</p>
+        <p className="text-sm text-muted-foreground">One-time payment. Shipping included. No recurring fees.</p>
+      </div>
+      <div>
+        <h2 className="text-sm font-semibold text-foreground">Shipping</h2>
+        <p className="text-sm text-muted-foreground">{shippingCopy(product.provider)}</p>
+      </div>
+      <div>
+        <h2 className="text-sm font-semibold text-foreground">What the family receives</h2>
+        <ul className="mt-2 space-y-2">
+          {familyReceives(product).map((item) => (
+            <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        See a sample memorial page for{" "}
+        <Link href={SAMPLE_MEMORIAL_PATH} className="underline">
+          {SAMPLE_MEMORIAL_NAME}
+        </Link>
+        .
+      </p>
+      <Button asChild className="w-full" size="lg">
+        <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
+      </Button>
+    </div>
+  )
+}

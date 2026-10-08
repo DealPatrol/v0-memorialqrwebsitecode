@@ -1,30 +1,17 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Header } from "@/components/header"
-import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Tag, Shield, Truck } from "lucide-react"
+import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Shield, Truck } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useCartStore } from "@/lib/cart-store"
-
-const PROMO_CODES = {
-  SAVE10: { discount: 10, description: "10% off your order" },
-  MEMORIAL15: { discount: 15, description: "15% off memorial products" },
-  FIRST20: { discount: 20, description: "20% off first order" },
-  WELCOME25: { discount: 25, description: "25% off welcome discount" },
-  FAMILY30: { discount: 30, description: "30% off family memorial" },
-}
 
 export default function CartPage() {
   const { toast } = useToast()
   const { items, removeItem, updateQuantity, getTotalPrice } = useCartStore()
-  const [promoCode, setPromoCode] = useState("")
-  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number; description: string } | null>(null)
 
   const handleUpdateQuantity = (id: string, size: string, color: string, newQuantity: number) => {
     if (newQuantity < 1) return
@@ -39,47 +26,14 @@ export default function CartPage() {
     })
   }
 
-  const applyPromoCode = () => {
-    const upperCode = promoCode.toUpperCase()
-    const promoData = PROMO_CODES[upperCode as keyof typeof PROMO_CODES]
-
-    if (promoData) {
-      setAppliedPromo({
-        code: upperCode,
-        discount: promoData.discount,
-        description: promoData.description,
-      })
-      toast({
-        title: "Promo Code Applied! 🎉",
-        description: `${promoData.description} - You saved ${promoData.discount}%!`,
-      })
-      setPromoCode("")
-    } else {
-      toast({
-        title: "Invalid Promo Code",
-        description: "Please check your promo code and try again. Try SAVE10, MEMORIAL15, or FIRST20.",
-        variant: "destructive",
-      })
-    }
-  }
-
-  const removePromoCode = () => {
-    setAppliedPromo(null)
-    toast({
-      title: "Promo Code Removed",
-      description: "Promo code has been removed from your order.",
-    })
-  }
-
   const subtotal = getTotalPrice()
   const savings = items.reduce((sum, item) => {
     const itemSavings = item.originalPrice ? (item.originalPrice - item.price) * item.quantity : 0
     return sum + itemSavings
   }, 0)
-  const promoDiscount = appliedPromo ? (subtotal * appliedPromo.discount) / 100 : 0
   const shipping = subtotal > 100 ? 0 : 15
-  const tax = (subtotal - promoDiscount) * 0.08 // 8% tax
-  const total = subtotal - promoDiscount + shipping + tax
+  const tax = subtotal * 0.08 // 8% tax
+  const total = subtotal + shipping + tax
 
   if (items.length === 0) {
     return (
@@ -93,7 +47,7 @@ export default function CartPage() {
               <h1 className="text-3xl font-bold text-slate-900 mb-4">Your Cart is Empty</h1>
               <p className="text-slate-600 mb-8">Ready to create a beautiful memorial for your loved one?</p>
               <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700">
-                <Link href="/products">View Memorial Plaque</Link>
+                <Link href="/store">See Keepsakes</Link>
               </Button>
             </div>
           </div>
@@ -111,7 +65,7 @@ export default function CartPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Shopping Cart</h1>
-            <p className="text-slate-600">Review your memorial plaque order before checkout</p>
+            <p className="text-slate-600">Physical products are not for sale. Start a digital memorial instead.</p>
           </div>
         </div>
       </section>
@@ -133,10 +87,6 @@ export default function CartPage() {
                   <CardContent className="space-y-6">
                     {items.map((item) => (
                       <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-4 p-4 border rounded-lg">
-                        <div className="w-24 h-24 relative overflow-hidden rounded-lg bg-white">
-                          <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
-                        </div>
-
                         <div className="flex-1">
                           <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
 
@@ -199,68 +149,6 @@ export default function CartPage() {
                   </CardContent>
                 </Card>
 
-                {/* Promo Code */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Tag className="w-5 h-5" />
-                      Promo Code
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {!appliedPromo ? (
-                      <div className="space-y-3">
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="Enter promo code (try SAVE10, MEMORIAL15, FIRST20)"
-                            value={promoCode}
-                            onChange={(e) => setPromoCode(e.target.value)}
-                            className="flex-1"
-                            onKeyPress={(e) => e.key === "Enter" && applyPromoCode()}
-                          />
-                          <Button onClick={applyPromoCode} variant="outline">
-                            Apply
-                          </Button>
-                        </div>
-                        <div className="text-sm text-slate-600">
-                          <p className="font-medium mb-1">Available codes:</p>
-                          <ul className="space-y-1">
-                            <li>
-                              • <code className="bg-slate-100 px-1 rounded">SAVE10</code> - 10% off your order
-                            </li>
-                            <li>
-                              • <code className="bg-slate-100 px-1 rounded">MEMORIAL15</code> - 15% off memorial
-                              products
-                            </li>
-                            <li>
-                              • <code className="bg-slate-100 px-1 rounded">FIRST20</code> - 20% off first order
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="text-green-700 font-semibold">{appliedPromo.code} Applied! 🎉</span>
-                            <p className="text-sm text-green-600">{appliedPromo.description}</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-green-700 font-bold">-{appliedPromo.discount}%</span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={removePromoCode}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
               </div>
 
               {/* Order Summary */}
@@ -283,13 +171,6 @@ export default function CartPage() {
                         </div>
                       )}
 
-                      {appliedPromo && (
-                        <div className="flex justify-between text-green-600">
-                          <span>Promo ({appliedPromo.code}):</span>
-                          <span>-${promoDiscount.toFixed(2)}</span>
-                        </div>
-                      )}
-
                       <div className="flex justify-between">
                         <span>Shipping:</span>
                         <span className={shipping === 0 ? "text-green-600" : ""}>
@@ -309,22 +190,22 @@ export default function CartPage() {
                         <span>${total.toFixed(2)}</span>
                       </div>
 
-                      {(savings > 0 || appliedPromo) && (
+                      {savings > 0 && (
                         <div className="text-center text-green-600 font-medium">
-                          You saved ${(savings + promoDiscount).toFixed(2)}! 🎉
+                          You saved ${savings.toFixed(2)}! 🎉
                         </div>
                       )}
                     </div>
 
                     <Button asChild size="lg" className="w-full bg-purple-600 hover:bg-purple-700">
-                      <Link href="/checkout">
-                        Proceed to Checkout
+                      <Link href="/store">
+                        See Keepsakes
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>
                     </Button>
 
                     <Button asChild variant="outline" size="lg" className="w-full bg-transparent">
-                      <Link href="/products">Continue Shopping</Link>
+                      <Link href="/store">Continue Shopping</Link>
                     </Button>
 
                     {/* Trust Indicators */}
@@ -356,14 +237,14 @@ export default function CartPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm text-slate-400">
                 <li>
-                  <Link href="/products" className="hover:text-white">
+                  <Link href="/store" className="hover:text-white">
                     Memorial Plaque
                   </Link>
                 </li>

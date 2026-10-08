@@ -1,9 +1,12 @@
 import { Header } from "@/components/header"
+import { pageMetadata, publicPages } from "@/lib/seo"
 import QrCustomizer from "@/components/qr-customizer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { QrCode, Palette, Download, Smartphone, Headphones, CreditCard } from "lucide-react"
+import { QrCode, Palette, Download, Smartphone } from "lucide-react"
 import Link from "next/link"
+
+export const metadata = pageMetadata(publicPages.qrGenerator)
 
 export default function QrGeneratorPage() {
   return (
@@ -19,11 +22,10 @@ export default function QrGeneratorPage() {
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Create Custom <span className="memorial-logo">Memorial QR</span> Codes
+            Create a <span className="memorial-logo">QR Code Memorial</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Design beautiful, personalized QR codes for headstones, plaques, and memorial cards. Choose from 8 colors
-            and 3 styles to match your memorial perfectly.
+            Design a QR code that opens an online memorial page. Download it and share the link. Nothing is shipped.
           </p>
         </div>
       </section>
@@ -70,7 +72,7 @@ export default function QrGeneratorPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3">High-Quality Download</h3>
                 <p className="text-gray-600">
-                  Download 300x300px PNG files perfect for printing on headstones, plaques, and memorial cards.
+                  Download a PNG you can share or print yourself. MemorialsQR does not ship a physical product.
                 </p>
               </CardContent>
             </Card>
@@ -81,38 +83,36 @@ export default function QrGeneratorPage() {
       {/* Usage Examples */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Perfect for Any Memorial</h2>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Ways to share the page</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-white p-8 rounded-lg shadow-md mb-4">
-                <div className="w-24 h-24 bg-gray-200 rounded mx-auto mb-4 flex items-center justify-center">
-                  <Headphones className="h-12 w-12 text-gray-500" />
-                </div>
-                <h3 className="font-semibold text-lg">Headstones</h3>
-              </div>
-              <p className="text-gray-600">
-                Weather-resistant QR codes that last for generations on granite and marble.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-white p-8 rounded-lg shadow-md mb-4">
-                <div className="w-24 h-24 bg-gray-200 rounded mx-auto mb-4 flex items-center justify-center">
-                  <CreditCard className="h-12 w-12 text-gray-500" />
-                </div>
-                <h3 className="font-semibold text-lg">Memorial Plaques</h3>
-              </div>
-              <p className="text-gray-600">Elegant QR codes for bronze, brass, and aluminum memorial plaques.</p>
-            </div>
-
             <div className="text-center">
               <div className="bg-white p-8 rounded-lg shadow-md mb-4">
                 <div className="w-24 h-24 bg-gray-200 rounded mx-auto mb-4 flex items-center justify-center">
                   <Smartphone className="h-12 w-12 text-gray-500" />
                 </div>
-                <h3 className="font-semibold text-lg">Memorial Cards</h3>
+                <h3 className="font-semibold text-lg">A link</h3>
               </div>
-              <p className="text-gray-600">Beautiful QR codes for funeral programs, prayer cards, and keepsakes.</p>
+              <p className="text-gray-600">Send the memorial page to family and friends. Nothing is shipped.</p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-white p-8 rounded-lg shadow-md mb-4">
+                <div className="w-24 h-24 bg-gray-200 rounded mx-auto mb-4 flex items-center justify-center">
+                  <QrCode className="h-12 w-12 text-gray-500" />
+                </div>
+                <h3 className="font-semibold text-lg">A downloaded code</h3>
+              </div>
+              <p className="text-gray-600">Save the QR code and print it yourself if you want a paper copy.</p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-white p-8 rounded-lg shadow-md mb-4">
+                <div className="w-24 h-24 bg-gray-200 rounded mx-auto mb-4 flex items-center justify-center">
+                  <Download className="h-12 w-12 text-gray-500" />
+                </div>
+                <h3 className="font-semibold text-lg">The same page</h3>
+              </div>
+              <p className="text-gray-600">The code always opens the online memorial page you are hosting.</p>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function QrGeneratorPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Create Your Memorial?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Start with a custom QR code, then build a beautiful digital memorial that lasts forever.
+            Start with a custom QR code, then build a beautiful digital memorial, with 10 years of hosting included with every keepsake.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">

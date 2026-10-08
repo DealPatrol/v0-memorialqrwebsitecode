@@ -182,6 +182,8 @@ export default function AdminOrdersPage() {
         return "bg-blue-100 text-blue-800"
       case "completed":
         return "bg-green-100 text-green-800"
+      case "shipped":
+        return "bg-green-100 text-green-800"
       case "cancelled":
         return "bg-red-100 text-red-800"
       default:
@@ -305,6 +307,7 @@ export default function AdminOrdersPage() {
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="processing">Processing</SelectItem>
                       <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="shipped">Shipped</SelectItem>
                       <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
@@ -455,7 +458,8 @@ export default function AdminOrdersPage() {
                           <DialogHeader>
                             <DialogTitle>Update Order Status</DialogTitle>
                             <DialogDescription>
-                              Update the status and add notes for {order.order_number}
+                              Update the status and add notes for {order.order_number}. Completed or shipped sends one
+                              review email after the keepsake is fulfilled. Processing does not.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4 py-4">
@@ -469,6 +473,7 @@ export default function AdminOrdersPage() {
                                   <SelectItem value="pending">Pending</SelectItem>
                                   <SelectItem value="processing">Processing</SelectItem>
                                   <SelectItem value="completed">Completed</SelectItem>
+                                  <SelectItem value="shipped">Shipped</SelectItem>
                                   <SelectItem value="cancelled">Cancelled</SelectItem>
                                 </SelectContent>
                               </Select>

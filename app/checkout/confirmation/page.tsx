@@ -140,12 +140,6 @@ export default function OrderConfirmationPage() {
                   <span className="text-muted-foreground">Plan:</span>
                   <span className="font-medium capitalize">{order.plan_type} Payment</span>
                 </div>
-                {order.plan_type === "monthly" && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Monthly:</span>
-                    <span className="font-medium">${(order.monthly_amount_cents / 100).toFixed(2)}/month</span>
-                  </div>
-                )}
                 {order.addon_wooden_qr && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Add-on:</span>
@@ -203,10 +197,9 @@ export default function OrderConfirmationPage() {
                 <Package className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Shipping Timeline</h3>
+                <h3 className="font-semibold mb-2">Your Memorial Page</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your memorial plaque will be carefully crafted and shipped within 3-5 business days. You'll receive
-                  tracking information via email.
+                  Your memorial page is ready to build. 10 years of hosting included.
                 </p>
               </div>
             </div>
@@ -219,7 +212,7 @@ export default function OrderConfirmationPage() {
               <h2 className="text-2xl font-bold mb-3">Create Your Memorial Now</h2>
               <p className="text-muted-foreground mb-6">
                 Start building your loved one's memorial page. Add photos, stories, and memories that will be accessible
-                through your QR code plaque.
+                on the memorial page.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>
@@ -234,7 +227,7 @@ export default function OrderConfirmationPage() {
               </div>
               <p className="text-sm text-muted-foreground mt-4">
                 Want to manage your memorial later?{" "}
-                <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+                <Link href="/auth/sign-up" className="text-primary hover:underline font-medium">
                   Create a free account
                 </Link>
               </p>
@@ -251,7 +244,7 @@ export default function OrderConfirmationPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button variant="outline" asChild>
-                  <Link href="/auth/signup">Create Free Account</Link>
+                  <Link href="/auth/sign-up">Create Free Account</Link>
                 </Button>
                 <Button variant="ghost" asChild>
                   <Link href="/">Return Home</Link>

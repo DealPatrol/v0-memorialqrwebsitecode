@@ -5,8 +5,11 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
-import type { Metadata } from "next"
-import { FAQSchema, BreadcrumbSchema } from "@/components/seo/structured-data"
+import { JsonLd } from "@/components/json-ld"
+import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
+import { SUPPORT_EMAIL } from "@/lib/site"
+
+export const metadata = pageMetadata(publicPages.faq)
 
 const faqCategories = [
   {
@@ -30,7 +33,7 @@ const faqCategories = [
       {
         question: "How long does it take to set up?",
         answer:
-          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, your digital memorial is live immediately, and your QR code plaque ships within 3-5 business days.",
+          "Most people complete their memorial in 15-20 minutes. You can work at your own pace and save your progress. Once submitted, your digital memorial is live immediately.",
       },
     ],
   },
@@ -38,14 +41,19 @@ const faqCategories = [
     title: "Pricing & Payment",
     faqs: [
       {
-        question: "Are there any monthly fees?",
+        question: "Are there any recurring fees?",
         answer:
-          "No! Memorial QR is a one-time payment starting at $39.89 with lifetime access. There are no hidden fees, no monthly charges, and no subscription costs. Your memorial and QR code will work forever.",
+          "No. A QR keepsake is a one-time purchase, and it includes 10 years of hosting for its memorial page. There is no subscription.",
       },
       {
-        question: "What's included in the price?",
+        question: "What's included in the product price?",
         answer:
-          "Everything! You get a complete digital memorial website, unlimited photo uploads, guest message board, a weatherproof QR code plaque with professional engraving, free shipping, and lifetime hosting. No additional costs.",
+          "The printed QR keepsake and 10 years of hosting for the memorial page it opens, starting on the order date. That covers photos, videos, and stories on the page.",
+      },
+      {
+        question: "What happens after the 10 included years?",
+        answer:
+          "We will contact you before the included hosting ends to talk about renewal options. You can download the memorial photos at any time.",
       },
       {
         question: "Do you offer refunds?",
@@ -55,37 +63,22 @@ const faqCategories = [
       {
         question: "What payment methods do you accept?",
         answer:
-          "We accept all major credit cards (Visa, MasterCard, American Express, Discover), PayPal, and Apple Pay. All payments are processed securely.",
+          "We accept major credit and debit cards through Square's secure payment form. Card details go to Square, not to our servers.",
       },
     ],
   },
   {
-    title: "QR Code & Plaque",
+    title: "Hosting",
     faqs: [
       {
-        question: "How durable is the QR code plaque?",
+        question: "Is anything shipped?",
         answer:
-          "Our QR code plaques are made from weatherproof metal with UV-resistant coating and professional laser engraving. They're designed to withstand rain, snow, sun, and extreme temperatures for decades. We offer a 5-year durability guarantee.",
+          "Yes. QR keepsakes ship to United States addresses. The store lists the keepsakes you can order, including the QR Memorial Plaque.",
       },
       {
-        question: "What size is the QR code plaque?",
+        question: "What if the memorial page will not load?",
         answer:
-          "The standard plaque is 4 inches by 6 inches, perfect for mounting on headstones, memorial benches, or display stands. The QR code is large enough to scan easily from 2-3 feet away.",
-      },
-      {
-        question: "How do I mount the plaque?",
-        answer:
-          "Each plaque comes with multiple mounting options including adhesive backing, screw holes, and magnetic backing. We include detailed instructions and all necessary hardware for secure installation.",
-      },
-      {
-        question: "What if the QR code stops working?",
-        answer:
-          "QR codes don't 'expire' or stop working. As long as our service is running (which is guaranteed for life), the QR code will always link to the memorial. If there are ever technical issues, we'll resolve them immediately at no cost.",
-      },
-      {
-        question: "How long does shipping take?",
-        answer:
-          "QR code plaques ship within 3-5 business days via USPS Priority Mail (2-3 day delivery). Rush shipping options are available for an additional fee if you need it faster.",
+          "Contact support if a memorial page is not loading and we will look into it.",
       },
     ],
   },
@@ -144,53 +137,53 @@ const faqCategories = [
       },
     ],
   },
-]
-
-const allFaqs = faqCategories.flatMap((category) => category.faqs)
-
-export const metadata: Metadata = {
-  title: "FAQ - Frequently Asked Questions About QR Memorial Plaques",
-  description:
-    "Get answers about Memorial QR: pricing ($39.89+), QR code plaques, digital memorials, lifetime hosting, free shipping, 30-day guarantee, and 24/7 support.",
-  keywords:
-    "memorial FAQ, QR code plaque questions, digital memorial help, memorial pricing, memorial support, QR memorial answers, cemetery QR code FAQ",
-  openGraph: {
-    title: "Memorial QR FAQ - Your Questions Answered",
-    description:
-      "Find answers about creating digital memorials, QR code plaques, pricing, shipping, and our lifetime hosting guarantee.",
-    type: "website",
-    url: "https://memorialsqr.com/faq",
-    images: [
+  {
+    title: "QR codes and what we sell",
+    faqs: [
       {
-        url: "https://memorialsqr.com/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Memorial QR FAQ",
+        question: "Do you ship a plaque, tag, or garden stone?",
+        answer:
+          "We sell printed QR keepsakes such as stickers, coasters, keyrings, desk plaques, and pet tags, each with 10 years of hosting included. The store shows what can be ordered right now. We do not sell headstones or garden stones.",
+      },
+      {
+        question: "What is a QR code memorial?",
+        answer:
+          "It is a QR code that opens an online memorial page of photos, stories, and messages. Our keepsakes come with the code printed on them.",
+      },
+      {
+        question: "What does memorial hosting cost?",
+        answer: "Hosting is included. Every QR keepsake comes with 10 years of hosting for its memorial page, with no recurring fees.",
+      },
+      {
+        question: "What does the concierge memorial service cost?",
+        answer: `The concierge memorial service is ${CONCIERGE_PRICE_LABEL}, with 10 years of hosting included. We build the page and send you the link.`,
+      },
+      {
+        question: "Where is MemorialsQR based?",
+        answer: `MemorialsQR is a US business in Hanceville, Alabama. Email ${SUPPORT_EMAIL} for help.`,
       },
     ],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Memorial QR FAQ - Your Questions Answered",
-    description: "Get answers about pricing, setup, QR plaques, and our lifetime guarantee",
-    images: ["https://memorialsqr.com/og-image.jpg"],
-  },
-  alternates: {
-    canonical: "https://memorialsqr.com/faq",
-  },
-}
+]
 
 export default function FAQPage() {
+  const allFaqs = faqCategories.flatMap((category) => category.faqs)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: allFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-white">
-      <FAQSchema faqs={allFaqs} />
-      <BreadcrumbSchema
-        items={[
-          { name: "Home", url: "https://memorialsqr.com" },
-          { name: "FAQ", url: "https://memorialsqr.com/faq" },
-        ]}
-      />
-
+      <JsonLd data={faqSchema} />
       <Header />
 
       {/* Hero Section */}
@@ -204,8 +197,8 @@ export default function FAQPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Find answers to common questions about creating digital memorials, QR code plaques, pricing, and more. Can't
-            find what you're looking for? Our support team is here to help 24/7.
+            Find answers to common questions about online memorial pages, hosting, and the concierge memorial service. Can't
+            find what you're looking for? Contact our support team for help.
           </p>
 
           <Button asChild size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
@@ -252,7 +245,7 @@ export default function FAQPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Still Need Help?</h2>
             <p className="text-xl text-gray-600 mb-12">
-              Our friendly support team is available 24/7 to help you create the perfect memorial for your loved one.
+              Our support team can help you create a memorial for your loved one.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -271,13 +264,13 @@ export default function FAQPage() {
                 <CardContent className="p-8 text-center">
                   <Mail className="w-12 h-12 text-orange-600 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h3>
-                  <p className="text-gray-600 mb-4">Send us your questions and we'll respond within 2 hours.</p>
+                  <p className="text-gray-600 mb-4">Send us your questions and we'll respond as soon as we can.</p>
                   <Button
                     asChild
                     variant="outline"
                     className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
                   >
-                    <Link href="mailto:support@memorialsQR.com">Email Us</Link>
+                    <Link href={`mailto:${SUPPORT_EMAIL}`}>Email Us</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -306,8 +299,7 @@ export default function FAQPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Start honoring your loved one today with a beautiful digital memorial that will preserve their memory
-            forever.
+            Start honoring your loved one today with a beautiful digital memorial, with 10 years of hosting included with every keepsake.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -316,7 +308,7 @@ export default function FAQPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/create-profile">Create Memorial - $39.89</Link>
+              <Link href="/store">See Keepsakes</Link>
             </Button>
 
             <Button
@@ -337,7 +329,7 @@ export default function FAQPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>
@@ -400,7 +392,7 @@ export default function FAQPage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 Memorial QR. All rights reserved.</p>
+            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
           </div>
         </div>
       </footer>

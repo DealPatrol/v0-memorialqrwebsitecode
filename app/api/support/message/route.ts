@@ -1,23 +1,15 @@
 import { NextResponse } from "next/server"
-import { Resend } from "resend"
-
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY
-
-  if (!apiKey) {
-    throw new Error("RESEND_API_KEY is not configured")
-  }
-
-  return new Resend(apiKey)
-}
+import { getResend } from "@/lib/resend"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export async function POST(request: Request) {
   try {
+    const resend = getResend()
     const { name, email, message } = await request.json()
 
-    const result = await getResend().emails.send({
-      from: "Memorial QR Support <support@memorialsqr.com>",
-      to: "support@memorialsQR.com",
+    const result = await resend.emails.send({
+      from: `Memorial QR Support <${SUPPORT_EMAIL}>`,
+      to: SUPPORT_EMAIL,
       replyTo: email,
       subject: `Support Request from ${name}`,
       html: `

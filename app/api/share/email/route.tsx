@@ -1,18 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { Resend } from "resend"
-
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY
-
-  if (!apiKey) {
-    throw new Error("RESEND_API_KEY is not configured")
-  }
-
-  return new Resend(apiKey)
-}
+import { getResend } from "@/lib/resend"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export async function POST(request: NextRequest) {
   try {
+    const resend = getResend()
     const body = await request.json()
     const { memorialId, memorialName, memorialUrl, recipientEmail } = body
 
@@ -28,10 +20,10 @@ export async function POST(request: NextRequest) {
 
     const fromEmail = process.env.RESEND_FROM_EMAIL || "Memorial QR <noreply@memorialsqr.com>"
 
-    const { data, error } = await getResend().emails.send({
+    const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: recipientEmail,
-      replyTo: "support@memorialsQR.com",
+      replyTo: SUPPORT_EMAIL,
       subject: `Memorial for ${memorialName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -48,7 +40,7 @@ export async function POST(request: NextRequest) {
             Visit Memorial
           </a>
           <p style="color: #666; font-size: 14px; margin-top: 30px;">
-            This memorial was created with Memorial QR - Honoring memories that last forever.
+            This memorial was created with Memorial QR - Honoring memories with QR keepsakes.
           </p>
         </div>
       `,

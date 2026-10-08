@@ -15,7 +15,7 @@ Add the following environment variables to your Vercel project:
 - `RESEND_API_KEY` - Your Resend API key (get from Resend dashboard)
 
 ### Optional:
-- `ADMIN_EMAIL` - Email address to receive new order notifications (defaults to admin@memorialqr.com)
+- `ADMIN_EMAIL` - Email address to receive new order notifications (defaults to admin@memorialsqr.com)
 
 ## Getting Your Resend API Key
 
@@ -29,7 +29,7 @@ Add the following environment variables to your Vercel project:
 For production use, you should verify your domain:
 
 1. Go to Resend dashboard → Domains
-2. Add your domain (e.g., memorialqr.com)
+2. Add your domain (e.g., memorialsqr.com)
 3. Add the provided DNS records to your domain
 4. Wait for verification (usually takes a few minutes)
 
@@ -39,12 +39,12 @@ The application sends two types of emails:
 
 ### 1. Customer Order Confirmation
 - Sent to: Customer's email address
-- From: orders@memorialqr.com
+- From: orders@memorialsqr.com
 - Contains: Order details, shipping address, next steps
 
 ### 2. Admin Order Notification
 - Sent to: Admin email (from ADMIN_EMAIL env var)
-- From: orders@memorialqr.com
+- From: orders@memorialsqr.com
 - Contains: New order alert with customer and order details
 
 ## Testing

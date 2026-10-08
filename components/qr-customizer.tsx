@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import QrCode from "@/components/ui/qrcode"
 import { Download, Palette, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { SITE_URL } from "@/lib/site"
 
 const colorOptions = [
   { name: "Black", value: "#000000" },
@@ -92,7 +93,7 @@ export default function QrCustomizer() {
             <Input
               id="memorial-url"
               type="url"
-              placeholder="https://memorialqr.com/memorial/your-loved-one"
+              placeholder={`${SITE_URL}/memorial/your-loved-one`}
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="w-full"
@@ -159,7 +160,7 @@ export default function QrCustomizer() {
                   <QrCode value={url} size={300} color={selectedColor} style={selectedStyle} />
                 ) : (
                   <div className="text-center text-gray-500">
-                    <QrCode value="https://memorialqr.com" size={200} color="#e5e7eb" />
+                    <QrCode value={SITE_URL} size={200} color="#e5e7eb" />
                     <p className="mt-4 text-sm">Enter a URL to generate your QR code</p>
                   </div>
                 )}

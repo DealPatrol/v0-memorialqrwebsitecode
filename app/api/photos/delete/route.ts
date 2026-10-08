@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // Check authentication
     const {
