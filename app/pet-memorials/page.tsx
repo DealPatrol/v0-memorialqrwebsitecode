@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, ArrowRight, Globe, Lock, PawPrint, Music, Camera, Bone } from "lucide-react"
-import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
+import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.petMemorials)
 
@@ -26,7 +26,7 @@ export default function PetMemorialsPage() {
           </h1>
           <p className="text-xl text-amber-100 mb-8 max-w-3xl mx-auto">
             Create heartfelt digital memorials for dogs, cats, horses, and all the furry friends who gave us
-            unconditional love. A scannable QR code opens their memorial page, kept online as long as your plan is active.
+            unconditional love. A scannable QR code opens their memorial page, with 10 years of hosting included with every keepsake.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -61,7 +61,7 @@ export default function PetMemorialsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-amber-600" />
-              <span>Hosting $4.99/month per memorial</span>
+              <span>10 years of hosting included</span>
             </div>
             <div className="flex items-center gap-2">
               <PawPrint className="w-5 h-5 text-orange-600" />
@@ -148,7 +148,7 @@ export default function PetMemorialsPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">What you can buy today</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              A pet memorial page and a concierge memorial service. Nothing is shipped.
+              QR keepsakes with a pet memorial page, and a concierge memorial service.
             </p>
           </div>
 
@@ -160,7 +160,7 @@ export default function PetMemorialsPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Pet memorial page</h3>
                 <p className="text-muted-foreground mb-4">
-                  Photos, stories, and messages. Hosting is {HOSTING_PRICE_LABEL} a month.
+                  Photos, stories, and messages, opened by a QR keepsake. 10 years of hosting included.
                 </p>
                 <Badge className="bg-amber-100 text-amber-800">Hosting</Badge>
               </CardContent>
@@ -188,7 +188,7 @@ export default function PetMemorialsPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Concierge memorial service</h3>
                 <p className="text-muted-foreground mb-4">
-                  We build the page for you for {CONCIERGE_PRICE_LABEL}. Nothing is shipped.
+                  We build the page for you for {CONCIERGE_PRICE_LABEL}, with 10 years of hosting included.
                 </p>
                 <Badge variant="outline" className="border-amber-400 text-amber-700">
                   Service
@@ -210,7 +210,7 @@ export default function PetMemorialsPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-amber-600 hover:bg-gray-100">
               <Link href="/pricing?type=pet">
-                View Hosting
+                View Pricing
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

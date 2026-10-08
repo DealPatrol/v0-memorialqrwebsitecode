@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Users, Music, ImageIcon, MessageCircle, Share2, Download, Smartphone } from "lucide-react"
 import Link from "next/link"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { pageMetadata, publicPages } from "@/lib/seo"
-import { formatUsd } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.programs)
 
@@ -30,7 +28,7 @@ export default function Programs() {
         <div className="relative container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Digital Memorial Pages</h1>
           <p className="text-xl text-slate-200 max-w-2xl mx-auto">
-            Host a lasting page of photos, stories, and messages for {formatUsd(HOSTING_MONTHLY_PRICE)} per month.
+            A lasting page of photos, stories, and messages, opened by a QR keepsake. 10 years of hosting included.
           </p>
         </div>
       </div>
@@ -53,15 +51,15 @@ export default function Programs() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Honor Your Loved One?</h2>
           <p className="text-xl text-slate-200 mb-6 max-w-2xl mx-auto">
-            Create the memorial page yourself, or ask our team to build it. Hosting is{" "}
-            {formatUsd(HOSTING_MONTHLY_PRICE)} per month.
+            Choose a QR keepsake, then build the memorial page yourself or ask our team to build it. Every keepsake
+            includes 10 years of hosting.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-              <Link href="/create-memorial">Create a Memorial Page</Link>
+              <Link href="/store">Shop Keepsakes</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              <Link href="/store">See Hosting</Link>
+              <Link href="/concierge">Have Us Build It</Link>
             </Button>
           </div>
         </div>

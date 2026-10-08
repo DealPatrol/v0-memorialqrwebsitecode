@@ -9,7 +9,7 @@ const faqs = [
   {
     question: "How long does a memorial QR code last?",
     answer:
-      "The digital memorial remains available while its $4.99 monthly hosting plan is active.",
+      "Every keepsake includes 10 years of hosting for its memorial page, starting on the order date. There is no subscription.",
   },
   {
     question: "Can multiple family members contribute to a memorial?",
@@ -17,9 +17,9 @@ const faqs = [
       "Yes! You can invite unlimited family members to add photos, videos, and stories. Everyone with access can contribute their cherished memories.",
   },
   {
-    question: "What happens if I cancel my hosting subscription?",
+    question: "What happens after the 10 included years?",
     answer:
-      "Future renewals stop. The hosted page may become unavailable after the paid period ends. Contact support before canceling if you need help preserving your content.",
+      "We will contact you before the included hosting ends to talk about renewal options. You can download the memorial photos at any time.",
   },
 ]
 

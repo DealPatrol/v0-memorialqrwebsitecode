@@ -303,10 +303,10 @@ function CreateMemorialForm() {
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="mb-4 text-3xl font-bold text-white">Create Your Digital Memorial</h1>
           <p className="mx-auto mb-8 max-w-xl text-zinc-400">
-            Start with memorial page hosting. Nothing is shipped.
+            Every QR keepsake includes a memorial page with 10 years of hosting.
           </p>
           <Button asChild>
-            <Link href="/pricing">View Hosting</Link>
+            <Link href="/store">See Keepsakes</Link>
           </Button>
         </div>
       </div>
@@ -829,7 +829,7 @@ function CreateMemorialForm() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>
@@ -837,7 +837,7 @@ function CreateMemorialForm() {
               <ul className="space-y-2 text-sm text-slate-400">
                 <li>
                   <Link href="/store" className="hover:text-white">
-                    Memorial Hosting
+                    QR Keepsakes
                   </Link>
                 </li>
                 <li>

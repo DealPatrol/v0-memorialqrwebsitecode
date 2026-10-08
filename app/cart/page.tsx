@@ -47,7 +47,7 @@ export default function CartPage() {
               <h1 className="text-3xl font-bold text-slate-900 mb-4">Your Cart is Empty</h1>
               <p className="text-slate-600 mb-8">Ready to create a beautiful memorial for your loved one?</p>
               <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700">
-                <Link href="/store">See Digital Memorial Hosting</Link>
+                <Link href="/store">See Keepsakes</Link>
               </Button>
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function CartPage() {
 
                     <Button asChild size="lg" className="w-full bg-purple-600 hover:bg-purple-700">
                       <Link href="/store">
-                        See Digital Memorial Hosting
+                        See Keepsakes
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>
                     </Button>
@@ -237,7 +237,7 @@ export default function CartPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-slate-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
+              <p className="text-slate-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

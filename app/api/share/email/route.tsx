@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
             Visit Memorial
           </a>
           <p style="color: #666; font-size: 14px; margin-top: 30px;">
-            This memorial was created with Memorial QR - Honoring memories, kept online as long as the memorial's plan is active.
+            This memorial was created with Memorial QR - Honoring memories with QR keepsakes.
           </p>
         </div>
       `,

@@ -284,7 +284,7 @@ export default function ContactPage() {
               size="lg"
               className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
             >
-              <Link href="/store">See Memorial Hosting</Link>
+              <Link href="/store">See Keepsakes</Link>
             </Button>
 
             <Button
@@ -305,7 +305,7 @@ export default function ContactPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

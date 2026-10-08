@@ -1,12 +1,9 @@
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
-
 export type StoreCategory = "Human" | "Pet"
 
 export interface StoreProduct {
   id: string
   name: string
   price: number
-  monthlyFee: number
   image: string
   badge: string
   category: StoreCategory
@@ -18,7 +15,6 @@ export interface CheckoutProduct {
   id: string
   name: string
   price: number
-  monthlyFee: number
 }
 
 export type FulfillmentProvider = "printful" | "printify"
@@ -28,7 +24,6 @@ export interface PodProduct {
   id: string
   name: string
   price: number
-  monthlyFee: number
   provider: FulfillmentProvider
   fulfillmentProduct: string
   /** Env var holding the Printful sync variant id or the Printify product id. */
@@ -53,7 +48,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "keep-card",
     name: "Keep Card — Sticker + Online Memorial Profile",
     price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     provider: "printful",
     fulfillmentProduct: "Kiss-cut vinyl sticker, 3×3 in.",
     templateEnv: "PRINTFUL_KEEP_CARD_TEMPLATE_ID",
@@ -68,7 +62,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "memorial-coaster",
     name: "Cork Memorial Coaster",
     price: 19.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     provider: "printful",
     fulfillmentProduct: "Cork-back coaster",
     templateEnv: "PRINTFUL_MEMORIAL_COASTER_TEMPLATE_ID",
@@ -82,7 +75,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "acrylic-keyring",
     name: "Acrylic QR Keyring",
     price: 19.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     provider: "printify",
     fulfillmentProduct: "Acrylic keyring",
     templateEnv: "PRINTIFY_ACRYLIC_KEYRING_PRODUCT_ID",
@@ -96,7 +88,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "voice-keychain",
     name: "Voice Keychain",
     price: 24.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     provider: "printify",
     fulfillmentProduct: "Acrylic keyring",
     templateEnv: "PRINTIFY_VOICE_KEYCHAIN_PRODUCT_ID",
@@ -111,7 +102,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "slate-plaque",
     name: "Slate Desk Plaque",
     price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     provider: "printify",
     fulfillmentProduct: "Slate desk plaque",
     templateEnv: "PRINTIFY_SLATE_PLAQUE_PRODUCT_ID",
@@ -125,7 +115,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "pet-tag",
     name: "Pet QR Tag",
     price: 24.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     provider: "printify",
     fulfillmentProduct: "Pet tag",
     templateEnv: "PRINTIFY_PET_TAG_PRODUCT_ID",
@@ -139,7 +128,6 @@ export const POD_PRODUCTS: PodProduct[] = [
     id: "photo-block",
     name: "Memorial Photo Block",
     price: 59.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     provider: "printify",
     fulfillmentProduct: "Acrylic photo block",
     templateEnv: "PRINTIFY_PHOTO_BLOCK_PRODUCT_ID",
@@ -164,7 +152,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "memorial-locket",
     name: "Vintage Flower of Life Urn Necklace with Mini Jar Cremation Locket",
     price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/04933625-2735-47aa-b480-d34dc7292a74.jpeg",
     badge: "Most Popular",
     category: "Human",
@@ -181,7 +168,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "wooden-keychain-necklace",
     name: "Memorial QR Code Wooden Keychain or Necklace",
     price: 14.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/17c80bbb-d33f-4068-8656.jpeg",
     badge: "Best Seller",
     category: "Human",
@@ -198,7 +184,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "slate-memorial-coaster",
     name: "Memorial Slate Coaster with QR Code",
     price: 24.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/slate-memorial-coaster.jpeg",
     badge: "Popular",
     category: "Human",
@@ -215,7 +200,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "memorial-photo-frame",
     name: "Memorial Photo Frame with QR Code",
     price: 49.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/0d120a50-1c8d-4a75-a564.jpeg",
     badge: "Premium",
     category: "Human",
@@ -232,7 +216,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "human-cremation-urn-wood",
     name: "Wooden Cremation Urn with QR Memorial Plaque",
     price: 89.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/human-cremation-urn-wood.jpg",
     badge: "Premium",
     category: "Human",
@@ -249,7 +232,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-collar-memorial-tag",
     name: "Pet Memorial Collar with QR Code Tag",
     price: 19.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-collar-memorial.jpg",
     badge: "Pet",
     category: "Pet",
@@ -266,7 +248,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-garden-tombstone",
     name: "Pet Memorial Garden Stone with QR Code",
     price: 44.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-tombstone-garden.jpg",
     badge: "Pet",
     category: "Pet",
@@ -283,7 +264,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-cremation-urn-wood",
     name: "Wooden Pet Cremation Urn with QR Code",
     price: 34.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-cremation-urn-wood.jpg",
     badge: "Best Seller",
     category: "Pet",
@@ -300,7 +280,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-cremation-urn-ceramic",
     name: "Ceramic Pet Cremation Urn with QR Memorial",
     price: 39.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-urn-ceramic.jpg",
     badge: "Pet",
     category: "Pet",
@@ -317,7 +296,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-photo-frame-qr",
     name: "Pet Memorial Photo Frame with QR Code",
     price: 29.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-frame-dog-photo.jpg",
     badge: "Pet",
     category: "Pet",
@@ -334,7 +312,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "custom-pet-portrait-drawing",
     name: "Custom Pet Portrait Drawing with QR Code",
     price: 54.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/custom-dog-portrait-drawing.jpg",
     badge: "Premium",
     category: "Pet",
@@ -351,7 +328,6 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
     id: "pet-shadow-box-collar",
     name: "Pet Memorial Shadow Box with Collar Display",
     price: 64.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
     image: "/images/pet-shadow-box-collar.jpg",
     badge: "Premium",
     category: "Pet",
@@ -366,16 +342,16 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
   },
 ]
 
-/** Nothing physical is listed for sale until a supplier can fulfill it. */
+/** Legacy hand-made catalog stays empty. Printed keepsakes come from POD_PRODUCTS. */
 export const STORE_PRODUCTS: StoreProduct[] = []
 
 /** Standard metal plaque price, retained for the withheld catalog. */
 export const PLAQUE_PRICE = 29.99
 
 const WITHHELD_PLAQUE_PRODUCTS: CheckoutProduct[] = [
-  { id: "gold-plaque", name: "Gold Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
-  { id: "silver-plaque", name: "Silver Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
-  { id: "black-plaque", name: "Black Memorial Plaque", price: PLAQUE_PRICE, monthlyFee: HOSTING_MONTHLY_PRICE },
+  { id: "gold-plaque", name: "Gold Memorial Plaque", price: PLAQUE_PRICE },
+  { id: "silver-plaque", name: "Silver Memorial Plaque", price: PLAQUE_PRICE },
+  { id: "black-plaque", name: "Black Memorial Plaque", price: PLAQUE_PRICE },
 ]
 
 export const PLAQUE_PRODUCTS: CheckoutProduct[] = []
@@ -389,13 +365,11 @@ export const CONCIERGE_PRODUCTS: CheckoutProduct[] = [
     id: "concierge-digital",
     name: "Concierge Service - Digital Link",
     price: 299.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
   },
   {
     id: "concierge-service",
     name: "Concierge Memorial Service",
     price: 299.99,
-    monthlyFee: HOSTING_MONTHLY_PRICE,
   },
 ]
 
@@ -403,15 +377,6 @@ const WITHHELD_CONCIERGE_PLAQUE: CheckoutProduct = {
   id: "concierge-plaque",
   name: "Concierge Service - Physical Plaque",
   price: 329.99,
-  monthlyFee: HOSTING_MONTHLY_PRICE,
-}
-
-/** The digital page itself. Hosting is billed monthly and nothing is shipped. */
-export const DIGITAL_MEMORIAL: CheckoutProduct = {
-  id: "digital-memorial",
-  name: "Digital Memorial Page",
-  price: 0,
-  monthlyFee: HOSTING_MONTHLY_PRICE,
 }
 
 const REMOVED_PHYSICAL_IDS = new Set<string>([

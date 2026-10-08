@@ -8,7 +8,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { blogPosts } from "@/lib/blog-posts"
-import { assertMetadataLength, CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata } from "@/lib/seo"
+import { assertMetadataLength, CONCIERGE_PRICE_LABEL, pageMetadata } from "@/lib/seo"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 
 for (const post of blogPosts) {
@@ -30,7 +30,7 @@ In today's digital age, the way we honor and remember our loved ones is evolving
 
 ## What Are Memorial QR Codes?
 
-A QR code memorial is a code that opens an online memorial page. The page holds photos, videos, stories, and messages. MemorialsQR hosts that page. Nothing is shipped.
+A QR code memorial is a code that opens an online memorial page. The page holds photos, videos, stories, and messages. MemorialsQR sells QR keepsakes that open that page, and every keepsake includes 10 years of hosting.
 
 ## Why Choose a QR Memorial?
 
@@ -62,7 +62,7 @@ The process is beautifully simple:
 
 ## What MemorialsQR Sells Today
 
-Hosting for one online memorial page is ${HOSTING_PRICE_LABEL} a month. The concierge memorial service is ${CONCIERGE_PRICE_LABEL} if you want the page built for you. Nothing is shipped.
+Every MemorialsQR keepsake includes 10 years of hosting for its memorial page, with no recurring fees. The concierge memorial service is ${CONCIERGE_PRICE_LABEL} if you want the page built for you.
 
 ## Best Practices for Creating a Memorial QR Page
 
@@ -91,13 +91,13 @@ Creating a memorial QR tribute is easier than you might think:
 1. Gather photos, videos, and stories
 2. Create the online memorial page
 3. Share the link, or download a QR code
-4. Keep the page online with monthly hosting
+4. Hosting is included for 10 years with your keepsake
 
 A digital memorial can be shared with family wherever they are.
 
 ---
 
-*Ready to create a lasting memorial? Start an online memorial page. Nothing is shipped.*
+*Ready to create a lasting memorial? Choose a QR keepsake with 10 years of hosting included.*
     `,
   },
   "pet-memorial-ideas-honoring-furry-friends": {
@@ -117,7 +117,7 @@ Pets aren't "just animals"—they're family members who hold irreplaceable place
 
 ## Physical Memorial Ideas
 
-These are things a family might make on their own. MemorialsQR does not sell them, and nothing is shipped.
+These are things a family might make on their own. MemorialsQR does not sell these particular items.
 
 ### 1. **Memorial Garden Stone**
 Create a peaceful garden memorial with a custom engraved stone. Add a QR code that links to photos and videos of your pet playing in that very garden.
@@ -158,14 +158,14 @@ Your pet gave you years of unconditional love, loyalty, and companionship. They 
 
 ---
 
-*Ready to create a pet memorial page? MemorialsQR hosts the page. Collar tags, garden stones, and plaques are not for sale.*
+*Ready to create a pet memorial page? See our QR keepsakes. Each one includes 10 years of hosting for the page.*
     `,
   },
   "memorial-headstone-plaques-buying-guide": {
     content: `
-MemorialsQR hosts an online memorial page. Physical plaques, headstone tags, collar tags, and garden stones are not for sale, and nothing is shipped.
+MemorialsQR sells printed QR keepsakes that open an online memorial page. Headstone tags and garden stones are not for sale.
 
-Hosting is ${HOSTING_PRICE_LABEL} per month for one memorial website. The concierge memorial service is ${CONCIERGE_PRICE_LABEL} when you want the page built for you.
+Every keepsake includes 10 years of hosting for its memorial website. The concierge memorial service is ${CONCIERGE_PRICE_LABEL} when you want the page built for you.
 
 You can download a QR code that opens the page and share that link with family.
     `,
@@ -380,7 +380,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
-                    <Link href="/store">See Memorial Hosting</Link>
+                    <Link href="/store">See Keepsakes</Link>
                   </Button>
                   <Button asChild variant="outline" size="lg">
                     <Link href="/pricing">View Pricing</Link>

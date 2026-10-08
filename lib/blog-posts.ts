@@ -1,6 +1,6 @@
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
-const hosting = `$${HOSTING_MONTHLY_PRICE.toFixed(2)}`
+const years = HOSTING_INCLUDED_YEARS
 
 export const blogPosts = [
   {
@@ -9,7 +9,7 @@ export const blogPosts = [
     excerpt:
       "Discover how QR code memorials are revolutionizing the way we remember and honor those we've lost. Learn everything about creating lasting digital tributes.",
     seoTitle: "QR Code Memorial Guide | MemorialsQR",
-    seoDescription: "How a QR code memorial opens an online memorial page of photos and stories. Nothing is shipped.",
+    seoDescription: `How a QR code memorial opens an online memorial page of photos and stories. ${years} years of hosting with every keepsake.`,
     category: "Guides",
     author: "Sarah Mitchell",
     date: "2024-12-15",
@@ -23,7 +23,7 @@ export const blogPosts = [
     excerpt:
       "Losing a pet is heartbreaking. Explore creative and touching ways to memorialize your beloved companion and keep their memory close.",
     seoTitle: "Pet Memorial Page Ideas | MemorialsQR",
-    seoDescription: `Ideas for a pet memorial page with photos and stories. Hosting is ${hosting} a month. Nothing is shipped.`,
+    seoDescription: `Ideas for a pet memorial page with photos and stories. Every QR keepsake includes ${years} years of hosting.`,
     category: "Pet Memorials",
     author: "Dr. Emily Rogers",
     date: "2024-12-10",
@@ -37,7 +37,7 @@ export const blogPosts = [
     excerpt:
       "Creating a digital memorial doesn't have to be overwhelming. Follow our comprehensive guide to build a beautiful tribute that honors your loved one's legacy.",
     seoTitle: "Create a Digital Memorial | MemorialsQR",
-    seoDescription: `Steps to create a digital memorial for a loved one on a memorial website. Hosting is ${hosting} a month.`,
+    seoDescription: `Steps to create a digital memorial for a loved one on a memorial website. ${years} years of hosting with every keepsake.`,
     category: "Guides",
     author: "Michael Chen",
     date: "2024-12-05",
@@ -61,9 +61,9 @@ export const blogPosts = [
     slug: "memorial-headstone-plaques-buying-guide",
     title: "A Digital Memorial Page Instead of a Plaque",
     excerpt:
-      "MemorialsQR hosts an online memorial page. Physical plaques, headstone tags, and garden stones are not for sale.",
+      "MemorialsQR sells QR keepsakes that open an online memorial page. Headstone tags and garden stones are not for sale.",
     seoTitle: "Digital Pages, Not Plaques | MemorialsQR",
-    seoDescription: `MemorialsQR sells an online memorial page, not physical plaques. Hosting is ${hosting} a month.`,
+    seoDescription: `MemorialsQR sells QR keepsakes that open an online memorial page. Each includes ${years} years of hosting.`,
     category: "Product Guides",
     author: "Robert Thompson",
     date: "2024-11-28",

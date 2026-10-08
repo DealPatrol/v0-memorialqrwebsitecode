@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 
 const conciergeOffer = CONCIERGE_PRODUCTS.find((product) => product.id === "concierge-digital")
@@ -10,9 +10,9 @@ if (!conciergeOffer) {
 }
 
 /** Real charged amounts. Descriptions and JSON-LD must use these, not rounded marketing numbers. */
-export const HOSTING_PRICE_AMOUNT = HOSTING_MONTHLY_PRICE
 export const CONCIERGE_PRICE_AMOUNT = conciergeOffer.price
-export const HOSTING_PRICE_LABEL = `$${HOSTING_MONTHLY_PRICE.toFixed(2)}`
+/** Keepsakes include hosting. There is no recurring plan. */
+export const HOSTING_INCLUDED_TEXT = `${HOSTING_INCLUDED_YEARS} years of hosting included`
 export const CONCIERGE_PRICE_LABEL = `$${conciergeOffer.price.toFixed(2)}`
 
 export type ChangeFrequency = "daily" | "weekly" | "monthly" | "yearly"
@@ -28,14 +28,14 @@ export type SeoPage = {
   inSitemap: boolean
 }
 
-const hosting = HOSTING_PRICE_LABEL
+const years = HOSTING_INCLUDED_YEARS
 const concierge = CONCIERGE_PRICE_LABEL
 
 export const publicPages = {
   home: {
     path: "/",
     title: "Online Memorial Page | MemorialsQR",
-    description: `Create an online memorial page for a loved one or pet. Hosting is ${hosting} a month. Concierge is ${concierge}. Nothing ships.`,
+    description: `QR memorial keepsakes that open an online memorial page for a loved one or pet. Every keepsake includes ${years} years of hosting. No recurring fees.`,
     file: "app/page.tsx",
     changeFrequency: "weekly",
     priority: 1,
@@ -44,8 +44,8 @@ export const publicPages = {
   },
   store: {
     path: "/store",
-    title: "Memorial Website Hosting | MemorialsQR",
-    description: `Host a memorial website with photos and stories for ${hosting} per month. Nothing is shipped.`,
+    title: "QR Memorial Keepsakes | MemorialsQR",
+    description: `Printed QR memorial keepsakes that open a memorial page of photos and stories. ${years} years of hosting included. No recurring fees.`,
     file: "app/store/page.tsx",
     changeFrequency: "weekly",
     priority: 0.9,
@@ -55,7 +55,7 @@ export const publicPages = {
   tombstones: {
     path: "/memorial-qr-codes-tombstones",
     title: "QR Code Memorial Pages | MemorialsQR",
-    description: `A QR code memorial opens an online memorial page of photos and stories. Hosting is ${hosting} a month. Nothing ships.`,
+    description: `A QR code memorial keepsake opens an online memorial page of photos and stories. ${years} years of hosting included.`,
     file: "app/memorial-qr-codes-tombstones/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -64,8 +64,8 @@ export const publicPages = {
   },
   pricing: {
     path: "/pricing",
-    title: "Memorial Page Pricing | MemorialsQR",
-    description: `Online memorial page hosting is ${hosting} USD per month. The concierge memorial service is ${concierge}. Nothing ships.`,
+    title: "Memorial Keepsake Pricing | MemorialsQR",
+    description: `Each QR memorial keepsake is a one-time purchase with ${years} years of memorial page hosting included. No recurring fees.`,
     file: "app/pricing/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -85,7 +85,7 @@ export const publicPages = {
   howItWorks: {
     path: "/how-it-works",
     title: "How a Memorial Page Works | MemorialsQR",
-    description: `Create a digital memorial for a loved one, share a QR code memorial, and host it for ${hosting} a month.`,
+    description: `Order a QR memorial keepsake, build the memorial page, and share it. ${years} years of hosting included with every keepsake.`,
     file: "app/how-it-works/page.tsx",
     changeFrequency: "monthly",
     priority: 0.7,
@@ -95,7 +95,7 @@ export const publicPages = {
   faq: {
     path: "/faq",
     title: "Memorial Page FAQ | MemorialsQR",
-    description: `Answers about online memorial pages, ${hosting} monthly hosting, and the ${concierge} concierge memorial service.`,
+    description: `Answers about QR memorial keepsakes, the ${years} years of included hosting, and the ${concierge} concierge memorial service.`,
     file: "app/faq/page.tsx",
     changeFrequency: "monthly",
     priority: 0.7,
@@ -125,7 +125,7 @@ export const publicPages = {
   humanMemorials: {
     path: "/human-memorials",
     title: "Digital Memorial for a Loved One",
-    description: `An online memorial page for a parent, grandparent, or friend. Photos, stories, and a QR code. ${hosting} a month.`,
+    description: `A QR memorial keepsake and online memorial page for a parent, grandparent, or friend. ${years} years of hosting included.`,
     file: "app/human-memorials/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -135,7 +135,7 @@ export const publicPages = {
   petMemorials: {
     path: "/pet-memorials",
     title: "Pet Memorial Page | MemorialsQR",
-    description: `Create a pet memorial page with photos, stories, and a QR code memorial. Hosting is ${hosting} a month. Nothing ships.`,
+    description: `A QR memorial keepsake and pet memorial page with photos and stories. ${years} years of hosting included. No recurring fees.`,
     file: "app/pet-memorials/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -145,7 +145,7 @@ export const publicPages = {
   terms: {
     path: "/terms-of-service",
     title: "Terms of Service | MemorialsQR",
-    description: `Terms for MemorialsQR memorial website hosting at ${hosting} per month and the concierge memorial service.`,
+    description: `Terms for MemorialsQR keepsakes, the ${years} years of included memorial page hosting, and the concierge memorial service.`,
     file: "app/terms-of-service/page.tsx",
     changeFrequency: "yearly",
     priority: 0.3,
@@ -175,7 +175,7 @@ export const publicPages = {
   about: {
     path: "/about",
     title: "About MemorialsQR",
-    description: `MemorialsQR hosts digital memorial pages from Hanceville, Alabama. Hosting is ${hosting} a month. Nothing ships.`,
+    description: `MemorialsQR, based in Hanceville, Alabama, sells QR memorial keepsakes. Each includes ${years} years of memorial page hosting.`,
     file: "app/about/page.tsx",
     changeFrequency: "monthly",
     priority: 0.6,
@@ -195,7 +195,7 @@ export const publicPages = {
   createMemorial: {
     path: "/create-memorial",
     title: "Create a Memorial Page | MemorialsQR",
-    description: `Start an online memorial page with photos, stories, and a QR code memorial. Hosting is ${hosting} per month.`,
+    description: `Set up the online memorial page for your QR keepsake with photos, stories, and messages.`,
     file: "app/create-memorial/page.tsx",
     changeFrequency: "monthly",
     priority: 0.4,
@@ -215,7 +215,7 @@ export const publicPages = {
   help: {
     path: "/help",
     title: "Memorial Page Help | MemorialsQR",
-    description: `Help with an online memorial page, hosting at ${hosting} a month, and the concierge memorial service.`,
+    description: `Help with QR memorial keepsakes, memorial pages, the ${years} years of included hosting, and the concierge service.`,
     file: "app/help/page.tsx",
     changeFrequency: "monthly",
     priority: 0.5,
@@ -245,7 +245,7 @@ export const publicPages = {
   programs: {
     path: "/programs",
     title: "Memorial Website Features | MemorialsQR",
-    description: `Photos, stories, guest messages, and a QR code memorial on one memorial website. Hosting is ${hosting} a month.`,
+    description: `Photos, stories, guest messages, and a QR code memorial on one memorial website. ${years} years of hosting with every keepsake.`,
     file: "app/programs/page.tsx",
     changeFrequency: "monthly",
     priority: 0.5,

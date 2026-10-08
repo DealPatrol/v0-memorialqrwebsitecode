@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from 'lucide-react'
-import { CONCIERGE_PRICE_LABEL, HOSTING_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
+import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.help)
@@ -46,9 +46,9 @@ const helpCategories = [
     icon: FileText,
     articles: [
       "Understanding your invoice",
-      "Understanding monthly hosting",
+      "Understanding your 10 years of included hosting",
       "Requesting refunds",
-      "Updating billing information",
+      "Tracking a keepsake shipment",
     ],
   },
 ]
@@ -171,8 +171,9 @@ export default function HelpPage() {
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Is anything shipped?</h3>
                 <p className="text-gray-600">
-                  No. MemorialsQR hosts the online memorial page. Nothing is shipped. Hosting is {HOSTING_PRICE_LABEL} a
-                  month, and the concierge memorial service is {CONCIERGE_PRICE_LABEL} if you want us to build the page.
+                  Yes. QR keepsakes are printed after payment and ship to United States addresses. Every keepsake
+                  includes 10 years of hosting for its memorial page, and the concierge memorial service is{" "}
+                  {CONCIERGE_PRICE_LABEL} if you want us to build the page.
                 </p>
               </CardContent>
             </Card>
@@ -249,7 +250,7 @@ export default function HelpPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorial pages, kept online as long as your plan is active.</p>
+              <p className="text-gray-400 text-sm">Honoring memories with QR keepsakes and memorial pages, with 10 years of hosting included.</p>
             </div>
 
             <div>

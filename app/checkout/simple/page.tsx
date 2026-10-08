@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 
 type CartLine = { id: string; name: string; price: number; quantity: number; ships: boolean }
@@ -164,7 +164,6 @@ function CheckoutForm() {
         planType: "cart-checkout",
         items: cartItems,
         totalAmount: orderTotal,
-        monthlyFee: HOSTING_MONTHLY_PRICE,
         customerEmail: formData.email || "",
         customerPhone: formData.phone || "",
         addressLine1: needsShipping ? formData.address : "",
@@ -229,19 +228,19 @@ function CheckoutForm() {
       <section className="py-20 px-4">
         <div className="max-w-xl mx-auto text-center">
           <h1 className="text-3xl font-bold text-foreground mb-4">
-            {rejectedProduct ? "This product is not available" : "Start with a digital memorial"}
+            {rejectedProduct ? "This product is not available" : "Choose a QR memorial keepsake"}
           </h1>
           <p className="text-muted-foreground mb-8">
             {rejectedProduct
-              ? "We are not selling that item. The memorial page and monthly hosting do not need to be shipped."
-              : `Create a memorial page and keep it online for ${formatUsd(HOSTING_MONTHLY_PRICE)} per month.`}
+              ? "We are not selling that item right now. See the keepsakes that are available."
+              : `Every QR memorial keepsake includes ${HOSTING_INCLUDED_YEARS} years of hosting for its memorial page. One payment, no recurring fees.`}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/create-memorial" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground">
-              Create a Memorial Page
+            <Link href="/store" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground">
+              See Keepsakes
             </Link>
-            <Link href="/store" className="inline-flex items-center justify-center rounded-md border px-6 py-3">
-              See Hosting
+            <Link href="/concierge" className="inline-flex items-center justify-center rounded-md border px-6 py-3">
+              Have Us Build It
             </Link>
           </div>
         </div>
@@ -254,7 +253,7 @@ function CheckoutForm() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Complete Your Purchase</h1>
-          <p className="text-lg text-muted-foreground">Secure checkout for your digital memorial</p>
+          <p className="text-lg text-muted-foreground">Secure one-time checkout</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -281,11 +280,11 @@ function CheckoutForm() {
 
                 <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
                   <div className="flex justify-between items-center text-sm mb-1">
-                    <span className="text-blue-900 dark:text-blue-100 font-medium">Monthly Hosting Fee:</span>
-                    <span className="font-semibold text-blue-900 dark:text-blue-100">{formatUsd(HOSTING_MONTHLY_PRICE)}/mo</span>
+                    <span className="text-blue-900 dark:text-blue-100 font-medium">Memorial Page Hosting:</span>
+                    <span className="font-semibold text-blue-900 dark:text-blue-100">{HOSTING_INCLUDED_YEARS} years included</span>
                   </div>
                   <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                    This fee is <strong>per memorial page</strong>.
+                    Hosting starts on the order date. <strong>No recurring fees.</strong>
                   </p>
                   <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
                     Includes: Unlimited photos, videos & memorial content hosting
@@ -298,7 +297,7 @@ function CheckoutForm() {
                   <span className="text-2xl font-bold text-blue-600">{formatUsd(orderTotal)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Then {formatUsd(HOSTING_MONTHLY_PRICE)}/month per memorial starting next month
+                  One-time payment. Nothing else is charged later.
                 </p>
               </div>
 
@@ -312,7 +311,7 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Memorial website kept online as long as your plan is active</span>
+                  <span>{HOSTING_INCLUDED_YEARS} years of memorial page hosting included</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -320,7 +319,7 @@ function CheckoutForm() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Hosting billed once per memorial</span>
+                  <span>No subscription and no recurring charges</span>
                 </div>
               </div>
 

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
 import { resolveConfiguredCheckoutItems } from "@/lib/fulfillment-availability"
 import { fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
@@ -26,7 +25,6 @@ export async function POST(req: Request) {
       zip,
       paymentId,
       customization,
-      cardId,
       squareCustomerId,
     } = body
 
@@ -78,7 +76,6 @@ export async function POST(req: Request) {
       (total, item) => total + Math.round(item.price * 100) * item.quantity,
       0,
     )
-    const monthlyAmountCents = Math.round(HOSTING_MONTHLY_PRICE * 100)
     const finalProductName = resolvedItems.map((item) => `[${item.id}] ${item.name} × ${item.quantity}`).join(", ")
     const finalPlanType = "cart-checkout"
     const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
@@ -95,44 +92,7 @@ export async function POST(req: Request) {
 
     const supabase = createServiceRoleClient()
 
-    let subscriptionId = null
-    let subscriptionStatus = null
-
-    // Only create subscription if monthly fee exists and payment info is available
-    // Note: In future enhancement, check if customer already has subscription for this memorial
-    if (monthlyAmountCents > 0 && cardId && finalSquareCustomerId) {
-      console.log("[v0] Creating monthly subscription for memorial hosting (per-memorial, not per-product)...")
-
-      try {
-        const subscriptionResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/square/create-subscription`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              customerId: finalSquareCustomerId,
-              cardId: cardId,
-              planVariationId: process.env.SQUARE_SUBSCRIPTION_PLAN_ID,
-              orderId: orderNumber,
-            }),
-          },
-        )
-
-        const subscriptionData = await subscriptionResponse.json()
-
-        if (subscriptionData.success) {
-          subscriptionId = subscriptionData.subscription.id
-          subscriptionStatus = subscriptionData.subscription.status
-          console.log("[v0] Subscription created successfully:", subscriptionId)
-        } else {
-          console.error("[v0] Subscription creation failed:", subscriptionData.error)
-          // Don't fail the order if subscription fails - store can follow up manually
-        }
-      } catch (subError) {
-        console.error("[v0] Subscription creation error:", subError)
-        // Don't fail the order if subscription fails
-      }
-    }
+    // Keepsakes include 10 years of hosting. Checkout is one-time only and never creates a subscription.
 
     const orderData = {
       order_number: orderNumber,
@@ -149,7 +109,7 @@ export async function POST(req: Request) {
       payment_id: paymentId,
       payment_status: "completed",
       amount_cents: totalAmountCents,
-      monthly_amount_cents: monthlyAmountCents,
+      monthly_amount_cents: 0,
       currency: "USD",
       product_type: finalPlanType,
       product_name: finalProductName,
@@ -157,8 +117,8 @@ export async function POST(req: Request) {
       status: "processing",
       special_instructions: customization || null,
       plan_type: finalPlanType,
-      subscription_id: subscriptionId,
-      subscription_plan_id: process.env.SQUARE_SUBSCRIPTION_PLAN_ID || null,
+      subscription_id: null,
+      subscription_plan_id: null,
 
       plaque_color: null,
       box_personalization: null,
@@ -238,7 +198,6 @@ export async function POST(req: Request) {
         orderNumber: order.order_number,
         productName: finalProductName,
         amount: (totalAmountCents / 100).toFixed(2),
-        monthlyFee: (monthlyAmountCents / 100).toFixed(2),
         shipsPhysical,
       })
     } catch (emailError) {

@@ -8,7 +8,7 @@ import { LiveChatButton } from "@/components/live-chat-button"
 import { Footer } from "@/components/footer"
 import { Analytics } from "@vercel/analytics/next"
 import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
-import { HOSTING_MONTHLY_PRICE } from "@/lib/pricing"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 const conciergeOffer = CONCIERGE_PRODUCTS.find((product) => product.id === "concierge-digital")
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   title: {
     default: "MemorialsQR",
   },
-  description: "MemorialsQR hosts digital memorial pages. Nothing is shipped.",
+  description: `MemorialsQR sells QR memorial keepsakes. Each one opens an online memorial page with ${HOSTING_INCLUDED_YEARS} years of hosting included.`,
   keywords:
     "online memorial page, digital memorial for loved one, QR code memorial, pet memorial page, memorial website, concierge memorial service",
   authors: [{ name: SITE_NAME }],
@@ -120,38 +120,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         publisher: { "@id": `${SITE_URL}/#organization` },
       },
       {
-        "@type": "Product",
-        name: "Online memorial page hosting",
-        description: "A digital memorial page for photos, stories, and messages. Billed monthly. Nothing is shipped.",
-        sku: "digital-memorial",
-        brand: {
-          "@type": "Brand",
-          name: SITE_NAME,
-        },
-        offers: {
-          "@type": "Offer",
-          url: `${SITE_URL}/pricing`,
-          price: HOSTING_MONTHLY_PRICE.toFixed(2),
-          priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
-          priceSpecification: {
-            "@type": "UnitPriceSpecification",
-            price: HOSTING_MONTHLY_PRICE.toFixed(2),
-            priceCurrency: "USD",
-            unitCode: "MON",
-            billingDuration: 1,
-            referenceQuantity: {
-              "@type": "QuantitativeValue",
-              value: 1,
-              unitCode: "MON",
-            },
-          },
-        },
-      },
-      {
         "@type": "Service",
         name: "Concierge memorial service",
-        description: "We build the memorial page. Nothing is shipped.",
+        description: `We build the memorial page. ${HOSTING_INCLUDED_YEARS} years of hosting included.`,
         serviceType: "Concierge memorial service",
         provider: { "@id": `${SITE_URL}/#organization` },
         offers: {
