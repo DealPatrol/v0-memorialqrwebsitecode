@@ -523,11 +523,11 @@ function CheckoutForm() {
                 <div className="flex flex-wrap items-center gap-4 pt-4 border-t mt-4">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Shield className="h-5 w-5 text-green-600" />
-                    <span className="font-medium">SSL Encrypted</span>
+                    <span className="font-medium">Secure HTTPS</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CreditCard className="h-5 w-5 text-blue-600" />
-                    <span className="font-medium">Square Secure Checkout</span>
+                    <span className="font-medium">Payments processed by Square</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Award className="h-5 w-5 text-purple-600" />

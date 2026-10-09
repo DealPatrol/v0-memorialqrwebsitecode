@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Clock, TrendingUp, Package } from 'lucide-react'
+import { Clock } from "lucide-react"
 
 export function UrgencyBanner() {
   const [timeLeft, setTimeLeft] = useState({
@@ -42,14 +42,6 @@ export function UrgencyBanner() {
             Limited Time: {String(timeLeft.hours).padStart(2, "0")}:{String(timeLeft.minutes).padStart(2, "0")}:
             {String(timeLeft.seconds).padStart(2, "0")}
           </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4" />
-          <span>127 memorials created this week</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Package className="h-4 w-4" />
-          <span>Only 8 luxury boxes left in stock</span>
         </div>
       </div>
     </div>

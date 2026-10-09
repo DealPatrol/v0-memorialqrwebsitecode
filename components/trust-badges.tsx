@@ -11,13 +11,13 @@ export function TrustBadges() {
         </div>
         <div className="flex flex-col items-center text-center gap-2">
           <Lock className="h-8 w-8 text-blue-500" />
-          <p className="text-sm font-semibold text-white">SSL Secured</p>
-          <p className="text-xs text-zinc-500">Bank-level encryption</p>
+          <p className="text-sm font-semibold text-white">Secure HTTPS</p>
+          <p className="text-xs text-zinc-500">Pages and checkout use HTTPS</p>
         </div>
         <div className="flex flex-col items-center text-center gap-2">
           <CreditCard className="h-8 w-8 text-purple-500" />
-          <p className="text-sm font-semibold text-white">Secure Payments</p>
-          <p className="text-xs text-zinc-500">Powered by Square</p>
+          <p className="text-sm font-semibold text-white">Payments by Square</p>
+          <p className="text-xs text-zinc-500">Payments processed by Square</p>
         </div>
         <div className="flex flex-col items-center text-center gap-2 hidden md:flex">
           <Clock className="h-8 w-8 text-yellow-500" />

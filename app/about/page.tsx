@@ -111,8 +111,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
               <Shield className="w-12 h-12 text-green-500 mx-auto mb-4" />
-              <h3 className="font-bold text-lg mb-2">Bank-Level Security</h3>
-              <p className="text-zinc-400">SSL encryption protects all data and transactions.</p>
+              <h3 className="font-bold text-lg mb-2">Secure HTTPS</h3>
+              <p className="text-zinc-400">Pages and uploads use HTTPS. Payments processed by Square.</p>
             </div>
             <div className="text-center">
               <Lock className="w-12 h-12 text-green-500 mx-auto mb-4" />

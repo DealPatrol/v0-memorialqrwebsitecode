@@ -40,8 +40,8 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Data Security</h2>
             <p className="text-gray-700 mb-4">
               We implement appropriate security measures to protect your personal information against unauthorized
-              access, alteration, disclosure, or destruction. All payment information is processed through PCI-compliant
-              Square payment systems. Memorial content is stored securely with automatic backups.
+              access, alteration, disclosure, or destruction. All payment information is processed by Square.
+              Memorial content is stored securely with automatic backups.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Your Rights and Choices</h2>

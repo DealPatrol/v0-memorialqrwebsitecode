@@ -212,15 +212,11 @@ export default function CartPage() {
                     <div className="pt-4 border-t space-y-3">
                       <div className="flex items-center gap-2 text-sm text-slate-600">
                         <Shield className="w-4 h-4 text-green-600" />
-                        <span>Secure SSL Encryption</span>
+                        <span>Secure HTTPS · Payments processed by Square</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-slate-600">
                         <Truck className="w-4 h-4 text-green-600" />
                         <span>Free shipping on orders over $100</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <Shield className="w-4 h-4 text-green-600" />
-                        <span>5-year quality guarantee</span>
                       </div>
                     </div>
                   </CardContent>

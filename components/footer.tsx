@@ -28,13 +28,13 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
               <Shield className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-bold mb-1">SSL Encrypted</h3>
-              <p className="text-sm text-zinc-400">Bank-level security for all data</p>
+              <h3 className="font-bold mb-1">Secure HTTPS</h3>
+              <p className="text-sm text-zinc-400">Pages and uploads use HTTPS</p>
             </div>
             <div className="text-center">
               <Lock className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-bold mb-1">GDPR Compliant</h3>
-              <p className="text-sm text-zinc-400">Your privacy is protected</p>
+              <h3 className="font-bold mb-1">Payments by Square</h3>
+              <p className="text-sm text-zinc-400">Payments processed by Square</p>
             </div>
             <div className="text-center">
               <Award className="w-8 h-8 text-green-500 mx-auto mb-3" />

@@ -41,7 +41,7 @@ export default function PrivacyPage() {
 
           <h2 className="text-2xl font-bold text-black mt-12 mb-4">4. Data Security</h2>
           <p>
-            We implement industry-standard security measures including SSL encryption, secure databases, and regular security audits. Your memorial data is protected with the same security as financial institutions.
+            Pages and uploads use HTTPS. Payments are processed by Square, and we do not store full card numbers.
           </p>
 
           <h2 className="text-2xl font-bold text-black mt-12 mb-4">5. Third-Party Services</h2>
