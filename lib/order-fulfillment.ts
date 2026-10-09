@@ -2,6 +2,7 @@ import { SUPPORT_EMAIL } from "@/lib/site"
 import { memorialPageUrl, memorialSlugForOrder, printFileUrl } from "@/lib/memorial-urls"
 import { sendEmail } from "@/lib/email"
 import { sendManualFulfillmentNotice } from "@/lib/manual-fulfillment-email"
+import { recordEmailAlert } from "@/lib/order-email-alerts"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 import { dispatchSupplierLines, type DispatchLine, type DispatchOutcome } from "@/lib/supplier-dispatch"
 import { attributionFromUnknown } from "@/lib/attribution"
@@ -313,7 +314,9 @@ async function placePhysicalOrder(
         },
       }
       await saveFulfillmentLog(supabase, order, outcome, printUrl, memorialOk ? slug : null)
-      if (!notice.sent) console.error("[Fulfillment] Manual fulfillment email was not sent:", notice.error)
+      if (notice.failed.length) {
+        await recordEmailAlert(supabase, order, "manual_fulfillment_notice", notice.error, notice.failed.map((item) => item.to))
+      }
       return outcome
     }
 
@@ -339,6 +342,9 @@ async function placePhysicalOrder(
     outcome.details.manualFulfillment = notice
     outcome.details.summary = manualSummary(order, manualItems, memorialUrl, printUrl, notice.sent, notice.error)
     await saveFulfillmentLog(supabase, order, outcome, printUrl, memorialOk ? slug : null)
+    if (notice.failed.length) {
+      await recordEmailAlert(supabase, order, "manual_fulfillment_notice", notice.error, notice.failed.map((item) => item.to))
+    }
     if (outcome.status === "failed") await alertSupport(order, outcome)
     return outcome
   }

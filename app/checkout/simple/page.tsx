@@ -39,6 +39,7 @@ function CheckoutForm() {
 
   const [cartItems, setCartItems] = useState<CartLine[]>([])
   const [orderTotal, setOrderTotal] = useState(0)
+  const [checkoutAttemptId] = useState(() => `order_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`)
   const [checkoutBlocked, setCheckoutBlocked] = useState(true)
   const [rejectedProduct, setRejectedProduct] = useState(false)
 
@@ -535,7 +536,8 @@ function CheckoutForm() {
               <CardContent>
                 <SquarePaymentForm
                   amount={orderTotal}
-                  orderId={`order_${Date.now()}`}
+                  orderId={checkoutAttemptId}
+                  items={cartItems.map((item) => ({ id: item.id, quantity: item.quantity }))}
                   onSuccess={handlePaymentSuccess}
                   onError={(error) => {
                     console.error("[v0] Payment error:", error)

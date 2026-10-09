@@ -39,6 +39,8 @@ const CreditCard = dynamic(
 interface SquarePaymentFormProps {
   amount: number
   orderId: string
+  /** Cart lines; the server prices them from the catalog. */
+  items: { id: string; quantity: number }[]
   onSuccess?: (paymentId: string, cardId?: string, customerId?: string) => void
   onError?: (error: string) => void
   onBeforePayment?: () => boolean
@@ -50,6 +52,7 @@ interface SquarePaymentFormProps {
 export function SquarePaymentForm({
   amount,
   orderId,
+  items,
   onSuccess,
   onError,
   onBeforePayment,
@@ -93,6 +96,7 @@ export function SquarePaymentForm({
           sourceId: token.token,
           amount,
           orderId,
+          items,
           verificationToken: token.details?.card?.verification_token,
           customerEmail,
           customerName,

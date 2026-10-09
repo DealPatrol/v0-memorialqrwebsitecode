@@ -2,7 +2,9 @@ import { NextResponse } from "next/server"
 import { attributionFromUnknown, formatAttribution } from "@/lib/attribution"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
-import { resolveConfiguredCheckoutItems } from "@/lib/fulfillment-availability"
+import { priceCart } from "@/lib/checkout-pricing"
+import { recordEmailAlert } from "@/lib/order-email-alerts"
+import { verifySquarePayment } from "@/lib/square-verify"
 import { fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 import { sendOrderConfirmationEmail } from "@/lib/order-confirmation-email"
@@ -51,10 +53,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
     }
 
-    const resolvedItems = resolveConfiguredCheckoutItems(items)
-    if (!resolvedItems) {
+    const cart = priceCart(items)
+    if (!cart) {
       return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
     }
+    const resolvedItems = cart.lines
 
     const shipsPhysical = resolvedItems.some((item) => item.ships)
     const manualFulfillment =
@@ -77,12 +80,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Use a US ZIP code" }, { status: 400 })
     }
 
-    const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+    const totalAmountCents = cart.amountCents
 
-    const totalAmountCents = resolvedItems.reduce(
-      (total, item) => total + Math.round(item.price * 100) * item.quantity,
-      0,
-    )
+    // Never create an order for a payment Square has not completed for this exact amount.
+    const payment = await verifySquarePayment(paymentId, { amountCents: totalAmountCents, currency: cart.currency })
+    if (!payment.ok) {
+      console.error("[Checkout] Square payment verification failed:", paymentId, payment.reason)
+      return NextResponse.json({ success: false, error: payment.reason }, { status: payment.status })
+    }
+
+    const supabase = createServiceRoleClient()
+
+    // One order per Square payment. A retry returns the order that already exists.
+    const existing = await findOrderByPaymentId(supabase, paymentId)
+    if (existing) return NextResponse.json(orderResponse(existing, existing.fulfillment_status ?? null, null))
+
+    const orderNumber = `MQR-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
     const finalProductName = resolvedItems.map((item) => `[${item.id}] ${item.name} × ${item.quantity}`).join(", ")
     const finalPlanType = "cart-checkout"
     const totalQuantity = resolvedItems.reduce((total, item) => total + item.quantity, 0)
@@ -96,8 +109,6 @@ export async function POST(req: Request) {
     const finalSquareCustomerId = squareCustomerId || user?.user_metadata?.square_customer_id || null
 
     console.log("[v0] Processing checkout - User ID:", userId, "Square Customer ID:", finalSquareCustomerId)
-
-    const supabase = createServiceRoleClient()
 
     // Keepsakes include 10 years of hosting. Checkout is one-time only and never creates a subscription.
 
@@ -165,6 +176,12 @@ export async function POST(req: Request) {
     }
     const { data: order, error } = insertResult
 
+    if (error && error.code === "23505") {
+      // Unique payment_id: a concurrent request for the same payment already created the order.
+      const raced = await findOrderByPaymentId(supabase, paymentId)
+      if (raced) return NextResponse.json(orderResponse(raced, raced.fulfillment_status ?? null, null))
+    }
+
     if (error) {
       console.error("[v0] Database error creating order:", error)
       return NextResponse.json(
@@ -210,22 +227,11 @@ export async function POST(req: Request) {
         manualFulfillment,
       })
     } catch (emailError) {
-      console.error("[v0] Failed to send order confirmation email:", emailError)
-      // Don't fail the order if email fails
+      // Don't fail a paid order because of email, but make it visible.
+      await recordEmailAlert(supabase, order, "customer_confirmation", emailError)
     }
 
-    return NextResponse.json({
-      success: true,
-      order: {
-        id: order.id,
-        orderNumber: order.order_number,
-        status: order.status,
-        fulfillmentStatus,
-        memorialUrl,
-        amount: totalAmountCents / 100,
-        currency: "USD",
-      },
-    })
+    return NextResponse.json(orderResponse(order, fulfillmentStatus, memorialUrl))
   } catch (error: any) {
     console.error("[v0] Checkout processing error:", error)
     return NextResponse.json(
@@ -235,6 +241,40 @@ export async function POST(req: Request) {
       },
       { status: 500 },
     )
+  }
+}
+
+type OrderRow = {
+  id: string
+  order_number: string
+  status: string
+  amount_cents: number
+  currency?: string | null
+  fulfillment_status?: string | null
+}
+
+async function findOrderByPaymentId(supabase: ReturnType<typeof createServiceRoleClient>, paymentId: string) {
+  const { data } = await supabase
+    .from("orders")
+    .select("id, order_number, status, amount_cents, currency, fulfillment_status")
+    .eq("payment_id", paymentId)
+    .limit(1)
+    .maybeSingle()
+  return (data as OrderRow | null) ?? null
+}
+
+function orderResponse(order: OrderRow, fulfillmentStatus: string | null, memorialUrl: string | null) {
+  return {
+    success: true,
+    order: {
+      id: order.id,
+      orderNumber: order.order_number,
+      status: order.status,
+      fulfillmentStatus,
+      memorialUrl,
+      amount: order.amount_cents / 100,
+      currency: order.currency || "USD",
+    },
   }
 }
 
