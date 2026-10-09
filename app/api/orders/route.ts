@@ -1,8 +1,12 @@
+import { currentAdminEmail } from "@/lib/admin-auth"
 import { type NextRequest, NextResponse } from "next/server"
 import { createOrder } from "@/app/actions/orders"
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await currentAdminEmail())) {
+      return NextResponse.json({ error: "Admin access required" }, { status: 401 })
+    }
     const body = await request.json()
 
     const result = await createOrder({
