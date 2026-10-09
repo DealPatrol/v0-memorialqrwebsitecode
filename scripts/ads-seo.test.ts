@@ -160,7 +160,7 @@ describe("technical seo", () => {
   })
 
   it("publishes eight new long-tail guides with real product schema and no invented reviews", () => {
-    assert.equal(longTailList.length, 8)
+    assert.equal(longTailList.length, 11)
     const paths = longTailList.map((page) => page.path)
     assert.equal(new Set(paths).size, paths.length)
     const buyerPaths = new Set(buyerIntentList.map((page) => page.path))

@@ -302,6 +302,109 @@ export const longTailPages = {
       { href: "/memorial-qr-for-a-spouse", label: "A memorial QR for a spouse" },
     ],
   },
+  bench: {
+    id: "bench",
+    path: "/memorial-bench-plaque-qr-code",
+    title: "Memorial Bench Plaque QR Code | MemorialsQR",
+    description:
+      `A memorial bench has room for a name. A small QR plaque can open the photos and stories. $29.99 once, with ${years} years of hosting included.`,
+    h1: "A QR code for a memorial bench plaque",
+    ogTitle: "A QR code for a memorial bench",
+    ogSubtitle: "The bench holds the name. The page holds the rest.",
+    paragraphs: [
+      "A memorial bench in a park, a garden, or a school yard usually carries a short plaque: a name, dates, maybe one line. People sit there for years, and most of them never learn who the person was.",
+      "We do not sell benches or the engraved bench plaque. We sell the QR Memorial Plaque, a small metal piece with one QR code. Ask whoever manages the bench whether a small plaque can be added beside the existing one before you order. If it will be outdoors, say so in the order notes and we will confirm the finish before we make it.",
+      `Anyone who sits down can scan the code with a phone camera and open the memorial page. No app is needed. Hosting for ${years} years is included in the $29.99 price, and nothing is billed each month.`,
+    ],
+    faqs: [
+      {
+        question: "Do you make the bench or the engraved bench plaque?",
+        answer: "No. We make the QR Memorial Plaque and the memorial page it opens. It can sit beside a bench plaque you already have.",
+      },
+      {
+        question: "Can the plaque stay outdoors on a bench?",
+        answer:
+          "Write that it will be outdoors in the order notes. We will confirm the finish before we make it. We do not promise that every finish is for permanent outdoor use.",
+      },
+      {
+        question: "Do I need permission to add it to a public bench?",
+        answer: "Often, yes. Parks, schools, and cemeteries set their own rules, so ask the bench owner before you order.",
+      },
+    ],
+    showConcierge: false,
+    links: [
+      { href: "/grave-marker-qr-code", label: "A QR code for a grave marker" },
+      { href: "/cemetery-qr-code", label: "A QR code for a cemetery visit" },
+    ],
+  },
+  home: {
+    id: "home",
+    path: "/memorial-display-at-home",
+    title: "Memorial Display at Home With a QR Code | MemorialsQR",
+    description:
+      "A shelf, a mantel, or a corner with a photo and a candle. A QR plaque there opens the whole memorial page. $29.99, hosting included.",
+    h1: "A memorial display at home with a QR code",
+    ogTitle: "A memorial corner at home",
+    ogSubtitle: "One photo on the shelf. Every photo on the page.",
+    paragraphs: [
+      "Many families keep a small memorial at home: a framed photo, a candle, an urn, a card from the service. There is only room for a few things, and the rest of the photos sit in a phone.",
+      "The QR Memorial Plaque is a small metal piece with a name, dates, and one QR code. Set it next to the photo or the urn. When a visitor asks about them, they can scan it and see the photos, videos, and stories on the memorial page.",
+      `The page is created when the order is paid, so the code works the day it arrives. Keepsakes are made to order and ship within 7 to 10 business days to US addresses. Hosting for ${years} years is included.`,
+    ],
+    faqs: [
+      {
+        question: "Can the plaque sit next to an urn?",
+        answer: "Yes. It is a small standalone plaque. We also have a guide on QR codes for urns if you want the code on the urn itself.",
+      },
+      {
+        question: "Who can see the memorial page?",
+        answer: "Anyone who scans the code or has the link can open the page. You can share the link with family who live far away.",
+      },
+      {
+        question: "Is there a monthly fee?",
+        answer: `No. The plaque is $29.99 and includes ${years} years of hosting for the page.`,
+      },
+    ],
+    showConcierge: false,
+    links: [
+      { href: "/qr-code-for-urn", label: "A QR code for an urn" },
+      { href: "/memorial-page-for-family-far-away", label: "A memorial page for family far away" },
+    ],
+  },
+  sibling: {
+    id: "sibling",
+    path: "/memorial-qr-for-a-sibling",
+    title: "Memorial Gift for Loss of a Brother or Sister | MemorialsQR",
+    description:
+      "A QR plaque that opens a memorial page for a brother or sister: childhood photos, stories, and messages from family. $29.99, hosting included.",
+    h1: "A memorial QR for a brother or sister",
+    ogTitle: "Remembering a brother or sister",
+    ogSubtitle: "A lifetime of photos, one code.",
+    paragraphs: [
+      "Siblings share the longest stretch of a life. The photos are scattered across parents, cousins, old friends, and a dozen phones. A memorial page is one place to gather them.",
+      "The QR Memorial Plaque carries a name, dates, and a QR code that opens that page. Family can add photos and stories after it is made, so you do not have to collect everything first.",
+      `It can be a gift for a parent or another sibling, or something you keep yourself. Put the name on the first line of the order notes, then the dates, then gold, silver, or black. Hosting for ${years} years is included in the $29.99 price.`,
+    ],
+    faqs: [
+      {
+        question: "Can other family members add photos?",
+        answer: "Yes. The memorial page can collect photos and stories from family after the plaque is made.",
+      },
+      {
+        question: "Can I send it as a gift?",
+        answer: "Yes. Enter the recipient's address at checkout. It ships within 7 to 10 business days to US addresses.",
+      },
+      {
+        question: "What if the page is not ready when it arrives?",
+        answer: "The page exists as soon as the order is paid. You can keep adding to it over time.",
+      },
+    ],
+    showConcierge: false,
+    links: [
+      { href: "/memorial-gift-loss-of-mother", label: "A memorial gift for the loss of a mother" },
+      { href: "/memorial-gift-loss-of-father", label: "A memorial gift for the loss of a father" },
+    ],
+  },
 } as const satisfies Record<string, LongTailPage>
 
 export const longTailList: LongTailPage[] = Object.values(longTailPages)

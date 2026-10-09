@@ -254,6 +254,7 @@ function CreateMemorialForm() {
           body: JSON.stringify({
             orderId: orderData.orderId,
             memorialId: memorial.id,
+            customerEmail: orderData.customerEmail || user?.email,
           }),
         })
       }
