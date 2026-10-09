@@ -11,31 +11,43 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Music ID is required" }, { status: 400 })
     }
 
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
 
-    const { data: music, error: fetchError } = await supabase.from("music").select("*").eq("id", musicId).single()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-    if (fetchError || !music) {
+    // Row-level security only lets the uploader or the memorial owner delete a track.
+    const { data: deleted, error: deleteError } = await supabase
+      .from("music")
+      .delete()
+      .eq("id", musicId)
+      .select("audio_url")
+
+    if (deleteError) {
+      console.error("Music deletion error:", deleteError)
+      return NextResponse.json({ error: "Failed to delete music" }, { status: 500 })
+    }
+    if (!deleted || deleted.length === 0) {
       return NextResponse.json({ error: "Music not found" }, { status: 404 })
     }
 
-    try {
-      await del(music.audio_url)
-    } catch (blobError) {
-      console.error("[v0] Blob deletion error:", blobError)
-      // Continue even if blob deletion fails
-    }
-
-    const { error: deleteError } = await supabase.from("music").delete().eq("id", musicId)
-
-    if (deleteError) {
-      console.error("[v0] Database deletion error:", deleteError)
-      return NextResponse.json({ error: "Failed to delete music" }, { status: 500 })
+    const audioUrl = deleted[0]?.audio_url
+    if (typeof audioUrl === "string" && audioUrl.includes(".blob.vercel-storage.com/")) {
+      try {
+        await del(audioUrl)
+      } catch (blobError) {
+        console.error("Music blob deletion error:", blobError)
+      }
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("[v0] Delete error:", error)
+    console.error("Delete error:", error)
     return NextResponse.json({ error: "Failed to delete music" }, { status: 500 })
   }
 }
