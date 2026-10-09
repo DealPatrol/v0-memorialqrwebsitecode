@@ -220,7 +220,7 @@ export default function HelpPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Still Need Help?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Our compassionate support team is available 24/7 to help you create the perfect memorial for your loved one.
+            Our compassionate support team is here to help you create the perfect memorial for your loved one.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

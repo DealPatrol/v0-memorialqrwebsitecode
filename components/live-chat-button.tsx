@@ -50,7 +50,7 @@ export function LiveChatButton() {
         <Card className="fixed bottom-24 right-6 w-80 shadow-xl z-50">
           <CardHeader className="bg-accent text-white rounded-t-lg">
             <CardTitle className="text-lg">Need Help?</CardTitle>
-            <p className="text-xs text-white/90">We typically respond within 2 hours</p>
+            <p className="text-xs text-white/90">A real person reads every message</p>
           </CardHeader>
           <CardContent className="p-4">
             {sent ? (
