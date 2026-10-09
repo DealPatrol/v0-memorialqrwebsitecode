@@ -1,8 +1,12 @@
+import { currentAdminEmail } from "@/lib/admin-auth"
 import { NextResponse } from 'next/server'
 import { getResend } from '@/lib/resend'
 
 export async function POST(request: Request) {
   try {
+    if (!(await currentAdminEmail())) {
+      return NextResponse.json({ error: "Admin access required" }, { status: 401 })
+    }
     const { conciergeRequestId, subject, body, recipientEmail } = await request.json()
     const resend = getResend()
 

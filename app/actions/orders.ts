@@ -1,5 +1,6 @@
 "use server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
+import { currentAdminEmail } from "@/lib/admin-auth"
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/email"
 import { sendReviewRequestForOrder } from "@/lib/review-request"
 
@@ -25,6 +26,7 @@ export interface CreateOrderData {
 
 export async function createOrder(data: CreateOrderData) {
   try {
+    if (!(await currentAdminEmail())) return { success: false, error: "Admin access required" }
     const supabase = createServiceRoleClient()
 
     // Generate unique order number
@@ -87,6 +89,7 @@ export async function createOrder(data: CreateOrderData) {
 
 export async function getOrderByNumber(orderNumber: string) {
   try {
+    if (!(await currentAdminEmail())) return { success: false, error: "Admin access required" }
     const supabase = createServiceRoleClient()
 
     const { data: order, error } = await supabase
@@ -113,6 +116,7 @@ export async function getOrderByNumber(orderNumber: string) {
 
 export async function getAllOrders() {
   try {
+    if (!(await currentAdminEmail())) return { success: false, error: "Admin access required", orders: [] }
     const supabase = createServiceRoleClient()
 
     const { data: orders, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false })
@@ -131,6 +135,7 @@ export async function getAllOrders() {
 
 export async function updateOrderStatus(orderId: string, status: string, adminNotes?: string) {
   try {
+    if (!(await currentAdminEmail())) return { success: false, error: "Admin access required" }
     const supabase = createServiceRoleClient()
 
     const updateData: any = { status }
