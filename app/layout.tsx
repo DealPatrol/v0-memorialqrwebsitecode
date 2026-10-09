@@ -25,7 +25,9 @@ if (!conciergeOffer) {
   throw new Error("Concierge digital offer is missing from the catalog")
 }
 
-const googleSiteVerification = googleSiteVerificationTag(process.env.GOOGLE_SITE_VERIFICATION)
+const googleSiteVerification = googleSiteVerificationTag(
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || process.env.GOOGLE_SITE_VERIFICATION,
+)
 const adConfig = readAdConfig(process.env)
 
 const inter = Inter({
