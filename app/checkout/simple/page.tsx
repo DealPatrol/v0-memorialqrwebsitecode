@@ -531,7 +531,7 @@ function CheckoutForm() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Award className="h-5 w-5 text-purple-600" />
-                    <span className="font-medium">100% Satisfaction Guaranteed</span>
+                    <span className="font-medium">30-Day Money-Back Guarantee</span>
                   </div>
                 </div>
               </CardHeader>

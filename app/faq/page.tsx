@@ -108,7 +108,7 @@ const faqCategories = [
       {
         question: "What happens if I forget my login information?",
         answer:
-          "No problem! Use the 'Forgot Password' link on the login page, and we'll send you a reset link. If you need additional help, our support team is available 24/7.",
+          "No problem! Use the 'Forgot Password' link on the login page, and we'll send you a reset link. If you need additional help, contact our support team and we'll help.",
       },
     ],
   },
@@ -128,7 +128,7 @@ const faqCategories = [
       {
         question: "What if I need help setting up the memorial?",
         answer:
-          "We offer 24/7 customer support via phone, email, and live chat. Our team can walk you through the entire process, help with technical issues, or even help you create the memorial over the phone if needed.",
+          "You can reach us by phone or email. We can walk you through the entire process, help with technical issues, or even help you create the memorial over the phone if needed.",
       },
       {
         question: "Can I transfer ownership of the memorial?",

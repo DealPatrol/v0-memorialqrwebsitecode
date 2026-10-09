@@ -1,128 +1,99 @@
+import Link from "next/link"
 import { Header } from "@/components/header"
-import { Shield, Lock, Eye, Zap } from "lucide-react"
+import { CreditCard, Heart, Lock, EyeOff } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { pageMetadata, publicPages } from "@/lib/seo"
+import { SUPPORT_EMAIL } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.security)
 
-export default function SecurityPage() {
-  const securityMeasures = [
-    {
-      icon: Lock,
-      title: "Encryption",
-      description: "SSL/TLS encryption for all data in transit. AES-256 encryption for data at rest.",
-    },
-    {
-      icon: Shield,
-      title: "Authentication",
-      description: "Multi-factor authentication, secure password requirements, and session management.",
-    },
-    {
-      icon: Eye,
-      title: "Access Control",
-      description: "Role-based access, limited staff permissions, and complete audit trails.",
-    },
-    {
-      icon: Zap,
-      title: "Monitoring",
-      description: "24/7 security monitoring, intrusion detection, and regular penetration testing.",
-    },
-  ]
+const safeguards = [
+  {
+    icon: Lock,
+    title: "Encrypted connections",
+    description: "Every page and upload travels over HTTPS, so memories and account details are encrypted on the way to us.",
+  },
+  {
+    icon: CreditCard,
+    title: "Payments handled by Square",
+    description:
+      "Card details are entered into Square's secure payment form. Square processes the payment, and MemorialsQR never sees or stores your full card number.",
+  },
+  {
+    icon: EyeOff,
+    title: "Private memorials stay private",
+    description:
+      "Memorials marked private are kept out of search results and our public sitemap. Only people you share the link with can find them.",
+  },
+  {
+    icon: Heart,
+    title: "A person to help, not a ticket queue",
+    description: "Questions about privacy, a memorial, or an order go to our support inbox, and a member of our small team replies.",
+  },
+]
 
+export default function SecurityPage() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <h1 className="text-4xl font-bold text-black mb-6">Security & Trust</h1>
-        <p className="text-xl text-zinc-600 mb-12 max-w-3xl">
-          Your memorial data is precious. We implement enterprise-grade security to protect your memories and ensure your privacy.
+      <div className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
+        <p className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Security and privacy</p>
+        <h1 className="mt-3 text-4xl font-bold text-black">Caring for the memories you trust us with</h1>
+        <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600">
+          A memorial holds some of a family&apos;s most precious words and photos. Here is, plainly, how we protect them and what
+          stays in your control.
         </p>
 
-        {/* Security Measures */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {securityMeasures.map((measure, idx) => {
-            const Icon = measure.icon
-            return (
-              <Card key={idx} className="border-zinc-200">
-                <CardContent className="p-6">
-                  <Icon className="w-8 h-8 text-black mb-4" />
-                  <h3 className="font-bold text-black mb-2">{measure.title}</h3>
-                  <p className="text-sm text-zinc-600">{measure.description}</p>
-                </CardContent>
-              </Card>
-            )
-          })}
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+          {safeguards.map((item) => (
+            <Card key={item.title} className="border-zinc-200">
+              <CardContent className="p-6">
+                <item.icon className="mb-4 h-7 w-7 text-black" aria-hidden="true" />
+                <h2 className="mb-2 font-semibold text-black">{item.title}</h2>
+                <p className="text-sm leading-6 text-zinc-600">{item.description}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* Compliance Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-12 mb-16">
-          <h2 className="text-3xl font-bold text-black mb-8">Compliance & Standards</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section className="mt-16 rounded-2xl bg-zinc-50 p-8 sm:p-10">
+          <h2 className="text-2xl font-bold text-black">Your memorial, your choices</h2>
+          <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-2">
             <div>
-              <h3 className="font-bold text-black mb-3">International Standards</h3>
-              <ul className="space-y-2 text-zinc-700">
-                <li>✓ GDPR Compliant (EU regulation)</li>
-                <li>✓ PCI-DSS Level 1 (Payment security)</li>
-                <li>✓ SOC 2 Type II Certified</li>
-                <li>✓ ISO 27001 Aligned</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-black mb-3">Data Protection</h3>
-              <ul className="space-y-2 text-zinc-700">
-                <li>✓ Automated backups (daily)</li>
-                <li>✓ Geographically redundant storage</li>
-                <li>✓ Disaster recovery plan</li>
-                <li>✓ Data retention policies</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Privacy & Control */}
-        <div className="max-w-4xl">
-          <h2 className="text-3xl font-bold text-black mb-8">Your Control & Privacy</h2>
-          <div className="space-y-6 text-zinc-700">
-            <div>
-              <h3 className="font-bold text-black mb-2">Memorial Privacy Settings</h3>
-              <p>
-                You control who can see, comment on, and share your memorial. Options include: public, family only, private (locked), or custom access lists.
+              <h3 className="font-semibold text-black">We never sell your information</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
+                We do not sell, trade, or rent personal information. Read the full{" "}
+                <Link className="font-semibold underline" href="/privacy-policy">privacy policy</Link>.
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-black mb-2">Data Rights</h3>
-              <p>
-                We never sell your data. You can request a complete export of your memorial at any time. You can also request permanent deletion, though we recommend maintaining memorials for future generations.
+              <h3 className="font-semibold text-black">Ask for a copy or deletion</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
+                Update details from your dashboard, or email{" "}
+                <a className="font-semibold underline" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> to request a copy of your
+                memorial or deletion of your account.
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-black mb-2">Transparency</h3>
-              <p>
-                We publish a transparency report annually showing any government requests for data. We disclose all third-party services we use and provide regular security updates.
+              <h3 className="font-semibold text-black">Ten years of hosting included</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
+                Every keepsake includes 10 years of hosting for its memorial page, starting on the order date, with no recurring fees.
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-black mb-2">Hosting Access</h3>
-              <p>
-                Every keepsake includes 10 years of hosting for its memorial page, starting on the order date. Contact support if you need help preserving a copy of your content.
+              <h3 className="font-semibold text-black">30-day money-back guarantee</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
+                If you are not satisfied, contact us within 30 days of purchase for a refund, as described in our{" "}
+                <Link className="font-semibold underline" href="/terms-of-service">terms of service</Link>.
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Security Reporting */}
-        <div className="mt-16 bg-black text-white rounded-lg p-8">
-          <h2 className="text-2xl font-bold mb-4">Report a Security Issue</h2>
-          <p className="mb-4">
-            If you discover a security vulnerability, please report it responsibly to security@memorialqr.com. We appreciate your help in keeping Memorial QR secure.
-          </p>
-          <a
-            href="mailto:security@memorialqr.com"
-            className="inline-block bg-white text-black px-6 py-2 rounded font-semibold hover:bg-gray-200 transition-colors"
-          >
-            Report Security Issue
-          </a>
-        </div>
+        <p className="mt-12 text-sm leading-6 text-zinc-600">
+          Questions about security or privacy? We&apos;re glad to help at{" "}
+          <a className="font-semibold underline" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+        </p>
       </div>
     </div>
   )

@@ -15,7 +15,7 @@ export default function AboutPage() {
     {
       icon: Lock,
       title: "Protect Privacy",
-      description: "Advanced security ensures only authorized people can modify memorial content.",
+      description: "Private memorials stay out of search results, and payments are handled by Square.",
     },
     {
       icon: Award,
@@ -31,8 +31,8 @@ export default function AboutPage() {
 
   const credentials = [
     "30-Day Money-Back Guarantee",
-    "SSL Encryption for All Data",
-    "PCI-DSS Payment Security",
+    "HTTPS Encryption on Every Page",
+    "Payments Processed Securely by Square",
     "10 Years of Hosting With Every Keepsake",
   ]
 

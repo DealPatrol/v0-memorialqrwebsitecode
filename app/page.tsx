@@ -46,12 +46,12 @@ export default function HomePage() {
             </div>
 
             <h1 className="hero-lcp text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
-              QR Memorial Keepsakes With 10 Years of Hosting Included
+              Keep their story close: QR memorial keepsakes with {HOSTING_INCLUDED_YEARS} years of hosting included
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
-              Each keepsake carries a QR code that opens a memorial page for photos, videos, and stories. Every keepsake
-              includes {HOSTING_INCLUDED_YEARS} years of hosting. One payment, no recurring fees.
+              A gentle scan opens a memorial page where family and friends can see photos, watch videos, and read the
+              stories that made them who they were. One payment covers {HOSTING_INCLUDED_YEARS} years of hosting, with no recurring fees.
               {physicalProducts.length === 0
                 ? " Keepsakes are not available to order online right now."
                 : " Keepsakes ship to United States addresses."}
@@ -65,6 +65,10 @@ export default function HomePage() {
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
                 <Clock className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-foreground">{HOSTING_INCLUDED_YEARS} Years of Hosting Included</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
+                <Lock className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-foreground">Secure Checkout by Square</span>
               </div>
             </div>
           </div>

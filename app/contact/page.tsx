@@ -33,7 +33,7 @@ export default function ContactPage() {
 
     toast({
       title: "Message sent successfully!",
-      description: "We'll get back to you within 2 hours.",
+      description: "We'll get back to you as soon as we can.",
     })
   }
 
@@ -47,7 +47,7 @@ export default function ContactPage() {
               <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Message Sent!</h2>
               <p className="text-gray-600 mb-6">
-                Thank you for contacting us. We'll get back to you within 2 hours during business hours.
+                Thank you for contacting us. We'll get back to you as soon as we can.
               </p>
               <div className="space-y-3">
                 <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
@@ -79,7 +79,7 @@ export default function ContactPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Contact Our Support Team</h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Have questions about creating a memorial? Need technical support? Our friendly team is available 24/7 to
+            Have questions about creating a memorial? Need technical support? We&apos;re a small, caring team, and we&apos;re here to
             help you honor your loved one with a beautiful digital tribute.
           </p>
         </div>
@@ -96,7 +96,7 @@ export default function ContactPage() {
                 <p className="text-gray-600 mb-4">Speak with a real person who understands your needs</p>
                 <div className="space-y-2">
                   <div className="font-semibold text-gray-900">256-595-3354</div>
-                  <div className="text-sm text-gray-600">Available 24/7</div>
+                  <div className="text-sm text-gray-600">If we miss your call, leave a message and we&apos;ll call you back</div>
                 </div>
                 <Button asChild className="mt-4 bg-orange-600 hover:bg-orange-700">
                   <Link href="tel:256-595-3354">Call Now</Link>
@@ -111,7 +111,7 @@ export default function ContactPage() {
                 <p className="text-gray-600 mb-4">Send us your questions and get detailed responses</p>
                 <div className="space-y-2">
                   <div className="font-semibold text-gray-900">{SUPPORT_EMAIL}</div>
-                  <div className="text-sm text-gray-600">Response within 2 hours</div>
+                  <div className="text-sm text-gray-600">Answered by a real person</div>
                 </div>
                 <Button
                   asChild
@@ -130,7 +130,7 @@ export default function ContactPage() {
               <CardHeader>
                 <CardTitle className="text-2xl text-center">Send Us a Message</CardTitle>
                 <p className="text-center text-gray-600">
-                  Fill out the form below and we'll get back to you within 2 hours
+                  Fill out the form below and we'll get back to you as soon as we can
                 </p>
               </CardHeader>
               <CardContent>
@@ -225,16 +225,16 @@ export default function ContactPage() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Support Hours</h3>
                   <div className="space-y-2 text-gray-700">
                     <div className="flex justify-between">
-                      <span>Phone Support:</span>
-                      <span className="font-semibold">24/7</span>
+                      <span>Phone:</span>
+                      <span className="font-semibold">Leave a message anytime</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Email Support:</span>
-                      <span className="font-semibold">24/7</span>
+                      <span>Email:</span>
+                      <span className="font-semibold">Answered by a real person</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Response Time:</span>
-                      <span className="font-semibold text-orange-600">Within 2 hours</span>
+                      <span>Urgent service date?</span>
+                      <span className="font-semibold text-orange-600">Mention it in your message</span>
                     </div>
                   </div>
                 </CardContent>
