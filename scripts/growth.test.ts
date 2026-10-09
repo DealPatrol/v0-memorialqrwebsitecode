@@ -4,6 +4,8 @@ import { buyerIntentJsonLd, buyerIntentList, PRIMARY_KEEPSAKE_ID } from "../lib/
 import { giftIntentList } from "../lib/gift-intent"
 import { getSellableKeepsake } from "../lib/fulfillment-availability"
 import { buildMerchantFeedXml } from "../lib/merchant-feed"
+import { keepsakeFaqJsonLd, keepsakeFaqs } from "../lib/keepsake-faq"
+import { keepsakePageCopy } from "../lib/keepsake-page"
 import { keepsakeProductJsonLd } from "../lib/keepsake-jsonld"
 import { buildGuideEmail, MEMORIAL_GUIDE_SECTIONS, parseGuideEmail } from "../lib/memorial-guide"
 import { parseReviewSubmission, reviewStructuredData } from "../lib/product-reviews"
@@ -48,6 +50,9 @@ describe("merchant feed", () => {
     const feed = buildMerchantFeedXml()
     const ld = keepsakeProductJsonLd(product)
     assert.match(feed, /<g:id>qr-memorial-plaque<\/g:id>/)
+    assert.match(feed, /<g:id>pet-memorial-plaque<\/g:id>/)
+    assert.match(feed, /<g:link>https:\/\/memorialsqr.com\/store\/pet-memorial-plaque<\/g:link>/)
+    assert.equal(feed.match(/<g:price>29\.99 USD<\/g:price>/g)?.length, 2)
     assert.match(feed, /<g:price>29\.99 USD<\/g:price>/)
     assert.match(feed, /<g:availability>in_stock<\/g:availability>/)
     assert.match(feed, /<g:identifier_exists>no<\/g:identifier_exists>/)
@@ -60,6 +65,27 @@ describe("merchant feed", () => {
     assert.equal(ld.offers.shippingDetails.deliveryTime.handlingTime.minValue, 7)
     assert.equal(ld.offers.shippingDetails.deliveryTime.handlingTime.maxValue, 10)
     assert.equal("gtin" in ld, false)
+    const pet = getSellableKeepsake("pet-memorial-plaque", {})
+    assert.ok(pet)
+    const petLd = keepsakeProductJsonLd(pet)
+    assert.equal(petLd.offers.price, "29.99")
+    assert.equal(petLd.offers.url, "https://memorialsqr.com/store/pet-memorial-plaque")
+    const petCopy = keepsakePageCopy(pet)
+    assert.ok(petCopy.title.length <= 60)
+    assert.ok(petCopy.description.length <= 155)
+    assert.equal(petCopy.path, "/store/pet-memorial-plaque")
+    const plaqueCopy = keepsakePageCopy(product)
+    assert.ok(plaqueCopy.description.length <= 155)
+    assert.equal(plaqueCopy.path, "/store/qr-memorial-plaque")
+    const faqs = keepsakeFaqs("qr-memorial-plaque")
+    assert.equal(faqs.length, 4)
+    assert.match(faqs[0].answer, /7 to 10 business days/)
+    assert.match(faqs[2].answer, /10 years/)
+    assert.match(faqs[3].answer, /30-day money-back guarantee/)
+    assert.match(faqs[3].answer, /support@memorialsqr.com/)
+    assert.equal(keepsakeFaqs("pet-memorial-plaque").length, 4)
+    assert.equal(keepsakeFaqJsonLd(faqs)["@type"], "FAQPage")
+    assert.equal(feed.includes("#1"), false)
   })
 })
 

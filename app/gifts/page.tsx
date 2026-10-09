@@ -19,8 +19,9 @@ export default function GiftsPage() {
         />
         <h1 className="mb-4 text-4xl font-bold text-foreground">Memorial gift ideas</h1>
         <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
-          These are gifts for a person who is grieving. Each one is the same QR Memorial Plaque, chosen for a different
-          relationship. A pet gift is for the person who lost a pet. A pet memorial QR code is the pet&apos;s own page.
+          These are gifts for a person who is grieving. A gift for a person is the QR Memorial Plaque. A gift after
+          losing a pet is the Pet Memorial QR Plaque, the same kind of metal plaque for a companion. A pet memorial QR
+          code is the pet&apos;s own page.
         </p>
         <ul className="space-y-3">
           {giftIntentList.map((item) => (
@@ -38,6 +39,11 @@ export default function GiftsPage() {
           <li>
             <Link href="/store/qr-memorial-plaque" className="text-lg underline">
               Buy the QR Memorial Plaque
+            </Link>
+          </li>
+          <li>
+            <Link href="/store/pet-memorial-plaque" className="text-lg underline">
+              Buy the Pet Memorial QR Plaque
             </Link>
           </li>
         </ul>

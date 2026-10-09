@@ -18,6 +18,7 @@ import Link from "next/link"
 import { readStoredAttribution } from "@/components/attribution-capture"
 import { trackCommerce } from "@/components/track-commerce"
 import { purchaseAfterPayment } from "@/lib/ad-events"
+import { orderNotesHint } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 
@@ -504,11 +505,7 @@ function CheckoutForm() {
                     placeholder="Names, dates, and anything our team should know about the memorial."
                     rows={4}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {cartItems.some((item) => item.id === "qr-memorial-plaque")
-                      ? "For the QR Memorial Plaque, put the name on the first line, then the dates and the finish: gold, silver, or black."
-                      : "Share names, dates, or notes for the memorial page."}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{orderNotesHint(cartItems.map((item) => item.id))}</p>
                 </div>
               </CardContent>
             </Card>

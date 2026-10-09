@@ -347,8 +347,11 @@ const WITHHELD_PHYSICAL_PRODUCTS: StoreProduct[] = [
 /** Legacy hand-made catalog stays empty. Printed keepsakes come from POD_PRODUCTS. */
 export const STORE_PRODUCTS: StoreProduct[] = []
 
-/** Standard metal plaque price. The manually fulfilled QR plaque charges this amount. */
+/** Standard metal plaque price. Handmade QR plaques, including the pet plaque, charge this amount. */
 export const PLAQUE_PRICE = 29.99
+
+export const QR_MEMORIAL_PLAQUE_ID = "qr-memorial-plaque"
+export const PET_MEMORIAL_PLAQUE_ID = "pet-memorial-plaque"
 
 /**
  * Keepsakes Cole makes and ships by hand. They do not need Printful or Printify
@@ -368,7 +371,7 @@ export interface ManualKeepsake {
 
 export const MANUAL_KEEPSAKES: ManualKeepsake[] = [
   {
-    id: "qr-memorial-plaque",
+    id: QR_MEMORIAL_PLAQUE_ID,
     name: "QR Memorial Plaque",
     price: PLAQUE_PRICE,
     provider: "manual",
@@ -384,10 +387,69 @@ export const MANUAL_KEEPSAKES: ManualKeepsake[] = [
       "Made to order and shipped in the United States",
     ],
   },
+  {
+    id: PET_MEMORIAL_PLAQUE_ID,
+    name: "Pet Memorial QR Plaque",
+    price: PLAQUE_PRICE,
+    provider: "manual",
+    category: "Pet",
+    image: "/images/plaques-gold-silver-black.jpeg",
+    imageAlt: "Gold, silver, and black metal memorial plaques, each with a QR code",
+    description: `A metal memorial plaque with a QR code that opens an online memorial page for a dog, a cat, or another companion. It is not a collar tag. In the order notes, put the pet's name on the first line, then the dates and the finish: gold, silver, or black. We make the plaque and ship it in the United States. The price includes ${HOSTING_INCLUDED_YEARS} years of hosting for the memorial page.`,
+    features: [
+      "QR code that opens the pet's memorial page",
+      "Gold, silver, or black finish, written in the order notes",
+      "Pet's name and dates from the order notes",
+      `${HOSTING_INCLUDED_YEARS} years of memorial page hosting included`,
+      "Made to order and shipped in the United States",
+      "Not a collar tag",
+    ],
+  },
 ]
 
 export function getManualKeepsake(id: string): ManualKeepsake | undefined {
   return MANUAL_KEEPSAKES.find((product) => product.id === id)
+}
+
+type HandmadePlaqueId = typeof QR_MEMORIAL_PLAQUE_ID | typeof PET_MEMORIAL_PLAQUE_ID
+
+function isHandmadePlaqueId(id: string): id is HandmadePlaqueId {
+  return id === QR_MEMORIAL_PLAQUE_ID || id === PET_MEMORIAL_PLAQUE_ID
+}
+
+/** Checkout note under the memorial customization box. */
+export function orderNotesHint(productIds: string[]): string {
+  const hints = [...new Set(productIds.map(noteHintForId))]
+  return hints.join(" ")
+}
+
+function noteHintForId(id: string): string {
+  if (!isHandmadePlaqueId(id)) return "Share names, dates, or notes for the memorial page."
+  switch (id) {
+    case QR_MEMORIAL_PLAQUE_ID:
+      return "For the QR Memorial Plaque, put the name on the first line, then the dates and the finish: gold, silver, or black."
+    case PET_MEMORIAL_PLAQUE_ID:
+      return "For the Pet Memorial QR Plaque, put the pet's name on the first line, then the dates and the finish: gold, silver, or black. This is not a collar tag."
+    default: {
+      const exhaustive: never = id
+      return exhaustive
+    }
+  }
+}
+
+/** The other handmade plaque, so each product page can link to the second one. */
+export function relatedHandmadePlaqueId(id: string): HandmadePlaqueId | null {
+  if (!isHandmadePlaqueId(id)) return null
+  switch (id) {
+    case QR_MEMORIAL_PLAQUE_ID:
+      return PET_MEMORIAL_PLAQUE_ID
+    case PET_MEMORIAL_PLAQUE_ID:
+      return QR_MEMORIAL_PLAQUE_ID
+    default: {
+      const exhaustive: never = id
+      return exhaustive
+    }
+  }
 }
 
 const WITHHELD_PLAQUE_PRODUCTS: CheckoutProduct[] = [

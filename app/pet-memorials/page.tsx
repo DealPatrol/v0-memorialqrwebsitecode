@@ -34,8 +34,8 @@ export default function PetMemorialsPage() {
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
             >
-              <Link href="/pricing?type=pet">
-                Create Memorial
+              <Link href="/store/pet-memorial-plaque">
+                Buy the Pet Memorial QR Plaque
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -209,8 +209,8 @@ export default function PetMemorialsPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-amber-600 hover:bg-gray-100">
-              <Link href="/pricing?type=pet">
-                View Pricing
+              <Link href="/store/pet-memorial-plaque">
+                Buy the Pet Memorial QR Plaque
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

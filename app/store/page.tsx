@@ -20,7 +20,7 @@ export default function StorePage() {
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <Header />
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      <section className="px-4 py-10 sm:px-6 md:py-16 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">QR Memorial Keepsakes</h1>
           <p className="text-lg md:text-xl text-muted-foreground mb-8">
@@ -30,6 +30,8 @@ export default function StorePage() {
           </p>
         </div>
       </section>
+
+      <SellableProductGrid />
 
       <section className="pb-12 px-4">
         <div className="max-w-xl mx-auto">
@@ -94,8 +96,6 @@ export default function StorePage() {
           </ul>
         </nav>
       </section>
-
-      <SellableProductGrid />
     </div>
   )
 }

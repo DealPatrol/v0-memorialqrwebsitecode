@@ -26,8 +26,8 @@ export function BuyerIntentView({
   related?: BuyerIntent[]
   relatedHeading?: string
 }) {
-  const product = getSellableKeepsake(PRIMARY_KEEPSAKE_ID)
-  const others = getSellableKeepsakes().filter((item) => item.id !== PRIMARY_KEEPSAKE_ID)
+  const product = getSellableKeepsake(page.keepsakeId ?? PRIMARY_KEEPSAKE_ID)
+  const others = getSellableKeepsakes().filter((item) => item.id !== product?.id)
   const linksSympathy = related.every((item) => item.path !== "/sympathy-gift-ideas") && page.path !== "/sympathy-gift-ideas"
   const section = giftIntentList.some((item) => item.path === page.path)
     ? { href: "/gifts", label: "Gifts" }

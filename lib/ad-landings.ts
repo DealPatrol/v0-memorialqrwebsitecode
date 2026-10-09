@@ -8,6 +8,8 @@ export type AdLanding = {
   ctaHref: string
   ctaLabel: string
   trackProduct: boolean
+  /** Catalog id for ViewContent. Defaults to the QR Memorial Plaque when omitted. */
+  productId?: string
 }
 
 export const adLandingPages = {
@@ -37,9 +39,10 @@ export const adLandingPages = {
       "The plaque is for the person who is grieving a dog, a cat, or another companion. The QR code opens a page for their photos. We do not sell a collar tag.",
       "It is $29.99, shipping included in the United States. Put the pet's name on the first line when you check out.",
     ],
-    ctaHref: "/checkout/simple?product=qr-memorial-plaque",
+    ctaHref: "/checkout/simple?product=pet-memorial-plaque",
     ctaLabel: "Buy the pet memorial plaque",
     trackProduct: true,
+    productId: "pet-memorial-plaque",
   },
   partner: {
     id: "partner",

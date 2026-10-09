@@ -1,4 +1,4 @@
-import type { BuyerIntent } from "@/lib/buyer-intent"
+import { PET_KEEPSAKE_ID, type BuyerIntent } from "@/lib/buyer-intent"
 
 export type GiftIntentId = "sympathy" | "mother" | "father" | "pet" | "personalized" | "friend"
 
@@ -103,18 +103,18 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
     paragraphs: [
       "People sometimes treat the death of a pet as a small thing. It is not small to the person who came home to them. A gift that takes the loss seriously is worth more than a card that says you are sorry and then stops.",
       "The memorial page can be for a dog, a cat, or any companion. It can hold a few photos and the ordinary days: the walk, the chair they claimed, the name you still say. The person who is grieving can add those when they want. You do not have to collect the photos yourself.",
-      "We are not selling a collar tag online. The gift you can order is the QR Memorial Plaque, and its code opens the pet's page. It can sit with a photograph at home.",
+      "We are not selling a collar tag online. The gift you can order is the Pet Memorial QR Plaque, and its code opens the pet's page. It can sit with a photograph at home.",
     ],
     faqs: [
       {
         question: "Is this gift for the pet's person, or a tag for the pet?",
         answer:
-          "It is for the person who is grieving. We do not sell a collar tag online right now. The plaque can sit with a photo, and the QR code opens the pet's memorial page.",
+          "It is for the person who is grieving. We do not sell a collar tag online. The Pet Memorial QR Plaque can sit with a photo, and the QR code opens the pet's memorial page.",
       },
       {
         question: "Can the page be for a dog or a cat?",
         answer:
-          "Yes. The page can be for a dog, a cat, or any companion. The QR Memorial Plaque is the keepsake you can order today.",
+          "Yes. The page can be for a dog, a cat, or any companion. The Pet Memorial QR Plaque is the keepsake you can order today.",
       },
       {
         question: "Do I need their photos before I order?",
@@ -123,10 +123,15 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    keepsakeId: PET_KEEPSAKE_ID,
     links: [
       {
         href: "/pet-memorial-qr-code",
         label: "The pet's own memorial QR page",
+      },
+      {
+        href: "/store/pet-memorial-plaque",
+        label: "Buy the Pet Memorial QR Plaque",
       },
     ],
   },
