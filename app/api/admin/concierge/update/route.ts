@@ -1,9 +1,13 @@
+import { currentAdminEmail } from "@/lib/admin-auth"
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export async function POST(request: Request) {
   try {
+    if (!(await currentAdminEmail())) {
+      return NextResponse.json({ error: "Admin access required" }, { status: 401 })
+    }
     const { requestId, status, adminNotes } = await request.json()
 
     const cookieStore = await cookies()
