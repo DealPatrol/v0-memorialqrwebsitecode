@@ -4,9 +4,8 @@ import { createClient } from "@/lib/supabase/server"
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
 
-    // Check authentication
     const {
       data: { user },
       error: authError,
@@ -15,25 +14,36 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { photoId, url } = await request.json()
-
-    if (!photoId || !url) {
-      return NextResponse.json({ error: "Photo ID and URL required" }, { status: 400 })
+    const { photoId } = await request.json()
+    if (!photoId) {
+      return NextResponse.json({ error: "Photo ID required" }, { status: 400 })
     }
 
-    // Delete from database first
-    const { error: dbError } = await supabase.from("photos").delete().eq("id", photoId)
+    // Row-level security only lets the uploader or the memorial owner delete a photo.
+    // Use the stored URL of the row that was actually deleted, never a URL from the request.
+    const { data: deleted, error: dbError } = await supabase
+      .from("photos")
+      .delete()
+      .eq("id", photoId)
+      .select("image_url")
 
-    if (dbError) {
-      throw dbError
+    if (dbError) throw dbError
+    if (!deleted || deleted.length === 0) {
+      return NextResponse.json({ error: "Photo not found" }, { status: 404 })
     }
 
-    // Delete from Vercel Blob
-    await del(url)
+    const imageUrl = deleted[0]?.image_url
+    if (typeof imageUrl === "string" && imageUrl.includes(".blob.vercel-storage.com/")) {
+      try {
+        await del(imageUrl)
+      } catch (blobError) {
+        console.error("Photo blob deletion error:", blobError)
+      }
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Delete error:", error)
-    return NextResponse.json({ error: "Delete failed" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to delete photo" }, { status: 500 })
   }
 }
