@@ -1,3 +1,4 @@
+import { PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
 import type { SellableKeepsake } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { keepsakeProductJsonLd } from "@/lib/keepsake-jsonld"
@@ -23,9 +24,12 @@ export type BuyerIntent = {
   showGuide?: boolean
   /** Extra internal links that clarify a nearby page. */
   links?: { href: string; label: string }[]
+  /** Product shown in the buy box. Defaults to the QR Memorial Plaque. */
+  keepsakeId?: string
 }
 
-export const PRIMARY_KEEPSAKE_ID = "qr-memorial-plaque"
+export const PRIMARY_KEEPSAKE_ID = QR_MEMORIAL_PLAQUE_ID
+export const PET_KEEPSAKE_ID = PET_MEMORIAL_PLAQUE_ID
 
 export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
   headstone: {
@@ -126,19 +130,19 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
     ogSubtitle: "A page for the companion you still look for.",
     paragraphs: [
       "A pet is family. The empty place by the door does not fit on a tag, and a collar in a drawer cannot show the ordinary days you still want to see.",
-      "The memorial page can be for a dog, a cat, or any companion. It can hold their name, their photos, and the stories only your household knows. The QR Memorial Plaque is the keepsake you can buy today. Its QR code opens that page.",
-      "We are not selling a collar tag online right now. The plaque can sit with their photo, on a shelf, or wherever you keep them near. Hosting for the page is included with the plaque.",
+      "The memorial page can be for a dog, a cat, or any companion. It can hold their name, their photos, and the stories only your household knows. The Pet Memorial QR Plaque is the keepsake you can buy today. Its QR code opens that page.",
+      "We are not selling a collar tag online. The Pet Memorial QR Plaque is a metal plaque, the same kind we make for a person, and it can sit with their photo or on a shelf. Hosting for the page is included.",
     ],
     faqs: [
       {
         question: "Can the memorial page be for a pet?",
         answer:
-          "Yes. The page can be for a dog, a cat, or any companion. The QR Memorial Plaque is the keepsake you can order today, and its QR code opens that page.",
+          "Yes. The page can be for a dog, a cat, or any companion. The Pet Memorial QR Plaque is the keepsake you can order today, and its QR code opens that page.",
       },
       {
         question: "Do you sell a pet collar tag?",
         answer:
-          "Not online right now. The QR Memorial Plaque can sit with their photo or on a shelf, and the QR code opens the pet's memorial page.",
+          "Not online. The Pet Memorial QR Plaque can sit with their photo or on a shelf, and the QR code opens the pet's memorial page. It is not a collar tag.",
       },
       {
         question: "Who can add photos later?",
@@ -147,10 +151,15 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    keepsakeId: PET_KEEPSAKE_ID,
     links: [
       {
         href: "/memorial-gift-loss-of-pet",
         label: "A gift for someone grieving a pet",
+      },
+      {
+        href: "/store/pet-memorial-plaque",
+        label: "Buy the Pet Memorial QR Plaque",
       },
     ],
   },
@@ -211,6 +220,16 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: true,
+    links: [
+      {
+        href: "/store/qr-memorial-plaque",
+        label: "Buy the QR Memorial Plaque",
+      },
+      {
+        href: "/store/pet-memorial-plaque",
+        label: "Buy the Pet Memorial QR Plaque",
+      },
+    ],
   },
 }
 

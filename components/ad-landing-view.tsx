@@ -6,7 +6,7 @@ import { PRIMARY_KEEPSAKE_ID } from "@/lib/buyer-intent"
 import { getSellableKeepsake } from "@/lib/fulfillment-availability"
 
 export function AdLandingView({ page }: { page: AdLanding }) {
-  const product = page.trackProduct ? getSellableKeepsake(PRIMARY_KEEPSAKE_ID) : null
+  const product = page.trackProduct ? getSellableKeepsake(page.productId ?? PRIMARY_KEEPSAKE_ID) : null
   return (
     <main className="mx-auto max-w-xl px-4 py-16">
       {product ? (

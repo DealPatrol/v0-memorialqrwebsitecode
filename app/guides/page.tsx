@@ -14,6 +14,7 @@ const also = [
   { href: "/how-it-works", label: "How a memorial page works" },
   { href: "/faq", label: "Memorial page FAQ" },
   { href: "/store/qr-memorial-plaque", label: "The QR Memorial Plaque you can buy" },
+  { href: "/store/pet-memorial-plaque", label: "The Pet Memorial QR Plaque you can buy" },
 ]
 
 export default function GuidesPage() {
@@ -29,8 +30,8 @@ export default function GuidesPage() {
         />
         <h1 className="mb-4 text-4xl font-bold text-foreground">Memorial QR guides</h1>
         <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
-          Each guide is about one way families use a QR code. The keepsake you can order is the QR Memorial Plaque. It
-          opens one memorial page.
+          Each guide is about one way families use a QR code. The keepsake for a person is the QR Memorial Plaque. The
+          keepsake for a pet is the Pet Memorial QR Plaque. Each one opens one memorial page.
         </p>
         <ul className="space-y-3">
           {buyerIntentList.map((item) => (

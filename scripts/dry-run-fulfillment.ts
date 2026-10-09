@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { PLAQUE_PRICE, POD_PRODUCTS } from "../lib/catalog"
+import { PET_MEMORIAL_PLAQUE_ID, PLAQUE_PRICE, POD_PRODUCTS, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
 import { getSellableKeepsake, resolveConfiguredCheckoutItems } from "../lib/fulfillment-availability"
 import { configuredPodProducts } from "../lib/fulfillment-readiness"
 import { keepsakeProductJsonLd } from "../lib/keepsake-jsonld"
@@ -55,6 +55,24 @@ describe("supplier env gating", () => {
     const page = getSellableKeepsake("qr-memorial-plaque", {})
     assert.ok(page)
     assert.equal(page.name, "QR Memorial Plaque")
+  })
+
+  it("sells the pet memorial plaque through the same manual Square checkout, at the published plaque price", () => {
+    const lines = resolveConfiguredCheckoutItems([{ id: PET_MEMORIAL_PLAQUE_ID, quantity: 1 }], {})
+    assert.ok(lines)
+    assert.equal(lines[0].id, PET_MEMORIAL_PLAQUE_ID)
+    assert.equal(lines[0].price, PLAQUE_PRICE)
+    assert.equal(lines[0].price, 29.99)
+    assert.equal(lines[0].ships, true)
+    assert.equal(lines[0].provider, "manual")
+    assert.equal(Math.round(lines[0].price * 100) * lines[0].quantity, 2999)
+    const plaque = resolveConfiguredCheckoutItems([{ id: QR_MEMORIAL_PLAQUE_ID, quantity: 1 }], {})
+    assert.ok(plaque)
+    assert.equal(Math.round(plaque[0].price * 100), 2999)
+    const page = getSellableKeepsake(PET_MEMORIAL_PLAQUE_ID, {})
+    assert.ok(page)
+    assert.equal(page.category, "Pet")
+    assert.match(page.description, /not a collar tag/i)
   })
 
   it("sells a product only after its own ids are set, at the catalog price", () => {

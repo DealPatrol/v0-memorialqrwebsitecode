@@ -9,7 +9,7 @@ import {
   SAMPLE_MEMORIAL_NAME,
   SAMPLE_MEMORIAL_PATH,
 } from "@/lib/site"
-import type { FulfillmentProvider } from "@/lib/catalog"
+import { PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID, type FulfillmentProvider } from "@/lib/catalog"
 
 function shippingCopy(provider: FulfillmentProvider): string {
   switch (provider) {
@@ -25,11 +25,22 @@ function shippingCopy(provider: FulfillmentProvider): string {
   }
 }
 
+function handmadePlaqueLine(id: string): string {
+  switch (id) {
+    case QR_MEMORIAL_PLAQUE_ID:
+      return "A metal QR memorial plaque in the finish you write in the order notes: gold, silver, or black"
+    case PET_MEMORIAL_PLAQUE_ID:
+      return "A metal QR plaque for a pet, in the finish you write in the order notes: gold, silver, or black. This is not a collar tag"
+    default:
+      return "A metal QR memorial plaque in the finish you write in the order notes: gold, silver, or black"
+  }
+}
+
 function familyReceives(product: SellableKeepsake): string[] {
   switch (product.provider) {
     case "manual":
       return [
-        "A metal QR memorial plaque in the finish you write in the order notes: gold, silver, or black",
+        handmadePlaqueLine(product.id),
         "A unique QR code on that plaque",
         "A memorial page for photos, stories, and messages, created when you order",
         `${HOSTING_INCLUDED_YEARS} years of hosting from the order date, with no monthly fee`,
@@ -57,6 +68,9 @@ export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake
         <p className="text-3xl font-bold">{formatUsd(product.price)}</p>
         <p className="text-sm text-muted-foreground">One-time payment. Shipping included. No recurring fees.</p>
       </div>
+      <Button asChild className="w-full" size="lg">
+        <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
+      </Button>
       <div>
         <h2 className="text-sm font-semibold text-foreground">Shipping</h2>
         <p className="text-sm text-muted-foreground">{shippingCopy(product.provider)}</p>
@@ -79,9 +93,6 @@ export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake
         </Link>
         .
       </p>
-      <Button asChild className="w-full" size="lg">
-        <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
-      </Button>
     </div>
   )
 }
