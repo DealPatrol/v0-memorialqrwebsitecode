@@ -22,6 +22,7 @@ import { createMemorialFromOrder } from "@/app/actions/memorial"
 import { Package, Mail, Phone, MapPin, Calendar, DollarSign, Search, Filter, ExternalLink, Plus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import { emailAlertsOf } from "@/lib/order-email-alerts"
 
 interface Order {
   id: string
@@ -41,6 +42,7 @@ interface Order {
   payment_status: string
   memorial_id: string | null
   admin_notes: string | null
+  fulfillment_data?: unknown
 }
 
 export default function AdminOrdersPage() {
@@ -228,6 +230,16 @@ export default function AdminOrdersPage() {
             <p className="text-gray-600">View and manage all customer orders</p>
           </div>
 
+          {orders.some((order) => emailAlertsOf(order.fulfillment_data).length > 0) && (
+            <div role="alert" className="mb-6 rounded-lg border border-red-300 bg-red-50 p-4 text-red-800">
+              <strong>
+                {orders.filter((order) => emailAlertsOf(order.fulfillment_data).length > 0).length} paid order(s) had an
+                email that did not send.
+              </strong>{" "}
+              Look for the red &quot;Email failed&quot; badge. A make-and-ship notice or the customer confirmation may be missing.
+            </div>
+          )}
+
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <Card>
@@ -346,6 +358,16 @@ export default function AdminOrdersPage() {
                       <div className="flex gap-2">
                         <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                         <Badge className={getPaymentStatusColor(order.payment_status)}>{order.payment_status}</Badge>
+                        {emailAlertsOf(order.fulfillment_data).length > 0 && (
+                          <Badge
+                            className="bg-red-600 text-white"
+                            title={emailAlertsOf(order.fulfillment_data)
+                              .map((alert) => `${alert.kind}: ${alert.error}`)
+                              .join("\n")}
+                          >
+                            Email failed
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </CardHeader>

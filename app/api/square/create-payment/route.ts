@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server"
-import { randomUUID } from "crypto"
+import { createHash } from "crypto"
+import { priceCart } from "@/lib/checkout-pricing"
 import { CHECKOUT_CURRENCY } from "@/lib/site"
 
 export async function POST(req: Request) {
   try {
-    const { sourceId, amount, orderId, verificationToken, customerEmail, customerName } = await req.json()
+    const { sourceId, amount, orderId, items, verificationToken, customerEmail, customerName } = await req.json()
 
     // Validate inputs
-    if (!sourceId || !amount || !orderId) {
+    if (!sourceId || !orderId || typeof orderId !== "string") {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
 
@@ -20,12 +21,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Square not configured" }, { status: 500 })
     }
 
-    const idempotencyKey = randomUUID()
-    const amountInCents = Math.round(Number.parseFloat(amount) * 100)
-
-    if (amountInCents <= 0 || !Number.isFinite(amountInCents)) {
-      return NextResponse.json({ success: false, error: "Invalid payment amount" }, { status: 400 })
+    // The charge is priced from lib/catalog.ts. The browser amount is only used to
+    // catch a stale page, never to decide what the card is charged.
+    const cart = priceCart(items)
+    if (!cart) {
+      return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
     }
+    const amountInCents = cart.amountCents
+    if (amount !== undefined && Math.round(Number.parseFloat(String(amount)) * 100) !== amountInCents) {
+      return NextResponse.json(
+        { success: false, error: "The price changed. Refresh the page and try again.", errorCode: "PRICE_MISMATCH" },
+        { status: 409 },
+      )
+    }
+    // Same card token + same cart => same key, so a double click or network retry cannot charge twice.
+    const idempotencyKey = createHash("sha256")
+      .update(`${orderId}:${sourceId}:${amountInCents}:${JSON.stringify(cart.lines.map((line) => [line.id, line.quantity]))}`)
+      .digest("hex")
+      .slice(0, 40)
 
     // Determine API URL
     const baseUrl =

@@ -29,12 +29,21 @@ function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!)
 }
 
-/** Support always receives the make-and-ship email. ADMIN_EMAIL is added when it is a different inbox. */
+/**
+ * Support always receives the make-and-ship email. ADMIN_EMAIL and every address in
+ * ORDER_ALERT_EMAIL (comma-separated) are added when they are different inboxes.
+ */
 export function manualFulfillmentRecipients(env: Record<string, string | undefined>): string[] {
-  const support = SUPPORT_EMAIL
-  const admin = env.ADMIN_EMAIL?.trim()
-  if (admin && admin.toLowerCase() !== support.toLowerCase()) return [support, admin]
-  return [support]
+  const candidates = [SUPPORT_EMAIL, env.ADMIN_EMAIL, ...(env.ORDER_ALERT_EMAIL || "").split(",")]
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const value of candidates) {
+    const email = value?.trim()
+    if (!email || !email.includes("@") || seen.has(email.toLowerCase())) continue
+    seen.add(email.toLowerCase())
+    out.push(email)
+  }
+  return out
 }
 
 export function buildManualFulfillmentNotice(
@@ -122,6 +131,28 @@ ${input.memorialError ? `<p>Memorial error: ${escapeHtml(input.memorialError)}</
   }
 }
 
+export type ManualNoticeResult = {
+  /** True when at least one recipient accepted the email. */
+  sent: boolean
+  error: string | null
+  to: string[]
+  delivered: string[]
+  failed: { to: string; error: string }[]
+}
+
+type SendFn = (message: {
+  from: string
+  to: string[]
+  replyTo: string
+  subject: string
+  html: string
+  text: string
+}) => Promise<{ error: { message: string } | null }>
+
+/**
+ * Sends one email per recipient, so a recipient the sender cannot reach (for example
+ * while RESEND_FROM_EMAIL is a resend.dev test sender) does not block the others.
+ */
 export async function sendManualFulfillmentNotice(
   input: {
     order: ManualOrderRecord
@@ -131,22 +162,40 @@ export async function sendManualFulfillmentNotice(
     memorialError: string | null
   },
   env: Record<string, string | undefined> = process.env,
-): Promise<{ sent: boolean; error: string | null; to: string[] }> {
+  send?: SendFn,
+): Promise<ManualNoticeResult> {
   const notice = buildManualFulfillmentNotice(input, env)
-  try {
-    const resend = getResend()
-    const { error } = await resend.emails.send({
-      from: env.RESEND_FROM_EMAIL || "Memorial QR <orders@memorialqr.com>",
-      to: notice.to,
-      replyTo: input.order.customer_email || SUPPORT_EMAIL,
-      subject: notice.subject,
-      html: notice.html,
-      text: notice.text,
-    })
-    if (error) return { sent: false, error: error.message, to: notice.to }
-    return { sent: true, error: null, to: notice.to }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Fulfillment email failed"
-    return { sent: false, error: message, to: notice.to }
+  const delivered: string[] = []
+  const failed: { to: string; error: string }[] = []
+  let sendFn = send
+  if (!sendFn) {
+    try {
+      const resend = getResend()
+      sendFn = async (message) => {
+        const { error } = await resend.emails.send(message)
+        return { error: error ? { message: error.message } : null }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Resend is not configured"
+      return { sent: false, error: message, to: notice.to, delivered, failed: notice.to.map((to) => ({ to, error: message })) }
+    }
   }
+  for (const to of notice.to) {
+    try {
+      const { error } = await sendFn({
+        from: env.RESEND_FROM_EMAIL || "Memorial QR <orders@memorialqr.com>",
+        to: [to],
+        replyTo: input.order.customer_email || SUPPORT_EMAIL,
+        subject: notice.subject,
+        html: notice.html,
+        text: notice.text,
+      })
+      if (error) failed.push({ to, error: error.message })
+      else delivered.push(to)
+    } catch (error) {
+      failed.push({ to, error: error instanceof Error ? error.message : "Fulfillment email failed" })
+    }
+  }
+  const error = failed.length ? failed.map((item) => `${item.to}: ${item.error}`).join("; ") : null
+  return { sent: delivered.length > 0, error, to: notice.to, delivered, failed }
 }
