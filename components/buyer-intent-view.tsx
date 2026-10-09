@@ -112,7 +112,7 @@ export function BuyerIntentView({
             </nav>
             {page.showGuide ? <MemorialGuideSection /> : null}
           </article>
-          <Card>
+          <Card id="order" className="scroll-mt-24">
             <CardContent className="space-y-4 p-6">
               {product ? (
                 <>
@@ -147,6 +147,20 @@ export function BuyerIntentView({
             </CardContent>
           </Card>
         </div>
+        {product ? (
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 shadow-lg backdrop-blur lg:hidden">
+            <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{product.name}</p>
+                <p className="text-sm text-muted-foreground">${product.price.toFixed(2)} once. Hosting included.</p>
+              </div>
+              <Button asChild size="sm">
+                <a href="#order">Order</a>
+              </Button>
+            </div>
+          </div>
+        ) : null}
+        <div className="h-20 lg:hidden" aria-hidden="true" />
       </main>
     </div>
   )
