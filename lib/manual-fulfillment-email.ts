@@ -1,4 +1,5 @@
 import type { ConfiguredLine } from "@/lib/fulfillment-availability"
+import { giftNoticeLines, packageRecipientName, type GiftOrderRecord } from "@/lib/gift-order"
 import { getResend } from "@/lib/resend"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
@@ -16,7 +17,7 @@ export type ManualOrderRecord = {
   payment_id?: string | null
   amount_cents?: number | null
   admin_notes?: string | null
-}
+} & GiftOrderRecord
 
 export type ManualFulfillmentNotice = {
   to: string[]
@@ -63,8 +64,9 @@ export function buildManualFulfillmentNotice(
   const lines = input.lines
     .map((line) => `${line.name} (${line.id}) × ${line.quantity} at $${line.price.toFixed(2)} each`)
     .join("\n")
+  const giftLines = giftNoticeLines(order)
   const address = [
-    order.customer_name,
+    packageRecipientName(order),
     order.shipping_address_line1,
     order.shipping_address_line2,
     [order.shipping_city, order.shipping_state, order.shipping_zip].filter(Boolean).join(", "),
@@ -90,6 +92,7 @@ export function buildManualFulfillmentNotice(
     `Customer email: ${order.customer_email || "not recorded"}`,
     `Customer phone: ${order.customer_phone || "not recorded"}`,
     "",
+    ...(giftLines.length ? [...giftLines, ""] : []),
     "Order notes:",
     order.special_instructions?.trim() || "None",
     ...(order.admin_notes?.trim() ? ["", "Attribution:", order.admin_notes.trim(), ""] : [""]),
@@ -115,6 +118,7 @@ export function buildManualFulfillmentNotice(
 <pre>${escapeHtml(lines || "No line items recorded")}</pre>
 <p><strong>Ship to</strong></p>
 <pre>${escapeHtml(address || "No shipping address recorded")}</pre>
+${giftLines.length ? `<p><strong>Gift</strong></p><pre>${escapeHtml(giftLines.join("\n"))}</pre>` : ""}
 <p><strong>Order notes</strong></p>
 <pre>${escapeHtml(order.special_instructions?.trim() || "None")}</pre>
 ${order.admin_notes?.trim() ? `<p><strong>Attribution</strong></p><pre>${escapeHtml(order.admin_notes.trim())}</pre>` : ""}
@@ -123,9 +127,14 @@ ${order.admin_notes?.trim() ? `<p><strong>Attribution</strong></p><pre>${escapeH
 ${input.memorialError ? `<p>Memorial error: ${escapeHtml(input.memorialError)}</p>` : ""}
 <p>Fulfillment status: manual. Make the keepsake and ship it to the address above.</p>`
 
+  const recipientLine = giftLines.find((line) => line.startsWith("Recipient: "))
+  const subject = recipientLine
+    ? `Make and ship ${order.order_number} (gift for ${recipientLine.slice("Recipient: ".length)})`
+    : `Make and ship ${order.order_number}`
+
   return {
     to,
-    subject: `Make and ship ${order.order_number}`,
+    subject,
     html,
     text,
   }

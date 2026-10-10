@@ -30,6 +30,11 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         answer:
           "No. The page is created when the order is paid. They can add photos and stories after the plaque arrives.",
       },
+      {
+        question: "Can I send the plaque to the family?",
+        answer:
+          "Yes. At checkout, mark the order as a gift, enter the recipient's name, and use their shipping address if it is different from yours. A short message is saved with the order for the person who packs the plaque. It is not engraved. The name, dates, and finish still go in the memorial notes.",
+      },
     ],
     showConcierge: false,
     showGuide: true,
@@ -61,6 +66,11 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         answer:
           "No. It is a metal plaque with her name, the dates, and a QR code. Many families keep it at home. Some set it with a headstone they already have.",
       },
+      {
+        question: "Can I ship this to her child?",
+        answer:
+          "Yes. Mark the order as a gift and enter the name of the person who should receive it. If they live somewhere else, use their address. The message you add is stored with the order so we see it when we pack the plaque. It is not engraved. Her name and dates for the metal still go on the first lines of the memorial notes.",
+      },
     ],
     showConcierge: false,
   },
@@ -91,6 +101,11 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         answer:
           "A metal plaque in the finish you wrote in the notes, with his name, the dates, and a QR code. The memorial page is already online.",
       },
+      {
+        question: "Can I mail this to his family?",
+        answer:
+          "Yes. Mark the order as a gift, put the recipient's name in, and give their address when it is not yours. We keep the short message on the order for packing. It is not engraved. His name, the dates, and the finish stay in the memorial notes.",
+      },
     ],
     showConcierge: false,
   },
@@ -120,6 +135,11 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         question: "Do I need their photos before I order?",
         answer:
           "No. Order the plaque with the pet's name. The page is created then, and photos can be added later.",
+      },
+      {
+        question: "Can I send this to the person who lost their pet?",
+        answer:
+          "Yes. Mark the checkout as a gift, enter their name, and ship it to their address if they are not at yours. The message is saved for the person who packs the Pet Memorial QR Plaque. It is not engraved. The pet's name and dates for the plaque still go in the memorial notes.",
       },
     ],
     showConcierge: false,
@@ -162,6 +182,11 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         answer:
           "No. The plaque is one payment, and hosting for the memorial page is included. Shipping in the United States is included too.",
       },
+      {
+        question: "Can the plaque go to someone other than me?",
+        answer:
+          "Yes. Mark the order as a gift and enter the recipient's name. Use their address when it differs from yours. The message stays with the order for packing and is not the engraving. The engraved name, dates, and finish come from the memorial notes.",
+      },
     ],
     showConcierge: false,
   },
@@ -191,6 +216,11 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         question: "Can you write the page for them?",
         answer:
           "Yes. The concierge service is a separate purchase. We build the memorial page and send the link. Nothing is shipped for that service. The plaque is the gift we make and mail.",
+      },
+      {
+        question: "Can I ship the plaque to my friend?",
+        answer:
+          "Yes. Mark the order as a gift, enter your friend's name, and use their address if you are not handing it to them yourself. The message is saved with the order for the person who packs it. It is not engraved. If you do not know the dates, ask before you order, and put the name on the first line of the memorial notes.",
       },
     ],
     showConcierge: true,

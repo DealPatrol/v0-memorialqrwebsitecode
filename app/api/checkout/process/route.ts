@@ -6,8 +6,16 @@ import { priceCart } from "@/lib/checkout-pricing"
 import { recordEmailAlert } from "@/lib/order-email-alerts"
 import { verifySquarePayment } from "@/lib/square-verify"
 import { fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
-import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 import { sendOrderConfirmationEmail } from "@/lib/order-confirmation-email"
+import {
+  giftOrderColumns,
+  initialOrderInsertPlan,
+  parseGiftOrder,
+  relaxOrderInsert,
+  withStoredGift,
+  type OrderInsertPlan,
+  type StoredGift,
+} from "@/lib/gift-order"
 
 export async function POST(req: Request) {
   try {
@@ -30,16 +38,22 @@ export async function POST(req: Request) {
       customization,
       squareCustomerId,
       attribution: rawAttribution,
+      isGift,
+      recipientName,
+      giftMessage,
+      shipToRecipient,
+      recipientAddressLine1,
+      recipientAddressLine2,
+      recipientCity,
+      recipientState,
+      recipientZip,
     } = body
 
     const attribution = attributionFromUnknown(rawAttribution)
     const attributionNote = formatAttribution(attribution) || null
 
-    const resolvedCustomerName = customerName || customerEmail
-
     // Validate required fields. A shipping address is only required when the cart ships something.
     const baseMissing = []
-    if (!resolvedCustomerName) baseMissing.push("customerName")
     if (!customerEmail) baseMissing.push("customerEmail")
     if (!paymentId) baseMissing.push("paymentId")
     if (baseMissing.length > 0) {
@@ -53,6 +67,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
     }
 
+    // Gift fields never affect the charged amount. priceCart reads the catalog only.
     const cart = priceCart(items)
     if (!cart) {
       return NextResponse.json({ success: false, error: "This product is not available" }, { status: 400 })
@@ -62,21 +77,63 @@ export async function POST(req: Request) {
     const shipsPhysical = resolvedItems.some((item) => item.ships)
     const manualFulfillment =
       shipsPhysical && resolvedItems.every((item) => !item.ships || item.provider === "manual")
-    if (shipsPhysical && (!addressLine1 || !city || !state || !zip)) {
+
+    const giftParsed = parseGiftOrder({ isGift, recipientName, giftMessage, shipToRecipient })
+    if (!giftParsed.ok) {
+      return NextResponse.json({ success: false, error: giftParsed.error }, { status: 400 })
+    }
+    const gift = giftParsed.gift
+    if (gift.isGift && !shipsPhysical) {
+      return NextResponse.json(
+        { success: false, error: "A gift order has to include a keepsake we ship" },
+        { status: 400 },
+      )
+    }
+    const buyerName = typeof customerName === "string" ? customerName.trim() : ""
+    if (gift.isGift && !buyerName) {
+      return NextResponse.json({ success: false, error: "Enter your name" }, { status: 400 })
+    }
+    const resolvedCustomerName = gift.isGift ? buyerName : customerName || customerEmail
+    if (!resolvedCustomerName) {
+      return NextResponse.json(
+        { success: false, error: "Missing required fields: customerName" },
+        { status: 400 },
+      )
+    }
+
+    const shipTo = gift.isGift && gift.shipToRecipient
+      ? {
+          line1: recipientAddressLine1,
+          line2: recipientAddressLine2,
+          city: recipientCity,
+          state: recipientState,
+          zip: recipientZip,
+          missingNames: ["recipientAddressLine1", "recipientCity", "recipientState", "recipientZip"] as const,
+        }
+      : {
+          line1: addressLine1,
+          line2: addressLine2,
+          city,
+          state,
+          zip,
+          missingNames: ["addressLine1", "city", "state", "zip"] as const,
+        }
+
+    if (shipsPhysical && (!shipTo.line1 || !shipTo.city || !shipTo.state || !shipTo.zip)) {
       const missing = []
-      if (!addressLine1) missing.push("addressLine1")
-      if (!city) missing.push("city")
-      if (!state) missing.push("state")
-      if (!zip) missing.push("zip")
+      if (!shipTo.line1) missing.push(shipTo.missingNames[0])
+      if (!shipTo.city) missing.push(shipTo.missingNames[1])
+      if (!shipTo.state) missing.push(shipTo.missingNames[2])
+      if (!shipTo.zip) missing.push(shipTo.missingNames[3])
       return NextResponse.json(
         { success: false, error: `Missing required fields: ${missing.join(", ")}` },
         { status: 400 },
       )
     }
-    if (shipsPhysical && !/^[A-Za-z]{2}$/.test(state.trim())) {
+    if (shipsPhysical && !/^[A-Za-z]{2}$/.test(String(shipTo.state).trim())) {
       return NextResponse.json({ success: false, error: "Use a 2-letter US state code" }, { status: 400 })
     }
-    if (shipsPhysical && !/^\d{5}(-\d{4})?$/.test(zip.trim())) {
+    if (shipsPhysical && !/^\d{5}(-\d{4})?$/.test(String(shipTo.zip).trim())) {
       return NextResponse.json({ success: false, error: "Use a US ZIP code" }, { status: 400 })
     }
 
@@ -118,11 +175,12 @@ export async function POST(req: Request) {
       customer_email: customerEmail,
       customer_phone: customerPhone || null,
       // Digital-only carts collect no address; empty strings keep the NOT NULL columns valid.
-      shipping_address_line1: shipsPhysical ? addressLine1 : addressLine1 || "",
-      shipping_address_line2: addressLine2 || null,
-      shipping_city: shipsPhysical ? city : city || "",
-      shipping_state: shipsPhysical ? state : state || "",
-      shipping_zip: shipsPhysical ? zip : zip || "",
+      // A gift ships to the recipient's address when the buyer says it differs. Otherwise these are the buyer's.
+      shipping_address_line1: shipsPhysical ? shipTo.line1 : shipTo.line1 || "",
+      shipping_address_line2: shipTo.line2 || null,
+      shipping_city: shipsPhysical ? shipTo.city : shipTo.city || "",
+      shipping_state: shipsPhysical ? shipTo.state : shipTo.state || "",
+      shipping_zip: shipsPhysical ? shipTo.zip : shipTo.zip || "",
       shipping_country: "US",
       payment_id: paymentId,
       payment_status: "completed",
@@ -160,21 +218,27 @@ export async function POST(req: Request) {
       provider_template_id: item.templateProductId || item.syncVariantId,
       provider_variant_id: item.variantId,
     }))
-    const podOrderData = {
-      ...orderData,
+    const fulfillmentBase = { schema_version: 1, ...(attribution ? { attribution } : {}) }
+    const podFields = {
       line_items: lineItems,
       fulfillment_provider: shipsPhysical ? (new Set(resolvedItems.map((item) => item.provider).filter(Boolean)).size > 1 ? "mixed" : resolvedItems.find((item) => item.provider)?.provider) : null,
       fulfillment_id: null,
       fulfillment_status: shipsPhysical ? "pending" : "not_required",
-      fulfillment_data: { schema_version: 1, ...(attribution ? { attribution } : {}) },
       print_file_url: null,
     }
 
-    let insertResult = await supabase.from("orders").insert(podOrderData).select().single()
-    if (insertResult.error && isMissingPodOrderSchema(insertResult.error)) {
-      insertResult = await supabase.from("orders").insert(orderData).select().single()
+    const inserted = await insertCheckoutOrder(supabase, orderData, podFields, fulfillmentBase, gift)
+    if (inserted.unsavedGift) {
+      console.error("[Checkout] Paid gift could not be stored on the order:", paymentId)
+      return NextResponse.json(
+        {
+          success: false,
+          error: "We could not save the gift details for this order. Email support@memorialsqr.com with your payment confirmation.",
+        },
+        { status: 500 },
+      )
     }
-    const { data: order, error } = insertResult
+    const { data: order, error } = inserted.result
 
     if (error && error.code === "23505") {
       // Unique payment_id: a concurrent request for the same payment already created the order.
@@ -225,6 +289,7 @@ export async function POST(req: Request) {
         amount: (totalAmountCents / 100).toFixed(2),
         shipsPhysical,
         manualFulfillment,
+        gift,
       })
     } catch (emailError) {
       // Don't fail a paid order because of email, but make it visible.
@@ -276,6 +341,45 @@ function orderResponse(order: OrderRow, fulfillmentStatus: string | null, memori
       currency: order.currency || "USD",
     },
   }
+}
+
+type OrderInsertClient = { from: (table: string) => any }
+
+async function insertCheckoutOrder(
+  supabase: OrderInsertClient,
+  orderData: Record<string, unknown>,
+  podFields: Record<string, unknown>,
+  fulfillmentBase: Record<string, unknown>,
+  gift: StoredGift,
+) {
+  let plan: OrderInsertPlan = initialOrderInsertPlan()
+  let result = await insertOrderRow(supabase, orderPayload(plan, orderData, podFields, fulfillmentBase, gift))
+  for (let attempt = 0; attempt < 3 && result.error; attempt++) {
+    const next = relaxOrderInsert(plan, result.error, gift.isGift)
+    if (next === "unsaved-gift") return { result, unsavedGift: true }
+    if (next === "stop") break
+    plan = next
+    result = await insertOrderRow(supabase, orderPayload(plan, orderData, podFields, fulfillmentBase, gift))
+  }
+  return { result, unsavedGift: false }
+}
+
+function orderPayload(
+  plan: OrderInsertPlan,
+  orderData: Record<string, unknown>,
+  podFields: Record<string, unknown>,
+  fulfillmentBase: Record<string, unknown>,
+  gift: StoredGift,
+) {
+  const columns = plan.giftColumns ? giftOrderColumns(gift) : null
+  const withGift = columns ? { ...orderData, ...columns } : orderData
+  if (!plan.pod) return withGift
+  const fulfillment = plan.giftInFulfillment ? withStoredGift(fulfillmentBase, gift) : fulfillmentBase
+  return { ...withGift, ...podFields, fulfillment_data: fulfillment }
+}
+
+function insertOrderRow(supabase: OrderInsertClient, values: Record<string, unknown>) {
+  return supabase.from("orders").insert(values).select().single()
 }
 
 export async function GET() {

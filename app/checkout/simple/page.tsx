@@ -14,6 +14,7 @@ import { SquarePaymentForm } from "@/components/square-payment-form"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { readStoredAttribution } from "@/components/attribution-capture"
 import { trackCommerce } from "@/components/track-commerce"
@@ -21,6 +22,7 @@ import { purchaseAfterPayment } from "@/lib/ad-events"
 import { orderNotesHint } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
+import { GIFT_MESSAGE_MAX } from "@/lib/gift-order"
 
 type CartLine = { id: string; name: string; price: number; quantity: number; ships: boolean }
 
@@ -96,6 +98,15 @@ function CheckoutForm() {
     state: "",
     zipCode: "",
     customization: "",
+    isGift: false,
+    recipientName: "",
+    giftMessage: "",
+    shipToRecipient: false,
+    recipientAddress: "",
+    recipientAddress2: "",
+    recipientCity: "",
+    recipientState: "",
+    recipientZip: "",
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -127,10 +138,35 @@ function CheckoutForm() {
       return false
     }
 
-    if (needsShipping && (!formData.fullName.trim() || !formData.address || !formData.city || !formData.state || !formData.zipCode)) {
+    const shipToRecipient = needsShipping && formData.isGift && formData.shipToRecipient
+    const shipAddress = shipToRecipient ? formData.recipientAddress : formData.address
+    const shipCity = shipToRecipient ? formData.recipientCity : formData.city
+    const shipState = shipToRecipient ? formData.recipientState : formData.state
+    const shipZip = shipToRecipient ? formData.recipientZip : formData.zipCode
+
+    if (needsShipping && (!formData.fullName.trim() || !shipAddress || !shipCity || !shipState || !shipZip)) {
       toast({
         title: "Missing Information",
-        description: "Please enter the recipient name and the full US shipping address before payment.",
+        description: shipToRecipient
+          ? "Enter your name, the recipient's name, and the recipient's full US shipping address before payment."
+          : "Please enter the name and the full US shipping address before payment.",
+        variant: "destructive",
+      })
+      return false
+    }
+
+    if (needsShipping && formData.isGift && !formData.recipientName.trim()) {
+      toast({
+        title: "Recipient name",
+        description: "Enter the name of the person this gift is for.",
+        variant: "destructive",
+      })
+      return false
+    }
+    if (needsShipping && formData.isGift && formData.giftMessage.trim().length > GIFT_MESSAGE_MAX) {
+      toast({
+        title: "Gift message",
+        description: `Keep the gift message to ${GIFT_MESSAGE_MAX} characters or fewer.`,
         variant: "destructive",
       })
       return false
@@ -148,7 +184,7 @@ function CheckoutForm() {
       }
     }
 
-    if (needsShipping && !/^[A-Za-z]{2}$/.test(formData.state.trim())) {
+    if (needsShipping && !/^[A-Za-z]{2}$/.test(shipState.trim())) {
       toast({
         title: "US state required",
         description: "Enter a 2-letter state code. We ship only in the United States.",
@@ -156,7 +192,7 @@ function CheckoutForm() {
       })
       return false
     }
-    if (needsShipping && !/^\d{5}(-\d{4})?$/.test(formData.zipCode.trim())) {
+    if (needsShipping && !/^\d{5}(-\d{4})?$/.test(shipZip.trim())) {
       toast({
         title: "US ZIP required",
         description: "Enter a 5-digit ZIP code. We ship only in the United States.",
@@ -173,6 +209,7 @@ function CheckoutForm() {
     setIsSubmitting(true)
 
     try {
+      const shipToRecipient = needsShipping && formData.isGift && formData.shipToRecipient
       const orderData = {
         planType: "cart-checkout",
         items: cartItems,
@@ -180,13 +217,22 @@ function CheckoutForm() {
         customerName: needsShipping ? formData.fullName.trim() : "",
         customerEmail: formData.email || "",
         customerPhone: formData.phone || "",
-        addressLine1: needsShipping ? formData.address : "",
-        addressLine2: needsShipping ? formData.address2 || "" : "",
-        city: needsShipping ? formData.city : "",
-        state: needsShipping ? formData.state : "",
-        zip: needsShipping ? formData.zipCode : "",
+        addressLine1: needsShipping && !shipToRecipient ? formData.address : "",
+        addressLine2: needsShipping && !shipToRecipient ? formData.address2 || "" : "",
+        city: needsShipping && !shipToRecipient ? formData.city : "",
+        state: needsShipping && !shipToRecipient ? formData.state : "",
+        zip: needsShipping && !shipToRecipient ? formData.zipCode : "",
         paymentId: paymentId,
         customization: formData.customization || "",
+        isGift: needsShipping && formData.isGift,
+        recipientName: needsShipping && formData.isGift ? formData.recipientName.trim() : "",
+        giftMessage: needsShipping && formData.isGift ? formData.giftMessage.trim() : "",
+        shipToRecipient,
+        recipientAddressLine1: shipToRecipient ? formData.recipientAddress : "",
+        recipientAddressLine2: shipToRecipient ? formData.recipientAddress2 : "",
+        recipientCity: shipToRecipient ? formData.recipientCity : "",
+        recipientState: shipToRecipient ? formData.recipientState : "",
+        recipientZip: shipToRecipient ? formData.recipientZip : "",
         cardId: cardId,
         squareCustomerId: customerId,
         attribution: readStoredAttribution(),
@@ -374,7 +420,11 @@ function CheckoutForm() {
                       placeholder="Jane Doe"
                       autoComplete="name"
                     />
-                    <p className="text-xs text-muted-foreground">Name for the keepsake shipment</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formData.isGift
+                        ? "Your name. Order email goes to you."
+                        : "Name for the keepsake shipment"}
+                    </p>
                   </div>
                 )}
 
@@ -414,6 +464,10 @@ function CheckoutForm() {
                   <p className="text-sm text-muted-foreground">
                     Nothing is shipped for this order, so no mailing address is needed. Enter your card details and
                     billing ZIP code in the secure payment form below.
+                  </p>
+                ) : formData.isGift && formData.shipToRecipient ? (
+                  <p className="text-sm text-muted-foreground">
+                    We will ship the keepsake to the recipient. Enter their address below.
                   </p>
                 ) : (
                 <div className="space-y-4">
@@ -493,6 +547,147 @@ function CheckoutForm() {
                   </div>
                 </div>
                 )}
+
+                {needsShipping ? (
+                  <div className="space-y-4 rounded-md border p-4">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        id="isGift"
+                        checked={formData.isGift}
+                        onCheckedChange={(checked) =>
+                          setFormData((current) => ({ ...current, isGift: checked === true }))
+                        }
+                      />
+                      <div>
+                        <Label htmlFor="isGift" className="font-normal">
+                          This order is a gift
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Add the recipient&apos;s name and a short message. Use their address if it is different from yours.
+                        </p>
+                      </div>
+                    </div>
+                    {formData.isGift ? (
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="recipientName">
+                            Recipient&apos;s name <span className="text-red-500">*</span>
+                          </Label>
+                          <Input
+                            id="recipientName"
+                            name="recipientName"
+                            value={formData.recipientName}
+                            onChange={handleInputChange}
+                            placeholder="Grace Hopper"
+                            autoComplete="name"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="giftMessage">Gift message (optional)</Label>
+                          <Textarea
+                            id="giftMessage"
+                            name="giftMessage"
+                            value={formData.giftMessage}
+                            onChange={handleInputChange}
+                            placeholder="A short note for the person this is for."
+                            rows={3}
+                            maxLength={GIFT_MESSAGE_MAX}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Saved with the order for the person who packs the keepsake. It is not engraved. {GIFT_MESSAGE_MAX} characters at most.
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Checkbox
+                            id="shipToRecipient"
+                            checked={formData.shipToRecipient}
+                            onCheckedChange={(checked) =>
+                              setFormData((current) => ({ ...current, shipToRecipient: checked === true }))
+                            }
+                          />
+                          <Label htmlFor="shipToRecipient" className="font-normal">
+                            Ship to the recipient&apos;s address
+                          </Label>
+                        </div>
+                        {formData.shipToRecipient ? (
+                          <div className="space-y-4">
+                            <h3 className="font-semibold text-sm">Recipient&apos;s US shipping address</h3>
+                            <div className="space-y-2">
+                              <Label htmlFor="recipientAddress">
+                                Street Address <span className="text-red-500">*</span>
+                              </Label>
+                              <Input
+                                id="recipientAddress"
+                                name="recipientAddress"
+                                value={formData.recipientAddress}
+                                onChange={handleInputChange}
+                                placeholder="123 Main Street"
+                                autoComplete="shipping street-address"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="recipientAddress2">Apartment, Suite, etc.</Label>
+                              <Input
+                                id="recipientAddress2"
+                                name="recipientAddress2"
+                                value={formData.recipientAddress2}
+                                onChange={handleInputChange}
+                                placeholder="Apt 4B"
+                                autoComplete="shipping address-line2"
+                              />
+                            </div>
+                            <div className="grid md:grid-cols-3 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="recipientCity">
+                                  City <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                  id="recipientCity"
+                                  name="recipientCity"
+                                  value={formData.recipientCity}
+                                  onChange={handleInputChange}
+                                  placeholder="New York"
+                                  autoComplete="shipping address-level2"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="recipientState">
+                                  State <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                  id="recipientState"
+                                  name="recipientState"
+                                  value={formData.recipientState}
+                                  onChange={handleInputChange}
+                                  placeholder="NY"
+                                  maxLength={2}
+                                  autoComplete="shipping address-level1"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="recipientZip">
+                                  ZIP Code <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                  id="recipientZip"
+                                  name="recipientZip"
+                                  value={formData.recipientZip}
+                                  onChange={handleInputChange}
+                                  placeholder="10001"
+                                  autoComplete="shipping postal-code"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            We will ship the keepsake to your address so you can give it yourself.
+                          </p>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 <Separator />
 

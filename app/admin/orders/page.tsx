@@ -23,6 +23,7 @@ import { Package, Mail, Phone, MapPin, Calendar, DollarSign, Search, Filter, Ext
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import { emailAlertsOf } from "@/lib/order-email-alerts"
+import { GiftOrderDetails } from "@/components/gift-order-details"
 
 interface Order {
   id: string
@@ -407,6 +408,7 @@ export default function AdminOrdersPage() {
                             </div>
                           </div>
                         </div>
+                        <GiftOrderDetails order={order} />
                       </div>
 
                       <div className="space-y-3">
