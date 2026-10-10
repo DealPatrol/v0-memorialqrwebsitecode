@@ -8,7 +8,9 @@ After Square captures payment, checkout:
 
 1. Saves an `orders` row with `fulfillment_provider` `manual` and `fulfillment_status` `manual`.
 2. Creates the memorial page and a QR image at `/api/print-file/{slug}`.
-3. Emails a make-and-ship notice with the order number, payment id, amount, line items, ship-to address, order notes, memorial URL, and QR image URL.
+3. Emails a make-and-ship notice with the order number, payment id, amount, line items, ship-to address, order notes, memorial URL, and QR image URL. If the buyer marked the order as a gift, the notice also includes the recipient's name and the gift message. The message is not engraved. The name on the plaque still comes from the order notes.
+
+Gift columns live in `scripts/028_add_gift_order_columns.sql`. Run that in the Supabase SQL editor before relying on the columns. Until it is applied, a gift is saved on `orders.fulfillment_data.gift` instead, and the same notice still shows it. Square's payment itself does not carry a shipping address. The ship-to is `orders.shipping_address_*`. When the buyer says the recipient's address is different, those columns are the recipient's address and the package name is `recipient_name`. The buyer's name, email, and phone stay on the order. No new environment variable is required.
 
 No supplier order is placed. Cole makes the plaque (gold, silver, or black, from the order notes) and ships it. If the pod columns from `scripts/025_add_pod_order_fulfillment_fields.sql` are missing, the same notice is written into `special_instructions`.
 

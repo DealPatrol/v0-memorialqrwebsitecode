@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { CheckCircle, Package, Mail, Clock, User } from "lucide-react"
 import Link from "next/link"
 import { getOrderByNumber } from "@/app/actions/orders"
+import { GiftOrderDetails } from "@/components/gift-order-details"
 
 export default function OrderConfirmationPage() {
   const searchParams = useSearchParams()
@@ -102,13 +103,14 @@ export default function OrderConfirmationPage() {
                 <p className="text-sm text-gray-600">{order.customer_email}</p>
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <p className="text-sm text-gray-600">Shipping Address</p>
                 <p className="font-semibold">{order.shipping_address_line1}</p>
                 {order.shipping_address_line2 && <p className="text-sm">{order.shipping_address_line2}</p>}
                 <p className="text-sm">
                   {order.shipping_city}, {order.shipping_state} {order.shipping_zip}
                 </p>
+                <GiftOrderDetails order={order} />
               </div>
 
               <div>

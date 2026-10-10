@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Header } from "@/components/header"
 import { buyerIntentList } from "@/lib/buyer-intent"
+import { giftIntentList } from "@/lib/gift-intent"
 import { longTailList } from "@/lib/long-tail"
 import { pageMetadata, publicPages } from "@/lib/seo"
 
@@ -55,6 +56,25 @@ export default function GuidesPage() {
               </Link>
             </li>
           ))}
+        </ul>
+        <h2 className="mb-3 mt-10 text-2xl font-semibold text-foreground">Sympathy and remembrance gifts</h2>
+        <p className="mb-4 text-muted-foreground">
+          These pages are for someone buying a keepsake for a person who is grieving. At checkout you can mark the
+          order as a gift, ship it to the recipient if they live somewhere else, and leave a short message.
+        </p>
+        <ul className="space-y-3">
+          {giftIntentList.map((item) => (
+            <li key={item.path}>
+              <Link href={item.path} className="text-lg underline">
+                {item.h1}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link href="/gifts" className="text-lg underline">
+              All memorial gift ideas
+            </Link>
+          </li>
         </ul>
       </main>
     </div>

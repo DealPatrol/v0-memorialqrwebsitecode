@@ -21,7 +21,7 @@ export default function GiftsPage() {
         <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
           These are gifts for a person who is grieving. A gift for a person is the QR Memorial Plaque. A gift after
           losing a pet is the Pet Memorial QR Plaque, the same kind of metal plaque for a companion. A pet memorial QR
-          code is the pet&apos;s own page.
+          code is the pet&apos;s own page. At checkout you can mark the order as a gift and ship it to the recipient.
         </p>
         <ul className="space-y-3">
           {giftIntentList.map((item) => (

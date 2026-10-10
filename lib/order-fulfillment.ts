@@ -6,6 +6,7 @@ import { recordEmailAlert } from "@/lib/order-email-alerts"
 import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 import { dispatchSupplierLines, type DispatchLine, type DispatchOutcome } from "@/lib/supplier-dispatch"
 import { attributionFromUnknown } from "@/lib/attribution"
+import { giftNoticeLines, packageRecipientName, preserveStoredGift } from "@/lib/gift-order"
 import type { ConfiguredLine } from "@/lib/fulfillment-availability"
 import type { ShipTo } from "@/lib/printful"
 
@@ -108,6 +109,7 @@ async function saveFulfillmentLog(
     dispatched_at: new Date().toISOString(),
     details: outcome.details,
     ...(previousAttribution ? { attribution: previousAttribution } : {}),
+    ...preserveStoredGift(order.fulfillment_data),
   }
   const status = orderStatusForOutcome(outcome.status)
   const update = await supabase
@@ -194,6 +196,19 @@ function isSupplierProvider(provider: ConfiguredLine["provider"]): provider is "
   return provider === "printful" || provider === "printify"
 }
 
+function shipToFor(order: OrderRow): ShipTo {
+  return {
+    name: packageRecipientName(order),
+    address1: order.shipping_address_line1 || "",
+    address2: order.shipping_address_line2,
+    city: order.shipping_city || "",
+    state: (order.shipping_state || "").toUpperCase(),
+    zip: order.shipping_zip || "",
+    email: order.customer_email || "",
+    phone: order.customer_phone,
+  }
+}
+
 function manualSummary(
   order: OrderRow,
   lines: ConfiguredLine[],
@@ -207,9 +222,10 @@ function manualSummary(
     `manual fulfillment for ${order.order_number}`,
     "No supplier order was placed.",
     `Items: ${items}`,
-    `Ship to: ${order.customer_name || ""}, ${order.shipping_address_line1 || ""}, ${order.shipping_city || ""} ${order.shipping_state || ""} ${order.shipping_zip || ""}`.trim(),
+    `Ship to: ${packageRecipientName(order)}, ${order.shipping_address_line1 || ""}, ${order.shipping_city || ""} ${order.shipping_state || ""} ${order.shipping_zip || ""}`.trim(),
     `Email: ${order.customer_email || ""}`,
     `Phone: ${order.customer_phone || ""}`,
+    ...giftNoticeLines(order),
     `Notes: ${order.special_instructions || "none"}`,
     `Memorial: ${memorialUrl || "not created"}`,
     `QR: ${printFileUrl || "not created"}`,
@@ -320,16 +336,7 @@ async function placePhysicalOrder(
       return outcome
     }
 
-    const recipient: ShipTo = {
-      name: order.customer_name || "Customer",
-      address1: order.shipping_address_line1 || "",
-      address2: order.shipping_address_line2,
-      city: order.shipping_city || "",
-      state: (order.shipping_state || "").toUpperCase(),
-      zip: order.shipping_zip || "",
-      email: order.customer_email || "",
-      phone: order.customer_phone,
-    }
+    const recipient: ShipTo = shipToFor(order)
     const outcome = await dispatchSupplierLines({
       orderNumber: order.order_number,
       recipient,
@@ -349,16 +356,7 @@ async function placePhysicalOrder(
     return outcome
   }
 
-  const recipient: ShipTo = {
-    name: order.customer_name || "Customer",
-    address1: order.shipping_address_line1 || "",
-    address2: order.shipping_address_line2,
-    city: order.shipping_city || "",
-    state: (order.shipping_state || "").toUpperCase(),
-    zip: order.shipping_zip || "",
-    email: order.customer_email || "",
-    phone: order.customer_phone,
-  }
+  const recipient: ShipTo = shipToFor(order)
 
   const outcome = await dispatchSupplierLines({
     orderNumber: order.order_number,

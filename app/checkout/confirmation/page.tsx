@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { CheckCircle2, Package, Mail, ArrowRight, Eye } from "lucide-react"
 import Link from "next/link"
+import { GiftOrderDetails } from "@/components/gift-order-details"
 
 export default function OrderConfirmationPage() {
   const searchParams = useSearchParams()
@@ -163,12 +164,15 @@ export default function OrderConfirmationPage() {
 
             <div>
               <h3 className="font-semibold mb-2">Shipping Address</h3>
-              <div className="bg-muted/50 rounded-lg p-4">
-                <p className="text-sm">{order.shipping_address_line1}</p>
-                {order.shipping_address_line2 && <p className="text-sm">{order.shipping_address_line2}</p>}
-                <p className="text-sm">
-                  {order.shipping_city}, {order.shipping_state} {order.shipping_zip}
-                </p>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                <div>
+                  <p className="text-sm">{order.shipping_address_line1}</p>
+                  {order.shipping_address_line2 && <p className="text-sm">{order.shipping_address_line2}</p>}
+                  <p className="text-sm">
+                    {order.shipping_city}, {order.shipping_state} {order.shipping_zip}
+                  </p>
+                </div>
+                <GiftOrderDetails order={order} />
               </div>
             </div>
           </div>

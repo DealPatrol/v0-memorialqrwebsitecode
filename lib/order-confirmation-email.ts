@@ -1,6 +1,7 @@
 import { getResend } from "@/lib/resend"
 import { SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import { giftBuyerSentences, type StoredGift } from "@/lib/gift-order"
 
 export type OrderConfirmationInput = {
   customerEmail: string
@@ -13,6 +14,7 @@ export type OrderConfirmationInput = {
   /** True when every shipped line is made and shipped by hand, with no supplier order. */
   manualFulfillment?: boolean
   hostingIncludedUntil?: string | null
+  gift?: StoredGift
 }
 
 function escapeHtml(value: string): string {
@@ -38,6 +40,9 @@ export async function sendOrderConfirmationEmail(input: OrderConfirmationInput):
     : input.manualFulfillment
       ? "We've received your order. We will make your keepsake and ship it to the United States address you provided."
       : "We've received your order. Your keepsake is printed after payment and we'll email tracking when it ships."
+  const giftCopy = giftBuyerSentences(input.gift ?? { isGift: false, recipientName: null, giftMessage: null, shipToRecipient: false })
+    .map((sentence) => `<p style="font-size: 16px;">${escapeHtml(sentence)}</p>`)
+    .join("")
 
   const { error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL || "Memorial QR <orders@memorialqr.com>",
@@ -53,6 +58,7 @@ export async function sendOrderConfirmationEmail(input: OrderConfirmationInput):
   <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
     <p style="font-size: 16px;">Dear ${name},</p>
     <p style="font-size: 16px;">${intro}</p>
+    ${giftCopy}
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #8b5cf6;">
       <h2 style="color: #8b5cf6; margin-top: 0;">Order Details</h2>
       <p><strong>Order Number:</strong> ${escapeHtml(input.orderNumber)}</p>

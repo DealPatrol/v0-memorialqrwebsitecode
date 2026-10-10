@@ -74,6 +74,10 @@ export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake
       <div>
         <h2 className="text-sm font-semibold text-foreground">Shipping</h2>
         <p className="text-sm text-muted-foreground">{shippingCopy(product.provider)}</p>
+        <p className="text-sm text-muted-foreground">
+          Ordering for someone else? Mark the order as a gift at checkout, use their address if it is different from
+          yours, and add a short message. The message is saved with the order. It is not engraved.
+        </p>
       </div>
       <div>
         <h2 className="text-sm font-semibold text-foreground">What the family receives</h2>
