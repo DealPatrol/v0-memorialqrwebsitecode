@@ -23,14 +23,14 @@ export default function FuneralHomesPage() {
             memorial page, without asking guests to create an account.
           </p>
           <p className="text-lg leading-relaxed text-muted-foreground">
-            MemorialsQR sells a QR memorial plaque
-            {plaque ? ` for ${formatUsd(plaque.price)}` : ""}, with the memorial page and {HOSTING_INCLUDED_YEARS} years
-            of hosting included.
+            {plaque
+              ? `MemorialsQR sells a QR memorial plaque for ${formatUsd(plaque.price)}, with the memorial page and ${HOSTING_INCLUDED_YEARS} years of hosting included.`
+              : "Our QR memorial plaque is coming soon. We are not taking plaque orders yet."}
             If you want to offer that to the families you serve, send a wholesale inquiry. We reply by email. This form
             does not place an order and does not charge a card.
           </p>
           <p className="text-muted-foreground">
-            Families can also order the plaque themselves from the{" "}
+            Families can {plaque ? "also order the plaque themselves from" : "join the waitlist on"} the{" "}
             <Link href="/store/qr-memorial-plaque" className="underline">
               QR Memorial Plaque
             </Link>{" "}

@@ -2,6 +2,7 @@ import {
   CONCIERGE_PRODUCTS,
   getManualKeepsake,
   getPodProduct,
+  isKeepsakeComingSoon,
   MANUAL_KEEPSAKES,
   type CheckoutProduct,
   type FulfillmentProvider,
@@ -38,12 +39,14 @@ export type SellableKeepsake = {
   features: string[]
   image: string
   imageAlt: string
+  /** False when the page is live but checkout refuses it (coming soon). */
+  available: boolean
 }
 
 const SUPPLIER_IMAGE = "/memorial-qr-code-products.jpg"
 const SUPPLIER_IMAGE_ALT = "QR memorial keepsake"
 
-function keepsakeFromManual(product: ManualKeepsake): SellableKeepsake {
+function keepsakeFromManual(product: ManualKeepsake, env: EnvSource): SellableKeepsake {
   return {
     id: product.id,
     name: product.name,
@@ -54,10 +57,11 @@ function keepsakeFromManual(product: ManualKeepsake): SellableKeepsake {
     features: product.features,
     image: product.image,
     imageAlt: product.imageAlt,
+    available: !isKeepsakeComingSoon(product.id, env),
   }
 }
 
-function keepsakeFromPod(product: PodProduct): SellableKeepsake {
+function keepsakeFromPod(product: PodProduct, env: EnvSource): SellableKeepsake {
   return {
     id: product.id,
     name: product.name,
@@ -68,12 +72,25 @@ function keepsakeFromPod(product: PodProduct): SellableKeepsake {
     features: product.features,
     image: SUPPLIER_IMAGE,
     imageAlt: SUPPLIER_IMAGE_ALT,
+    available: !isKeepsakeComingSoon(product.id, env),
   }
 }
 
-/** Manual keepsakes are always listed. Printful and Printify keepsakes need their env vars. */
+/** Every keepsake with a public page, including coming-soon ones. Not for checkout, feeds, or offers. */
+export function getListedKeepsakes(env: EnvSource = process.env): SellableKeepsake[] {
+  return [
+    ...MANUAL_KEEPSAKES.map((product) => keepsakeFromManual(product, env)),
+    ...getSellablePodProducts(env).map((product) => keepsakeFromPod(product, env)),
+  ]
+}
+
+export function getListedKeepsake(id: string, env: EnvSource = process.env): SellableKeepsake | undefined {
+  return getListedKeepsakes(env).find((product) => product.id === id)
+}
+
+/** Keepsakes a buyer can actually order. Coming-soon keepsakes are excluded. */
 export function getSellableKeepsakes(env: EnvSource = process.env): SellableKeepsake[] {
-  return [...MANUAL_KEEPSAKES.map(keepsakeFromManual), ...getSellablePodProducts(env).map(keepsakeFromPod)]
+  return getListedKeepsakes(env).filter((product) => product.available)
 }
 
 export function getSellableKeepsake(id: string, env: EnvSource = process.env): SellableKeepsake | undefined {
@@ -127,6 +144,8 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
       })
       continue
     }
+
+    if (isKeepsakeComingSoon(item.id, env)) return null
 
     const manual = getManualKeepsake(item.id)
     if (manual) {

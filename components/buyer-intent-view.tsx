@@ -12,7 +12,7 @@ import {
   PRIMARY_KEEPSAKE_ID,
   type BuyerIntent,
 } from "@/lib/buyer-intent"
-import { getSellableKeepsake, getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { getListedKeepsake, getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { giftIntentList } from "@/lib/gift-intent"
 import { CONCIERGE_PRICE_LABEL } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
@@ -26,8 +26,8 @@ export function BuyerIntentView({
   related?: BuyerIntent[]
   relatedHeading?: string
 }) {
-  const product = getSellableKeepsake(page.keepsakeId ?? PRIMARY_KEEPSAKE_ID)
-  const others = getSellableKeepsakes().filter((item) => item.id !== product?.id)
+  const product = getListedKeepsake(page.keepsakeId ?? PRIMARY_KEEPSAKE_ID)
+  const others = getListedKeepsakes().filter((item) => item.id !== product?.id)
   const linksSympathy = related.every((item) => item.path !== "/sympathy-gift-ideas") && page.path !== "/sympathy-gift-ideas"
   const section = giftIntentList.some((item) => item.path === page.path)
     ? { href: "/gifts", label: "Gifts" }
@@ -48,6 +48,15 @@ export function BuyerIntentView({
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <article className="space-y-6">
             <h1 className="text-4xl font-bold text-foreground">{page.h1}</h1>
+            {product && !product.available ? (
+              <p className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+                The {product.name} is coming soon. We are not taking orders yet.{" "}
+                <a href="#waitlist" className="font-medium underline">
+                  Join the list
+                </a>{" "}
+                and we will email you once when it can be ordered.
+              </p>
+            ) : null}
             {page.paragraphs.map((paragraph) => (
               <p key={paragraph} className="text-lg leading-relaxed text-muted-foreground">
                 {paragraph}
@@ -131,14 +140,14 @@ export function BuyerIntentView({
               ) : null}
               {others.length > 0 ? (
                 <div className="space-y-2 border-t pt-4">
-                  <h3 className="text-sm font-semibold">Other keepsakes you can order</h3>
+                  <h3 className="text-sm font-semibold">Other keepsakes</h3>
                   <ul className="space-y-2">
                     {others.map((item) => (
                       <li key={item.id} className="flex items-center justify-between gap-3 text-sm">
                         <Link href={`/store/${item.id}`} className="underline">
                           {item.name}
                         </Link>
-                        <span>{formatUsd(item.price)}</span>
+                        <span>{item.available ? formatUsd(item.price) : "Coming soon"}</span>
                       </li>
                     ))}
                   </ul>
@@ -152,10 +161,12 @@ export function BuyerIntentView({
             <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{product.name}</p>
-                <p className="text-sm text-muted-foreground">${product.price.toFixed(2)} once. Hosting included.</p>
+                <p className="text-sm text-muted-foreground">
+                  {product.available ? `$${product.price.toFixed(2)} once. Hosting included.` : "Coming soon. Join the list."}
+                </p>
               </div>
               <Button asChild size="sm">
-                <a href="#order">Order</a>
+                <a href={product.available ? "#order" : "#waitlist"}>{product.available ? "Order" : "Join the list"}</a>
               </Button>
             </div>
           </div>

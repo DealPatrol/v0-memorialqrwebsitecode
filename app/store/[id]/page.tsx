@@ -12,18 +12,18 @@ import { Card, CardContent } from "@/components/ui/card"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { relatedHandmadePlaqueId } from "@/lib/catalog"
 import { giftIntentList } from "@/lib/gift-intent"
-import { getSellableKeepsake, getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { getListedKeepsake, getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { keepsakeFaqJsonLd, keepsakeFaqs } from "@/lib/keepsake-faq"
 import { keepsakeProductJsonLd } from "@/lib/keepsake-jsonld"
 import { keepsakePageCopy } from "@/lib/keepsake-page"
 import { assertMetadataLength, pageMetadata } from "@/lib/seo"
 
 export function generateStaticParams() {
-  return getSellableKeepsakes().map((product) => ({ id: product.id }))
+  return getListedKeepsakes().map((product) => ({ id: product.id }))
 }
 
 export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const product = getSellableKeepsake(params.id)
+  const product = getListedKeepsake(params.id)
   const path = `/store/${params.id}`
   if (!product) {
     return pageMetadata({
@@ -40,17 +40,19 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
 }
 
 export default function KeepsakePage({ params }: { params: { id: string } }) {
-  const product = getSellableKeepsake(params.id)
+  const product = getListedKeepsake(params.id)
   if (!product) notFound()
   const relatedId = relatedHandmadePlaqueId(product.id)
-  const related = relatedId ? getSellableKeepsake(relatedId) : undefined
+  const related = relatedId ? getListedKeepsake(relatedId) : undefined
   const faqs = keepsakeFaqs(product.id)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
-      <JsonLd data={keepsakeProductJsonLd(product)} />
+      {product.available ? <JsonLd data={keepsakeProductJsonLd(product)} /> : null}
       {faqs.length > 0 ? <JsonLd data={keepsakeFaqJsonLd(faqs)} /> : null}
-      <TrackViewContent contentId={product.id} contentName={product.name} value={product.price} />
+      {product.available ? (
+        <TrackViewContent contentId={product.id} contentName={product.name} value={product.price} />
+      ) : null}
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-6 md:py-12">
         <Breadcrumbs

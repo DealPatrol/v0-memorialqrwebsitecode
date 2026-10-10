@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PlaqueWaitlistForm } from "@/components/plaque-waitlist-form"
 import type { SellableKeepsake } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import {
@@ -62,6 +63,31 @@ function familyReceives(product: SellableKeepsake): string[] {
 }
 
 export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake }) {
+  if (!product.available) {
+    return (
+      <div className="space-y-5">
+        <div>
+          <p className="text-xl font-semibold text-foreground">Coming soon</p>
+          <p className="text-sm text-muted-foreground">
+            We are not taking orders for the {product.name} yet. Leave your email and we will write once when it can be
+            ordered. Nothing is charged.
+          </p>
+        </div>
+        <PlaqueWaitlistForm productId={product.id} />
+        <p className="text-sm text-muted-foreground">
+          You can still make a memorial page today, or{" "}
+          <Link href="/concierge" className="underline">
+            have us build it
+          </Link>
+          . See a sample page for{" "}
+          <Link href={SAMPLE_MEMORIAL_PATH} className="underline">
+            {SAMPLE_MEMORIAL_NAME}
+          </Link>
+          .
+        </p>
+      </div>
+    )
+  }
   return (
     <div className="space-y-5">
       <div>
