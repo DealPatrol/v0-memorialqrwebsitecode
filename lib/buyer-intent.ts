@@ -240,15 +240,20 @@ export function buyerIntentJsonLd(page: BuyerIntent, product: SellableKeepsake) 
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": productLd["@type"],
-        name: productLd.name,
-        description: productLd.description,
-        sku: productLd.sku,
-        image: productLd.image,
-        brand: productLd.brand,
-        offers: productLd.offers,
-      },
+      // A coming-soon keepsake has no Offer. Only the FAQ is published.
+      ...(product.available
+        ? [
+            {
+              "@type": productLd["@type"],
+              name: productLd.name,
+              description: productLd.description,
+              sku: productLd.sku,
+              image: productLd.image,
+              brand: productLd.brand,
+              offers: productLd.offers,
+            },
+          ]
+        : []),
       {
         "@type": "FAQPage",
         mainEntity: page.faqs.map((faq) => ({

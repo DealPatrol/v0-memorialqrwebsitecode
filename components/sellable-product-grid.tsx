@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 
@@ -11,16 +11,17 @@ function listingLine(description: string): string {
 }
 
 export function SellableProductGrid() {
-  const products = getSellableKeepsakes()
+  const products = getListedKeepsakes()
   if (products.length === 0) return null
 
   return (
     <section className="px-4 pb-12 pt-2">
       <div className="max-w-6xl mx-auto">
-        <h2 className="mb-3 text-center text-3xl font-bold">Keepsakes that ship</h2>
+        <h2 className="mb-3 text-center text-3xl font-bold">QR keepsakes</h2>
         <p className="mb-8 text-center text-muted-foreground">
-          Shipped to United States addresses. Each keepsake includes {HOSTING_INCLUDED_YEARS} years of memorial page
-          hosting.
+          {products.some((product) => product.available)
+            ? `Shipped to United States addresses. Each keepsake includes ${HOSTING_INCLUDED_YEARS} years of memorial page hosting.`
+            : "Our QR plaques are coming soon. Join the list on a plaque page and we will email you once when it can be ordered."}
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
@@ -34,11 +35,19 @@ export function SellableProductGrid() {
               </CardHeader>
               <CardContent className="flex-1 space-y-3">
                 <p className="text-sm text-muted-foreground">{listingLine(product.description)}</p>
-                <p className="text-2xl font-bold">{formatUsd(product.price)}</p>
+                {product.available ? (
+                  <p className="text-2xl font-bold">{formatUsd(product.price)}</p>
+                ) : (
+                  <p className="text-lg font-semibold">Coming soon</p>
+                )}
               </CardContent>
               <CardFooter>
-                <Button asChild className="w-full">
-                  <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
+                <Button asChild className="w-full" variant={product.available ? "default" : "outline"}>
+                  {product.available ? (
+                    <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
+                  ) : (
+                    <Link href={`/store/${product.id}#waitlist`}>Join the list</Link>
+                  )}
                 </Button>
               </CardFooter>
             </Card>

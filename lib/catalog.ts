@@ -407,6 +407,25 @@ export const MANUAL_KEEPSAKES: ManualKeepsake[] = [
   },
 ]
 
+/**
+ * Keepsakes listed with a page but not for sale. Both plaques are hidden from
+ * checkout until a drop-ship supplier exists. Their pages show a waitlist.
+ */
+export const COMING_SOON_KEEPSAKE_IDS: ReadonlySet<string> = new Set([QR_MEMORIAL_PLAQUE_ID, PET_MEMORIAL_PLAQUE_ID])
+
+/**
+ * KEEPSAKE_PLAQUES_ON_SALE="true" puts the plaques back on sale once a supplier
+ * exists. It is unset in production. The test suite sets it to keep the paid
+ * checkout paths covered; tests for the hidden state pass "false".
+ */
+export function isKeepsakeComingSoon(
+  id: string,
+  env: Record<string, string | undefined> = process.env,
+): boolean {
+  const onSale = (env.KEEPSAKE_PLAQUES_ON_SALE ?? process.env.KEEPSAKE_PLAQUES_ON_SALE) === "true"
+  return !onSale && COMING_SOON_KEEPSAKE_IDS.has(id)
+}
+
 export function getManualKeepsake(id: string): ManualKeepsake | undefined {
   return MANUAL_KEEPSAKES.find((product) => product.id === id)
 }

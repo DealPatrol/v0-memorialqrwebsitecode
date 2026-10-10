@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 import { blogPosts } from "@/lib/blog-posts"
 import { fileLastModified } from "@/lib/content-dates"
-import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { isIndexableMemorial, memorialPublicPath } from "@/lib/memorial-indexing"
 import { publicPages } from "@/lib/seo"
 import { SITE_URL } from "@/lib/site"
@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
 
   const keepsakeUpdated = fileLastModified("lib/catalog.ts")
-  const keepsakes: MetadataRoute.Sitemap = getSellableKeepsakes().map((product) => ({
+  const keepsakes: MetadataRoute.Sitemap = getListedKeepsakes().map((product) => ({
     url: `${SITE_URL}/store/${product.id}`,
     lastModified: keepsakeUpdated,
     changeFrequency: "weekly",

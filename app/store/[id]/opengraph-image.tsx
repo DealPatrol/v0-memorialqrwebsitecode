@@ -1,4 +1,4 @@
-import { getSellableKeepsake } from "@/lib/fulfillment-availability"
+import { getListedKeepsake } from "@/lib/fulfillment-availability"
 import { memorialOgImage, ogContentType, ogSize } from "@/lib/og-card"
 import { formatUsd, KEEPSAKE_HANDLING_TIME } from "@/lib/site"
 
@@ -8,7 +8,7 @@ export const contentType = ogContentType
 export const dynamic = "force-dynamic"
 
 export default function Image({ params }: { params: { id: string } }) {
-  const product = getSellableKeepsake(params.id)
+  const product = getListedKeepsake(params.id)
   return memorialOgImage({
     kicker: product ? formatUsd(product.price) : "MemorialsQR",
     title: product?.name ?? "QR memorial keepsake",
