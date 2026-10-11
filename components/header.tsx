@@ -110,7 +110,7 @@ export function Header() {
         {/* Desktop Navigation */}
         <div className="flex items-center flex-1">
           <Link href="/" className="mr-8 flex items-center">
-            <span className="font-script text-3xl font-bold text-primary">Memorial QR</span>
+            <img src="/brand-header.png" alt="MemorialsQR" width={155} height={40} className="h-10 w-auto" />
           </Link>
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
@@ -203,7 +203,7 @@ export function Header() {
           <SheetContent side="left">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <Link href="/" className="mb-6 flex items-center">
-              <span className="font-script text-2xl font-bold text-primary">Memorial QR</span>
+              <img src="/brand-header.png" alt="MemorialsQR" width={140} height={36} className="h-9 w-auto" />
             </Link>
             <nav className="flex flex-col gap-4">
               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Memorials</div>

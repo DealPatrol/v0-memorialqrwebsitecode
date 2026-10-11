@@ -246,7 +246,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       name: SITE_NAME,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/icon.svg`,
+        url: `${SITE_URL}/brand-logo.png`,
       },
     },
     mainEntityOfPage: {

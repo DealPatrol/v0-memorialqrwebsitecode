@@ -105,7 +105,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         url: SITE_URL,
         logo: {
           "@type": "ImageObject",
-          url: `${SITE_URL}/icon.svg`,
+          url: `${SITE_URL}/brand-logo.png`,
         },
         email: SUPPORT_EMAIL,
         address: {
