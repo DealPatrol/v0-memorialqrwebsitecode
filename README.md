@@ -24,9 +24,9 @@ Continue building your app on:
 
 ## Google Shopping
 
-Subscriptions and services are not allowed in Google Shopping, so this site does not publish a merchant product feed. `/feed.xml` is the blog RSS feed and should keep working.
+`/feed.xml` is the blog RSS feed and should keep working.
 
-Add a `/merchant-feed.xml` endpoint only once physical products are purchasable.
+`/merchant-feed.xml` is the Google Merchant Center product feed. It lists only keepsakes Square checkout will charge right now, at the catalog price. Coming-soon plaques stay out. The concierge service stays out because Shopping does not allow services. The same URL is noted in `robots.txt`.
 
 ## How It Works
 
