@@ -10,6 +10,18 @@ export const SUPPORT_EMAIL = "support@memorialsqr.com"
 export const CHECKOUT_CURRENCY = "USD"
 export const CHECKOUT_COUNTRY = "US"
 
+/**
+ * Shipping charge stated on keepsake pages and in the terms: included in the
+ * price, United States addresses only.
+ */
+export const KEEPSAKE_SHIPPING_PRICE_USD = "0.00"
+
+/**
+ * Money-back window stated in the terms, the FAQ, checkout, and the security page.
+ * The site does not say who pays return shipping, so that detail stays out of offers.
+ */
+export const MONEY_BACK_GUARANTEE_DAYS = 30
+
 export const US_SHIPPING_COPY = "Ships anywhere in the United States from Alabama."
 
 /**
@@ -27,4 +39,9 @@ export const SAMPLE_MEMORIAL_NAME = "Glenda Jane Kelso"
 
 export function formatUsd(amount: number): string {
   return `$${amount.toFixed(2)} USD`
+}
+
+export function absoluteAssetUrl(path: string): string {
+  if (path.startsWith("https://") || path.startsWith("http://")) return path
+  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`
 }
