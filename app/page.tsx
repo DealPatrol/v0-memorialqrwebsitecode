@@ -33,7 +33,7 @@ export const metadata = pageMetadata(publicPages.home)
 export default function HomePage() {
   const physicalProducts = getSellableKeepsakes()
   return (
-    <div className="min-h-screen pb-16 md:pb-0">
+    <div className="min-h-screen">
       <ScrollProgressBar />
       <Header />
 
@@ -78,13 +78,14 @@ export default function HomePage() {
               <CardContent className="p-8 text-center">
                 <h2 className="text-2xl font-bold text-foreground mb-3">QR Memorial Keepsakes</h2>
                 <p className="text-muted-foreground mb-6">
-                  Choose a keepsake, then set up the memorial page yourself or have our team build it. Hosting for{" "}
-                  {HOSTING_INCLUDED_YEARS} years is included.
+                  {physicalProducts.length === 0
+                    ? "Our QR plaques are coming soon. Join the list and we will email you once when one can be ordered. You can also have our team build the memorial page now."
+                    : `Choose a keepsake, then set up the memorial page yourself or have our team build it. Hosting for ${HOSTING_INCLUDED_YEARS} years is included.`}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg">
                     <Link href="/store">
-                      Shop Keepsakes
+                      {physicalProducts.length === 0 ? "Join the list" : "Shop Keepsakes"}
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
                   </Button>
@@ -237,9 +238,13 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
                 <QrCode className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">1. Choose a Keepsake</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-3">
+                {physicalProducts.length === 0 ? "1. Join the list" : "1. Choose a Keepsake"}
+              </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Pick a QR keepsake, then upload photos, videos, and memories to build the memorial page.
+                {physicalProducts.length === 0
+                  ? "The QR plaques are coming soon. Leave your email and we will write once when one can be ordered."
+                  : "Pick a QR keepsake, then upload photos, videos, and memories to build the memorial page."}
               </p>
             </div>
 
@@ -349,13 +354,15 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Create a Lasting Memorial?</h2>
           <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Whether honoring a loved one or a beloved pet, choose a QR keepsake with {HOSTING_INCLUDED_YEARS} years of memorial page hosting included.
+            {physicalProducts.length === 0
+              ? "The QR plaques are coming soon. Join the list to hear when one can be ordered, or have us build the memorial page."
+              : `Whether honoring a loved one or a beloved pet, choose a QR keepsake with ${HOSTING_INCLUDED_YEARS} years of memorial page hosting included.`}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
               <Link href="/store">
-                Shop Keepsakes
+                {physicalProducts.length === 0 ? "Join the list" : "Shop Keepsakes"}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -382,108 +389,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-foreground/5 text-foreground py-12 border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <QrCode className="w-5 h-5 text-white" />
-                </div>
-                <span className="memorial-logo text-xl font-bold">Memorial QR</span>
-              </div>
-              <p className="text-muted-foreground text-sm">Creating lasting digital memorials to honor and remember your loved ones.</p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4 text-foreground">Services</h3>
-              <ul className="space-y-2 text-muted-foreground text-sm">
-                <li>
-                  <Link href="/human-memorials" className="hover:text-primary transition-colors">
-                    Human Memorials
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pet-memorials" className="hover:text-primary transition-colors">
-                    Pet Memorials
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/store" className="hover:text-primary transition-colors">
-                    Store
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/guides" className="hover:text-primary transition-colors">
-                    Memorial guides
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/gifts" className="hover:text-primary transition-colors">
-                    Gift ideas
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4 text-foreground">Company</h3>
-              <ul className="space-y-2 text-muted-foreground text-sm">
-                <li>
-                  <Link href="/our-story" className="hover:text-primary transition-colors">
-                    Our Story
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/how-it-works" className="hover:text-primary transition-colors">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-primary transition-colors">
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/faq" className="hover:text-primary transition-colors">
-                    FAQ
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="hover:text-primary transition-colors">
-                    Blog
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
-              <ul className="space-y-2 text-muted-foreground text-sm">
-                <li>
-                  <Link href="/privacy-policy" className="hover:text-primary transition-colors">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms-of-service" className="hover:text-primary transition-colors">
-                    Terms of Service
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-border mt-12 pt-8 text-center">
-            <p className="text-muted-foreground text-sm">
-              &copy; {new Date().getFullYear()} Memorial QR. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
-
     </div>
   )
 }
