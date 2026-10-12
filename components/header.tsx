@@ -109,8 +109,8 @@ export function Header() {
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Desktop Navigation */}
         <div className="flex items-center flex-1">
-          <Link href="/" className="mr-8 flex items-center">
-            <img src="/brand-header.png" alt="MemorialsQR" width={155} height={40} className="h-10 w-auto" />
+          <Link href="/" className="mr-3 flex shrink-0 items-center md:mr-8">
+            <img src="/brand-header.png" alt="MemorialsQR" width={155} height={40} className="h-8 w-auto md:h-10" />
           </Link>
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
@@ -195,7 +195,7 @@ export function Header() {
         {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="mr-2 md:hidden">
+            <Button variant="ghost" size="icon" className="mr-2 shrink-0 md:hidden">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle Menu</span>
             </Button>
@@ -267,7 +267,7 @@ export function Header() {
         </Sheet>
 
         {/* Right Side Actions */}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           {user && userName ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -297,10 +297,11 @@ export function Header() {
               <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
                 <Link href="/auth/login">Sign In</Link>
               </Button>
-              <Button size="sm" asChild className="bg-blue-600 hover:bg-blue-700">
+              <Button size="sm" asChild className="shrink-0 bg-blue-600 hover:bg-blue-700">
                 <Link href="/store">
-                  <ShoppingBag className="w-4 h-4 mr-2" />
-                  Store
+                  <ShoppingBag className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Store</span>
+                  <span className="sr-only sm:hidden">Store</span>
                 </Link>
               </Button>
             </>

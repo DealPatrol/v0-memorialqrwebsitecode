@@ -123,12 +123,36 @@ describe("technical seo", () => {
     const descriptions = pages.map((page) => page.description)
     assert.equal(new Set(titles).size, titles.length)
     assert.equal(new Set(descriptions).size, descriptions.length)
+    const paths = pages.map((page) => page.path)
+    assert.equal(new Set(paths).size, paths.length)
+    assert.equal(publicPages.home.path, "/")
+    assert.equal(publicPages.home.title, "Online Memorial Page | MemorialsQR")
+    assert.equal(publicPages.displayAtHome.path, "/memorial-display-at-home")
+    assert.notEqual(publicPages.home.title, publicPages.displayAtHome.title)
     for (const page of pages) {
       const metadata = pageMetadata(page)
       assert.equal(metadata.alternates && "canonical" in metadata.alternates ? metadata.alternates.canonical : "", page.path)
       assert.ok(page.title.length > 0 && page.title.length <= 60)
       assert.ok(page.description.length > 0 && page.description.length <= 155)
     }
+    const homeMeta = pageMetadata(publicPages.home)
+    assert.equal(homeMeta.title, publicPages.home.title)
+    assert.equal(homeMeta.description, publicPages.home.description)
+  })
+
+  it("points the homepage at its own metadata and keeps the header on a phone", () => {
+    const home = fs.readFileSync(path.join(root, "app/page.tsx"), "utf8")
+    const display = fs.readFileSync(path.join(root, "app/memorial-display-at-home/page.tsx"), "utf8")
+    const header = fs.readFileSync(path.join(root, "components/header.tsx"), "utf8")
+    assert.match(home, /pageMetadata\(publicPages\.home\)/)
+    assert.equal(home.includes("<footer"), false)
+    assert.match(home, /Join the list/)
+    assert.match(home, /Shop Keepsakes/)
+    assert.match(home, /Have Us Build It/)
+    assert.match(display, /pageMetadata\(publicPages\.displayAtHome\)/)
+    assert.equal(display.includes("publicPages.home"), false)
+    assert.match(header, /h-8 w-auto md:h-10/)
+    assert.match(header, /md:mr-8/)
   })
 
   it("separates similar gift pages and keeps ad landings out of the index", () => {

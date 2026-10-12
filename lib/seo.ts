@@ -489,7 +489,7 @@ export const publicPages = {
     index: true,
     inSitemap: true,
   },
-  home: {
+  displayAtHome: {
     path: longTailPages.home.path,
     title: longTailPages.home.title,
     description: longTailPages.home.description,
