@@ -9,6 +9,7 @@ import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
+import { STORE_COLLECTIONS } from "@/lib/store-catalog"
 
 export const metadata = pageMetadata(publicPages.store)
 
@@ -30,6 +31,18 @@ export default function StorePage() {
           </p>
         </div>
       </section>
+
+      <nav aria-label="Keepsake collections" className="px-4 pb-2">
+        <ul className="mx-auto flex max-w-5xl flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
+          {STORE_COLLECTIONS.map((collection) => (
+            <li key={collection.id}>
+              <Link href={`/store/collections/${collection.id}`} className="underline">
+                {collection.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       <SellableProductGrid />
 

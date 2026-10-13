@@ -4,7 +4,8 @@ import { describe, it } from "node:test"
 import { buyerIntentJsonLd, buyerIntentList, PRIMARY_KEEPSAKE_ID } from "../lib/buyer-intent"
 import { giftIntentList } from "../lib/gift-intent"
 import { getSellableKeepsakes, getSellableKeepsake } from "../lib/fulfillment-availability"
-import { POD_PRODUCTS } from "../lib/catalog"
+import { POD_PRODUCTS, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
+import { STORE_CATALOG } from "../lib/store-catalog"
 import { priceCart } from "../lib/checkout-pricing"
 import { buildMerchantFeedXml, catalogIdsMissingGoogleCategory } from "../lib/merchant-feed"
 import { formatUsd, SITE_NAME } from "../lib/site"
@@ -109,7 +110,7 @@ describe("merchant feed", () => {
     assertWellFormedFeed(feed)
   })
 
-  it("lists configured keepsakes at the checkout price and leaves hidden plaques out", () => {
+  it("lists plaques, the store catalog, and configured print products at the checkout price", () => {
     assert.deepEqual(catalogIdsMissingGoogleCategory(), [])
     const hidden = {
       KEEPSAKE_PLAQUES_ON_SALE: "false",
@@ -130,13 +131,15 @@ describe("merchant feed", () => {
       PRINTIFY_PHOTO_BLOCK_VARIANT_ID: "505",
     }
     const products = getSellableKeepsakes(hidden)
-    assert.deepEqual(
-      products.map((product) => product.id),
-      POD_PRODUCTS.map((product) => product.id),
-    )
+    const ids = products.map((product) => product.id)
+    assert.ok(ids.includes(QR_MEMORIAL_PLAQUE_ID))
+    assert.ok(ids.includes(PET_MEMORIAL_PLAQUE_ID))
+    for (const product of POD_PRODUCTS) assert.ok(ids.includes(product.id))
+    for (const product of STORE_CATALOG) assert.ok(ids.includes(product.id))
     const feed = buildMerchantFeedXml(hidden)
-    assert.equal(feed.includes("qr-memorial-plaque"), false)
-    assert.equal(feed.includes("pet-memorial-plaque"), false)
+    assert.match(feed, /<g:id>qr-memorial-plaque<\/g:id>/)
+    assert.match(feed, /<g:id>human-photo-canvas<\/g:id>/)
+    assert.match(feed, /<g:id>human-garden-stone-1<\/g:id>/)
     assert.equal(feed.includes("concierge"), false)
     assert.equal(feed.includes("<g:gtin>"), false)
     assertWellFormedFeed(feed)
@@ -160,16 +163,23 @@ describe("merchant feed", () => {
       assert.equal(item.shippingCountry, "US")
       assert.equal(item.shippingPrice, "0.00 USD")
       assert.ok(item.category.length > 0)
-      assert.equal(item.handlingMin, "")
+      const handmade = product.provider === "manual" || product.provider === "merchize"
+      assert.equal(item.handlingMin, handmade ? "7" : "")
       const ld = keepsakeProductJsonLd(product)
       assertProductOffer(ld, product.price)
-      assert.equal(ld.offers.shippingDetails.deliveryTime, undefined)
+      if (handmade) {
+        assert.equal(ld.offers.shippingDetails.deliveryTime?.handlingTime.minValue, 7)
+      } else {
+        assert.equal(ld.offers.shippingDetails.deliveryTime, undefined)
+      }
       assert.equal(formatUsd(product.price).includes(ld.offers.price), true)
     }
 
     const none = buildMerchantFeedXml({ KEEPSAKE_PLAQUES_ON_SALE: "false" })
-    assert.equal(none.includes("<item>"), false)
-    assert.equal(none.includes("qr-memorial-plaque"), false)
+    assert.match(none, /<g:id>qr-memorial-plaque<\/g:id>/)
+    assert.match(none, /<g:id>human-wind-chime<\/g:id>/)
+    assert.equal(none.includes("keep-card"), false)
+    assert.equal(none.includes("concierge"), false)
     assertWellFormedFeed(none)
   })
 })

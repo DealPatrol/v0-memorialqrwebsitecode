@@ -11,11 +11,15 @@ import {
   SAMPLE_MEMORIAL_PATH,
 } from "@/lib/site"
 import { PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID, type FulfillmentProvider } from "@/lib/catalog"
+import { ProductPersonalization } from "@/components/product-personalization"
+import { getStoreCatalogProduct } from "@/lib/store-catalog"
 
 function shippingCopy(provider: FulfillmentProvider): string {
   switch (provider) {
     case "manual":
       return KEEPSAKE_SHIPPING_COPY
+    case "merchize":
+      return "Made after payment and shipped to United States addresses. Shipping is included in the price."
     case "printful":
     case "printify":
       return "Printed after payment and shipped to United States addresses. Shipping is included in the price."
@@ -47,11 +51,19 @@ function familyReceives(product: SellableKeepsake): string[] {
         `${HOSTING_INCLUDED_YEARS} years of hosting from the order date, with no monthly fee`,
         "An email when the plaque ships",
       ]
+    case "merchize":
+      return [
+        product.name,
+        "A unique QR code for this memorial, at least 1 inch, black on white",
+        "A memorial page for photos, stories, and messages",
+        `${HOSTING_INCLUDED_YEARS} years of hosting from the order date, with no monthly fee`,
+        "Placed with Merchize after payment. It is not sent to Printify.",
+      ]
     case "printful":
     case "printify":
       return [
         product.name,
-        "A unique QR code for this memorial",
+        "A unique QR code for this memorial, at least 1 inch, black on white",
         "A memorial page for photos, stories, and messages",
         `${HOSTING_INCLUDED_YEARS} years of hosting from the order date, with no monthly fee`,
       ]
@@ -88,15 +100,20 @@ export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake
       </div>
     )
   }
+  const storeProduct = getStoreCatalogProduct(product.id)
   return (
     <div className="space-y-5">
       <div>
         <p className="text-3xl font-bold">{formatUsd(product.price)}</p>
         <p className="text-sm text-muted-foreground">One-time payment. Shipping included. No recurring fees.</p>
       </div>
-      <Button asChild className="w-full" size="lg">
-        <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
-      </Button>
+      {storeProduct ? (
+        <ProductPersonalization productId={product.id} qrNote={storeProduct.qr.note} />
+      ) : (
+        <Button asChild className="w-full" size="lg">
+          <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
+        </Button>
+      )}
       <div>
         <h2 className="text-sm font-semibold text-foreground">Shipping</h2>
         <p className="text-sm text-muted-foreground">{shippingCopy(product.provider)}</p>

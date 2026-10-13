@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Header } from "@/components/header"
+import { MemorialPreparing } from "@/components/memorial-preparing"
 import { Heart, MapPin, MessageCircle, Sparkles, ArrowLeft, ImageIcon } from "lucide-react"
 import { useState, useEffect } from "react"
 import QRCode from "qrcode"
@@ -87,6 +88,7 @@ interface Memorial {
   location: string | null
   profile_image_url: string | null
   theme: string | null
+  preparing?: boolean
 }
 
 interface Milestone {
@@ -406,6 +408,10 @@ export function MemorialClientPage() {
         </div>
       </div>
     )
+  }
+
+  if (memorial?.preparing) {
+    return <MemorialPreparing memorial={memorial} />
   }
 
   if (!memorial && !isSample) {

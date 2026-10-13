@@ -1,5 +1,5 @@
 import { SUPPORT_EMAIL } from "@/lib/site"
-import { memorialPageUrl, memorialSlugForOrder, printFileUrl } from "@/lib/memorial-urls"
+import { memorialSlugForOrder } from "@/lib/memorial-urls"
 import { sendEmail } from "@/lib/email"
 import { sendManualFulfillmentNotice } from "@/lib/manual-fulfillment-email"
 import { recordEmailAlert } from "@/lib/order-email-alerts"
@@ -7,6 +7,9 @@ import { isMissingPodOrderSchema } from "@/lib/pod-orders"
 import { dispatchSupplierLines, type DispatchLine, type DispatchOutcome } from "@/lib/supplier-dispatch"
 import { attributionFromUnknown } from "@/lib/attribution"
 import { giftNoticeLines, packageRecipientName, preserveStoredGift } from "@/lib/gift-order"
+import { createPartnerMemorial, printFileUrlForCode } from "@/lib/partner-memorial-store"
+import { claimPageUrl, scanUrl } from "@/lib/partner-memorials"
+import type { LinePersonalization } from "@/lib/personalization"
 import type { ConfiguredLine } from "@/lib/fulfillment-availability"
 import type { ShipTo } from "@/lib/printful"
 
@@ -36,6 +39,7 @@ function orderStatusForOutcome(status: DispatchOutcome["status"]): string {
     case "failed":
       return "fulfillment_failed"
     case "manual":
+    case "mocked":
       return "processing"
     case "not_required":
       return "processing"
@@ -51,6 +55,7 @@ function fulfillmentSucceeded(status: DispatchOutcome["status"]): boolean {
     case "submitted":
     case "not_required":
     case "manual":
+    case "mocked":
       return true
     case "failed":
       return false
@@ -72,18 +77,28 @@ type SupabaseLike = {
   }
 }
 
-export function linesForSupplier(items: ConfiguredLine[], printUrl: string): DispatchLine[] {
+export function linesForSupplier(
+  items: ConfiguredLine[],
+  printUrls: string[],
+  photos: Array<string | null> = [],
+): DispatchLine[] {
   return items
-    .filter((item) => item.ships && item.provider)
-    .map((item) => ({
+    .filter((item) => item.ships && (item.provider === "printful" || item.provider === "printify"))
+    .map((item, index) => ({
       provider: item.provider as "printful" | "printify",
       quantity: item.quantity,
-      printFileUrl: printUrl,
+      printFileUrl: printUrls[index] || "",
       syncVariantId: item.syncVariantId || undefined,
       templateProductId: item.templateProductId || undefined,
       variantId: item.variantId || undefined,
       retailCents: Math.round(item.price * 100),
-      title: `${item.name} ${printUrl}`.slice(0, 120),
+      title: `${item.name}`.slice(0, 120),
+      blueprintId: item.blueprintId,
+      printProviderId: item.printProviderId,
+      photoUrl: photos[index] ?? null,
+      qrSurface: item.qrSurface,
+      qrMinInches: item.qrMinInches,
+      printWidthInches: item.printWidthInches,
     }))
 }
 
@@ -169,9 +184,10 @@ export async function fulfillPaidPhysicalOrder(
   order: OrderRow,
   items: ConfiguredLine[],
   env: Record<string, string | undefined> = process.env,
+  personalizations: Array<LinePersonalization | null> = [],
 ): Promise<DispatchOutcome> {
   try {
-    return await placePhysicalOrder(supabase, order, items, env)
+    return await placePhysicalOrder(supabase, order, items, env, personalizations)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Fulfillment failed"
     const outcome: DispatchOutcome = {
@@ -194,6 +210,10 @@ export async function fulfillPaidPhysicalOrder(
 
 function isSupplierProvider(provider: ConfiguredLine["provider"]): provider is "printful" | "printify" {
   return provider === "printful" || provider === "printify"
+}
+
+function isHandFulfilled(provider: ConfiguredLine["provider"]): boolean {
+  return provider === "manual" || provider === "merchize"
 }
 
 function shipToFor(order: OrderRow): ShipTo {
@@ -238,6 +258,7 @@ async function placePhysicalOrder(
   order: OrderRow,
   items: ConfiguredLine[],
   env: Record<string, string | undefined>,
+  personalizations: Array<LinePersonalization | null>,
 ): Promise<DispatchOutcome> {
   const physical = items.filter((item) => item.ships)
   if (physical.length === 0) {
@@ -247,7 +268,7 @@ async function placePhysicalOrder(
   }
 
   const supplierItems = physical.filter((item) => isSupplierProvider(item.provider))
-  const manualItems = physical.filter((item) => item.provider === "manual")
+  const manualItems = physical.filter((item) => isHandFulfilled(item.provider))
   if (supplierItems.length + manualItems.length !== physical.length) {
     const outcome: DispatchOutcome = {
       status: "failed",
@@ -261,28 +282,55 @@ async function placePhysicalOrder(
     return outcome
   }
 
-  const slug = memorialSlugForOrder(order.order_number)
-  const pageUrl = memorialPageUrl(slug)
-  const fileUrl = printFileUrl(slug)
-  const memorialName = (order.special_instructions || "In Loving Memory").split("\n")[0].slice(0, 80) || "In Loving Memory"
+  const fallbackName = (order.special_instructions || "In Loving Memory").split("\n")[0].slice(0, 80) || "In Loving Memory"
+  const buyerEmail = order.customer_email || ""
+  const provisioned: Array<{
+    printUrl: string
+    scanUrl: string
+    claimUrl: string
+    photoUrl: string | null
+    memorialId: string | null
+    error: string | null
+  }> = []
 
-  const inserted = await supabase
-    .from("memorials")
-    .insert({
-      full_name: memorialName,
-      slug,
-      user_id: order.user_id,
-      biography: "This page was created when the keepsake was ordered. Add photos and stories whenever you are ready.",
-      theme: "classic",
-      package_type: "basic",
-    })
-    .select()
-    .single()
+  for (let index = 0; index < physical.length; index++) {
+    const item = physical[index]
+    const itemIndex = items.indexOf(item)
+    const personalization = personalizations[itemIndex] ?? null
+    try {
+      const created = await createPartnerMemorial(supabase, {
+        source: "memorialsqr",
+        orderId: order.order_number,
+        lineItemId: `${item.id}:${index}`,
+        petName: personalization?.name || fallbackName,
+        birthDate: personalization?.birthDate ?? null,
+        deathDate: personalization?.deathDate ?? null,
+        photoUrl: personalization?.photoUrl ?? null,
+        buyerEmail: buyerEmail || "support@memorialsqr.com",
+      })
+      provisioned.push({
+        printUrl: printFileUrlForCode(created.code),
+        scanUrl: created.url || scanUrl(created.code),
+        claimUrl: created.claimUrl || claimPageUrl(created.code),
+        photoUrl: personalization?.photoUrl ?? null,
+        memorialId: created.memorialId,
+        error: created.emailError,
+      })
+    } catch (error) {
+      provisioned.push({
+        printUrl: "",
+        scanUrl: "",
+        claimUrl: "",
+        photoUrl: personalization?.photoUrl ?? null,
+        memorialId: null,
+        error: error instanceof Error ? error.message : "Memorial was not created",
+      })
+    }
+  }
 
-  const memorialOk = !inserted.error && !!inserted.data
-  const memorialError = memorialOk
-    ? null
-    : inserted.error?.message || "Memorial page was not created, so the QR print file could not be made"
+  const first = provisioned[0]
+  const memorialOk = provisioned.every((line) => line.memorialId)
+  const memorialError = memorialOk ? null : provisioned.find((line) => line.error)?.error || "Memorial page was not created"
 
   if (!memorialOk && supplierItems.length > 0) {
     const outcome: DispatchOutcome = {
@@ -290,19 +338,20 @@ async function placePhysicalOrder(
       provider: null,
       fulfillmentId: null,
       error: memorialError ?? undefined,
-      details: {},
+      details: { memorials: provisioned },
     }
     await saveFulfillmentLog(supabase, order, outcome, null, null)
     await alertSupport(order, outcome)
     return outcome
   }
 
-  if (memorialOk && inserted.data?.id) {
-    await supabase.from("orders").update({ memorial_id: inserted.data.id }).eq("id", order.id)
+  if (first?.memorialId) {
+    await supabase.from("orders").update({ memorial_id: first.memorialId }).eq("id", order.id)
   }
 
-  const memorialUrl = memorialOk ? pageUrl : null
-  const printUrl = memorialOk ? fileUrl : null
+  const memorialUrl = first?.scanUrl || null
+  const printUrl = first?.printUrl || null
+  const slug = first?.memorialId ? memorialSlugForOrder(order.order_number) : null
 
   if (manualItems.length > 0) {
     const notice = await sendManualFulfillmentNotice(
@@ -312,21 +361,28 @@ async function placePhysicalOrder(
         memorialUrl,
         printFileUrl: printUrl,
         memorialError,
+        merchize: manualItems.some((item) => item.provider === "merchize"),
       },
       env,
     )
     if (supplierItems.length === 0) {
+      const merchizeOnly = manualItems.every((item) => item.provider === "merchize")
       const outcome: DispatchOutcome = {
         status: "manual",
-        provider: "manual",
+        provider: merchizeOnly ? "merchize" : "manual",
         fulfillmentId: null,
         error: notice.sent ? undefined : notice.error || "Fulfillment email was not sent",
         details: {
           memorialUrl,
           printFileUrl: printUrl,
+          claimUrl: first?.claimUrl || null,
           manualFulfillment: notice,
-          note: "Fulfill by hand. No supplier order was placed.",
+          adminFlag: manualItems.some((item) => item.provider === "merchize") ? "merchize" : null,
+          note: merchizeOnly
+            ? "MERCHIZE: place this order in the Merchize admin. Do not submit it to Printify."
+            : "Fulfill by hand. No supplier order was placed.",
           summary: manualSummary(order, manualItems, memorialUrl, printUrl, notice.sent, notice.error),
+          memorials: provisioned,
         },
       }
       await saveFulfillmentLog(supabase, order, outcome, printUrl, memorialOk ? slug : null)
@@ -340,12 +396,19 @@ async function placePhysicalOrder(
     const outcome = await dispatchSupplierLines({
       orderNumber: order.order_number,
       recipient,
-      lines: linesForSupplier(supplierItems, printUrl || fileUrl),
+      lines: linesForSupplier(
+        supplierItems,
+        supplierItems.map((item) => provisioned[physical.indexOf(item)]?.printUrl || ""),
+        supplierItems.map((item) => provisioned[physical.indexOf(item)]?.photoUrl || null),
+      ),
       env,
     })
     outcome.provider = "mixed"
     outcome.details.memorialUrl = memorialUrl
     outcome.details.printFileUrl = printUrl
+    outcome.details.claimUrl = first?.claimUrl || null
+    outcome.details.memorials = provisioned
+    outcome.details.adminFlag = manualItems.some((item) => item.provider === "merchize") ? "merchize" : null
     outcome.details.manualFulfillment = notice
     outcome.details.summary = manualSummary(order, manualItems, memorialUrl, printUrl, notice.sent, notice.error)
     await saveFulfillmentLog(supabase, order, outcome, printUrl, memorialOk ? slug : null)
@@ -361,12 +424,18 @@ async function placePhysicalOrder(
   const outcome = await dispatchSupplierLines({
     orderNumber: order.order_number,
     recipient,
-    lines: linesForSupplier(supplierItems, fileUrl),
+    lines: linesForSupplier(
+      supplierItems,
+      supplierItems.map((item) => provisioned[physical.indexOf(item)]?.printUrl || ""),
+      supplierItems.map((item) => provisioned[physical.indexOf(item)]?.photoUrl || null),
+    ),
     env,
   })
-  outcome.details.memorialUrl = pageUrl
-  outcome.details.printFileUrl = fileUrl
-  await saveFulfillmentLog(supabase, order, outcome, fileUrl, slug)
+  outcome.details.memorialUrl = memorialUrl
+  outcome.details.printFileUrl = printUrl
+  outcome.details.claimUrl = first?.claimUrl || null
+  outcome.details.memorials = provisioned
+  await saveFulfillmentLog(supabase, order, outcome, printUrl, slug)
   if (outcome.status === "failed") await alertSupport(order, outcome)
   return outcome
 }

@@ -54,6 +54,7 @@ export function buildManualFulfillmentNotice(
     memorialUrl: string | null
     printFileUrl: string | null
     memorialError: string | null
+    merchize?: boolean
   },
   env: Record<string, string | undefined> = process.env,
 ): ManualFulfillmentNotice {
@@ -78,6 +79,9 @@ export function buildManualFulfillmentNotice(
   const text = [
     `Make and ship order ${order.order_number}.`,
     "This order was paid through Square. No Printful or Printify order was placed.",
+    ...(input.merchize
+      ? ["MERCHIZE: place this order in the Merchize admin. Do not submit it to Printify."]
+      : []),
     "",
     `Order number: ${order.order_number}`,
     `Payment id: ${order.payment_id || "not recorded"}`,
@@ -107,6 +111,7 @@ export function buildManualFulfillmentNotice(
 
   const html = `<p><strong>Make and ship order ${escapeHtml(order.order_number)}.</strong></p>
 <p>This order was paid through Square. No Printful or Printify order was placed.</p>
+${input.merchize ? "<p><strong>MERCHIZE:</strong> place this order in the Merchize admin. Do not submit it to Printify.</p>" : ""}
 <ul>
   <li>Order number: ${escapeHtml(order.order_number)}</li>
   <li>Payment id: ${escapeHtml(order.payment_id || "not recorded")}</li>
@@ -169,6 +174,7 @@ export async function sendManualFulfillmentNotice(
     memorialUrl: string | null
     printFileUrl: string | null
     memorialError: string | null
+    merchize?: boolean
   },
   env: Record<string, string | undefined> = process.env,
   send?: SendFn,

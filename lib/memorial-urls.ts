@@ -8,6 +8,11 @@ export function memorialPageUrl(slug: string): string {
   return `${SITE_URL}/memorial/${slug}`
 }
 
+/** QR codes open the short link, which redirects to the memorial. */
+export function qrScanUrl(code: string): string {
+  return `${SITE_URL}/q/${code}`
+}
+
 export function printFileUrl(slug: string): string {
   return `${SITE_URL}/api/print-file/${slug}`
 }

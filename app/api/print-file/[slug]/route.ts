@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { generateQRCodeBuffer } from "@/lib/qr-code"
-import { memorialPageUrl } from "@/lib/memorial-urls"
+import { qrScanUrl } from "@/lib/memorial-urls"
+import { QR_PRINT_PIXELS } from "@/lib/print-layout"
 
 export async function GET(_request: Request, { params }: { params: { slug: string } }) {
   const slug = params.slug
@@ -8,7 +9,7 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
     return NextResponse.json({ error: "Unknown print file" }, { status: 404 })
   }
 
-  const png = await generateQRCodeBuffer(memorialPageUrl(slug))
+  const png = await generateQRCodeBuffer(qrScanUrl(slug), QR_PRINT_PIXELS)
   return new NextResponse(new Uint8Array(png), {
     headers: {
       "Content-Type": "image/png",
