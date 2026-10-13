@@ -12,6 +12,7 @@ import {
 function includeHandlingTime(provider: SellableKeepsake["provider"]): boolean {
   switch (provider) {
     case "manual":
+    case "merchize":
       return true
     case "printful":
     case "printify":

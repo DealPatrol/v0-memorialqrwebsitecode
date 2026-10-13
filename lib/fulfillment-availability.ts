@@ -11,6 +11,13 @@ import {
   type StoreCategory,
 } from "@/lib/catalog"
 import { configuredPodProducts, envValue, type EnvSource } from "@/lib/fulfillment-readiness"
+import {
+  getStoreCatalogProduct,
+  resolvedBlueprintId,
+  STORE_CATALOG,
+  printifyEnvNames,
+  type QrSurface,
+} from "@/lib/store-catalog"
 
 export type SellableProduct = CheckoutProduct & {
   ships: boolean
@@ -27,6 +34,11 @@ export type ConfiguredLine = CheckoutProduct & {
   syncVariantId: string | null
   templateProductId: string | null
   variantId: string | null
+  blueprintId?: number | null
+  printProviderId?: string | null
+  qrSurface?: QrSurface
+  qrMinInches?: number
+  printWidthInches?: number
 }
 
 export type SellableKeepsake = {
@@ -76,11 +88,27 @@ function keepsakeFromPod(product: PodProduct, env: EnvSource): SellableKeepsake 
   }
 }
 
+function keepsakeFromStore(product: (typeof STORE_CATALOG)[number]): SellableKeepsake {
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    provider: product.fulfillment.kind === "merchize" ? "merchize" : "printify",
+    category: product.category,
+    description: product.description,
+    features: product.features,
+    image: product.image,
+    imageAlt: product.imageAlt,
+    available: true,
+  }
+}
+
 /** Every keepsake with a public page, including coming-soon ones. Not for checkout, feeds, or offers. */
 export function getListedKeepsakes(env: EnvSource = process.env): SellableKeepsake[] {
   return [
     ...MANUAL_KEEPSAKES.map((product) => keepsakeFromManual(product, env)),
     ...getSellablePodProducts(env).map((product) => keepsakeFromPod(product, env)),
+    ...STORE_CATALOG.map((product) => keepsakeFromStore(product)),
   ]
 }
 
@@ -159,6 +187,30 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
         syncVariantId: null,
         templateProductId: null,
         variantId: null,
+      })
+      continue
+    }
+
+    const storeProduct = getStoreCatalogProduct(item.id)
+    if (storeProduct) {
+      const names = printifyEnvNames(storeProduct.id)
+      const variant = envValue(env, names.variant)
+      const providerId = envValue(env, names.provider)
+      resolved.push({
+        id: storeProduct.id,
+        name: storeProduct.name,
+        price: storeProduct.price,
+        quantity,
+        ships: true,
+        provider: storeProduct.fulfillment.kind === "merchize" ? "merchize" : "printify",
+        syncVariantId: null,
+        templateProductId: null,
+        variantId: variant || null,
+        blueprintId: resolvedBlueprintId(storeProduct, env),
+        printProviderId: providerId || null,
+        qrSurface: storeProduct.qr.surface,
+        qrMinInches: storeProduct.qr.minInches,
+        printWidthInches: storeProduct.qr.printWidthInches,
       })
       continue
     }

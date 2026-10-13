@@ -24,14 +24,55 @@ import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 import { GIFT_MESSAGE_MAX } from "@/lib/gift-order"
 
-type CartLine = { id: string; name: string; price: number; quantity: number; ships: boolean }
+type SavedPersonalization = {
+  name: string
+  birthDate: string | null
+  deathDate: string | null
+  message: string | null
+  photoUrl: string | null
+}
+
+type CartLine = {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  ships: boolean
+  personalization?: SavedPersonalization
+}
 
 type SellableRow = { id: string; name: string; price: number; ships: boolean }
 
-function lineFromSellable(catalog: Map<string, SellableRow>, id: string, quantity: number): CartLine | null {
+function savedPersonalization(value: unknown): SavedPersonalization | undefined {
+  if (!value || typeof value !== "object") return undefined
+  const record = value as Record<string, unknown>
+  const name = typeof record.name === "string" ? record.name : ""
+  if (!name) return undefined
+  return {
+    name,
+    birthDate: typeof record.birthDate === "string" ? record.birthDate : null,
+    deathDate: typeof record.deathDate === "string" ? record.deathDate : null,
+    message: typeof record.message === "string" ? record.message : null,
+    photoUrl: typeof record.photoUrl === "string" ? record.photoUrl : null,
+  }
+}
+
+function lineFromSellable(
+  catalog: Map<string, SellableRow>,
+  id: string,
+  quantity: number,
+  personalization?: SavedPersonalization,
+): CartLine | null {
   const product = catalog.get(id)
   if (!product) return null
-  return { id: product.id, name: product.name, price: product.price, quantity, ships: product.ships }
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    quantity,
+    ships: product.ships,
+    ...(personalization ? { personalization } : {}),
+  }
 }
 
 function CheckoutForm() {
@@ -56,9 +97,9 @@ function CheckoutForm() {
       let rejected = false
 
       if (storedItems) {
-        const parsed = JSON.parse(storedItems) as Array<{ id: string; quantity: number }>
+        const parsed = JSON.parse(storedItems) as Array<{ id: string; quantity: number; personalization?: unknown }>
         items = parsed.flatMap((item) => {
-          const line = lineFromSellable(catalog, item.id, item.quantity)
+          const line = lineFromSellable(catalog, item.id, item.quantity, savedPersonalization(item.personalization))
           if (!line) rejected = true
           return line ? [line] : []
         })
@@ -339,6 +380,9 @@ function CheckoutForm() {
                 {cartItems.map((item, index) => (
                   <div key={index} className="pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div className="text-sm font-medium text-foreground mb-1">{item.name}</div>
+                    {item.personalization?.name ? (
+                      <p className="mb-1 text-xs text-muted-foreground">For {item.personalization.name}</p>
+                    ) : null}
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-muted-foreground">Qty: {item.quantity}</span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100">

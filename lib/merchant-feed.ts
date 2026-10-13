@@ -1,4 +1,5 @@
 import { MANUAL_KEEPSAKES, POD_PRODUCTS } from "@/lib/catalog"
+import { STORE_CATALOG } from "@/lib/store-catalog"
 import { getSellableKeepsakes, type SellableKeepsake } from "@/lib/fulfillment-availability"
 import type { EnvSource } from "@/lib/fulfillment-readiness"
 import {
@@ -29,6 +30,7 @@ const GOOGLE_PRODUCT_CATEGORY: Record<string, string> = {
   "photo-block": "Home & Garden > Decor > Picture Frames",
   "qr-memorial-plaque": "Home & Garden > Decor > Decorative Plaques",
   "pet-memorial-plaque": "Home & Garden > Decor > Decorative Plaques",
+  ...Object.fromEntries(STORE_CATALOG.map((product) => [product.id, product.googleCategory])),
 }
 
 export function googleProductCategory(id: string): string {
@@ -41,7 +43,11 @@ export function googleProductCategory(id: string): string {
 
 /** Every catalog keepsake id must have a taxonomy path before it can be sold into the feed. */
 export function catalogIdsMissingGoogleCategory(): string[] {
-  const ids = [...POD_PRODUCTS.map((product) => product.id), ...MANUAL_KEEPSAKES.map((product) => product.id)]
+  const ids = [
+    ...POD_PRODUCTS.map((product) => product.id),
+    ...MANUAL_KEEPSAKES.map((product) => product.id),
+    ...STORE_CATALOG.map((product) => product.id),
+  ]
   return ids.filter((id) => !GOOGLE_PRODUCT_CATEGORY[id])
 }
 
@@ -57,6 +63,7 @@ export function keepsakesForMerchantFeed(env: EnvSource = process.env): Sellable
 function includeHandlingTime(provider: SellableKeepsake["provider"]): boolean {
   switch (provider) {
     case "manual":
+    case "merchize":
       return true
     case "printful":
     case "printify":
@@ -99,7 +106,7 @@ function feedItem(product: SellableKeepsake): string {
  * Prices come from getSellableKeepsakes, the same catalog checkout uses.
  * No GTIN exists, so identifier_exists is no and g:gtin is omitted.
  * Shipping is included in the price for United States addresses.
- * Handling time is included only for handmade plaques, where the site states 7 to 10 business days.
+ * Handling time is included for handmade plaques and Merchize pieces, where the site states 7 to 10 business days.
  * The 30-day refund is a Merchant Center account setting and Product JSON-LD, not a feed label.
  */
 export function buildMerchantFeedXml(env: EnvSource = process.env): string {

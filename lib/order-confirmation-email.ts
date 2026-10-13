@@ -15,6 +15,7 @@ export type OrderConfirmationInput = {
   manualFulfillment?: boolean
   hostingIncludedUntil?: string | null
   gift?: StoredGift
+  claimUrl?: string | null
 }
 
 function escapeHtml(value: string): string {
@@ -65,6 +66,11 @@ export async function sendOrderConfirmationEmail(input: OrderConfirmationInput):
       <p><strong>Product:</strong> ${escapeHtml(input.productName)}</p>
       <p><strong>Amount Paid:</strong> $${escapeHtml(input.amount)}</p>
       ${hostingLine}
+      ${
+        input.claimUrl
+          ? `<p>Claim the memorial page to add photos, videos, and stories: <a href="${escapeHtml(input.claimUrl)}">${escapeHtml(input.claimUrl)}</a></p>`
+          : ""
+      }
     </div>
     <p style="font-size: 14px; color: #4c51bf;"><strong>Need Help?</strong> Contact us at ${escapeHtml(
       process.env.ADMIN_EMAIL || SUPPORT_EMAIL,

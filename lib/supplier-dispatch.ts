@@ -1,5 +1,11 @@
 import { submitPrintfulOrder, type PrintfulLine, type ShipTo } from "@/lib/printful"
-import { submitPrintifyOrder, type PrintifyLine } from "@/lib/printify"
+import {
+  submitPrintifyBlueprintOrder,
+  submitPrintifyOrder,
+  type BlueprintPrintLine,
+  type PrintifyLine,
+} from "@/lib/printify"
+import type { QrSurface } from "@/lib/store-catalog"
 
 export type DispatchLine = {
   provider: "printful" | "printify"
@@ -10,11 +16,17 @@ export type DispatchLine = {
   variantId?: string
   retailCents: number
   title: string
+  blueprintId?: number | null
+  printProviderId?: string | null
+  photoUrl?: string | null
+  qrSurface?: QrSurface
+  qrMinInches?: number
+  printWidthInches?: number
 }
 
 export type DispatchOutcome = {
-  status: "submitted" | "failed" | "not_required" | "manual"
-  provider: "printful" | "printify" | "mixed" | "manual" | null
+  status: "submitted" | "failed" | "not_required" | "manual" | "mocked"
+  provider: "printful" | "printify" | "mixed" | "manual" | "merchize" | null
   fulfillmentId: string | null
   error?: string
   details: Record<string, unknown>
@@ -50,8 +62,9 @@ export async function dispatchSupplierLines(
       quantity: line.quantity,
       printFileUrl: line.printFileUrl,
     }))
-  const printifyLines: PrintifyLine[] = input.lines
-    .filter((line) => line.provider === "printify")
+  const printifyDispatch = input.lines.filter((line) => line.provider === "printify")
+  const templateLines: PrintifyLine[] = printifyDispatch
+    .filter((line) => line.templateProductId)
     .map((line) => ({
       templateProductId: line.templateProductId || "",
       variantId: line.variantId || "",
@@ -59,6 +72,21 @@ export async function dispatchSupplierLines(
       printFileUrl: line.printFileUrl,
       retailCents: line.retailCents,
       title: line.title,
+    }))
+  const blueprintLines: BlueprintPrintLine[] = printifyDispatch
+    .filter((line) => !line.templateProductId)
+    .map((line) => ({
+      title: line.title,
+      blueprintId: line.blueprintId ?? null,
+      printProviderId: line.printProviderId ?? null,
+      variantId: line.variantId || "",
+      quantity: line.quantity,
+      printFileUrl: line.printFileUrl,
+      photoUrl: line.photoUrl,
+      retailCents: line.retailCents,
+      qrSurface: line.qrSurface,
+      qrMinInches: line.qrMinInches,
+      printWidthInches: line.printWidthInches,
     }))
 
   const details: Record<string, unknown> = {}
@@ -84,12 +112,14 @@ export async function dispatchSupplierLines(
     if (result.fulfillmentId) ids.push(result.fulfillmentId)
   }
 
-  if (printifyLines.length > 0) {
+  let mocked = false
+
+  if (templateLines.length > 0) {
     const result = await submitPrintifyOrder(
       {
         orderNumber: input.orderNumber,
         recipient: input.recipient,
-        items: printifyLines,
+        items: templateLines,
         token: input.env.PRINTIFY_API_TOKEN?.trim() || "",
         shopId: input.env.PRINTIFY_SHOP_ID?.trim() || "",
       },
@@ -100,12 +130,35 @@ export async function dispatchSupplierLines(
       failed = true
       if (result.error) errors.push(result.error)
     }
+    if (result.status === "mocked") mocked = true
     if (result.fulfillmentId) ids.push(result.fulfillmentId)
   }
 
+  if (blueprintLines.length > 0) {
+    const result = await submitPrintifyBlueprintOrder(
+      {
+        orderNumber: input.orderNumber,
+        recipient: input.recipient,
+        items: blueprintLines,
+        token: input.env.PRINTIFY_API_TOKEN?.trim() || "",
+        shopId: input.env.PRINTIFY_SHOP_ID?.trim() || "",
+      },
+      fetchImpl,
+    )
+    details.printifyBlueprint = result
+    if (result.payload) details.printifyPayload = result.payload
+    if (result.status === "failed") {
+      failed = true
+      if (result.error) errors.push(result.error)
+    }
+    if (result.status === "mocked") mocked = true
+    if (result.fulfillmentId) ids.push(result.fulfillmentId)
+  }
+
+  const status = failed ? "failed" : mocked ? "mocked" : "submitted"
   return {
-    status: failed ? "failed" : "submitted",
-    provider: providerLabel(printfulLines.length > 0, printifyLines.length > 0),
+    status,
+    provider: providerLabel(printfulLines.length > 0, printifyDispatch.length > 0),
     fulfillmentId: ids.length > 0 ? ids.join(",") : null,
     error: errors.length > 0 ? errors.join(" ") : undefined,
     details,

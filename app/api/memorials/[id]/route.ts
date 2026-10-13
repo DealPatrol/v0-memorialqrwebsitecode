@@ -27,7 +27,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
     }
 
-    return NextResponse.json({ memorial })
+    let preparing = false
+    const { data: partnerCode, error: partnerError } = await supabase
+      .from("partner_memorial_codes")
+      .select("claimed_at")
+      .eq("memorial_id", memorial.id)
+      .maybeSingle()
+    if (!partnerError && partnerCode && !partnerCode.claimed_at) preparing = true
+
+    return NextResponse.json({ memorial: { ...memorial, preparing } })
   } catch (error) {
     console.error("Error in memorial API:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

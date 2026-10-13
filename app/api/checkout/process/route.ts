@@ -3,6 +3,7 @@ import { attributionFromUnknown, formatAttribution } from "@/lib/attribution"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
 import { priceCart } from "@/lib/checkout-pricing"
+import { sanitizePersonalizationList } from "@/lib/personalization"
 import { recordEmailAlert } from "@/lib/order-email-alerts"
 import { verifySquarePayment } from "@/lib/square-verify"
 import { fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
@@ -75,8 +76,14 @@ export async function POST(req: Request) {
     const resolvedItems = cart.lines
 
     const shipsPhysical = resolvedItems.some((item) => item.ships)
+    const personalizations = sanitizePersonalizationList(items)
+    const personalizedNames = personalizations
+      .map((entry) => entry?.name)
+      .filter((name): name is string => Boolean(name))
+      .join("\n")
     const manualFulfillment =
-      shipsPhysical && resolvedItems.every((item) => !item.ships || item.provider === "manual")
+      shipsPhysical &&
+      resolvedItems.every((item) => !item.ships || item.provider === "manual" || item.provider === "merchize")
 
     const giftParsed = parseGiftOrder({ isGift, recipientName, giftMessage, shipToRecipient })
     if (!giftParsed.ok) {
@@ -191,7 +198,9 @@ export async function POST(req: Request) {
       product_name: finalProductName,
       quantity: totalQuantity,
       status: "processing",
-      special_instructions: customization || null,
+      special_instructions: [typeof customization === "string" ? customization.trim() : "", personalizedNames]
+        .filter(Boolean)
+        .join("\n") || null,
       plan_type: finalPlanType,
       subscription_id: null,
       subscription_plan_id: null,
@@ -268,11 +277,13 @@ export async function POST(req: Request) {
 
     let fulfillmentStatus = shipsPhysical ? "pending" : "not_required"
     let memorialUrl: string | null = null
+    let claimUrl: string | null = null
     if (shipsPhysical) {
       try {
-        const outcome = await fulfillPaidPhysicalOrder(supabase, order, resolvedItems)
+        const outcome = await fulfillPaidPhysicalOrder(supabase, order, resolvedItems, process.env, personalizations)
         fulfillmentStatus = outcome.status
         memorialUrl = typeof outcome.details.memorialUrl === "string" ? outcome.details.memorialUrl : null
+        claimUrl = typeof outcome.details.claimUrl === "string" ? outcome.details.claimUrl : null
       } catch (fulfillmentError) {
         // Square has already captured payment. Keep the order and tell support.
         console.error("[v0] Fulfillment threw after payment:", fulfillmentError)
@@ -290,6 +301,7 @@ export async function POST(req: Request) {
         shipsPhysical,
         manualFulfillment,
         gift,
+        claimUrl,
       })
     } catch (emailError) {
       // Don't fail a paid order because of email, but make it visible.

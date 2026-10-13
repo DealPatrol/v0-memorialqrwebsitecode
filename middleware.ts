@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { updateSession } from "@/lib/supabase/middleware"
+import { legacyTailkeptOrder } from "@/lib/partner-memorials"
 
 const APEX_ORIGIN = "https://memorialsqr.com"
 
@@ -34,6 +35,15 @@ export async function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname === "/privacy") {
     return NextResponse.redirect(new URL(`/privacy-policy${request.nextUrl.search}`, request.url), 301)
+  }
+
+  const legacyOrder = legacyTailkeptOrder(request.nextUrl)
+  if (legacyOrder) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/q/legacy"
+    url.search = ""
+    url.searchParams.set("order", legacyOrder)
+    return NextResponse.redirect(url)
   }
 
   if (request.nextUrl.pathname.startsWith("/dashboard")) {

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get("code")
-  const next = requestUrl.searchParams.get("next")
+  const next = safeNextPath(requestUrl.searchParams.get("next"))
 
   if (code) {
     const supabase = await createClient()
@@ -57,4 +57,9 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.redirect(new URL("/auth/login?error=Invalid authentication link", requestUrl.origin))
+}
+
+function safeNextPath(next: string | null): string | null {
+  if (!next || !next.startsWith("/") || next.startsWith("//") || next.includes("\\")) return null
+  return next
 }

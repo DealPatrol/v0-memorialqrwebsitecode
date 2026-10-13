@@ -10,6 +10,7 @@ import { PhotosTab } from "@/components/dashboard/photos-tab"
 import { StoriesTab } from "@/components/dashboard/stories-tab"
 import { MusicTab } from "@/components/dashboard/music-tab"
 import { VideosTab } from "@/components/dashboard/videos-tab"
+import { BiographyForm } from "@/components/dashboard/biography-form"
 
 export default async function ManageMemorialPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -66,6 +67,8 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
             </Button>
           </CardContent>
         </Card>
+
+        <BiographyForm memorialId={id} biography={memorial.biography ?? null} />
 
         <Tabs defaultValue="messages" className="w-full">
           <TabsList className="grid w-full grid-cols-5">

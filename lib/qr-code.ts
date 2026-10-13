@@ -19,11 +19,11 @@ export async function generateQRCode(url: string): Promise<string> {
   }
 }
 
-export async function generateQRCodeBuffer(url: string): Promise<Buffer> {
+export async function generateQRCodeBuffer(url: string, width = 900): Promise<Buffer> {
   try {
-    // Generate QR code as buffer for server-side use
+    // Generate QR code as buffer for server-side use. 900px is 3 inches at 300 DPI.
     const buffer = await QRCode.toBuffer(url, {
-      width: 800,
+      width,
       margin: 2,
       color: {
         dark: "#000000",

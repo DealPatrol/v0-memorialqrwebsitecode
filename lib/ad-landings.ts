@@ -18,14 +18,14 @@ export const adLandingPages = {
     path: "/ads/memorial-qr-plaque-gift",
     title: "QR Plaque Gift | MemorialsQR",
     description:
-      "A metal QR plaque that opens a memorial page of photos and stories. Coming soon: join the list to hear when it can be ordered.",
+      "A metal QR plaque that opens a memorial page of photos and stories. One payment, with shipping included.",
     h1: "A memorial QR plaque you can give",
     paragraphs: [
       "The gift is a metal plaque with their name, the dates, and one QR code. The code opens a memorial page. Photos can be added after you give it.",
-      "The plaque is coming soon. We are not taking orders yet. Join the list and we will email you once when it can be ordered.",
+      "Order the plaque and we make it after payment. Shipping in the United States is included in the price.",
     ],
-    ctaHref: "/store/qr-memorial-plaque#waitlist",
-    ctaLabel: "Coming soon: join the list",
+    ctaHref: "/store/qr-memorial-plaque",
+    ctaLabel: "Order the plaque",
     trackProduct: true,
   },
   petPlaque: {
@@ -33,14 +33,14 @@ export const adLandingPages = {
     path: "/ads/pet-memorial-qr-plaque",
     title: "Pet Memorial QR Plaque | MemorialsQR",
     description:
-      "A pet memorial QR plaque that opens photos of a companion. Coming soon: join the list. We do not sell collar tags.",
+      "A pet memorial QR plaque that opens photos of a companion. Order it with shipping included. We do not sell collar tags.",
     h1: "A pet memorial QR plaque",
     paragraphs: [
       "The plaque is for the person who is grieving a dog, a cat, or another companion. The QR code opens a page for their photos. We do not sell a collar tag.",
-      "The pet plaque is coming soon. We are not taking orders yet. Join the list and we will email you once when it can be ordered.",
+      "Order the pet plaque and we make it after payment. Shipping in the United States is included in the price.",
     ],
-    ctaHref: "/store/pet-memorial-plaque#waitlist",
-    ctaLabel: "Coming soon: join the list",
+    ctaHref: "/store/pet-memorial-plaque",
+    ctaLabel: "Order the pet plaque",
     trackProduct: true,
     productId: "pet-memorial-plaque",
   },

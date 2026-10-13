@@ -4,14 +4,17 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
+import { collectionIdsForProduct, type CollectionId } from "@/lib/store-catalog"
 
 function listingLine(description: string): string {
   const sentence = description.split(". ")[0]
   return sentence.endsWith(".") ? sentence : `${sentence}.`
 }
 
-export function SellableProductGrid() {
-  const products = getListedKeepsakes()
+export function SellableProductGrid({ collectionId }: { collectionId?: CollectionId }) {
+  const products = getListedKeepsakes().filter(
+    (product) => !collectionId || collectionIdsForProduct(product.id).includes(collectionId),
+  )
   if (products.length === 0) return null
 
   return (
@@ -44,7 +47,7 @@ export function SellableProductGrid() {
               <CardFooter>
                 <Button asChild className="w-full" variant={product.available ? "default" : "outline"}>
                   {product.available ? (
-                    <Link href={`/checkout/simple?product=${product.id}`}>Buy</Link>
+                    <Link href={`/store/${product.id}`}>Choose</Link>
                   ) : (
                     <Link href={`/store/${product.id}#waitlist`}>Join the list</Link>
                   )}
