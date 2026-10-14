@@ -94,6 +94,11 @@ export function BuyerIntentView({
                   </Link>
                 </li>
                 <li>
+                  <Link href="/keepsakes" className="underline">
+                    Keepsakes you can order
+                  </Link>
+                </li>
+                <li>
                   <Link href="/gifts" className="underline">
                     Memorial gift ideas
                   </Link>

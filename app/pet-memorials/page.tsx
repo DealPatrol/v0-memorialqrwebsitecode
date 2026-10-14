@@ -4,11 +4,22 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, ArrowRight, Globe, Lock, PawPrint, Music, Camera, Bone } from "lucide-react"
+import { PET_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
+import { getListedKeepsake, getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.petMemorials)
 
+export const dynamic = "force-dynamic"
+
 export default function PetMemorialsPage() {
+  const petPlaque = getListedKeepsake(PET_MEMORIAL_PLAQUE_ID)
+  const keepsakesForSale = getSellableKeepsakes()
+  const petHref = petPlaque?.available
+    ? `/checkout/simple?product=${PET_MEMORIAL_PLAQUE_ID}`
+    : `/store/${PET_MEMORIAL_PLAQUE_ID}#waitlist`
+  const petLabel = petPlaque?.available ? "Buy the Pet Memorial QR Plaque" : "Join the pet plaque list"
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -34,8 +45,8 @@ export default function PetMemorialsPage() {
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
             >
-              <Link href="/store/pet-memorial-plaque">
-                Buy the Pet Memorial QR Plaque
+              <Link href={keepsakesForSale.length > 0 ? KEEPSAKE_COLLECTION_PATH : petHref}>
+                {keepsakesForSale.length > 0 ? "Shop Keepsakes" : petLabel}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -45,7 +56,9 @@ export default function PetMemorialsPage() {
               size="lg"
               className="border-white/30 text-white hover:bg-white/10 bg-transparent"
             >
-              <Link href="/browse-memorials?type=pet">View Examples</Link>
+              <Link href={keepsakesForSale.length > 0 ? petHref : "/browse-memorials?type=pet"}>
+                {keepsakesForSale.length > 0 ? petLabel : "View Examples"}
+              </Link>
             </Button>
           </div>
         </div>
@@ -209,8 +222,8 @@ export default function PetMemorialsPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-amber-600 hover:bg-gray-100">
-              <Link href="/store/pet-memorial-plaque">
-                Buy the Pet Memorial QR Plaque
+              <Link href={keepsakesForSale.length > 0 ? KEEPSAKE_COLLECTION_PATH : petHref}>
+                {keepsakesForSale.length > 0 ? "Shop Keepsakes" : petLabel}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

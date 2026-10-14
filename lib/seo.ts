@@ -2,6 +2,11 @@ import type { Metadata } from "next"
 import { adLandingPages } from "@/lib/ad-landings"
 import { CONCIERGE_PRODUCTS, PLAQUE_PRICE } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import {
+  KEEPSAKE_COLLECTION_DESCRIPTION,
+  KEEPSAKE_COLLECTION_PATH,
+  KEEPSAKE_COLLECTION_TITLE,
+} from "@/lib/keepsake-collection"
 import { longTailPages } from "@/lib/long-tail"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 
@@ -54,6 +59,16 @@ export const publicPages = {
     file: "app/page.tsx",
     changeFrequency: "weekly",
     priority: 1,
+    index: true,
+    inSitemap: true,
+  },
+  keepsakes: {
+    path: KEEPSAKE_COLLECTION_PATH,
+    title: KEEPSAKE_COLLECTION_TITLE,
+    description: KEEPSAKE_COLLECTION_DESCRIPTION,
+    file: "app/keepsakes/page.tsx",
+    changeFrequency: "weekly",
+    priority: 0.9,
     index: true,
     inSitemap: true,
   },

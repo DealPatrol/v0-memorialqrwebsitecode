@@ -6,6 +6,7 @@ import { Check } from "lucide-react"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
@@ -26,7 +27,11 @@ export default function StorePage() {
           <p className="text-lg md:text-xl text-muted-foreground mb-8">
             Each keepsake carries a QR code that opens an online memorial page of photos, stories, and messages. Every
             keepsake includes {HOSTING_INCLUDED_YEARS} years of hosting for its memorial page. One payment, no recurring
-            fees.
+            fees.{" "}
+            <Link href={KEEPSAKE_COLLECTION_PATH} className="underline">
+              Keepsakes you can order
+            </Link>{" "}
+            leaves out plaques that are not for sale yet.
           </p>
         </div>
       </section>
