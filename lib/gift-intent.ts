@@ -151,7 +151,7 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       },
       {
         href: "/store/pet-memorial-plaque",
-        label: "Buy the Pet Memorial QR Plaque",
+        label: "Pet Memorial QR Plaque",
       },
     ],
   },

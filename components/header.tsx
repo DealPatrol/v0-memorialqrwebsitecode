@@ -151,6 +151,9 @@ export function Header() {
                     <ListItem href="/sympathy-gift-ideas" title="Sympathy Gifts">
                       Ideas for a family after a death
                     </ListItem>
+                    <ListItem href="/keepsakes" title="Keepsakes You Can Order">
+                      Sympathy gifts checkout accepts today
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -242,6 +245,9 @@ export function Header() {
               <Link href="/sympathy-gift-ideas" className="text-muted-foreground hover:text-foreground pl-2">
                 Sympathy Gifts
               </Link>
+              <Link href="/keepsakes" className="text-muted-foreground hover:text-foreground pl-2">
+                Keepsakes You Can Order
+              </Link>
               <div className="border-t my-2" />
               <Link href="/store" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
                 <ShoppingBag className="h-4 w-4" />
@@ -298,10 +304,10 @@ export function Header() {
                 <Link href="/auth/login">Sign In</Link>
               </Button>
               <Button size="sm" asChild className="shrink-0 bg-blue-600 hover:bg-blue-700">
-                <Link href="/store">
+                <Link href="/keepsakes">
                   <ShoppingBag className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Store</span>
-                  <span className="sr-only sm:hidden">Store</span>
+                  <span className="hidden sm:inline">Shop</span>
+                  <span className="sr-only sm:hidden">Shop keepsakes</span>
                 </Link>
               </Button>
             </>

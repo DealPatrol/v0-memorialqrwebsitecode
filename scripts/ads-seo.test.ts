@@ -149,6 +149,8 @@ describe("technical seo", () => {
     assert.match(home, /Join the list/)
     assert.match(home, /Shop Keepsakes/)
     assert.match(home, /Have Us Build It/)
+    assert.match(home, /KEEPSAKE_COLLECTION_PATH/)
+    assert.match(home, /#plaque-waitlist/)
     assert.match(display, /pageMetadata\(publicPages\.displayAtHome\)/)
     assert.equal(display.includes("publicPages.home"), false)
     assert.match(header, /h-8 w-auto md:h-10/)

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
+import { PlaqueWaitlistSection } from "@/components/plaque-waitlist-section"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { ScrollProgressBar } from "@/components/scroll-progress-bar"
 import { FeaturedMemorialPreview } from "@/components/featured-memorial-preview"
@@ -24,14 +25,18 @@ import {
 } from "lucide-react"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { giftIntentList } from "@/lib/gift-intent"
-import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { getListedKeepsakes, getSellableKeepsakes } from "@/lib/fulfillment-availability"
+import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.home)
 
+export const dynamic = "force-dynamic"
+
 export default function HomePage() {
   const physicalProducts = getSellableKeepsakes()
+  const plaquesWaiting = getListedKeepsakes().some((product) => !product.available)
   return (
     <div className="min-h-screen">
       <ScrollProgressBar />
@@ -53,8 +58,8 @@ export default function HomePage() {
               A gentle scan opens a memorial page where family and friends can see photos, watch videos, and read the
               stories that made them who they were. One payment covers {HOSTING_INCLUDED_YEARS} years of hosting, with no recurring fees.
               {physicalProducts.length === 0
-                ? " Keepsakes are not available to order online right now."
-                : " Keepsakes ship to United States addresses."}
+                ? " Printed keepsakes are not available to order online right now. Metal plaques are coming soon."
+                : " Order a keepsake that checkout accepts today. Metal plaques are on a separate waitlist."}
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -80,19 +85,37 @@ export default function HomePage() {
                 <p className="text-muted-foreground mb-6">
                   {physicalProducts.length === 0
                     ? "Our QR plaques are coming soon. Join the list and we will email you once when one can be ordered. You can also have our team build the memorial page now."
-                    : `Choose a keepsake, then set up the memorial page yourself or have our team build it. Hosting for ${HOSTING_INCLUDED_YEARS} years is included.`}
+                    : `Shop Keepsakes you can order today, or join the plaque list if you want a metal plaque. Hosting for ${HOSTING_INCLUDED_YEARS} years is included. You can also have our team build the memorial page.`}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button asChild size="lg">
-                    <Link href="/store">
-                      {physicalProducts.length === 0 ? "Join the list" : "Shop Keepsakes"}
-                      <ArrowRight className="ml-2 w-5 h-5" />
-                    </Link>
-                  </Button>
+                  {physicalProducts.length > 0 ? (
+                    <Button asChild size="lg">
+                      <Link href={KEEPSAKE_COLLECTION_PATH}>
+                        Shop Keepsakes
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                      </Link>
+                    </Button>
+                  ) : null}
+                  {plaquesWaiting ? (
+                    <Button asChild size="lg" variant={physicalProducts.length > 0 ? "outline" : "default"}>
+                      <Link href="#plaque-waitlist">
+                        Join the list
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                      </Link>
+                    </Button>
+                  ) : null}
                   <Button asChild size="lg" variant="outline">
                     <Link href="/concierge">Have Us Build It</Link>
                   </Button>
                 </div>
+                {physicalProducts.length === 0 ? (
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    <Link href={KEEPSAKE_COLLECTION_PATH} className="underline">
+                      Keepsakes you can order
+                    </Link>{" "}
+                    lists only what checkout accepts today.
+                  </p>
+                ) : null}
               </CardContent>
             </Card>
           </div>
@@ -124,7 +147,8 @@ export default function HomePage() {
         </nav>
       </section>
 
-      <SellableProductGrid />
+      <SellableProductGrid mode="available" title="Keepsakes you can order" />
+      <PlaqueWaitlistSection />
 
       <TrustBadges />
 
@@ -353,19 +377,37 @@ export default function HomePage() {
       <section className="py-20 md:py-32 bg-primary text-white">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Create a Lasting Memorial?</h2>
-          <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
             {physicalProducts.length === 0
               ? "The QR plaques are coming soon. Join the list to hear when one can be ordered, or have us build the memorial page."
-              : `Whether honoring a loved one or a beloved pet, choose a QR keepsake with ${HOSTING_INCLUDED_YEARS} years of memorial page hosting included.`}
+              : `Shop Keepsakes you can order today. Metal plaques stay on the waitlist. Every keepsake includes ${HOSTING_INCLUDED_YEARS} years of hosting.`}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
-              <Link href="/store">
-                {physicalProducts.length === 0 ? "Join the list" : "Shop Keepsakes"}
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
-            </Button>
+            {physicalProducts.length > 0 ? (
+              <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
+                <Link href={KEEPSAKE_COLLECTION_PATH}>
+                  Shop Keepsakes
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+            ) : null}
+            {plaquesWaiting ? (
+              <Button
+                asChild
+                size="lg"
+                className={
+                  physicalProducts.length > 0
+                    ? "bg-white/20 text-white hover:bg-white/30 border border-white/30 text-lg px-8"
+                    : "bg-white text-primary hover:bg-gray-50 text-lg px-8"
+                }
+              >
+                <Link href="#plaque-waitlist">
+                  Join the list
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+            ) : null}
 
             <Button
               asChild

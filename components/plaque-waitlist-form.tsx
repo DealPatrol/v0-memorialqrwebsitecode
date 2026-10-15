@@ -4,15 +4,32 @@ import { useState, type FormEvent } from "react"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { waitlistEmailError } from "@/lib/plaque-waitlist"
 
-export function PlaqueWaitlistForm({ productId }: { productId: string }) {
+export function PlaqueWaitlistForm({
+  productId,
+  anchor = true,
+}: {
+  productId: string
+  /** Product pages use #waitlist. A page with two forms must pass false so ids stay unique. */
+  anchor?: boolean
+}) {
   const pathname = usePathname()
   const [email, setEmail] = useState("")
   const [state, setState] = useState<"idle" | "saving" | "done" | "error">("idle")
   const [message, setMessage] = useState("")
+  const fieldId = `waitlist-email-${productId}`
+  const hintId = `waitlist-hint-${productId}`
+  const messageId = `waitlist-message-${productId}`
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
+    const emailError = waitlistEmailError(email)
+    if (emailError) {
+      setState("error")
+      setMessage(emailError)
+      return
+    }
     setState("saving")
     setMessage("")
     try {
@@ -35,32 +52,55 @@ export function PlaqueWaitlistForm({ productId }: { productId: string }) {
     }
   }
 
+  if (state === "done") {
+    return (
+      <div id={anchor ? "waitlist" : undefined} role="status" className="scroll-mt-24 space-y-2 rounded-lg border border-border bg-secondary/40 p-4">
+        <p className="text-sm font-medium text-foreground">You are on the list.</p>
+        <p className="text-sm text-muted-foreground">
+          We will email {email.trim()} once when it can be ordered. Nothing was charged. No newsletter, and no email before then.
+        </p>
+      </div>
+    )
+  }
+
   return (
-    <form id="waitlist" onSubmit={onSubmit} className="scroll-mt-24 space-y-3">
-      <label htmlFor={`waitlist-${productId}`} className="text-sm font-medium text-foreground">
+    <form id={anchor ? "waitlist" : undefined} onSubmit={onSubmit} className="scroll-mt-24 space-y-3" noValidate>
+      <label htmlFor={fieldId} className="text-sm font-medium text-foreground">
         Email me when it can be ordered
       </label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input
-          id={`waitlist-${productId}`}
+          id={fieldId}
           type="email"
           required
           autoComplete="email"
+          inputMode="email"
+          maxLength={254}
           placeholder="you@example.com"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          disabled={state === "saving" || state === "done"}
+          aria-invalid={state === "error"}
+          aria-describedby={state === "error" ? `${hintId} ${messageId}` : hintId}
+          onChange={(event) => {
+            setEmail(event.target.value)
+            if (state === "error") {
+              setState("idle")
+              setMessage("")
+            }
+          }}
+          disabled={state === "saving"}
         />
-        <Button type="submit" disabled={state === "saving" || state === "done"}>
-          {state === "saving" ? "Saving..." : state === "done" ? "Saved" : "Join the list"}
+        <Button type="submit" disabled={state === "saving"}>
+          {state === "saving" ? "Saving..." : "Join the list"}
         </Button>
       </div>
       {message ? (
-        <p role="status" className={`text-sm ${state === "error" ? "text-red-700" : "text-muted-foreground"}`}>
+        <p id={messageId} role="alert" className="text-sm text-red-700">
           {message}
         </p>
       ) : null}
-      <p className="text-xs text-muted-foreground">One email when it is ready. No newsletter.</p>
+      <p id={hintId} className="text-xs text-muted-foreground">
+        One email when it is ready. No newsletter. Joining does not place an order.
+      </p>
     </form>
   )
 }

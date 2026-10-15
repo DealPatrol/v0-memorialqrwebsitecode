@@ -159,7 +159,7 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
       },
       {
         href: "/store/pet-memorial-plaque",
-        label: "Buy the Pet Memorial QR Plaque",
+        label: "Pet Memorial QR Plaque",
       },
     ],
   },
@@ -223,11 +223,11 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
     links: [
       {
         href: "/store/qr-memorial-plaque",
-        label: "Buy the QR Memorial Plaque",
+        label: "QR Memorial Plaque",
       },
       {
         href: "/store/pet-memorial-plaque",
-        label: "Buy the Pet Memorial QR Plaque",
+        label: "Pet Memorial QR Plaque",
       },
     ],
   },
