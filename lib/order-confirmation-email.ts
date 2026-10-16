@@ -15,6 +15,10 @@ export type OrderConfirmationInput = {
   manualFulfillment?: boolean
   hostingIncludedUntil?: string | null
   gift?: StoredGift
+  /** Set for the digital memorial SKU so the email can include the page and QR. */
+  digitalMemorial?: boolean
+  memorialPageUrl?: string | null
+  qrCodeUrl?: string | null
 }
 
 function escapeHtml(value: string): string {
@@ -35,11 +39,23 @@ export async function sendOrderConfirmationEmail(input: OrderConfirmationInput):
     { year: "numeric", month: "long", day: "numeric" },
   )}). One-time payment, no recurring charges.</p>`
 
-  const intro = !input.shipsPhysical
-    ? "We've received your order. Nothing is shipped for this order; your memorial page is online."
-    : input.manualFulfillment
-      ? "We've received your order. We will make your keepsake and ship it to the United States address you provided."
-      : "We've received your order. Your keepsake is printed after payment and we'll email tracking when it ships."
+  const intro = input.digitalMemorial && input.memorialPageUrl
+    ? "We've received your order. Nothing is shipped. Your memorial page is online, and you can print or share the QR code."
+    : input.digitalMemorial
+      ? `We've received your order. Nothing is shipped. We could not finish the memorial page automatically. Email ${SUPPORT_EMAIL} with order ${input.orderNumber} and we will send the page link.`
+      : !input.shipsPhysical
+        ? "We've received your order. Nothing is shipped for this order; your memorial page is online."
+        : input.manualFulfillment
+          ? "We've received your order. We will make your keepsake and ship it to the United States address you provided."
+          : "We've received your order. Your keepsake is printed after payment and we'll email tracking when it ships."
+  const deliveryLinks =
+    input.digitalMemorial && input.memorialPageUrl
+      ? `<p><strong>Memorial page:</strong> <a href="${escapeHtml(input.memorialPageUrl)}">${escapeHtml(input.memorialPageUrl)}</a></p>${
+          input.qrCodeUrl
+            ? `<p><strong>QR code to print or share:</strong> <a href="${escapeHtml(input.qrCodeUrl)}">${escapeHtml(input.qrCodeUrl)}</a></p>`
+            : ""
+        }`
+      : ""
   const giftCopy = giftBuyerSentences(input.gift ?? { isGift: false, recipientName: null, giftMessage: null, shipToRecipient: false })
     .map((sentence) => `<p style="font-size: 16px;">${escapeHtml(sentence)}</p>`)
     .join("")
@@ -65,6 +81,7 @@ export async function sendOrderConfirmationEmail(input: OrderConfirmationInput):
       <p><strong>Product:</strong> ${escapeHtml(input.productName)}</p>
       <p><strong>Amount Paid:</strong> $${escapeHtml(input.amount)}</p>
       ${hostingLine}
+      ${deliveryLinks}
     </div>
     <p style="font-size: 14px; color: #4c51bf;"><strong>Need Help?</strong> Contact us at ${escapeHtml(
       process.env.ADMIN_EMAIL || SUPPORT_EMAIL,

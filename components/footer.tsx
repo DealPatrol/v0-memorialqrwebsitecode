@@ -69,6 +69,7 @@ export function Footer() {
             <h3 className="font-bold text-lg mb-4">Products</h3>
             <ul className="space-y-2 text-sm text-zinc-400">
               <li><Link href="/keepsakes" className="hover:text-white transition-colors">Keepsakes You Can Order</Link></li>
+              <li><Link href="/digital-memorial" className="hover:text-white transition-colors">Digital Memorial Page</Link></li>
               <li><Link href="/store" className="hover:text-white transition-colors">QR Keepsakes</Link></li>
               <li><Link href="/store/qr-memorial-plaque#waitlist" className="hover:text-white transition-colors">Plaque Waitlist</Link></li>
               <li><Link href="/memorial-qr-code-plaque" className="hover:text-white transition-colors">QR Memorial Plaque</Link></li>

@@ -154,6 +154,9 @@ export function Header() {
                     <ListItem href="/keepsakes" title="Keepsakes You Can Order">
                       Sympathy gifts checkout accepts today
                     </ListItem>
+                    <ListItem href="/digital-memorial" title="Digital Memorial">
+                      Online memorial page and a QR you can print. Nothing ships.
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -247,6 +250,9 @@ export function Header() {
               </Link>
               <Link href="/keepsakes" className="text-muted-foreground hover:text-foreground pl-2">
                 Keepsakes You Can Order
+              </Link>
+              <Link href="/digital-memorial" className="text-muted-foreground hover:text-foreground pl-2">
+                Digital Memorial
               </Link>
               <div className="border-t my-2" />
               <Link href="/store" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">

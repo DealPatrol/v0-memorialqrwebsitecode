@@ -2,6 +2,7 @@ import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { PET_MEMORIAL_PLAQUE_ID, PLAQUE_PRICE, POD_PRODUCTS, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
 import { getSellableKeepsake, resolveConfiguredCheckoutItems } from "../lib/fulfillment-availability"
+import { fulfillDigitalMemorialOrder, memorialTitleFromNotes } from "../lib/order-fulfillment"
 import { configuredPodProducts } from "../lib/fulfillment-readiness"
 import { keepsakeProductJsonLd } from "../lib/keepsake-jsonld"
 import { buildManualFulfillmentNotice, manualFulfillmentRecipients } from "../lib/manual-fulfillment-email"
@@ -100,6 +101,58 @@ describe("supplier env gating", () => {
     assert.ok(lines)
     assert.equal(lines[0].price, 299.99)
     assert.equal(lines[0].ships, false)
+  })
+
+  it("creates a memorial page and QR for the digital memorial without a supplier order", async () => {
+    assert.equal(memorialTitleFromNotes("Glenda Kelso\n1952-2025"), "Glenda Kelso")
+    assert.equal(memorialTitleFromNotes("   "), "In Loving Memory")
+    const inserts: { table: string; values: Record<string, unknown> }[] = []
+    const updates: { table: string; values: Record<string, unknown> }[] = []
+    const supabase = {
+      from(table: string) {
+        return {
+          insert(values: Record<string, unknown>) {
+            inserts.push({ table, values })
+            return {
+              select() {
+                return { single: async () => ({ data: { id: "mem-1", slug: "mqr-100" }, error: null }) }
+              },
+            }
+          },
+          update(values: Record<string, unknown>) {
+            updates.push({ table, values })
+            return { eq: async () => ({ error: null }) }
+          },
+        }
+      },
+    }
+    const result = await fulfillDigitalMemorialOrder(supabase, {
+      id: "order-1",
+      order_number: "MQR-100",
+      customer_name: "Ada",
+      customer_email: "ada@example.com",
+      customer_phone: null,
+      shipping_address_line1: "",
+      shipping_address_line2: null,
+      shipping_city: "",
+      shipping_state: "",
+      shipping_zip: "",
+      special_instructions: "Glenda Kelso\n1952-2025",
+      user_id: null,
+      fulfillment_data: null,
+    })
+    assert.equal(result.error, null)
+    assert.equal(result.memorialUrl, "https://memorialsqr.com/memorial/mqr-100")
+    assert.equal(result.qrUrl, "https://memorialsqr.com/api/print-file/mqr-100")
+    assert.equal(inserts[0]?.table, "memorials")
+    assert.equal(inserts[0]?.values.full_name, "Glenda Kelso")
+    assert.equal(updates.some((update) => update.values.memorial_id === "mem-1"), true)
+    const log = updates.find((update) => update.values.fulfillment_status === "not_required")
+    assert.ok(log)
+    assert.equal(log.values.fulfillment_provider, null)
+    assert.equal(log.values.print_file_url, result.qrUrl)
+    assert.equal(updates.some((update) => update.values.fulfillment_provider === "printful"), false)
+    assert.equal(updates.some((update) => update.values.fulfillment_provider === "printify"), false)
   })
 })
 

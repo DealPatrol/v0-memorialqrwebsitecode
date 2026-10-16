@@ -2,10 +2,11 @@ import { NextResponse } from "next/server"
 import { attributionFromUnknown, formatAttribution } from "@/lib/attribution"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { createClient } from "@/lib/supabase/server"
+import { DIGITAL_MEMORIAL_ID } from "@/lib/catalog"
 import { priceCart } from "@/lib/checkout-pricing"
 import { recordEmailAlert } from "@/lib/order-email-alerts"
 import { verifySquarePayment } from "@/lib/square-verify"
-import { fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
+import { fulfillDigitalMemorialOrder, fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
 import { sendOrderConfirmationEmail } from "@/lib/order-confirmation-email"
 import {
   giftOrderColumns,
@@ -266,8 +267,10 @@ export async function POST(req: Request) {
 
     console.log("[v0] Order created successfully:", order.order_number)
 
+    const digitalMemorial = !shipsPhysical && resolvedItems.some((item) => item.id === DIGITAL_MEMORIAL_ID)
     let fulfillmentStatus = shipsPhysical ? "pending" : "not_required"
     let memorialUrl: string | null = null
+    let qrUrl: string | null = null
     if (shipsPhysical) {
       try {
         const outcome = await fulfillPaidPhysicalOrder(supabase, order, resolvedItems)
@@ -276,6 +279,16 @@ export async function POST(req: Request) {
       } catch (fulfillmentError) {
         // Square has already captured payment. Keep the order and tell support.
         console.error("[v0] Fulfillment threw after payment:", fulfillmentError)
+        fulfillmentStatus = "failed"
+      }
+    } else if (digitalMemorial) {
+      try {
+        const delivered = await fulfillDigitalMemorialOrder(supabase, order)
+        memorialUrl = delivered.memorialUrl
+        qrUrl = delivered.qrUrl
+        if (delivered.error) fulfillmentStatus = "failed"
+      } catch (fulfillmentError) {
+        console.error("[v0] Digital memorial threw after payment:", fulfillmentError)
         fulfillmentStatus = "failed"
       }
     }
@@ -290,6 +303,9 @@ export async function POST(req: Request) {
         shipsPhysical,
         manualFulfillment,
         gift,
+        digitalMemorial,
+        memorialPageUrl: memorialUrl,
+        qrCodeUrl: qrUrl,
       })
     } catch (emailError) {
       // Don't fail a paid order because of email, but make it visible.

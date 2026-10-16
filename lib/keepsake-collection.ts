@@ -1,4 +1,5 @@
-import { CONCIERGE_PRODUCTS } from "@/lib/catalog"
+import { CONCIERGE_PRODUCTS, DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { digitalMemorialJsonLd } from "@/lib/digital-memorial"
 import { getSellableKeepsakes, type SellableKeepsake } from "@/lib/fulfillment-availability"
 import type { EnvSource } from "@/lib/fulfillment-readiness"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
@@ -10,7 +11,7 @@ export const KEEPSAKE_COLLECTION_PATH = "/keepsakes"
 export const KEEPSAKE_COLLECTION_TITLE = "Keepsakes You Can Order | MemorialsQR"
 
 export const KEEPSAKE_COLLECTION_DESCRIPTION =
-  "Order a sympathy keepsake Square checkout accepts today, at the catalog price. Metal plaques stay on the waitlist. Hosting is included."
+  "Order a digital memorial page today. Metal plaques stay on the waitlist. Hosting is included, and nothing ships for the digital page."
 
 export type CollectionFaq = { question: string; answer: string }
 
@@ -36,12 +37,12 @@ export function collectionFaqs(): CollectionFaq[] {
     },
     {
       question: "What does the keepsake price include?",
-      answer: `The price is a one-time payment. Shipping to United States addresses is included. The memorial page includes ${HOSTING_INCLUDED_YEARS} years of hosting. There is no monthly fee.`,
+      answer: `The digital memorial page is ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}, paid once. Nothing is shipped. The page includes ${HOSTING_INCLUDED_YEARS} years of hosting. There is no monthly fee. A printed keepsake, when one is listed on this page, includes shipping to a United States address.`,
     },
     {
       question: "Can I send a keepsake as a sympathy gift?",
       answer:
-        "Yes, for a keepsake that is listed here. At checkout, mark the order as a gift, enter the recipient's name, and use their address if it is different from yours. A short message is saved with the order. It is not engraved.",
+        "The digital memorial page is not a shipped gift. After you pay, you can share the page link and the QR code. A printed keepsake that is listed here can be marked as a gift at checkout, with the recipient's name and address if it should ship to them. A short message is saved with that order. It is not engraved.",
     },
     {
       question: "Can you build the memorial page for us?",
@@ -63,28 +64,38 @@ function productNode(product: SellableKeepsake) {
   }
 }
 
+function digitalListItem() {
+  const full = digitalMemorialJsonLd()
+  return {
+    "@type": full["@type"],
+    name: full.name,
+    description: full.description,
+    sku: full.sku,
+    image: full.image,
+    brand: full.brand,
+    offers: full.offers,
+  }
+}
+
 /** ItemList of keepsakes checkout will charge, plus FAQ. Coming-soon plaques are omitted. */
 export function keepsakeCollectionJsonLd(products: SellableKeepsake[]) {
   const forSale = products.filter((product) => product.available)
+  const items = [digitalListItem(), ...forSale.map((product) => productNode(product))]
   const faqs = collectionFaqs()
   return {
     "@context": "https://schema.org",
     "@graph": [
-      ...(forSale.length > 0
-        ? [
-            {
-              "@type": "ItemList",
-              name: "Keepsakes you can order",
-              url: `${SITE_URL}${KEEPSAKE_COLLECTION_PATH}`,
-              numberOfItems: forSale.length,
-              itemListElement: forSale.map((product, index) => ({
-                "@type": "ListItem",
-                position: index + 1,
-                item: productNode(product),
-              })),
-            },
-          ]
-        : []),
+      {
+        "@type": "ItemList",
+        name: "Keepsakes you can order",
+        url: `${SITE_URL}${KEEPSAKE_COLLECTION_PATH}`,
+        numberOfItems: items.length,
+        itemListElement: items.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item,
+        })),
+      },
       {
         "@type": "Service",
         name: CONCIERGE_CHECKOUT_PRODUCT.name,

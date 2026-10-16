@@ -1,7 +1,9 @@
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
-import { SUPPORT_EMAIL } from "@/lib/site"
+import { formatUsd, SUPPORT_EMAIL } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.terms)
 
@@ -13,7 +15,7 @@ export default function TermsOfServicePage() {
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-gray-900 mb-8">Terms of Service</h1>
-          <p className="text-gray-600 mb-8">Last updated: December 2024</p>
+          <p className="text-gray-600 mb-8">Last updated: October 16, 2026</p>
 
           <div className="prose prose-lg max-w-none">
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Acceptance of Terms</h2>
@@ -26,8 +28,10 @@ export default function TermsOfServicePage() {
             <p className="text-gray-700 mb-4">
               Memorial QR sells printed QR memorial keepsakes. Each keepsake is a one-time purchase that includes 10
               years of hosting for the linked memorial page, starting on the order date. Several keepsakes for the same
-              memorial share one hosting term. The concierge memorial service also includes 10 years of hosting. We do
-              not sell a recurring hosting plan.
+              memorial share one hosting term. The concierge memorial service also includes 10 years of hosting. The
+              digital memorial page is {formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)} once. It includes an online memorial
+              page and a QR code you can print or share, with {HOSTING_INCLUDED_YEARS} years of hosting. Nothing is
+              shipped for that purchase. We do not sell a recurring hosting plan.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">User Responsibilities</h2>
@@ -38,7 +42,7 @@ export default function TermsOfServicePage() {
 
             <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Payment Terms</h2>
             <p className="text-gray-700 mb-4">
-              Keepsakes and concierge setup are paid once at checkout through Square. No recurring hosting fee is
+              Keepsakes, the digital memorial page, and concierge setup are paid once at checkout through Square. No recurring hosting fee is
               charged during the 10 included years. Before the included hosting ends, we will contact you about
               renewal options.
             </p>

@@ -1,15 +1,17 @@
 import {
-  CONCIERGE_PRODUCTS,
+  DIGITAL_MEMORIAL_ID,
   getManualKeepsake,
   getPodProduct,
   isKeepsakeComingSoon,
   MANUAL_KEEPSAKES,
+  NON_SHIPPING_CHECKOUT_PRODUCTS,
   type CheckoutProduct,
   type FulfillmentProvider,
   type ManualKeepsake,
   type PodProduct,
   type StoreCategory,
 } from "@/lib/catalog"
+import { DIGITAL_MEMORIAL_DESCRIPTION, digitalMemorialFeatures } from "@/lib/digital-memorial"
 import { configuredPodProducts, envValue, type EnvSource } from "@/lib/fulfillment-readiness"
 
 export type SellableProduct = CheckoutProduct & {
@@ -98,10 +100,13 @@ export function getSellableKeepsake(id: string, env: EnvSource = process.env): S
 }
 
 export function listSellableProducts(env: EnvSource = process.env): SellableProduct[] {
-  const digital = CONCIERGE_PRODUCTS.map((product) => ({
+  const digital = NON_SHIPPING_CHECKOUT_PRODUCTS.map((product) => ({
     ...product,
     ships: false,
     provider: null,
+    ...(product.id === DIGITAL_MEMORIAL_ID
+      ? { description: DIGITAL_MEMORIAL_DESCRIPTION, features: digitalMemorialFeatures() }
+      : {}),
   }))
   const physical = getSellableKeepsakes(env).map((product) => ({
     id: product.id,
@@ -131,7 +136,7 @@ export function resolveConfiguredCheckoutItems(items: unknown, env: EnvSource = 
     const quantity = Math.floor(rawQuantity)
     if (!Number.isFinite(quantity) || quantity < 1 || quantity > 99) return null
 
-    const digital = CONCIERGE_PRODUCTS.find((product) => product.id === item.id)
+    const digital = NON_SHIPPING_CHECKOUT_PRODUCTS.find((product) => product.id === item.id)
     if (digital) {
       resolved.push({
         ...digital,
