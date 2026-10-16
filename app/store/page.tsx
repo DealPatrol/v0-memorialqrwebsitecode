@@ -3,6 +3,7 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
+import { DigitalMemorialOfferCard } from "@/components/digital-memorial-offer-card"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
@@ -36,6 +37,12 @@ export default function StorePage() {
         </div>
       </section>
 
+      <section className="px-4 pb-4">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <DigitalMemorialOfferCard />
+        </div>
+      </section>
+
       <SellableProductGrid />
 
       <section className="pb-12 px-4">
@@ -65,11 +72,12 @@ export default function StorePage() {
               </ul>
               {physicalProducts.length === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  Keepsakes are not available to order online right now. Email{" "}
+                  Printed keepsakes are not available to order online right now. The digital memorial page is, and
+                  nothing is shipped. Email{" "}
                   <a href={`mailto:${SUPPORT_EMAIL}`} className="underline">
                     {SUPPORT_EMAIL}
                   </a>{" "}
-                  and we will let you know when you can order one.
+                  if you need help with an order.
                 </p>
               )}
             </CardContent>

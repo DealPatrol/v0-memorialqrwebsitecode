@@ -1,10 +1,12 @@
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { DigitalMemorialOfferCard } from "@/components/digital-memorial-offer-card"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
 import { PlaqueWaitlistSection } from "@/components/plaque-waitlist-section"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { Button } from "@/components/ui/button"
+import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import {
@@ -39,23 +41,26 @@ export default function KeepsakesForSalePage() {
         />
         <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Keepsakes you can order</h1>
         <p className="mb-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">
-          A sympathy gift you can check out today is one of the keepsakes below. Each one carries a QR code that opens
-          a memorial page of photos and stories. You pay once. Shipping to a United States address is included, and the
-          page includes {HOSTING_INCLUDED_YEARS} years of hosting.
+          The digital memorial page is {formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}. You get an online page and a QR
+          code you can print or share. You pay once. Nothing is shipped, and the page includes {HOSTING_INCLUDED_YEARS}{" "}
+          years of hosting.
         </p>
         <p className="mb-8 max-w-3xl text-lg leading-relaxed text-muted-foreground">
           Metal plaques are not in this list. They are coming soon, and the waitlist is further down this page. We do
           not sell flowers, urns, or jewelry.
+          {products.length > 0
+            ? " Printed keepsakes below include shipping to a United States address."
+            : " No printed keepsake is available to order online right now."}
         </p>
 
-        {products.length > 0 ? (
-          <SellableProductGrid mode="available" title="Order today" />
-        ) : (
-          <p className="mb-10 rounded-lg border border-border bg-white p-5 text-muted-foreground">
-            No printed keepsake is available to order online right now. This page stays empty until Square checkout
-            can charge one. You can join the plaque waitlist, or have us build the memorial page.
-          </p>
-        )}
+        <section className="mb-12">
+          <h2 className="mb-6 text-3xl font-bold text-foreground">Order today</h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <DigitalMemorialOfferCard />
+          </div>
+        </section>
+
+        {products.length > 0 ? <SellableProductGrid mode="available" title="Printed keepsakes" /> : null}
 
         <section className="mx-auto mb-12 max-w-xl rounded-lg border border-border bg-white p-6">
           <h2 className="mb-2 text-2xl font-semibold text-foreground">Have us build the memorial page</h2>

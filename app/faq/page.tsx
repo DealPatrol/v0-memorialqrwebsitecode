@@ -6,8 +6,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
 import { JsonLd } from "@/components/json-ld"
+import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
-import { SUPPORT_EMAIL } from "@/lib/site"
+import { formatUsd, SUPPORT_EMAIL } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.faq)
 
@@ -157,6 +159,10 @@ const faqCategories = [
       {
         question: "What does the concierge memorial service cost?",
         answer: `The concierge memorial service is ${CONCIERGE_PRICE_LABEL}, with 10 years of hosting included. We build the page and send you the link.`,
+      },
+      {
+        question: "Can I order a memorial page without a printed keepsake?",
+        answer: `Yes. The digital memorial page is ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}. You get an online memorial page and a QR code you can print or share. Nothing is shipped. It includes ${HOSTING_INCLUDED_YEARS} years of hosting. We do not sell flowers, urns, or jewelry.`,
       },
       {
         question: "Where is MemorialsQR based?",

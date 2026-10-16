@@ -160,6 +160,88 @@ async function alertSupport(order: OrderRow, outcome: DispatchOutcome) {
   }
 }
 
+/** First line of the order notes, or a neutral title when the buyer left the notes blank. */
+export function memorialTitleFromNotes(notes: string | null | undefined): string {
+  const line = (notes || "").split("\n")[0]?.trim().slice(0, 80) ?? ""
+  return line || "In Loving Memory"
+}
+
+/**
+ * Creates the memorial page and QR for a paid digital memorial. Nothing is shipped
+ * and no supplier order is placed.
+ */
+export async function fulfillDigitalMemorialOrder(
+  supabase: SupabaseLike,
+  order: OrderRow,
+): Promise<{ memorialUrl: string | null; qrUrl: string | null; error: string | null }> {
+  const slug = memorialSlugForOrder(order.order_number)
+  const pageUrl = memorialPageUrl(slug)
+  const fileUrl = printFileUrl(slug)
+  const memorialName = memorialTitleFromNotes(order.special_instructions)
+
+  try {
+    const inserted = await supabase
+      .from("memorials")
+      .insert({
+        full_name: memorialName,
+        slug,
+        user_id: order.user_id,
+        biography: "This page was created when the digital memorial was ordered. Add photos and stories whenever you are ready.",
+        theme: "classic",
+        package_type: "basic",
+      })
+      .select()
+      .single()
+
+    if (inserted.error || !inserted.data?.id) {
+      const message = inserted.error?.message || "Memorial page was not created"
+      const outcome: DispatchOutcome = {
+        status: "failed",
+        provider: null,
+        fulfillmentId: null,
+        error: message,
+        details: { digitalMemorial: true },
+      }
+      await saveFulfillmentLog(supabase, order, outcome, null, null)
+      await alertSupport(order, outcome)
+      return { memorialUrl: null, qrUrl: null, error: message }
+    }
+
+    await supabase.from("orders").update({ memorial_id: inserted.data.id }).eq("id", order.id)
+
+    const outcome: DispatchOutcome = {
+      status: "not_required",
+      provider: null,
+      fulfillmentId: null,
+      details: {
+        digitalMemorial: true,
+        memorialUrl: pageUrl,
+        printFileUrl: fileUrl,
+        note: "Digital memorial. Nothing ships.",
+      },
+    }
+    await saveFulfillmentLog(supabase, order, outcome, fileUrl, slug)
+    return { memorialUrl: pageUrl, qrUrl: fileUrl, error: null }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Digital memorial was not created"
+    const outcome: DispatchOutcome = {
+      status: "failed",
+      provider: null,
+      fulfillmentId: null,
+      error: message,
+      details: { digitalMemorial: true },
+    }
+    console.error("[Fulfillment] Digital memorial threw after payment:", error)
+    try {
+      await saveFulfillmentLog(supabase, order, outcome, null, null)
+    } catch (logError) {
+      console.error("[Fulfillment] Could not save the digital memorial failure:", logError)
+    }
+    await alertSupport(order, outcome)
+    return { memorialUrl: null, qrUrl: null, error: message }
+  }
+}
+
 /**
  * Creates the memorial slug, publishes a QR print file, and submits the supplier order
  * in the same checkout request. The family can add photos later; the QR already opens the page.

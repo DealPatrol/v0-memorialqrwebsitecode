@@ -443,6 +443,9 @@ export function orderNotesHint(productIds: string[]): string {
 }
 
 function noteHintForId(id: string): string {
+  if (id === DIGITAL_MEMORIAL_ID) {
+    return "For the Digital Memorial Page, put the name on the first line. That name is the title of the page. Dates can go on the next line."
+  }
   if (!isHandmadePlaqueId(id)) return "Share names, dates, or notes for the memorial page."
   switch (id) {
     case QR_MEMORIAL_PLAQUE_ID:
@@ -496,6 +499,25 @@ export const CONCIERGE_PRODUCTS: CheckoutProduct[] = [
   },
 ]
 
+/**
+ * Self-serve digital memorial. $24.99 is the same price as the voice keychain
+ * and pet tag in this catalog, and it is under the $29.99 plaque. Nothing
+ * ships, so checkout does not need Printful or Printify env vars.
+ */
+export const DIGITAL_MEMORIAL_ID = "digital-memorial"
+
+export const DIGITAL_MEMORIAL_PRODUCT: CheckoutProduct = {
+  id: DIGITAL_MEMORIAL_ID,
+  name: "Digital Memorial Page",
+  price: 24.99,
+}
+
+/** Paid checkout lines that do not ship. */
+export const NON_SHIPPING_CHECKOUT_PRODUCTS: CheckoutProduct[] = [
+  ...CONCIERGE_PRODUCTS,
+  DIGITAL_MEMORIAL_PRODUCT,
+]
+
 const WITHHELD_CONCIERGE_PLAQUE: CheckoutProduct = {
   id: "concierge-plaque",
   name: "Concierge Service - Physical Plaque",
@@ -518,7 +540,7 @@ const REMOVED_PHYSICAL_IDS = new Set<string>([
   "stone_qr",
 ])
 
-const CHECKOUT_PRODUCTS: CheckoutProduct[] = [...CONCIERGE_PRODUCTS]
+const CHECKOUT_PRODUCTS: CheckoutProduct[] = [...NON_SHIPPING_CHECKOUT_PRODUCTS]
 
 const CHECKOUT_BY_ID = new Map(CHECKOUT_PRODUCTS.map((product) => [product.id, product]))
 

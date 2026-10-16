@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
 import { adLandingPages } from "@/lib/ad-landings"
 import { CONCIERGE_PRODUCTS, PLAQUE_PRICE } from "@/lib/catalog"
+import {
+  DIGITAL_MEMORIAL_META_DESCRIPTION,
+  DIGITAL_MEMORIAL_PATH,
+  DIGITAL_MEMORIAL_TITLE,
+} from "@/lib/digital-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import {
   KEEPSAKE_COLLECTION_DESCRIPTION,
@@ -67,6 +72,16 @@ export const publicPages = {
     title: KEEPSAKE_COLLECTION_TITLE,
     description: KEEPSAKE_COLLECTION_DESCRIPTION,
     file: "app/keepsakes/page.tsx",
+    changeFrequency: "weekly",
+    priority: 0.9,
+    index: true,
+    inSitemap: true,
+  },
+  digitalMemorial: {
+    path: DIGITAL_MEMORIAL_PATH,
+    title: DIGITAL_MEMORIAL_TITLE,
+    description: DIGITAL_MEMORIAL_META_DESCRIPTION,
+    file: "app/digital-memorial/page.tsx",
     changeFrequency: "weekly",
     priority: 0.9,
     index: true,

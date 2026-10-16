@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { pageMetadata, publicPages } from "@/lib/seo"
@@ -27,17 +29,50 @@ export default function PricingPage() {
           </p>
         </div>
 
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Digital Memorial Page</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div>
+              <span className="text-4xl font-bold text-slate-900">{formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}</span>
+              <span className="text-slate-600"> one time</span>
+            </div>
+            <ul className="space-y-3 text-slate-700">
+              <li className="flex gap-2">
+                <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
+                Online memorial page and a QR code you can print or share
+              </li>
+              <li className="flex gap-2">
+                <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
+                {HOSTING_INCLUDED_YEARS} years of hosting, starting on the order date
+              </li>
+              <li className="flex gap-2">
+                <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-600" />
+                Nothing is shipped. No flowers, urns, or jewelry.
+              </li>
+            </ul>
+            <Button asChild className="w-full">
+              <Link href={DIGITAL_MEMORIAL_PATH}>Order a Digital Memorial</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>QR Memorial Keepsake</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            {lowestKeepsake !== null && (
+            {lowestKeepsake !== null ? (
               <div>
                 <span className="text-slate-600">From </span>
                 <span className="text-4xl font-bold text-slate-900">{formatUsd(lowestKeepsake)}</span>
                 <span className="text-slate-600"> one time</span>
               </div>
+            ) : (
+              <p className="text-slate-600">
+                Printed keepsakes are not available to order online right now. Metal plaques stay on the waitlist.
+              </p>
             )}
             <ul className="space-y-3 text-slate-700">
               <li className="flex gap-2">
