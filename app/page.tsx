@@ -25,7 +25,8 @@ import {
 } from "lucide-react"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
-import { DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
+import { DIGITAL_MEMORIAL_CHECKOUT_PATH, DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
+import { digitalLandingList } from "@/lib/digital-landing"
 import { giftIntentList } from "@/lib/gift-intent"
 import { getListedKeepsakes, getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
@@ -84,19 +85,25 @@ export default function HomePage() {
           <div id="digital-memorial" className="max-w-xl mx-auto">
             <Card className="bg-white border-border shadow-lg">
               <CardContent className="p-8 text-center">
-                <h2 className="text-2xl font-bold text-foreground mb-3">QR Memorial Keepsakes</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Digital Memorial Page</h2>
+                <p className="text-3xl font-bold text-foreground mb-3">{formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}</p>
                 <p className="text-muted-foreground mb-6">
                   {physicalProducts.length === 0
-                    ? `Our QR plaques are coming soon. Join the list and we will email you once when one can be ordered. You can order a digital memorial page for ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)} today. Nothing is shipped. You can also have our team build the memorial page now.`
-                    : `Shop Keepsakes you can order today, or join the plaque list if you want a metal plaque. A digital memorial page is ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)} if nothing needs to ship. Hosting for ${HOSTING_INCLUDED_YEARS} years is included. You can also have our team build the memorial page.`}
+                    ? `Order a digital memorial page today. You get an online page and a QR code you can print or share. You pay once. Nothing is shipped. Hosting for ${HOSTING_INCLUDED_YEARS} years is included. Metal plaques are coming soon. Join the list and we will email you once when one can be ordered.`
+                    : `Order a digital memorial page if nothing needs to ship. You pay once, and hosting for ${HOSTING_INCLUDED_YEARS} years is included. Shop Keepsakes you can order today, or join the plaque list if you want a metal plaque.`}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button asChild size="lg">
-                    <Link href={DIGITAL_MEMORIAL_PATH}>
-                      Order a Digital Memorial
-                      <ArrowRight className="ml-2 w-5 h-5" />
-                    </Link>
-                  </Button>
+                <Button asChild size="lg" className="w-full sm:w-auto">
+                  <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>
+                    Order a Digital Memorial
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
+                </Button>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  <Link href={DIGITAL_MEMORIAL_PATH} className="underline">
+                    See what is included
+                  </Link>
+                </p>
+                <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg" variant="outline">
                     <Link href={KEEPSAKE_COLLECTION_PATH}>
                       Shop Keepsakes
@@ -130,6 +137,22 @@ export default function HomePage() {
       </section>
 
       <section className="bg-white px-4 py-12">
+        <nav aria-label="Digital memorial pages" className="mx-auto mb-10 max-w-3xl text-center">
+          <h2 className="mb-3 text-2xl font-semibold text-foreground">Order a digital memorial</h2>
+          <p className="mb-4 text-muted-foreground">
+            Each page below is about the {formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)} digital memorial. Nothing is
+            shipped.
+          </p>
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
+            {digitalLandingList.map((item) => (
+              <li key={item.path}>
+                <Link href={item.path} className="underline">
+                  {item.h1}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
         <nav aria-label="Keepsake guides" className="mx-auto max-w-3xl text-center">
           <h2 className="mb-3 text-2xl font-semibold text-foreground">Ways families use a memorial QR</h2>
           <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">

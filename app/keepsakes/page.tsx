@@ -7,6 +7,8 @@ import { PlaqueWaitlistSection } from "@/components/plaque-waitlist-section"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { Button } from "@/components/ui/button"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { DIGITAL_MEMORIAL_CHECKOUT_PATH } from "@/lib/digital-memorial"
+import { digitalLandingList } from "@/lib/digital-landing"
 import { getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import {
@@ -45,13 +47,20 @@ export default function KeepsakesForSalePage() {
           code you can print or share. You pay once. Nothing is shipped, and the page includes {HOSTING_INCLUDED_YEARS}{" "}
           years of hosting.
         </p>
-        <p className="mb-8 max-w-3xl text-lg leading-relaxed text-muted-foreground">
+        <p className="mb-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">
           Metal plaques are not in this list. They are coming soon, and the waitlist is further down this page. We do
           not sell flowers, urns, or jewelry.
           {products.length > 0
             ? " Printed keepsakes below include shipping to a United States address."
             : " No printed keepsake is available to order online right now."}
         </p>
+        <div className="mb-10">
+          <Button asChild size="lg">
+            <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>
+              Buy the digital memorial · {formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}
+            </Link>
+          </Button>
+        </div>
 
         <section className="mb-12">
           <h2 className="mb-6 text-3xl font-bold text-foreground">Order today</h2>
@@ -82,6 +91,19 @@ export default function KeepsakesForSalePage() {
             </div>
           ))}
         </section>
+
+        <nav aria-label="Digital memorial guides" className="mb-8">
+          <h2 className="mb-3 text-2xl font-semibold text-foreground">About the digital memorial</h2>
+          <ul className="space-y-2">
+            {digitalLandingList.map((item) => (
+              <li key={item.path}>
+                <Link href={item.path} className="underline">
+                  {item.h1}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <nav aria-label="Related memorial pages" className="mb-4">
           <h2 className="mb-3 text-2xl font-semibold text-foreground">More ways to remember</h2>

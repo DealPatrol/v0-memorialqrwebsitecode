@@ -115,8 +115,13 @@ function CheckoutForm() {
   useEffect(() => {
     if (checkoutBlocked || orderTotal <= 0 || checkoutTracked.current) return
     checkoutTracked.current = true
-    trackCommerce({ name: "InitiateCheckout", value: orderTotal, currency: "USD" })
-  }, [checkoutBlocked, orderTotal])
+    trackCommerce({
+      name: "InitiateCheckout",
+      value: orderTotal,
+      currency: "USD",
+      contentId: cartItems.length === 1 ? cartItems[0].id : undefined,
+    })
+  }, [cartItems, checkoutBlocked, orderTotal])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
