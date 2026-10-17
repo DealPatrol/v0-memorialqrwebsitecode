@@ -4,6 +4,9 @@ import { absoluteAssetUrl, SITE_NAME, SITE_URL } from "@/lib/site"
 
 export const DIGITAL_MEMORIAL_PATH = "/digital-memorial"
 
+/** One-click buy path. Checkout loads this SKU from the server catalog. */
+export const DIGITAL_MEMORIAL_CHECKOUT_PATH = `/checkout/simple?product=${DIGITAL_MEMORIAL_PRODUCT.id}`
+
 export const DIGITAL_MEMORIAL_TITLE = "Order a Digital Memorial | MemorialsQR"
 
 export const DIGITAL_MEMORIAL_META_DESCRIPTION = `An online memorial page and a QR code you can print or share. $${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)} once, with ${HOSTING_INCLUDED_YEARS} years of hosting included. Nothing is shipped.`

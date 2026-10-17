@@ -12,6 +12,7 @@ export type CommerceEvent =
       name: "InitiateCheckout"
       value: number
       currency: "USD"
+      contentId?: string
     }
   | {
       name: "Purchase"
@@ -86,7 +87,10 @@ export function metaEventParams(event: CommerceEvent): Record<string, unknown> {
         content_type: "product",
       }
     case "InitiateCheckout":
-      return { ...money }
+      return {
+        ...money,
+        content_ids: event.contentId ? [event.contentId] : undefined,
+      }
     case "Purchase":
       return {
         ...money,
