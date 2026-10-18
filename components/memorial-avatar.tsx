@@ -30,7 +30,7 @@ export function MemorialAvatar({ src, name, size = 176, className, priority, var
       width={variant === "avatar" ? size : Math.round(size * (4 / 3))}
       height={size}
       sizes={variant === "avatar" ? `${size}px` : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"}
-      className={cn("object-cover", variant === "avatar" ? "rounded-full" : "object-[center_25%]", className)}
+      className={cn("object-cover", variant === "avatar" ? "rounded-full" : "object-[center_40%]", className)}
       priority={priority}
       onError={() => setFailed(true)}
     />
