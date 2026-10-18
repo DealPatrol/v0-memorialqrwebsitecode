@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Shield, Lock, Award, Clock, Mail, MapPin } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { SISTER_SHOP_MEMORIAL_GIFTS_URL } from "@/lib/sister-shop"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
 export function Footer() {
@@ -61,6 +62,7 @@ export function Footer() {
               <li><Link href="/blog" className="hover:text-white transition-colors">Blog & Resources</Link></li>
               <li><Link href="/concierge" className="hover:text-white transition-colors">Concierge Service</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+              <li><a href={SISTER_SHOP_MEMORIAL_GIFTS_URL} className="hover:text-white transition-colors">Memorial Gifts</a></li>
             </ul>
           </div>
 

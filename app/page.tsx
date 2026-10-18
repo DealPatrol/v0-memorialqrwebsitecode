@@ -10,6 +10,7 @@ import { TrustBadges } from "@/components/trust-badges"
 import { FAQPreview } from "@/components/faq-preview"
 import { RelatedContentLinks } from "@/components/related-content-links"
 import { MemorialGuideSection } from "@/components/memorial-guide-section"
+import { SisterShopNote } from "@/components/sister-shop-note"
 import {
   Heart,
   QrCode,
@@ -402,6 +403,8 @@ export default function HomePage() {
       </section>
 
       <RelatedContentLinks />
+
+      <SisterShopNote layout="band" />
 
       {/* CTA Section */}
       <section className="py-20 md:py-32 bg-primary text-white">
