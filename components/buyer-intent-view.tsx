@@ -4,6 +4,7 @@ import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
 import { KeepsakePurchaseDetails } from "@/components/keepsake-purchase-details"
 import { MemorialGuideSection } from "@/components/memorial-guide-section"
+import { SisterShopNote } from "@/components/sister-shop-note"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -71,6 +72,7 @@ export function BuyerIntentView({
                 </div>
               ))}
             </section>
+            {page.id === "pet" ? <SisterShopNote layout="inline" /> : null}
             <nav aria-label="Related memorial pages" className="space-y-3">
               <h2 className="text-2xl font-semibold text-foreground">{relatedHeading}</h2>
               <ul className="space-y-2">

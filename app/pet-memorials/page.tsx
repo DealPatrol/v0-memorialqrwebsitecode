@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
+import { SisterShopNote } from "@/components/sister-shop-note"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, ArrowRight, Globe, Lock, PawPrint, Music, Camera, Bone } from "lucide-react"
 import { PET_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
@@ -211,6 +212,8 @@ export default function PetMemorialsPage() {
           </div>
         </div>
       </section>
+
+      <SisterShopNote layout="band" />
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-amber-500 to-orange-600">

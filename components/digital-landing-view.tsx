@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
+import { SisterShopNote } from "@/components/sister-shop-note"
 import { TrackViewContent } from "@/components/track-view-content"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -64,6 +65,7 @@ export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
                 </div>
               ))}
             </section>
+            {page.id === "pet" ? <SisterShopNote layout="inline" /> : null}
             <nav aria-label="Related digital memorial pages" className="space-y-3">
               <h2 className="text-2xl font-semibold text-foreground">Other ways to order the page</h2>
               <ul className="space-y-2">
