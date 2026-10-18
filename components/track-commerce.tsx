@@ -1,7 +1,15 @@
 "use client"
 
 import { track } from "@vercel/analytics"
-import { googleAdsConversion, metaEventParams, pinterestEventName, ga4EventName, type CommerceEvent } from "@/lib/ad-events"
+import {
+  commerceAnalyticsProperties,
+  commerceLandingPath,
+  googleAdsConversion,
+  metaEventParams,
+  pinterestEventName,
+  ga4EventName,
+  type CommerceEvent,
+} from "@/lib/ad-events"
 
 type AdsWindow = Window & {
   fbq?: (...args: unknown[]) => void
@@ -24,11 +32,14 @@ export function trackCommerce(event: CommerceEvent) {
   const itemId = commerceContentId(event)
   const itemName = event.name === "ViewContent" ? event.contentName : itemId
 
+  const landingPath = commerceLandingPath(event)
+
   if (typeof ads.gtag === "function") {
     ads.gtag("event", ga4EventName(event.name), {
       ...money,
       transaction_id: event.name === "Purchase" ? event.transactionId : undefined,
       items: itemId ? [{ item_id: itemId, item_name: itemName }] : undefined,
+      ...(landingPath ? { landing_path: landingPath } : {}),
     })
     const conversion = googleAdsConversion(event, ads.__MQR_ADS_SEND_TO ?? null)
     if (conversion) ads.gtag("event", "conversion", conversion)
@@ -42,17 +53,8 @@ export function trackCommerce(event: CommerceEvent) {
     })
   }
 
-  const properties: Record<string, string | number> = {}
-  if (money) {
-    properties.value = money.value
-    properties.currency = money.currency
-  }
-  if (itemId) properties.content_id = itemId
-  if (event.name === "ViewContent") properties.content_name = event.contentName
-  if (event.name === "Purchase") properties.transaction_id = event.transactionId
-  if (event.name === "Lead") properties.lead_type = event.leadType
   ensureVercelQueue(ads)
-  track(ga4EventName(event.name), properties)
+  track(ga4EventName(event.name), commerceAnalyticsProperties(event))
 }
 
 /** Match the Vercel Analytics queue so an event fired before the script loads is kept. */

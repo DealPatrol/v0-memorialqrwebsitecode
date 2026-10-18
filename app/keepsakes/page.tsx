@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { DigitalMemorialOfferCard } from "@/components/digital-memorial-offer-card"
+import { RememberDigitalLanding } from "@/components/remember-digital-landing"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
 import { PlaqueWaitlistSection } from "@/components/plaque-waitlist-section"
@@ -18,8 +19,9 @@ import {
   keepsakeCollectionJsonLd,
   keepsakesForCollection,
 } from "@/lib/keepsake-collection"
+import { EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
 import { pageMetadata, publicPages } from "@/lib/seo"
-import { formatUsd, SAMPLE_MEMORIAL_NAME, SAMPLE_MEMORIAL_PATH } from "@/lib/site"
+import { formatUsd } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.keepsakes)
 
@@ -33,6 +35,7 @@ export default function KeepsakesForSalePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       <JsonLd data={keepsakeCollectionJsonLd(products)} />
+      <RememberDigitalLanding pathname={KEEPSAKE_COLLECTION_PATH} />
       <Header />
       <main className="mx-auto max-w-6xl px-4 py-12">
         <Breadcrumbs
@@ -131,8 +134,8 @@ export default function KeepsakesForSalePage() {
               </li>
             ))}
             <li>
-              <Link href={SAMPLE_MEMORIAL_PATH} className="underline">
-                Sample memorial for {SAMPLE_MEMORIAL_NAME}
+              <Link href={EXAMPLE_MEMORIAL_PATH} className="underline">
+                Example memorial page
               </Link>
             </li>
           </ul>

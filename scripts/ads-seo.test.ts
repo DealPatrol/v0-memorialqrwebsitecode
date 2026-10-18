@@ -3,7 +3,8 @@ import fs from "node:fs"
 import path from "node:path"
 import { describe, it } from "node:test"
 import { readAdConfig, googleAdsSendTo } from "../lib/ad-config"
-import { googleAdsConversion, purchaseAfterPayment } from "../lib/ad-events"
+import { commerceAnalyticsProperties, googleAdsConversion, purchaseAfterPayment } from "../lib/ad-events"
+import { resolveDigitalLanding } from "../lib/digital-landing-attribution"
 import { adLandingList } from "../lib/ad-landings"
 import { firstTouch, formatAttribution, parseAttribution } from "../lib/attribution"
 import { breadcrumbJsonLd } from "../lib/breadcrumbs"
@@ -72,6 +73,34 @@ describe("ad pixels", () => {
     assert.deepEqual(conversion, { send_to: "AW-99/buy", value: 29.99, currency: "USD", transaction_id: "MQR-1" })
     assert.equal(googleAdsConversion(purchase, null), null)
     assert.equal(googleAdsConversion({ name: "Lead", leadType: "memorial-guide" }, sendTo), null)
+  })
+
+  it("keeps the first digital selling page on checkout and purchase events", () => {
+    assert.equal(resolveDigitalLanding(null, "/pet-digital-memorial-qr"), "/pet-digital-memorial-qr")
+    assert.equal(resolveDigitalLanding("/pet-digital-memorial-qr", "/digital-memorial"), "/pet-digital-memorial-qr")
+    assert.equal(resolveDigitalLanding("/pet-digital-memorial-qr", "/checkout/simple"), "/pet-digital-memorial-qr")
+    assert.equal(resolveDigitalLanding(null, "/memorial/glenda-kelso"), null)
+    assert.equal(resolveDigitalLanding(null, "/example-memorial"), "/example-memorial")
+
+    const purchase = commerceAnalyticsProperties({
+      name: "Purchase",
+      value: 24.99,
+      currency: "USD",
+      transactionId: "MQR-1",
+      contentId: "digital-memorial",
+      landingPath: "/printable-memorial-qr-code",
+    })
+    assert.equal(purchase.landing_path, "/printable-memorial-qr-code")
+    assert.equal(purchase.value, 24.99)
+    assert.equal(purchase.transaction_id, "MQR-1")
+
+    const checkout = commerceAnalyticsProperties({
+      name: "InitiateCheckout",
+      value: 24.99,
+      currency: "USD",
+      contentId: "digital-memorial",
+    })
+    assert.equal("landing_path" in checkout, false)
   })
 })
 

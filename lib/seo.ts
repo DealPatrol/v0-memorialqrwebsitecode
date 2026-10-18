@@ -7,6 +7,7 @@ import {
   DIGITAL_MEMORIAL_PATH,
   DIGITAL_MEMORIAL_TITLE,
 } from "@/lib/digital-memorial"
+import { EXAMPLE_MEMORIAL_DESCRIPTION, EXAMPLE_MEMORIAL_PATH, EXAMPLE_MEMORIAL_TITLE } from "@/lib/example-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import {
   KEEPSAKE_COLLECTION_DESCRIPTION,
@@ -85,6 +86,16 @@ export const publicPages = {
     file: "app/digital-memorial/page.tsx",
     changeFrequency: "weekly",
     priority: 0.9,
+    index: true,
+    inSitemap: true,
+  },
+  exampleMemorial: {
+    path: EXAMPLE_MEMORIAL_PATH,
+    title: EXAMPLE_MEMORIAL_TITLE,
+    description: EXAMPLE_MEMORIAL_DESCRIPTION,
+    file: "app/example-memorial/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
     index: true,
     inSitemap: true,
   },

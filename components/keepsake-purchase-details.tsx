@@ -4,12 +4,8 @@ import { Button } from "@/components/ui/button"
 import { PlaqueWaitlistForm } from "@/components/plaque-waitlist-form"
 import type { SellableKeepsake } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
-import {
-  formatUsd,
-  KEEPSAKE_SHIPPING_COPY,
-  SAMPLE_MEMORIAL_NAME,
-  SAMPLE_MEMORIAL_PATH,
-} from "@/lib/site"
+import { EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
+import { formatUsd, KEEPSAKE_SHIPPING_COPY } from "@/lib/site"
 import { PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID, type FulfillmentProvider } from "@/lib/catalog"
 
 function shippingCopy(provider: FulfillmentProvider): string {
@@ -79,11 +75,11 @@ export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake
           <Link href="/concierge" className="underline">
             have us build it
           </Link>
-          . See a sample page for{" "}
-          <Link href={SAMPLE_MEMORIAL_PATH} className="underline">
-            {SAMPLE_MEMORIAL_NAME}
+          .{" "}
+          <Link href={EXAMPLE_MEMORIAL_PATH} className="underline">
+            See an example memorial page
           </Link>
-          .
+          . Alex Example is not a real person.
         </p>
       </div>
     )
@@ -117,11 +113,10 @@ export function KeepsakePurchaseDetails({ product }: { product: SellableKeepsake
         </ul>
       </div>
       <p className="text-sm text-muted-foreground">
-        See a sample memorial page for{" "}
-        <Link href={SAMPLE_MEMORIAL_PATH} className="underline">
-          {SAMPLE_MEMORIAL_NAME}
+        <Link href={EXAMPLE_MEMORIAL_PATH} className="underline">
+          See an example memorial page
         </Link>
-        .
+        . Alex Example is not a real person.
       </p>
     </div>
   )

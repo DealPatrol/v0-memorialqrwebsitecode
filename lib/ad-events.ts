@@ -7,12 +7,15 @@ export type CommerceEvent =
       currency: "USD"
       contentId: string
       contentName: string
+      /** First digital-memorial selling page in this browser tab, when known. */
+      landingPath?: string
     }
   | {
       name: "InitiateCheckout"
       value: number
       currency: "USD"
       contentId?: string
+      landingPath?: string
     }
   | {
       name: "Purchase"
@@ -20,11 +23,70 @@ export type CommerceEvent =
       currency: "USD"
       transactionId: string
       contentId?: string
+      landingPath?: string
     }
   | {
       name: "Lead"
       leadType: LeadType
     }
+
+/** Selling page that started this visit, for view, checkout, and purchase events. */
+export function commerceLandingPath(event: CommerceEvent): string | undefined {
+  switch (event.name) {
+    case "ViewContent":
+    case "InitiateCheckout":
+    case "Purchase":
+      return event.landingPath
+    case "Lead":
+      return undefined
+    default: {
+      const exhaustive: never = event
+      return exhaustive
+    }
+  }
+}
+
+/** Custom properties sent to Vercel Analytics with a commerce event. */
+export function commerceAnalyticsProperties(event: CommerceEvent): Record<string, string | number> {
+  const landingPath = commerceLandingPath(event)
+  switch (event.name) {
+    case "ViewContent": {
+      const properties: Record<string, string | number> = {
+        value: event.value,
+        currency: event.currency,
+        content_id: event.contentId,
+        content_name: event.contentName,
+      }
+      if (landingPath) properties.landing_path = landingPath
+      return properties
+    }
+    case "InitiateCheckout": {
+      const properties: Record<string, string | number> = {
+        value: event.value,
+        currency: event.currency,
+      }
+      if (event.contentId) properties.content_id = event.contentId
+      if (landingPath) properties.landing_path = landingPath
+      return properties
+    }
+    case "Purchase": {
+      const properties: Record<string, string | number> = {
+        value: event.value,
+        currency: event.currency,
+        transaction_id: event.transactionId,
+      }
+      if (event.contentId) properties.content_id = event.contentId
+      if (landingPath) properties.landing_path = landingPath
+      return properties
+    }
+    case "Lead":
+      return { lead_type: event.leadType }
+    default: {
+      const exhaustive: never = event
+      return exhaustive
+    }
+  }
+}
 
 export function ga4EventName(name: CommerceEvent["name"]): string {
   switch (name) {

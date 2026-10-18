@@ -1,6 +1,7 @@
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
-import { absoluteAssetUrl, SITE_NAME, SITE_URL } from "@/lib/site"
+import { statedMerchantReturnPolicy } from "@/lib/return-policy"
+import { absoluteAssetUrl, MONEY_BACK_GUARANTEE_DAYS, SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 export const DIGITAL_MEMORIAL_PATH = "/digital-memorial"
 
@@ -26,6 +27,26 @@ export function digitalMemorialFeatures(): string[] {
   ]
 }
 
+/** Delivery, editing, and refund answers. The same text is shown beside the buy button and in FAQ schema. */
+export function digitalMemorialPolicyFaqs(): { question: string; answer: string }[] {
+  return [
+    {
+      question: "When do I receive the page and the QR code?",
+      answer:
+        "The confirmation email includes the page link and a PNG of the QR code after payment is confirmed. Nothing is mailed.",
+    },
+    {
+      question: "Can I add photos after I order?",
+      answer:
+        "Yes. You add photos, videos, stories, messages, and audio on the memorial page after it is created. The QR code keeps opening that same page. If you leave the order notes blank, the page title is In Loving Memory until a name is added.",
+    },
+    {
+      question: "What is the refund policy?",
+      answer: `If you are not satisfied, email ${SUPPORT_EMAIL} within ${MONEY_BACK_GUARANTEE_DAYS} days of purchase for a refund, as described in the terms of service.`,
+    },
+  ]
+}
+
 export function digitalMemorialFaqs(): { question: string; answer: string }[] {
   return [
     {
@@ -42,6 +63,7 @@ export function digitalMemorialFaqs(): { question: string; answer: string }[] {
       answer:
         "Put the name on the first line of the order notes. That line becomes the title of the page. If you leave the notes blank, the page title is In Loving Memory, and you can add the name later.",
     },
+    ...digitalMemorialPolicyFaqs(),
   ]
 }
 
@@ -65,6 +87,7 @@ export function digitalMemorialJsonLd() {
       price: DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2),
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
+      hasMerchantReturnPolicy: statedMerchantReturnPolicy(),
       seller: {
         "@type": "Organization" as const,
         "@id": `${SITE_URL}/#organization`,
