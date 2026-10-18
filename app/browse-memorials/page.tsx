@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
-import Image from "next/image"
+import { MemorialAvatar } from "@/components/memorial-avatar"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -33,7 +33,7 @@ const glendaMemorial: Memorial = {
   death_date: "2025-08-27",
   location: null,
   biography: "The memorial that inspired Cole Collins to create Memorial QR.",
-  profile_image_url: null,
+  profile_image_url: "/memorials/glenda-kelso/glenda-portrait.webp",
   slug: "glenda-kelso",
   created_at: "2025-08-27T00:00:00.000Z",
   memorial_type: "human",
@@ -206,12 +206,12 @@ function BrowseMemorialsContent() {
             {filteredMemorials.map((memorial) => (
               <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
-                  <Image
-                    src={memorial.profile_image_url || "/placeholder.svg?height=300&width=400"}
-                    alt={memorial.full_name}
-                    width={400}
-                    height={300}
-                    className="w-full h-48 object-cover"
+                  <MemorialAvatar
+                    src={memorial.profile_image_url}
+                    name={memorial.full_name}
+                    variant="cover"
+                    size={300}
+                    className="w-full h-48"
                   />
                   {memorial.memorial_type && (
                     <div className="absolute top-2 right-2">
@@ -260,12 +260,12 @@ function BrowseMemorialsContent() {
                 <CardContent className="p-6">
                   <div className="flex gap-6">
                     <div className="relative flex-shrink-0">
-                      <Image
-                        src={memorial.profile_image_url || "/placeholder.svg?height=120&width=120"}
-                        alt={memorial.full_name}
-                        width={120}
-                        height={120}
-                        className="w-24 h-24 object-cover rounded-lg"
+                      <MemorialAvatar
+                        src={memorial.profile_image_url}
+                        name={memorial.full_name}
+                        variant="cover"
+                        size={96}
+                        className="w-24 h-24 rounded-lg"
                       />
                     </div>
                     <div className="flex-1">
