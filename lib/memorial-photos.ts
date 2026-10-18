@@ -13,7 +13,8 @@ export function memorialInitials(name: string | null | undefined): string {
   const words = (name ?? "")
     .replace(/\(.*?\)/g, " ")
     .split(/\s+/)
-    .map((word) => word.replace(/[^\p{L}]/gu, ""))
+    // drop French/Italian elisions like "l'" or "d'" so "l'Espérance" gives "E"
+    .map((word) => word.replace(/^[a-z]['’]/i, "").replace(/[^\p{L}]/gu, ""))
     .filter(Boolean)
   if (words.length === 0) return ""
   const first = words[0][0]

@@ -96,7 +96,7 @@ function BrowseMemorialsContent() {
     const formatDate = (dateStr: string | null) => {
       if (!dateStr) return "Unknown"
       const date = new Date(dateStr)
-      return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+      return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
     }
     return `${formatDate(birthDate)} - ${formatDate(deathDate)}`
   }
