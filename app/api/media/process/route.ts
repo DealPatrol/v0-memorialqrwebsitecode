@@ -12,11 +12,11 @@ import { convertAudio, convertVideo, planVideo, probe } from "@/lib/media/transc
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export const runtime = "nodejs"
-// Converting a long HEVC video can take a few minutes.
-export const maxDuration = 300
+// 60s works on every Vercel plan; long HEVC videos that cannot finish in time keep their original file.
+export const maxDuration = 60
 
 const MAX_AGE_MS = 24 * 60 * 60 * 1000
-const FFMPEG_BUDGET_MS = 240_000
+const FFMPEG_BUDGET_MS = 45_000
 
 /**
  * Makes a just-uploaded video or audio file playable in every browser.
