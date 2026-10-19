@@ -1,7 +1,7 @@
 "use client"
 
 import { upload } from "@vercel/blob/client"
-import { checkMediaFile, mediaFolder, safeFileName, type AudioKind, type MediaType, type ModerationStatus } from "@/lib/media/shared"
+import { checkMediaFile, isUuid, mediaFolder, safeFileName, type AudioKind, type MediaType, type ModerationStatus } from "@/lib/media/shared"
 
 export type UploadStage = "uploading" | "saving" | "converting" | "done"
 
@@ -43,8 +43,27 @@ async function postJson<T>(url: string, body: unknown): Promise<T> {
  * (no 4.5MB function limit), save it on the memorial, then convert phone formats
  * (AMR/3GP voicemails, iPhone MOV/HEVC) so every browser can play them.
  */
+const memorialIdCache = new Map<string, string>()
+
+/**
+ * Blob paths are keyed by the memorial's UUID, but memorial pages are often opened by
+ * slug (/memorial/jane-doe-123). Look the UUID up once so uploads land in the right folder.
+ */
+async function memorialUuid(identifier: string): Promise<string> {
+  if (isUuid(identifier)) return identifier
+  const cached = memorialIdCache.get(identifier)
+  if (cached) return cached
+  const response = await fetch(`/api/memorials/${encodeURIComponent(identifier)}`, { cache: "no-store" })
+  const data = (await response.json().catch(() => null)) as { memorial?: { id?: string } } | null
+  const id = data?.memorial?.id
+  if (!response.ok || !id || !isUuid(id)) throw new Error("Memorial not found")
+  memorialIdCache.set(identifier, id)
+  return id
+}
+
 export async function uploadMemorialMedia(options: UploadOptions): Promise<UploadResult> {
-  const { file, memorialId, mediaType, kind, onProgress } = options
+  const { file, mediaType, kind, onProgress } = options
+  const memorialId = await memorialUuid(options.memorialId)
   const check = checkMediaFile(file, mediaType)
   if (!check.ok) throw new Error(check.error)
 
