@@ -175,6 +175,15 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+          <p className="mt-8 text-sm text-muted-foreground">
+            <Link href="/pet-memorials" className="underline">
+              Pet memorial QR codes
+            </Link>
+            {" · "}
+            <Link href="/store" className="underline">
+              QR memorial keepsakes
+            </Link>
+          </p>
         </nav>
       </section>
 
