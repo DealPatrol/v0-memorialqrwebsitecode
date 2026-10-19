@@ -1,43 +1,17 @@
 import { NextResponse } from "next/server"
-import { createServiceRoleClient } from "@/lib/supabase/service-role"
+import { resolveMemorial, selectPublicMedia } from "@/lib/media/server"
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export const dynamic = "force-dynamic"
+
+/** Approved music for a memorial (visitor uploads waiting for the owner's approval are left out). */
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = await params
-    const supabase = createServiceRoleClient()
-
-    const identifier = id
-    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)
-
-    const { data: memorial, error: memorialError } = await supabase
-      .from("memorials")
-      .select("id")
-      .eq(isUUID ? "id" : "slug", identifier)
-      .maybeSingle()
-
-    if (memorialError) {
-      console.error("Error finding memorial:", memorialError)
-      return NextResponse.json({ error: "Failed to find memorial" }, { status: 500 })
-    }
-
-    if (!memorial) {
-      return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
-    }
-
-    const { data: music, error } = await supabase
-      .from("music")
-      .select("*")
-      .eq("memorial_id", memorial.id)
-      .order("created_at", { ascending: false })
-
-    if (error) {
-      console.error("Error fetching music:", error)
-      return NextResponse.json({ error: "Failed to fetch music" }, { status: 500 })
-    }
-
-    return NextResponse.json({ music: music || [] })
+    const memorial = await resolveMemorial(params.id)
+    if (!memorial) return NextResponse.json({ error: "Memorial not found" }, { status: 404 })
+    const music = await selectPublicMedia("music", memorial.id, { limit: 200 })
+    return NextResponse.json({ music })
   } catch (error) {
-    console.error("Error fetching music:", error)
+    console.error("Error fetching music:", error instanceof Error ? error.message : error)
     return NextResponse.json({ error: "Failed to fetch music" }, { status: 500 })
   }
 }

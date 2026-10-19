@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { compressImage } from "@/lib/image-compression"
+import { preparePhoto, uploadMemorialMedia } from "@/lib/media/client-upload"
+import { ACCEPT_ATTR } from "@/lib/media/shared"
 
 interface UploadItem {
   file: File
@@ -22,9 +23,11 @@ interface UploadItem {
 interface BulkPhotoUploadProps {
   memorialId: string
   onUploadComplete: () => void
+  creatorToken?: string | null
 }
 
-export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploadProps) {
+export function BulkPhotoUpload({ memorialId, onUploadComplete, creatorToken }: BulkPhotoUploadProps) {
+  const [awaitingApproval, setAwaitingApproval] = useState(0)
   const [items, setItems] = useState<UploadItem[]>([])
   const [uploaderName, setUploaderName] = useState("")
   const [isDragging, setIsDragging] = useState(false)
@@ -95,7 +98,7 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
         return newItems
       })
 
-      const compressed = await compressImage(item.file)
+      const compressed = await preparePhoto(item.file)
 
       setItems((prev) => {
         const newItems = [...prev]
@@ -103,21 +106,21 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
         return newItems
       })
 
-      const formData = new FormData()
-      formData.append("file", compressed)
-      formData.append("memorialId", memorialId)
-      formData.append("caption", item.caption)
-      formData.append("uploaderName", uploaderName)
-
-      const response = await fetch("/api/photos/upload", {
-        method: "POST",
-        body: formData,
+      const result = await uploadMemorialMedia({
+        file: compressed,
+        memorialId,
+        mediaType: "photo",
+        caption: item.caption,
+        uploadedBy: uploaderName,
+        creatorToken,
+        onProgress: (percent) =>
+          setItems((prev) => {
+            const newItems = [...prev]
+            newItems[index].progress = 50 + Math.round(percent / 2)
+            return newItems
+          }),
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Upload failed")
-      }
+      if (result.status === "pending") setAwaitingApproval((count) => count + 1)
 
       setItems((prev) => {
         const newItems = [...prev]
@@ -205,7 +208,7 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
         <p className="text-sm text-gray-600 mb-2">Drag and drop photos here, or click to select</p>
         <Input
           type="file"
-          accept="image/*"
+          accept={ACCEPT_ATTR.photo}
           multiple
           onChange={handleFileSelect}
           className="hidden"
@@ -270,6 +273,13 @@ export function BulkPhotoUpload({ memorialId, onUploadComplete }: BulkPhotoUploa
               </div>
             ))}
           </div>
+
+          {awaitingApproval > 0 && (
+            <p className="rounded-md bg-purple-50 p-3 text-sm text-purple-800">
+              Thank you! {awaitingApproval} photo{awaitingApproval !== 1 ? "s" : ""} will appear once the family approves
+              {awaitingApproval !== 1 ? " them" : " it"}.
+            </p>
+          )}
 
           <Button onClick={handleUploadAll} disabled={isUploading || pendingCount === 0} className="w-full">
             {isUploading ? "Uploading..." : `Upload ${pendingCount} Photo${pendingCount !== 1 ? "s" : ""}`}
