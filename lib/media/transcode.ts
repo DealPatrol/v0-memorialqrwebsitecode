@@ -55,6 +55,17 @@ async function tracedBinaryPath(): Promise<string | null> {
   return null
 }
 
+/**
+ * Uploaded bytes are untrusted: only read local files (no http/concat/playlist fetches)
+ * and only demux real media containers.
+ */
+export const INPUT_GUARD = [
+  "-protocol_whitelist",
+  "file",
+  "-format_whitelist",
+  "mov,mp4,m4a,3gp,3g2,mj2,amr,amrnb,amrwb,matroska,webm,avi,ogg,wav,mp3,aac,flac,caf,aiff",
+]
+
 function run(bin: string, args: string[], timeoutMs: number): Promise<{ code: number | null; stderr: string }> {
   return new Promise((resolve, reject) => {
     const child = spawn(bin, args, { stdio: ["ignore", "ignore", "pipe"] })
@@ -87,7 +98,7 @@ export function parseProbe(stderr: string): Probe {
 
 export async function probe(input: string): Promise<Probe> {
   const bin = await ffmpegPath()
-  const { stderr } = await run(bin, ["-hide_banner", "-i", input], 30_000)
+  const { stderr } = await run(bin, ["-hide_banner", ...INPUT_GUARD, "-i", input], 30_000)
   return parseProbe(stderr)
 }
 
@@ -107,10 +118,11 @@ export async function convertVideo(input: string, output: string, plan: Exclude<
   const bin = await ffmpegPath()
   const args =
     plan === "remux"
-      ? ["-y", "-hide_banner", "-i", input, "-map", "0:v:0", "-map", "0:a:0?", "-c", "copy", "-movflags", "+faststart", output]
+      ? ["-y", "-hide_banner", ...INPUT_GUARD, "-i", input, "-map", "0:v:0", "-map", "0:a:0?", "-c", "copy", "-movflags", "+faststart", output]
       : [
           "-y",
           "-hide_banner",
+          ...INPUT_GUARD,
           "-i",
           input,
           "-map",
@@ -147,6 +159,7 @@ export async function convertAudio(input: string, output: string, voicemail: boo
   const args = [
     "-y",
     "-hide_banner",
+    ...INPUT_GUARD,
     "-i",
     input,
     "-vn",

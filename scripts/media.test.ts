@@ -13,7 +13,7 @@ import {
   safeFileName,
   videoMayNeedConversion,
 } from "../lib/media/shared"
-import { createCreatorToken, verifyCreatorToken } from "../lib/media/creator-token"
+import { createCreatorToken, createProcessToken, verifyCreatorToken, verifyProcessToken } from "../lib/media/creator-token"
 import { rateLimit, resetRateLimits } from "../lib/media/rate-limit"
 import { parseProbe, planVideo } from "../lib/media/transcode"
 
@@ -132,5 +132,28 @@ describe("video conversion plan", () => {
     assert.equal(planVideo(hevc, "mov"), "transcode")
     assert.equal(planVideo(hevc, "mp4"), "transcode")
     assert.equal(planVideo(parseProbe("Video: h263\n Audio: amr_nb"), "3gp"), "transcode")
+  })
+})
+
+describe("process tokens", () => {
+  it("are bound to one row and expire", () => {
+    const env = { MEDIA_UPLOAD_SECRET: "test-secret" }
+    const now = Date.UTC(2026, 0, 1)
+    const token = createProcessToken("videos", "row-1", now, env)!
+    assert.equal(verifyProcessToken("videos", "row-1", token, now, env), true)
+    assert.equal(verifyProcessToken("videos", "row-2", token, now, env), false)
+    assert.equal(verifyProcessToken("music", "row-1", token, now, env), false)
+    assert.equal(verifyProcessToken("videos", "row-1", token, now + 31 * 60 * 1000, env), false)
+    assert.equal(verifyProcessToken("videos", "row-1", undefined, now, env), false)
+  })
+})
+
+describe("safeFileName", () => {
+  it("never leaves encoded or traversal characters", () => {
+    for (const name of ["foo%2f%2e%2e%2fx.mov", "../../x.mov", "a/b\\c.mov", "..mov", "a..b.mov"]) {
+      const cleaned = safeFileName(name)
+      assert.match(cleaned, /^[\w-][\w.-]*$/)
+      assert.ok(!cleaned.includes("/") && !cleaned.includes("%") && !cleaned.includes(".."))
+    }
   })
 })

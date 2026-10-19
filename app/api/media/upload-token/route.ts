@@ -56,7 +56,13 @@ export async function POST(request: NextRequest) {
         if (!memorial) throw new Error("Memorial not found")
 
         const folder = mediaFolder(mediaType, payload.kind)
-        if (!pathname.startsWith(`memorials/${memorial.id}/${folder}/`) || pathname.includes("..")) {
+        // Exactly memorials/{id}/{folder}/{safe file name}: no extra segments, dots-only names or encoded characters.
+        const fileName = pathname.slice(`memorials/${memorial.id}/${folder}/`.length)
+        if (
+          !pathname.startsWith(`memorials/${memorial.id}/${folder}/`) ||
+          !/^[\w-][\w.-]{0,119}$/.test(fileName) ||
+          fileName.includes("..")
+        ) {
           throw new Error("Invalid upload path")
         }
 

@@ -203,8 +203,9 @@ export function safeFileName(name: string): string {
     .normalize("NFKD")
     .replace(/[^\w.-]+/g, "_")
     .replace(/_+/g, "_")
-    .replace(/^[_.]+/, "")
+    .replace(/\.{2,}/g, ".")
     .slice(-80)
+    .replace(/^[_.]+/, "")
   return cleaned || "upload"
 }
 

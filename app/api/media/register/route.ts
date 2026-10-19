@@ -15,8 +15,11 @@ import {
   insertMediaRow,
   isMemorialBlobUrl,
   moderationStatusFor,
+  pendingCapReached,
   resolveMemorial,
+  URL_COLUMN,
 } from "@/lib/media/server"
+import { createProcessToken } from "@/lib/media/creator-token"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export const runtime = "nodejs"
@@ -93,6 +96,22 @@ export async function POST(request: NextRequest) {
     if (!uploader.canPublish && !uploadedBy) {
       return NextResponse.json({ error: "Please enter your name" }, { status: 400 })
     }
+    if (!uploader.canPublish && (await pendingCapReached(memorial.id))) {
+      return NextResponse.json(
+        { error: "This memorial has a lot of uploads waiting for the family's approval. Please try again tomorrow." },
+        { status: 429 },
+      )
+    }
+
+    // Each uploaded file can be registered once.
+    const table = mediaType === "photo" ? "photos" : mediaType === "video" ? "videos" : "music"
+    const existing = await createServiceRoleClient()
+      .from(table)
+      .select("id", { count: "exact", head: true })
+      .eq(URL_COLUMN[table], blob.url)
+    if (!existing.error && (existing.count ?? 0) > 0) {
+      return NextResponse.json({ error: "This upload was already saved" }, { status: 409 })
+    }
 
     const common = {
       memorial_id: memorial.id,
@@ -141,9 +160,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       id: result.row.id,
-      table: mediaType === "photo" ? "photos" : mediaType === "video" ? "videos" : "music",
+      table,
       status: finalStatus,
       needsProcessing,
+      processToken: needsProcessing ? createProcessToken(table, String(result.row.id)) : null,
       url: blob.url,
     })
   } catch (error) {

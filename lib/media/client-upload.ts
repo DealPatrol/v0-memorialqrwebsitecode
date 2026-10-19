@@ -68,7 +68,7 @@ export async function uploadMemorialMedia(options: UploadOptions): Promise<Uploa
   }
 
   onProgress?.(96, "saving")
-  const saved = await postJson<{ id?: string; table?: string; status: ModerationStatus; needsProcessing?: boolean; url: string }>(
+  const saved = await postJson<{ id?: string; table?: string; status: ModerationStatus; needsProcessing?: boolean; processToken?: string | null; url: string }>(
     "/api/media/register",
     {
       memorialId,
@@ -91,6 +91,7 @@ export async function uploadMemorialMedia(options: UploadOptions): Promise<Uploa
       const processed = await postJson<{ processed: boolean; url?: string; reason?: string }>("/api/media/process", {
         table: saved.table,
         id: saved.id,
+        token: saved.processToken,
       })
       if (processed.processed && processed.url) url = processed.url
       else if (processed.reason === "conversion-failed") playable = false

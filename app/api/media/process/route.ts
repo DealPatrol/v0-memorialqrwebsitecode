@@ -6,7 +6,8 @@ import { pipeline } from "node:stream/promises"
 import { put } from "@vercel/blob"
 import { NextResponse, type NextRequest } from "next/server"
 import { clientIp, rateLimit } from "@/lib/media/rate-limit"
-import { fileExtension, musicKind, MEDIA_LIMITS } from "@/lib/media/shared"
+import { verifyProcessToken } from "@/lib/media/creator-token"
+import { fileExtension, musicKind, MEDIA_LIMITS, safeFileName } from "@/lib/media/shared"
 import { isMemorialBlobUrl, updateMediaRow, URL_COLUMN, type MediaTable } from "@/lib/media/server"
 import { convertAudio, convertVideo, planVideo, probe } from "@/lib/media/transcode"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
@@ -24,17 +25,19 @@ const FFMPEG_BUDGET_MS = 45_000
  * The original upload is kept in Blob and its URL saved in original_url.
  */
 export async function POST(request: NextRequest) {
-  const limited = rateLimit(`process:${clientIp(request.headers)}`, 15, 10 * 60 * 1000)
+  const limited = rateLimit(`process:${clientIp(request.headers)}`, 10, 10 * 60 * 1000)
   if (!limited.ok) return NextResponse.json({ error: "Too many requests" }, { status: 429 })
 
-  let body: { table?: string; id?: string }
+  let body: { table?: string; id?: string; token?: string }
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 })
   }
   const table = body.table === "videos" || body.table === "music" ? (body.table as MediaTable) : null
-  if (!table || !body.id) return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+  if (!table || !body.id || typeof body.id !== "string") return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+  // Only the browser that registered this upload holds a token for it (30 minutes, single row).
+  if (!verifyProcessToken(table, body.id, body.token)) return NextResponse.json({ error: "Not allowed" }, { status: 403 })
 
   const db = createServiceRoleClient()
   const { data: row, error } = await db.from(table).select("*").eq("id", body.id).maybeSingle()
@@ -43,7 +46,10 @@ export async function POST(request: NextRequest) {
   const column = URL_COLUMN[table]
   const sourceUrl = String(row[column] ?? "")
   if (!isMemorialBlobUrl(sourceUrl, row.memorial_id)) return NextResponse.json({ processed: false, reason: "external" })
-  if (new URL(sourceUrl).pathname.includes("/playable/")) return NextResponse.json({ processed: false, reason: "done" })
+  // original_url is set after the first attempt (success or failure), so a file is converted at most once.
+  if (new URL(sourceUrl).pathname.includes("/playable/") || row.original_url) {
+    return NextResponse.json({ processed: false, reason: "done" })
+  }
   if (Date.now() - new Date(row.created_at).getTime() > MAX_AGE_MS) {
     return NextResponse.json({ processed: false, reason: "too-old" })
   }
@@ -72,8 +78,11 @@ export async function POST(request: NextRequest) {
       contentType = "audio/mp4"
     }
 
-    const folderPath = new URL(sourceUrl).pathname.replace(/^\//, "").split("/").slice(0, 3).join("/")
-    const baseName = decodeURIComponent(new URL(sourceUrl).pathname.split("/").pop() ?? "media").replace(/\.[^.]+$/, "")
+    // Build the key from trusted values only (never from the decoded upload name).
+    const sourceFolder = new URL(sourceUrl).pathname.split("/")[3]
+    const folder = ["videos", "voicemails", "music"].includes(sourceFolder) ? sourceFolder : table === "videos" ? "videos" : "music"
+    const folderPath = `memorials/${row.memorial_id}/${folder}`
+    const baseName = safeFileName(new URL(sourceUrl).pathname.split("/").pop() ?? "media").replace(/\.[^.]+$/, "") || "media"
     const data = await readFile(output)
     const blob = await put(`${folderPath}/playable/${baseName}.${table === "videos" ? "mp4" : "m4a"}`, data, {
       access: "public",
@@ -92,6 +101,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ processed: true, url: blob.url })
   } catch (err) {
     console.error("[media/process]", err instanceof Error ? err.message : err)
+    // Remember the attempt so the same file is not re-processed again and again.
+    await updateMediaRow(table, row.id, { original_url: sourceUrl }).catch(() => null)
     // The original stays in place; the page shows a download link if a browser cannot play it.
     return NextResponse.json({ processed: false, reason: "conversion-failed" })
   } finally {
