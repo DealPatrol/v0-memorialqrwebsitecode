@@ -34,6 +34,7 @@ import { ShareMemorialDialog } from "@/components/share-memorial-dialog"
 import { themes } from "@/components/theme-selector"
 import { MemorialAvatar } from "@/components/memorial-avatar"
 import { MemorialPhotoGallery } from "@/components/memorial-photo-gallery"
+import { MemorialMediaSections } from "@/components/memorial-media-sections"
 
 interface Photo {
   id: string
@@ -114,16 +115,13 @@ export function MemorialClientPage() {
   const [bulkUploadDialogOpen, setBulkUploadDialogOpen] = useState(false)
   const [bulkVideoUploadDialogOpen, setBulkVideoUploadDialogOpen] = useState(false)
   const [photos, setPhotos] = useState<Photo[]>([])
-  const [videos, setVideos] = useState<VideoType[]>([])
   const [stories, setStories] = useState<Story[]>([])
   const [messages, setMessages] = useState<Message[]>([])
-  const [music, setMusic] = useState<Music[]>([])
+  const [mediaRefreshKey, setMediaRefreshKey] = useState(0)
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [loadingPhotos, setLoadingPhotos] = useState(true)
-  const [loadingVideos, setLoadingVideos] = useState(true)
   const [loadingStories, setLoadingStories] = useState(true)
   const [loadingMessages, setLoadingMessages] = useState(true)
-  const [loadingMusic, setLoadingMusic] = useState(true)
   const [loadingMilestones, setLoadingMilestones] = useState(true)
   const [memorial, setMemorial] = useState<Memorial | null>(null)
   const [loadingMemorial, setLoadingMemorial] = useState(true)
@@ -197,28 +195,6 @@ export function MemorialClientPage() {
   }, [memorialId, isSample])
 
   useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await fetch(`/api/memorials/${memorialId}/videos`)
-        if (response.ok) {
-          const data = await response.json()
-          setVideos(data.videos || [])
-        }
-      } catch (error) {
-        console.error("[v0] Error fetching videos:", error)
-      } finally {
-        setLoadingVideos(false)
-      }
-    }
-
-    if (memorialId && !isSample) {
-      fetchVideos()
-    } else {
-      setLoadingVideos(false)
-    }
-  }, [memorialId, isSample])
-
-  useEffect(() => {
     const fetchStories = async () => {
       try {
         const response = await fetch(`/api/memorials/${memorialId}/stories`)
@@ -259,28 +235,6 @@ export function MemorialClientPage() {
       fetchMessages()
     } else {
       setLoadingMessages(false)
-    }
-  }, [memorialId, isSample])
-
-  useEffect(() => {
-    const fetchMusic = async () => {
-      try {
-        const response = await fetch(`/api/memorials/${memorialId}/music`)
-        if (response.ok) {
-          const data = await response.json()
-          setMusic(data.music || [])
-        }
-      } catch (error) {
-        console.error("[v0] Error fetching music:", error)
-      } finally {
-        setLoadingMusic(false)
-      }
-    }
-
-    if (memorialId && !isSample) {
-      fetchMusic()
-    } else {
-      setLoadingMusic(false)
     }
   }, [memorialId, isSample])
 
@@ -603,13 +557,13 @@ export function MemorialClientPage() {
                   <DialogTrigger asChild>
                     <Button variant="outline">
                       <MusicIcon className="mr-2 h-4 w-4" />
-                      Add Music
+                      Add Music / Voicemail
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Add Music</DialogTitle>
-                      <DialogDescription>Upload an audio file or add a YouTube link</DialogDescription>
+                      <DialogTitle>Add Music or a Voicemail</DialogTitle>
+                      <DialogDescription>Upload a song or saved voicemail, or add a YouTube link</DialogDescription>
                     </DialogHeader>
                     <MusicUpload memorialId={memorialId} onUploadComplete={handleMusicUploadComplete} />
                   </DialogContent>
@@ -736,37 +690,12 @@ export function MemorialClientPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <VideoIcon className="w-5 h-5" />
-                  Video Memories
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {loadingVideos ? (
-                  <div className="text-center py-8 text-slate-500">Loading videos...</div>
-                ) : videos.length > 0 ? (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {videos.map((video) => (
-                      <div key={video.id} className="space-y-2">
-                        <video src={video.video_url} controls className="w-full rounded-lg">
-                          Your browser does not support the video element.
-                        </video>
-                        <h4 className="font-semibold text-sm">{video.title}</h4>
-                        {video.uploaded_by && (
-                          <p className="text-xs text-slate-500">Video added by {video.uploaded_by}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-slate-500">No videos yet. Be the first to share a video memory!</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <MemorialMediaSections
+              memorialId={memorialId}
+              fetchOnMount={!isSample}
+              refreshKey={mediaRefreshKey}
+              allowUploads={!isSample}
+            />
 
             <Card>
               <CardHeader>
@@ -798,72 +727,6 @@ export function MemorialClientPage() {
               </CardContent>
             </Card>
 
-            {!loadingMusic && music.length > 0 && (
-              <Card id="music-section">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MusicIcon className="w-5 h-5" />
-                    Voicemails & Audio
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {music.map((song) => (
-                      <div key={song.id} className="bg-slate-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-3 mb-2">
-                          <MusicIcon className="w-4 h-4 text-purple-600" />
-                          <div>
-                            <h4 className="font-semibold text-sm">{song.title}</h4>
-                            {song.artist && <p className="text-xs text-slate-500">{song.artist}</p>}
-                          </div>
-                        </div>
-                        {song.is_youtube && song.youtube_id ? (
-                          <div className="aspect-video w-full">
-                            <iframe
-                              width="100%"
-                              height="100%"
-                              src={`https://www.youtube.com/embed/${song.youtube_id}`}
-                              title={song.title}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                              className="rounded-lg"
-                            />
-                          </div>
-                        ) : (
-                          <audio
-                            controls
-                            className="w-full"
-                            src={song.audio_url}
-                            preload="metadata"
-                            onError={(e) => {
-                              const target = e.currentTarget as HTMLAudioElement
-                              const error = target.error
-                              console.error("[v0] Audio playback error:", {
-                                songId: song.id,
-                                title: song.title,
-                                audioUrl: song.audio_url,
-                                errorCode: error?.code,
-                                errorMessage: error?.message,
-                                networkState: target.networkState,
-                                readyState: target.readyState,
-                              })
-                              toast({
-                                title: "Audio playback error",
-                                description: `Unable to play "${song.title}". The file format may not be supported by your browser.`,
-                                variant: "destructive",
-                              })
-                            }}
-                          >
-                            Your browser does not support the audio element.
-                          </audio>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </section>
@@ -1029,10 +892,6 @@ export function MemorialClientPage() {
           const data = await response.json()
           setPhotos(data.photos || [])
           setBrokenImages(new Set())
-          toast({
-            title: "Photo added",
-            description: "Your photo has been added to the memorial",
-          })
         }
       } catch (error) {
         console.error("[v0] Error fetching photos:", error)
@@ -1050,10 +909,6 @@ export function MemorialClientPage() {
           const data = await response.json()
           setPhotos(data.photos || [])
           setBrokenImages(new Set())
-          toast({
-            title: "Photos uploaded",
-            description: "Your photos have been added to the memorial",
-          })
         }
       } catch (error) {
         console.error("[v0] Error fetching photos:", error)
@@ -1064,62 +919,17 @@ export function MemorialClientPage() {
 
   async function handleVideoUploadComplete() {
     setVideoUploadDialogOpen(false)
-    const fetchVideos = async () => {
-      try {
-        const response = await fetch(`/api/memorials/${memorialId}/videos`)
-        if (response.ok) {
-          const data = await response.json()
-          setVideos(data.videos || [])
-          toast({
-            title: "Video added",
-            description: "Your video has been added to the memorial",
-          })
-        }
-      } catch (error) {
-        console.error("[v0] Error fetching videos:", error)
-      }
-    }
-    fetchVideos()
+    setMediaRefreshKey((key) => key + 1)
   }
 
   async function handleBulkVideoUploadComplete() {
     setBulkVideoUploadDialogOpen(false)
-    const fetchVideos = async () => {
-      try {
-        const response = await fetch(`/api/memorials/${memorialId}/videos`)
-        if (response.ok) {
-          const data = await response.json()
-          setVideos(data.videos || [])
-          toast({
-            title: "Videos uploaded",
-            description: "Your videos have been added to the memorial",
-          })
-        }
-      } catch (error) {
-        console.error("[v0] Error fetching videos:", error)
-      }
-    }
-    fetchVideos()
+    setMediaRefreshKey((key) => key + 1)
   }
 
   async function handleMusicUploadComplete() {
     setMusicUploadDialogOpen(false)
-    const fetchMusic = async () => {
-      try {
-        const response = await fetch(`/api/memorials/${memorialId}/music`)
-        if (response.ok) {
-          const data = await response.json()
-          setMusic(data.music || [])
-          toast({
-            title: "Music added",
-            description: "The music has been added to the memorial",
-          })
-        }
-      } catch (error) {
-        console.error("[v0] Error fetching music:", error)
-      }
-    }
-    fetchMusic()
+    setMediaRefreshKey((key) => key + 1)
   }
 
   async function handleMilestoneComplete() {

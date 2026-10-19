@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { sendWelcomeEmail } from "@/lib/email"
 import { SITE_URL } from "@/lib/site"
+import { createCreatorToken } from "@/lib/media/creator-token"
 
 export async function POST(request: NextRequest) {
   try {
@@ -110,7 +111,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ memorial }, { status: 201 })
+    // Lets this browser add the memorial's first photos, videos and recordings without waiting for approval.
+    const creatorToken = createCreatorToken(memorial.id)
+    return NextResponse.json({ memorial, creatorToken }, { status: 201 })
   } catch (error: any) {
     console.error("Unexpected exception creating memorial:", error.message)
     return NextResponse.json(

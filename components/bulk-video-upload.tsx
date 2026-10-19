@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
+import { uploadMemorialMedia, type UploadStage } from "@/lib/media/client-upload"
+import { ACCEPT_ATTR, ACCEPT_LABEL, checkMediaFile } from "@/lib/media/shared"
 
 interface UploadItem {
   file: File
@@ -15,20 +17,21 @@ interface UploadItem {
   status: "pending" | "uploading" | "success" | "error"
   error?: string
   progress: number
+  stage?: UploadStage
 }
 
 interface BulkVideoUploadProps {
   memorialId: string
   onUploadComplete: () => void
+  creatorToken?: string | null
 }
 
-export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploadProps) {
+export function BulkVideoUpload({ memorialId, onUploadComplete, creatorToken }: BulkVideoUploadProps) {
+  const [awaitingApproval, setAwaitingApproval] = useState(0)
   const [items, setItems] = useState<UploadItem[]>([])
   const [uploaderName, setUploaderName] = useState("")
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
-
-  const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -44,7 +47,7 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
     e.preventDefault()
     setIsDragging(false)
 
-    const files = Array.from(e.dataTransfer.files).filter((file) => file.type.startsWith("video/"))
+    const files = Array.from(e.dataTransfer.files).filter((file) => file.type.startsWith("video/") || /\.(mov|mp4|m4v|3gp|3gpp|webm|avi|mkv)$/i.test(file.name))
 
     addFiles(files)
   }, [])
@@ -57,13 +60,16 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
   }
 
   const addFiles = (files: File[]) => {
-    const newItems: UploadItem[] = files.map((file) => ({
-      file,
-      title: file.name.replace(/\.[^/.]+$/, ""),
-      status: file.size > MAX_FILE_SIZE ? "error" : "pending",
-      error: file.size > MAX_FILE_SIZE ? "File too large (max 100MB)" : undefined,
-      progress: 0,
-    }))
+    const newItems: UploadItem[] = files.map((file) => {
+      const check = checkMediaFile(file, "video")
+      return {
+        file,
+        title: file.name.replace(/\.[^/.]+$/, ""),
+        status: check.ok ? "pending" : "error",
+        error: check.ok ? undefined : check.error,
+        progress: 0,
+      }
+    })
 
     setItems((prev) => [...prev, ...newItems])
   }
@@ -93,27 +99,22 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
         return newItems
       })
 
-      const formData = new FormData()
-      formData.append("file", item.file)
-      formData.append("memorialId", memorialId)
-      formData.append("title", item.title)
-      formData.append("uploadedBy", uploaderName)
-
-      setItems((prev) => {
-        const newItems = [...prev]
-        newItems[index].progress = 30
-        return newItems
+      const result = await uploadMemorialMedia({
+        file: item.file,
+        memorialId,
+        mediaType: "video",
+        title: item.title,
+        uploadedBy: uploaderName,
+        creatorToken,
+        onProgress: (percent, stage) =>
+          setItems((prev) => {
+            const newItems = [...prev]
+            newItems[index].progress = Math.max(10, percent)
+            newItems[index].stage = stage
+            return newItems
+          }),
       })
-
-      const response = await fetch("/api/videos/upload", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Upload failed")
-      }
+      if (result.status === "pending") setAwaitingApproval((count) => count + 1)
 
       setItems((prev) => {
         const newItems = [...prev]
@@ -185,10 +186,10 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
       >
         <Video className="mx-auto h-12 w-12 text-gray-400 mb-4" />
         <p className="text-sm text-gray-600 mb-2">Drag and drop videos here, or click to select</p>
-        <p className="text-xs text-gray-500 mb-4">Maximum file size: 100MB per video</p>
+        <p className="text-xs text-gray-500 mb-4">Up to 100MB per video. {ACCEPT_LABEL.video}.</p>
         <Input
           type="file"
-          accept="video/*"
+          accept={ACCEPT_ATTR.video}
           multiple
           onChange={handleFileSelect}
           className="hidden"
@@ -232,7 +233,14 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
                     className="mb-2"
                   />
                   <p className="text-xs text-gray-500 mb-2">{(item.file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                  {item.status === "uploading" && <Progress value={item.progress} className="h-2" />}
+                  {item.status === "uploading" && (
+                    <>
+                      <Progress value={item.progress} className="h-2" />
+                      {item.stage === "converting" && (
+                        <p className="mt-1 text-xs text-gray-500">Converting so it plays on every phone and browser…</p>
+                      )}
+                    </>
+                  )}
                   {item.status === "error" && (
                     <div className="flex items-center gap-2 text-sm text-red-600">
                       <AlertCircle className="w-4 h-4" />
@@ -252,6 +260,13 @@ export function BulkVideoUpload({ memorialId, onUploadComplete }: BulkVideoUploa
               </div>
             ))}
           </div>
+
+          {awaitingApproval > 0 && (
+            <p className="rounded-md bg-purple-50 p-3 text-sm text-purple-800">
+              Thank you! {awaitingApproval} video{awaitingApproval !== 1 ? "s" : ""} will appear once the family approves
+              {awaitingApproval !== 1 ? " them" : " it"}.
+            </p>
+          )}
 
           <Button onClick={handleUploadAll} disabled={isUploading || pendingCount === 0} className="w-full">
             {isUploading ? "Uploading..." : `Upload ${pendingCount} Video${pendingCount !== 1 ? "s" : ""}`}

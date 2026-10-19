@@ -10,6 +10,11 @@ import { PhotosTab } from "@/components/dashboard/photos-tab"
 import { StoriesTab } from "@/components/dashboard/stories-tab"
 import { MusicTab } from "@/components/dashboard/music-tab"
 import { VideosTab } from "@/components/dashboard/videos-tab"
+import { PendingMediaTab, type PendingItem } from "@/components/dashboard/pending-media-tab"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
+import { isAdminEmail } from "@/lib/admin-emails"
+import { isApproved } from "@/lib/media/shared"
+import { selectPendingMedia } from "@/lib/media/server"
 
 export default async function ManageMemorialPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -23,21 +28,30 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
     redirect("/auth/login")
   }
 
-  // Fetch memorial and verify ownership
-  const { data: memorial } = await supabase.from("memorials").select("*").eq("id", id).eq("user_id", user.id).single()
+  // Owners manage their own memorials; site admins can also moderate memorials without an owner (e.g. Glenda's).
+  const isAdmin = Boolean(user.email_confirmed_at && isAdminEmail(user.email))
+  const db = isAdmin ? createServiceRoleClient() : supabase
+  const memorialQuery = db.from("memorials").select("*").eq("id", id)
+  const { data: memorial } = await (isAdmin ? memorialQuery : memorialQuery.eq("user_id", user.id)).single()
 
   if (!memorial) {
     redirect("/dashboard")
   }
 
-  const [{ data: messages }, { data: photos }, { data: stories }, { data: music }, { data: videos }] =
+  const [{ data: messages }, { data: allPhotos }, { data: stories }, { data: allMusic }, { data: allVideos }, pending] =
     await Promise.all([
-      supabase.from("messages").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
-      supabase.from("photos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
-      supabase.from("stories").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
-      supabase.from("music").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
-      supabase.from("videos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      db.from("messages").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      db.from("photos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      db.from("stories").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      db.from("music").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      db.from("videos").select("*").eq("memorial_id", id).order("created_at", { ascending: false }),
+      selectPendingMedia(id).catch(() => []),
     ])
+  // Pending and hidden visitor uploads stay out of the regular tabs.
+  const photos = (allPhotos ?? []).filter(isApproved)
+  const music = (allMusic ?? []).filter(isApproved)
+  const videos = (allVideos ?? []).filter(isApproved)
+  const pendingItems = pending as PendingItem[]
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,14 +81,18 @@ export default async function ManageMemorialPage({ params }: { params: Promise<{
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="messages" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue={pendingItems.length > 0 ? "pending" : "messages"} className="w-full">
+          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6">
+            <TabsTrigger value="pending">Needs approval ({pendingItems.length})</TabsTrigger>
             <TabsTrigger value="messages">Messages ({messages?.length || 0})</TabsTrigger>
             <TabsTrigger value="photos">Photos ({photos?.length || 0})</TabsTrigger>
             <TabsTrigger value="videos">Videos ({videos?.length || 0})</TabsTrigger>
             <TabsTrigger value="stories">Stories ({stories?.length || 0})</TabsTrigger>
             <TabsTrigger value="music">Voicemails/Audio ({music?.length || 0})</TabsTrigger>
           </TabsList>
+          <TabsContent value="pending">
+            <PendingMediaTab items={pendingItems} />
+          </TabsContent>
           <TabsContent value="messages">
             <MessagesTab messages={messages || []} memorialId={id} />
           </TabsContent>

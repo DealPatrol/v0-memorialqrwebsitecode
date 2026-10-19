@@ -6,7 +6,8 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MemorialPhotoGallery } from "@/components/memorial-photo-gallery"
-import { createServiceRoleClient } from "@/lib/supabase/service-role"
+import { MemorialMediaSections, type MusicRow, type VideoRow } from "@/components/memorial-media-sections"
+import { selectPublicMedia } from "@/lib/media/server"
 import { dedupePhotos, type GalleryPhoto } from "@/lib/memorial-photos"
 import {
   GLENDA_LEGACY_PORTRAIT,
@@ -25,19 +26,13 @@ export const metadata = {
   },
 }
 
-// Re-check hourly for photos the family adds through the memorial page.
-export const revalidate = 3600
+// Re-check every 10 minutes for photos, videos and recordings the family adds (after approval).
+export const revalidate = 600
 
 async function loadFamilyUploads(): Promise<GalleryPhoto[]> {
   try {
-    const supabase = createServiceRoleClient()
-    const { data, error } = await supabase
-      .from("photos")
-      .select("id, image_url, caption, uploaded_by, created_at")
-      .eq("memorial_id", GLENDA_MEMORIAL_ID)
-      .order("created_at", { ascending: true })
-    if (error || !data) return []
-    return data
+    const rows = await selectPublicMedia("photos", GLENDA_MEMORIAL_ID, { limit: 200, ascending: true })
+    return rows
       .filter((row) => typeof row.image_url === "string" && row.image_url && row.image_url !== GLENDA_LEGACY_PORTRAIT)
       .map((row) => ({
         id: String(row.id),
@@ -50,8 +45,17 @@ async function loadFamilyUploads(): Promise<GalleryPhoto[]> {
   }
 }
 
+/** Approved videos, voicemails and songs the family has shared on Glenda's memorial. */
+async function loadFamilyMedia(): Promise<{ videos: VideoRow[]; music: MusicRow[] }> {
+  const [videos, music] = await Promise.all([
+    selectPublicMedia("videos", GLENDA_MEMORIAL_ID, { limit: 50 }).catch(() => []),
+    selectPublicMedia("music", GLENDA_MEMORIAL_ID, { limit: 100 }).catch(() => []),
+  ])
+  return { videos: videos as VideoRow[], music: music as MusicRow[] }
+}
+
 export default async function GlendaKelsoMemorialPage() {
-  const uploads = await loadFamilyUploads()
+  const [uploads, media] = await Promise.all([loadFamilyUploads(), loadFamilyMedia()])
   const photos = dedupePhotos([...GLENDA_PHOTOS, ...uploads])
 
   return (
@@ -122,6 +126,15 @@ export default async function GlendaKelsoMemorialPage() {
             <MemorialPhotoGallery photos={photos} />
           </CardContent>
         </Card>
+
+        <div className="mt-8 space-y-8">
+          <MemorialMediaSections
+            memorialId={GLENDA_MEMORIAL_ID}
+            initialVideos={media.videos}
+            initialMusic={media.music}
+            allowUploads
+          />
+        </div>
       </main>
     </div>
   )

@@ -10,15 +10,17 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Upload, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { compressImage } from "@/lib/image-compression"
+import { preparePhoto, uploadMemorialMedia, uploadResultMessage } from "@/lib/media/client-upload"
+import { ACCEPT_ATTR, MEDIA_LIMITS, formatLimit } from "@/lib/media/shared"
 import { Progress } from "@/components/ui/progress"
 
 interface PhotoUploadProps {
   memorialId: string
   onUploadComplete?: () => void
+  creatorToken?: string | null
 }
 
-export function PhotoUpload({ memorialId, onUploadComplete }: PhotoUploadProps) {
+export function PhotoUpload({ memorialId, onUploadComplete, creatorToken }: PhotoUploadProps) {
   const [file, setFile] = useState<File | null>(null)
   const [caption, setCaption] = useState("")
   const [uploading, setUploading] = useState(false)
@@ -31,10 +33,10 @@ export function PhotoUpload({ memorialId, onUploadComplete }: PhotoUploadProps) 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) {
-      if (selectedFile.size > 10 * 1024 * 1024) {
+      if (selectedFile.size > MEDIA_LIMITS.photo) {
         toast({
           title: "File too large",
-          description: "Please select an image smaller than 10MB. It will be automatically compressed.",
+          description: `Please select an image smaller than ${formatLimit("photo")}. It will be automatically compressed.`,
           variant: "destructive",
         })
         return
@@ -59,7 +61,7 @@ export function PhotoUpload({ memorialId, onUploadComplete }: PhotoUploadProps) 
       return
     }
 
-    if (!uploaderName.trim()) {
+    if (!uploaderName.trim() && !creatorToken) {
       toast({
         title: "Name required",
         description: "Please enter your name",
@@ -75,41 +77,29 @@ export function PhotoUpload({ memorialId, onUploadComplete }: PhotoUploadProps) 
       setCompressionStatus("Optimizing image...")
       setUploadProgress(10)
 
-      const compressedFile = await compressImage(file, 2)
+      const compressedFile = await preparePhoto(file)
       const originalSize = (file.size / 1024 / 1024).toFixed(2)
       const compressedSize = (compressedFile.size / 1024 / 1024).toFixed(2)
-
-      console.log(`[v0] Image compressed: ${originalSize}MB → ${compressedSize}MB`)
       setCompressionStatus("")
       setUploadProgress(30)
 
-      const formData = new FormData()
-      formData.append("file", compressedFile)
-      formData.append("memorialId", memorialId)
-      formData.append("caption", caption)
-      formData.append("uploadedBy", uploaderName)
-
-      setUploadProgress(40)
-
-      const response = await fetch("/api/photos/upload", {
-        method: "POST",
-        body: formData,
+      const result = await uploadMemorialMedia({
+        file: compressedFile,
+        memorialId,
+        mediaType: "photo",
+        caption,
+        uploadedBy: uploaderName,
+        creatorToken,
+        onProgress: (percent) => setUploadProgress(30 + Math.round(percent * 0.7)),
       })
-
-      setUploadProgress(80)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Upload failed")
-      }
-
-      const data = await response.json()
       setUploadProgress(100)
 
-      toast({
-        title: "Photo uploaded",
-        description: `Your photo has been added (compressed from ${originalSize}MB to ${compressedSize}MB)`,
-      })
+      const message = uploadResultMessage(result, "photo")
+      toast(
+        result.status === "pending" || originalSize === compressedSize
+          ? message
+          : { ...message, description: `${message.description} (optimized from ${originalSize}MB to ${compressedSize}MB)` },
+      )
 
       // Reset form
       setFile(null)
@@ -139,7 +129,7 @@ export function PhotoUpload({ memorialId, onUploadComplete }: PhotoUploadProps) 
     <div className="space-y-4">
       <div>
         <Label htmlFor="photo">Select Photo</Label>
-        <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} />
+        <Input id="photo" type="file" accept={ACCEPT_ATTR.photo} onChange={handleFileChange} disabled={uploading} />
         <p className="text-xs text-muted-foreground mt-1">Images will be automatically optimized for faster upload</p>
       </div>
 

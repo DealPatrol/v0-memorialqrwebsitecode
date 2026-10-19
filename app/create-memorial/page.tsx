@@ -14,6 +14,8 @@ import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, Arrow
 import { useToast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
 import { ThemeSelector } from "@/components/theme-selector"
+import { preparePhoto, uploadMemorialMedia } from "@/lib/media/client-upload"
+import { ACCEPT_ATTR, ACCEPT_LABEL, checkMediaFile, formatLimit } from "@/lib/media/shared"
 
 const steps = [
   { id: 1, title: "Basic Information", icon: User },
@@ -38,6 +40,7 @@ function CreateMemorialForm() {
   const [isFreePlan, setIsFreePlan] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
   const [customerName, setCustomerName] = useState("")
+  const [mediaProgress, setMediaProgress] = useState<string | null>(null)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -137,6 +140,9 @@ function CreateMemorialForm() {
     favoriteQuote: "",
     profilePhoto: null as File | null,
     additionalPhotos: [] as File[],
+    videos: [] as File[],
+    voicemails: [] as File[],
+    songs: [] as File[],
     biography: "",
     personalStory: "",
     spouse: "",
@@ -151,6 +157,18 @@ function CreateMemorialForm() {
 
   const handleFileUpload = (field: string, files: FileList | null) => {
     if (!files) return
+
+    if (field === "videos" || field === "voicemails" || field === "songs") {
+      const mediaType = field === "videos" ? "video" : "audio"
+      const accepted: File[] = []
+      for (const file of Array.from(files)) {
+        const check = checkMediaFile(file, mediaType)
+        if (check.ok) accepted.push(file)
+        else toast({ title: `Skipped ${file.name}`, description: check.error, variant: "destructive" })
+      }
+      setFormData((prev) => ({ ...prev, [field]: [...(prev[field] as File[]), ...accepted] }))
+      return
+    }
 
     if (field === "additionalPhotos") {
       const newPhotos = Array.from(files)
@@ -179,29 +197,6 @@ function CreateMemorialForm() {
     setIsSubmitting(true)
 
     try {
-      let profileImageUrl = null
-
-      if (formData.profilePhoto) {
-        const formDataBlob = new FormData()
-        formDataBlob.append("file", formData.profilePhoto)
-
-        const uploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: formDataBlob,
-        })
-
-        if (uploadResponse.ok) {
-          const uploadData = await uploadResponse.json()
-          profileImageUrl = uploadData.url
-        } else {
-          toast({
-            title: "Warning",
-            description: "Profile photo upload failed, continuing with memorial creation...",
-            variant: "destructive",
-          })
-        }
-      }
-
       const memorialResponse = await fetch("/api/memorials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -215,7 +210,7 @@ function CreateMemorialForm() {
           customerEmail: user?.email || orderData.customerEmail,
           customerName: user?.user_metadata?.full_name || orderData.customerName,
           userId: user?.id || null,
-          profileImageUrl: profileImageUrl,
+          profileImageUrl: null,
           theme: formData.theme,
           packageType: isFreePlan ? "free" : orderData.packageType || "basic",
         }),
@@ -226,25 +221,93 @@ function CreateMemorialForm() {
         throw new Error(errorData.error || "Failed to create memorial")
       }
 
-      const { memorial } = await memorialResponse.json()
+      const { memorial, creatorToken } = await memorialResponse.json()
 
-      if (formData.additionalPhotos.length > 0) {
-        for (const photo of formData.additionalPhotos) {
-          try {
-            const photoFormData = new FormData()
-            photoFormData.append("file", photo)
-            photoFormData.append("memorialId", memorial.id)
-            photoFormData.append("caption", photo.name)
-            photoFormData.append("uploaderName", orderData.customerName || "Memorial Creator")
+      // Upload everything straight to Blob storage now that the memorial exists.
+      // Large videos (up to 100MB) and voicemails no longer fail at the API size limit.
+      const uploaderName = orderData.customerName || user?.user_metadata?.full_name || "Family"
+      const failures: string[] = []
+      const queue: { file: File; run: () => Promise<unknown> }[] = []
 
-            await fetch("/api/photos/upload", {
-              method: "POST",
-              body: photoFormData,
-            })
-          } catch (photoError) {
-            console.error("Error uploading photo:", photoError)
-          }
+      if (formData.profilePhoto) {
+        const file = formData.profilePhoto
+        queue.push({
+          file,
+          run: async () =>
+            uploadMemorialMedia({ file: await preparePhoto(file), memorialId: memorial.id, mediaType: "profile", creatorToken }),
+        })
+      }
+      for (const file of formData.additionalPhotos) {
+        queue.push({
+          file,
+          run: async () =>
+            uploadMemorialMedia({
+              file: await preparePhoto(file),
+              memorialId: memorial.id,
+              mediaType: "photo",
+              uploadedBy: uploaderName,
+              creatorToken,
+            }),
+        })
+      }
+      for (const file of formData.videos) {
+        queue.push({
+          file,
+          run: () =>
+            uploadMemorialMedia({
+              file,
+              memorialId: memorial.id,
+              mediaType: "video",
+              title: file.name.replace(/\.[^/.]+$/, ""),
+              uploadedBy: uploaderName,
+              creatorToken,
+              onProgress: (percent, stage) =>
+                setMediaProgress(
+                  stage === "converting" ? `Converting ${file.name} so it plays everywhere…` : `Uploading ${file.name}… ${percent}%`,
+                ),
+            }),
+        })
+      }
+      for (const [field, kind] of [
+        ["voicemails", "voicemail"],
+        ["songs", "song"],
+      ] as const) {
+        for (const file of formData[field]) {
+          queue.push({
+            file,
+            run: () =>
+              uploadMemorialMedia({
+                file,
+                memorialId: memorial.id,
+                mediaType: "audio",
+                kind,
+                title: file.name.replace(/\.[^/.]+$/, ""),
+                uploadedBy: uploaderName,
+                creatorToken,
+                onProgress: (percent) => setMediaProgress(`Uploading ${file.name}… ${percent}%`),
+              }),
+          })
         }
+      }
+
+      for (let index = 0; index < queue.length; index++) {
+        const item = queue[index]
+        setMediaProgress(`Uploading ${index + 1} of ${queue.length}: ${item.file.name}`)
+        try {
+          await item.run()
+        } catch (uploadError) {
+          console.error("Media upload failed:", item.file.name, uploadError)
+          failures.push(`${item.file.name}: ${uploadError instanceof Error ? uploadError.message : "upload failed"}`)
+        }
+      }
+      setMediaProgress(null)
+
+      if (failures.length > 0) {
+        toast({
+          title: `${failures.length} file${failures.length > 1 ? "s" : ""} could not be uploaded`,
+          description: `${failures.slice(0, 3).join("; ")}. You can add them from the memorial page.`,
+          variant: "destructive",
+        })
       }
 
       if (orderData.orderId && !isFreePlan) {
@@ -608,7 +671,59 @@ function CreateMemorialForm() {
                       onChange={(e) => handleFileUpload("additionalPhotos", e.target.files)}
                       className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
                     />
-                    <p className="text-sm text-zinc-500 mt-1">{formData.additionalPhotos.length} photos uploaded</p>
+                    <p className="text-sm text-zinc-500 mt-1">{formData.additionalPhotos.length} photos selected</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="videos" className="text-zinc-300">
+                      Videos
+                    </Label>
+                    <Input
+                      id="videos"
+                      type="file"
+                      accept={ACCEPT_ATTR.video}
+                      multiple
+                      onChange={(e) => handleFileUpload("videos", e.target.files)}
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
+                    />
+                    <p className="text-sm text-zinc-500 mt-1">
+                      {formData.videos.length} videos selected. Up to {formatLimit("video")} each. {ACCEPT_LABEL.video}.
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="voicemails" className="text-zinc-300">
+                      Voicemails &amp; voice recordings
+                    </Label>
+                    <Input
+                      id="voicemails"
+                      type="file"
+                      accept={ACCEPT_ATTR.audio}
+                      multiple
+                      onChange={(e) => handleFileUpload("voicemails", e.target.files)}
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
+                    />
+                    <p className="text-sm text-zinc-500 mt-1">
+                      {formData.voicemails.length} recordings selected. Android (AMR/3GP) and iPhone (M4A) voicemails
+                      work, up to {formatLimit("audio")} each.
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="songs" className="text-zinc-300">
+                      Songs
+                    </Label>
+                    <Input
+                      id="songs"
+                      type="file"
+                      accept={ACCEPT_ATTR.audio}
+                      multiple
+                      onChange={(e) => handleFileUpload("songs", e.target.files)}
+                      className="bg-zinc-800 border-zinc-700 text-white file:bg-zinc-700 file:text-white file:border-0"
+                    />
+                    <p className="text-sm text-zinc-500 mt-1">
+                      {formData.songs.length} songs selected. You can also add YouTube links from the memorial page.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -768,7 +883,8 @@ function CreateMemorialForm() {
                       <span className="text-zinc-400 text-sm">Photos:</span>
                       <p className="text-white">
                         {formData.profilePhoto ? "1 profile photo" : "No profile photo"},{" "}
-                        {formData.additionalPhotos.length} additional photos
+                        {formData.additionalPhotos.length} additional photos, {formData.videos.length} videos,{" "}
+                        {formData.voicemails.length} voicemails, {formData.songs.length} songs
                       </p>
                     </div>
                   </div>
@@ -809,7 +925,7 @@ function CreateMemorialForm() {
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Creating Memorial...
+                      {mediaProgress ?? "Creating Memorial..."}
                     </>
                   ) : (
                     <>
