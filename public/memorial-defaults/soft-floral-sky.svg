@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Soft sky with white blossoms">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dfe7f5"/>
+      <stop offset="0.55" stop-color="#ece6f4"/>
+      <stop offset="1" stop-color="#f8f1ee"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.35" r="0.6">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="petal" cx="0.5" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dcd2ec"/>
+    </radialGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="softer" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
+    <g id="blossom">
+      <g fill="url(#petal)">
+        <ellipse cx="0" cy="-34" rx="22" ry="34"/>
+        <ellipse cx="0" cy="-34" rx="22" ry="34" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-34" rx="22" ry="34" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-34" rx="22" ry="34" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-34" rx="22" ry="34" transform="rotate(288)"/>
+      </g>
+      <circle r="9" fill="#efe3c8"/>
+    </g>
+  </defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  <ellipse cx="180" cy="120" rx="220" ry="60" fill="#ffffff" opacity="0.55" filter="url(#softer)"/>
+  <ellipse cx="620" cy="90" rx="200" ry="50" fill="#ffffff" opacity="0.5" filter="url(#softer)"/>
+  <rect width="800" height="600" fill="url(#glow)"/>
+  <g filter="url(#softer)" opacity="0.7">
+    <use href="#blossom" transform="translate(70 470) scale(1.6) rotate(12)"/>
+    <use href="#blossom" transform="translate(740 520) scale(1.9) rotate(-8)"/>
+  </g>
+  <g filter="url(#soft)" opacity="0.85">
+    <use href="#blossom" transform="translate(150 560) scale(1.2) rotate(30)"/>
+    <use href="#blossom" transform="translate(660 430) scale(1.1) rotate(5)"/>
+    <use href="#blossom" transform="translate(720 140) scale(0.9) rotate(40)"/>
+    <use href="#blossom" transform="translate(60 200) scale(0.8) rotate(-20)"/>
+  </g>
+  <g opacity="0.9">
+    <use href="#blossom" transform="translate(250 520) scale(0.7) rotate(18)"/>
+    <use href="#blossom" transform="translate(560 540) scale(0.75) rotate(-14)"/>
+  </g>
+</svg>

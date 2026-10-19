@@ -1,6 +1,5 @@
 "use client"
 import { Upload, MusicIcon, VideoIcon, BookOpen, Calendar } from "lucide-react"
-import Image from "next/image"
 
 import { useParams } from "next/navigation"
 import Link from "next/link"
@@ -33,6 +32,8 @@ import { BulkVideoUpload } from "@/components/bulk-video-upload"
 import { ExportMemorialDialog } from "@/components/export-memorial-dialog"
 import { ShareMemorialDialog } from "@/components/share-memorial-dialog"
 import { themes } from "@/components/theme-selector"
+import { MemorialAvatar } from "@/components/memorial-avatar"
+import { MemorialPhotoGallery } from "@/components/memorial-photo-gallery"
 
 interface Photo {
   id: string
@@ -460,18 +461,12 @@ export function MemorialClientPage() {
                 <div
                   className={`w-48 h-48 bg-gradient-to-br ${memorial?.theme === "classic" ? "from-purple-200 to-blue-200" : "from-white/20 to-white/10"} rounded-full flex items-center justify-center overflow-hidden`}
                 >
-                  <Image
-                    src={memorial?.profile_image_url || "/placeholder.svg?height=176&width=176"}
-                    alt="Memorial Portrait"
-                    width={176}
-                    height={176}
-                    className="w-44 h-44 rounded-full object-cover"
+                  <MemorialAvatar
+                    src={memorial?.profile_image_url || (validPhotos[0] ? getPhotoUrl(validPhotos[0]) : null)}
+                    name={memorial?.full_name}
+                    size={176}
+                    className="size-44"
                     priority
-                    onError={(e) => {
-                      // Fallback to blank avatar if image fails to load
-                      const target = e.currentTarget as HTMLImageElement
-                      target.src = "/placeholder.svg?height=176&width=176"
-                    }}
                   />
                 </div>
 
@@ -722,37 +717,20 @@ export function MemorialClientPage() {
                       </div>
                     )}
 
-                    {validPhotos.length > 0 ? (
-                      <div className="grid md:grid-cols-3 gap-4">
-                        {validPhotos.map((photo) => {
-                          const photoUrl = getPhotoUrl(photo)
-                          return (
-                            <div key={photo.id} className="space-y-2">
-                              <Image
-                                src={photoUrl || "/placeholder.svg"}
-                                alt={photo.caption || "Memorial photo"}
-                                width={400}
-                                height={300}
-                                className="w-full h-48 object-cover rounded-lg"
-                                onError={() => handleImageError(photo.id, photoUrl)}
-                              />
-                              {photo.caption && <p className="text-sm text-slate-600">{photo.caption}</p>}
-                              {photo.uploaded_by && (
-                                <p className="text-xs text-slate-500">Photo added by {photo.uploaded_by}</p>
-                              )}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-slate-500 mb-4">
-                          {brokenPhotos.length > 0
-                            ? "All photos need to be re-uploaded. Click 'Add Photo' above to upload new photos."
-                            : "No photos yet. Be the first to share a memory!"}
-                        </p>
-                      </div>
-                    )}
+                    <MemorialPhotoGallery
+                      photos={validPhotos.map((photo) => ({
+                        id: photo.id,
+                        src: getPhotoUrl(photo),
+                        caption: photo.caption,
+                        uploadedBy: photo.uploaded_by,
+                      }))}
+                      onImageError={(photo) => handleImageError(photo.id, photo.src)}
+                      emptyMessage={
+                        brokenPhotos.length > 0
+                          ? "All photos need to be re-uploaded. Click 'Add Photo' above to upload new photos."
+                          : "No photos yet. Be the first to share a memory!"
+                      }
+                    />
                   </>
                 )}
               </CardContent>
@@ -1039,7 +1017,7 @@ export function MemorialClientPage() {
   function formatDate(dateString: string | null) {
     if (!dateString) return ""
     const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
   }
 
   async function handleUploadComplete() {
