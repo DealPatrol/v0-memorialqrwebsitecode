@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { isAdminEmail } from "@/lib/admin-emails"
 import { verifyCreatorToken } from "@/lib/media/creator-token"
-import { isUuid, type ModerationStatus } from "@/lib/media/shared"
+import { isUuid, safeMediaUrl, type ModerationStatus } from "@/lib/media/shared"
 
 export type MediaTable = "photos" | "videos" | "music"
 
@@ -114,12 +114,38 @@ export async function selectPublicMedia(
   db: SupabaseClient = createServiceRoleClient(),
 ): Promise<Record<string, any>[]> {
   const base = () => db.from(table).select("*").eq("memorial_id", memorialId).order("created_at", { ascending }).limit(limit)
+  const safe = (rows: Record<string, any>[] | null) => (rows ?? []).filter((row) => safeMediaUrl(row[URL_COLUMN[table]]))
   const filtered = await base().eq("status", "approved")
-  if (!filtered.error) return filtered.data ?? []
+  if (!filtered.error) return safe(filtered.data)
   if (!isMissingColumn(filtered.error)) throw new Error(filtered.error.message)
   const all = await base()
   if (all.error) throw new Error(all.error.message)
-  return all.data ?? []
+  return safe(all.data)
+}
+
+/** Visitor upload tokens per memorial / per IP in 24h. Durable (database) backstop for the in-memory limiter. */
+export const VISITOR_UPLOAD_TOKENS_PER_MEMORIAL_PER_DAY = 120
+export const VISITOR_UPLOAD_TOKENS_PER_IP_PER_DAY = 30
+
+/**
+ * Records a visitor upload-token request and says whether it is allowed.
+ * Allows (fails open) when the media_upload_attempts table does not exist yet.
+ */
+export async function recordVisitorUploadAttempt(
+  memorialId: string,
+  ip: string,
+  db: SupabaseClient = createServiceRoleClient(),
+): Promise<boolean> {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  const [byMemorial, byIp] = await Promise.all([
+    db.from("media_upload_attempts").select("id", { count: "exact", head: true }).eq("memorial_id", memorialId).gte("created_at", since),
+    db.from("media_upload_attempts").select("id", { count: "exact", head: true }).eq("ip", ip).gte("created_at", since),
+  ])
+  if (byMemorial.error || byIp.error) return true
+  if ((byMemorial.count ?? 0) >= VISITOR_UPLOAD_TOKENS_PER_MEMORIAL_PER_DAY) return false
+  if ((byIp.count ?? 0) >= VISITOR_UPLOAD_TOKENS_PER_IP_PER_DAY) return false
+  await db.from("media_upload_attempts").insert({ memorial_id: memorialId, ip })
+  return true
 }
 
 /** Pending media for one memorial (or every memorial when memorialId is null). Empty on unmigrated databases. */
@@ -134,7 +160,7 @@ export async function selectPendingMedia(memorialId: string | null, db: Supabase
         if (isMissingColumn(error)) return []
         throw new Error(error.message)
       }
-      return (data ?? []).map((row) => ({ ...row, table }))
+      return (data ?? []).filter((row) => safeMediaUrl(row[URL_COLUMN[table]])).map((row) => ({ ...row, table }))
     }),
   )
   return results.flat().sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))

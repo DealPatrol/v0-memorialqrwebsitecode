@@ -246,3 +246,18 @@ export function isApproved(row: { status?: string | null }): boolean {
 export function isUuid(value: string | null | undefined): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value ?? "")
 }
+
+/**
+ * Only https URLs and site-relative paths (/photo.jpg) are ever rendered as media
+ * sources or links (blocks javascript:, data:, protocol-relative //host, etc.).
+ */
+export function safeMediaUrl(value: unknown): string | null {
+  if (typeof value !== "string" || !value) return null
+  if (/^\/(?![\/\\])/.test(value)) return value
+  try {
+    const url = new URL(value)
+    return url.protocol === "https:" ? url.toString() : null
+  } catch {
+    return null
+  }
+}

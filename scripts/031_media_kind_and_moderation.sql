@@ -73,9 +73,10 @@ create index if not exists music_memorial_kind_idx on public.music (memorial_id,
 
 -- ---------------------------------------------------------------------------
 -- Row-level security: the public only sees approved media; uploaders and the
--- memorial owner also see pending items. Anonymous inserts must be "pending"
--- (only the owner can insert directly as approved). The site's API routes use
--- the service role and set the status themselves.
+-- memorial owner also see pending items.
+-- Direct (anon-key) inserts are limited to the memorial owner with an https URL:
+-- visitor uploads go through the site's API routes, which use the service role,
+-- verify the Blob URL and set the status ("pending") themselves.
 -- ---------------------------------------------------------------------------
 drop policy if exists "photos_select_all" on public.photos;
 drop policy if exists "photos_select_public" on public.photos;
@@ -108,24 +109,35 @@ drop policy if exists "photos_insert_public" on public.photos;
 drop policy if exists "photos_insert_authenticated" on public.photos;
 drop policy if exists "photos_insert_moderated" on public.photos;
 create policy "photos_insert_moderated" on public.photos for insert with check (
-  status = 'pending'
-  or auth.uid() in (select m.user_id from public.memorials m where m.id = photos.memorial_id)
+  (image_url like 'https://%' or (image_url like '/%' and image_url not like '//%'))
+  and auth.uid() in (select m.user_id from public.memorials m where m.id = photos.memorial_id)
 );
 
 drop policy if exists "videos_insert_public" on public.videos;
 drop policy if exists "videos_insert_moderated" on public.videos;
 create policy "videos_insert_moderated" on public.videos for insert with check (
-  status = 'pending'
-  or auth.uid() in (select m.user_id from public.memorials m where m.id = videos.memorial_id)
+  (video_url like 'https://%' or (video_url like '/%' and video_url not like '//%'))
+  and auth.uid() in (select m.user_id from public.memorials m where m.id = videos.memorial_id)
 );
 
 drop policy if exists "music_insert_public" on public.music;
 drop policy if exists "music_insert_authenticated" on public.music;
 drop policy if exists "music_insert_moderated" on public.music;
 create policy "music_insert_moderated" on public.music for insert with check (
-  status = 'pending'
-  or auth.uid() in (select m.user_id from public.memorials m where m.id = music.memorial_id)
+  (audio_url like 'https://%' or (audio_url like '/%' and audio_url not like '//%'))
+  and auth.uid() in (select m.user_id from public.memorials m where m.id = music.memorial_id)
 );
+
+-- Durable log of visitor upload-token requests (service role only), used for daily caps.
+create table if not exists public.media_upload_attempts (
+  id bigint generated always as identity primary key,
+  memorial_id uuid not null,
+  ip text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists media_upload_attempts_memorial_idx on public.media_upload_attempts (memorial_id, created_at desc);
+create index if not exists media_upload_attempts_ip_idx on public.media_upload_attempts (ip, created_at desc);
+alter table public.media_upload_attempts enable row level security;
 
 -- Owners approve/hide items on their memorial.
 drop policy if exists "photos_update_memorial_owner" on public.photos;

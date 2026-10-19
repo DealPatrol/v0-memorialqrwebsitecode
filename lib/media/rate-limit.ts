@@ -28,9 +28,12 @@ export function rateLimit(key: string, limit: number, windowMs: number, now = Da
 }
 
 export function clientIp(headers: Headers): string {
+  // On Vercel these are set by the platform from the real connection (client values are overwritten).
+  const vercel = headers.get("x-vercel-forwarded-for") || headers.get("x-real-ip")
+  if (vercel) return vercel.split(",")[0].trim()
   const forwarded = headers.get("x-forwarded-for")
   if (forwarded) return forwarded.split(",")[0].trim()
-  return headers.get("x-real-ip")?.trim() || "unknown"
+  return "unknown"
 }
 
 export function resetRateLimits() {

@@ -2,7 +2,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client"
 import { NextResponse, type NextRequest } from "next/server"
 import { clientIp, rateLimit } from "@/lib/media/rate-limit"
 import { ALLOWED_CONTENT_TYPES, MEDIA_LIMITS, mediaFolder, type AudioKind, type MediaType } from "@/lib/media/shared"
-import { currentUploader, pendingCapReached, resolveMemorial } from "@/lib/media/server"
+import { currentUploader, pendingCapReached, recordVisitorUploadAttempt, resolveMemorial } from "@/lib/media/server"
 
 export const runtime = "nodejs"
 
@@ -70,6 +70,10 @@ export async function POST(request: NextRequest) {
         if (mediaType === "profile" && !uploader.canPublish) throw new Error("Only the memorial owner can change the profile photo")
         if (!uploader.canPublish && (await pendingCapReached(memorial.id))) {
           throw new Error("This memorial has a lot of uploads waiting for the family's approval. Please try again tomorrow.")
+        }
+        // Durable daily cap on visitor upload tokens, so Blob storage can't be filled without creating queue items.
+        if (!uploader.canPublish && !(await recordVisitorUploadAttempt(memorial.id, clientIp(request.headers)))) {
+          throw new Error("Too many uploads today. Please try again tomorrow.")
         }
 
         return {

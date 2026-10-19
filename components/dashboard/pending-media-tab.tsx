@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Check, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { musicKind, musicYouTubeId } from "@/lib/media/shared"
+import { musicKind, musicYouTubeId, safeMediaUrl } from "@/lib/media/shared"
 import { youTubeEmbedUrl } from "@/lib/youtube"
 
 export type PendingItem = {
@@ -33,12 +33,15 @@ function label(item: PendingItem): string {
 }
 
 function Preview({ item }: { item: PendingItem }) {
-  if (item.table === "photos" && item.image_url) {
+  const imageUrl = safeMediaUrl(item.image_url)
+  const videoUrl = safeMediaUrl(item.video_url)
+  const audioUrl = safeMediaUrl(item.audio_url)
+  if (item.table === "photos" && imageUrl) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={item.image_url} alt={item.caption ?? "Uploaded photo"} className="max-h-64 rounded-lg object-contain" />
+    return <img src={imageUrl} alt={item.caption ?? "Uploaded photo"} className="max-h-64 rounded-lg object-contain" />
   }
-  if (item.table === "videos" && item.video_url) {
-    return <video src={item.video_url} controls playsInline preload="metadata" className="max-h-64 w-full rounded-lg bg-black" />
+  if (item.table === "videos" && videoUrl) {
+    return <video src={videoUrl} controls playsInline preload="metadata" className="max-h-64 w-full rounded-lg bg-black" />
   }
   const youTubeId = item.table === "music" ? musicYouTubeId(item) : null
   if (youTubeId) {
@@ -48,7 +51,7 @@ function Preview({ item }: { item: PendingItem }) {
       </div>
     )
   }
-  if (item.audio_url) return <audio src={item.audio_url} controls preload="metadata" className="w-full" />
+  if (audioUrl) return <audio src={audioUrl} controls preload="metadata" className="w-full" />
   return null
 }
 

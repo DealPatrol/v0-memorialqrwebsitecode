@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { VideoUpload } from "@/components/video-upload"
 import { MusicUpload } from "@/components/music-upload"
-import { fileExtension, isApproved, musicKind, musicYouTubeId } from "@/lib/media/shared"
+import { fileExtension, isApproved, musicKind, musicYouTubeId, safeMediaUrl } from "@/lib/media/shared"
 import { youTubeEmbedUrl } from "@/lib/youtube"
 
 export type VideoRow = {
@@ -53,7 +53,9 @@ function sourceType(url: string): string | undefined {
   return undefined
 }
 
-function Unplayable({ url, noun }: { url: string; noun: string }) {
+function Unplayable({ url: rawUrl, noun }: { url: string; noun: string }) {
+  const url = safeMediaUrl(rawUrl)
+  if (!url) return <p className="text-sm text-slate-500">This {noun} can't be played.</p>
   return (
     <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
       This {noun} is in a format your browser can't play.{" "}
@@ -66,14 +68,14 @@ function Unplayable({ url, noun }: { url: string; noun: string }) {
 }
 
 function VideoTile({ video }: { video: VideoRow }) {
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState(!safeMediaUrl(video.video_url))
   return (
     <div className="space-y-2">
       {failed ? (
         <Unplayable url={video.video_url} noun="video" />
       ) : (
         <video controls playsInline preload="metadata" className="w-full rounded-lg bg-black" onError={() => setFailed(true)}>
-          <source src={video.video_url} type={sourceType(video.video_url)} onError={() => setFailed(true)} />
+          <source src={safeMediaUrl(video.video_url) ?? undefined} type={sourceType(video.video_url)} onError={() => setFailed(true)} />
         </video>
       )}
       <h4 className="font-semibold text-sm">{video.title}</h4>
@@ -130,7 +132,7 @@ function AudioTile({ track, icon }: { track: MusicRow; icon: "voicemail" | "song
       ) : failed ? (
         <Unplayable url={track.audio_url} noun="recording" />
       ) : (
-        <audio controls preload="metadata" className="w-full" src={track.audio_url} onError={() => setFailed(true)} />
+        <audio controls preload="metadata" className="w-full" src={safeMediaUrl(track.audio_url) ?? undefined} onError={() => setFailed(true)} />
       )}
     </div>
   )

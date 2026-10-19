@@ -11,6 +11,7 @@ import {
   musicKind,
   musicYouTubeId,
   safeFileName,
+  safeMediaUrl,
   videoMayNeedConversion,
 } from "../lib/media/shared"
 import { createCreatorToken, createProcessToken, verifyCreatorToken, verifyProcessToken } from "../lib/media/creator-token"
@@ -154,6 +155,16 @@ describe("safeFileName", () => {
       const cleaned = safeFileName(name)
       assert.match(cleaned, /^[\w-][\w.-]*$/)
       assert.ok(!cleaned.includes("/") && !cleaned.includes("%") && !cleaned.includes(".."))
+    }
+  })
+})
+
+describe("safeMediaUrl", () => {
+  it("allows https and site paths only", () => {
+    assert.equal(safeMediaUrl("https://x.public.blob.vercel-storage.com/a.mp4"), "https://x.public.blob.vercel-storage.com/a.mp4")
+    assert.equal(safeMediaUrl("/glenda-beach-walk.jpeg"), "/glenda-beach-walk.jpeg")
+    for (const bad of ["javascript:alert(1)", "JAVASCRIPT:alert(1)", "data:text/html,x", "//evil.com/x", "/\\evil.com", "http://x.com/a.mp4", "", null]) {
+      assert.equal(safeMediaUrl(bad), null, String(bad))
     }
   })
 })
