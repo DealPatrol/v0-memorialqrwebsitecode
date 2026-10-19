@@ -60,8 +60,8 @@ const plaque = `$${PLAQUE_PRICE.toFixed(2)}`
 export const publicPages = {
   home: {
     path: "/",
-    title: "Online Memorial Page | MemorialsQR",
-    description: `QR memorial keepsakes that open an online memorial page for a loved one or pet. Every keepsake includes ${years} years of hosting. No recurring fees.`,
+    title: "Memorial QR Codes for Loved Ones & Pets | MemorialsQR",
+    description: `A memorial QR code opens a page of photos and stories for a loved one or pet. ${years} years of hosting is included, with no recurring fees. See how it works.`,
     file: "app/page.tsx",
     changeFrequency: "weekly",
     priority: 1,
@@ -180,8 +180,8 @@ export const publicPages = {
   },
   petMemorials: {
     path: "/pet-memorials",
-    title: "Pet Memorial Page | MemorialsQR",
-    description: `A QR memorial keepsake and pet memorial page with photos and stories. ${years} years of hosting included. No recurring fees.`,
+    title: "Pet Memorial QR Code & Plaque | MemorialsQR",
+    description: `A pet memorial QR code opens photos and stories of your companion. The pet QR memorial plaque includes ${years} years of hosting. No recurring fees. See it.`,
     file: "app/pet-memorials/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,

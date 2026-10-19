@@ -34,7 +34,7 @@ export default function PetMemorialsPage() {
             Pet Memorials
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Celebrate Their <span className="text-amber-400">Unconditional Love</span>
+            A pet memorial QR code <span className="text-amber-400">and plaque</span>
           </h1>
           <p className="text-xl text-amber-100 mb-8 max-w-3xl mx-auto">
             Create heartfelt digital memorials for dogs, cats, horses, and all the furry friends who gave us
