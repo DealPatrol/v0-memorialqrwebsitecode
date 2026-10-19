@@ -1,10 +1,10 @@
 import type { SellableKeepsake } from "@/lib/fulfillment-availability"
+import { statedMerchantReturnPolicy } from "@/lib/return-policy"
 import {
   absoluteAssetUrl,
   KEEPSAKE_HANDLING_MAX_DAYS,
   KEEPSAKE_HANDLING_MIN_DAYS,
   KEEPSAKE_SHIPPING_PRICE_USD,
-  MONEY_BACK_GUARANTEE_DAYS,
   SITE_NAME,
   SITE_URL,
 } from "@/lib/site"
@@ -65,20 +65,6 @@ function shippingDetails(product: SellableKeepsake) {
   return details
 }
 
-/**
- * Return policy stated on the terms, FAQ, checkout, and security pages.
- * Return shipping fees and return method are not stated, so they are omitted.
- */
-function merchantReturnPolicy() {
-  return {
-    "@type": "MerchantReturnPolicy" as const,
-    applicableCountry: "US",
-    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-    merchantReturnDays: MONEY_BACK_GUARANTEE_DAYS,
-    merchantReturnLink: `${SITE_URL}/terms-of-service`,
-  }
-}
-
 /** Product + Offer structured data for one keepsake a buyer can purchase. */
 export function keepsakeProductJsonLd(product: SellableKeepsake) {
   return {
@@ -100,7 +86,7 @@ export function keepsakeProductJsonLd(product: SellableKeepsake) {
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
       shippingDetails: shippingDetails(product),
-      hasMerchantReturnPolicy: merchantReturnPolicy(),
+      hasMerchantReturnPolicy: statedMerchantReturnPolicy(),
       eligibleRegion: {
         "@type": "Country" as const,
         name: "US",

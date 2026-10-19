@@ -3,7 +3,8 @@ import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { DIGITAL_MEMORIAL_ID, getCheckoutProduct, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
 import { digitalLandingJsonLd, digitalLandingList } from "../lib/digital-landing"
-import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialJsonLd } from "../lib/digital-memorial"
+import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "../lib/digital-memorial"
+import { EXAMPLE_MEMORIAL_PATH } from "../lib/example-memorial"
 import { priceCart } from "../lib/checkout-pricing"
 import {
   getListedKeepsakes,
@@ -16,7 +17,7 @@ import { giftIntentList } from "../lib/gift-intent"
 import { longTailList } from "../lib/long-tail"
 import { keepsakeCollectionJsonLd, keepsakesForCollection } from "../lib/keepsake-collection"
 import { parseWaitlistInput, waitlistEmailError } from "../lib/plaque-waitlist"
-import { publicPages } from "../lib/seo"
+import { pageMetadata, publicPages } from "../lib/seo"
 
 const hidden = { KEEPSAKE_PLAQUES_ON_SALE: "false" }
 
@@ -64,7 +65,9 @@ test("digital memorial checks out without print partners and publishes one offer
   assert.equal(ld.offers.priceCurrency, "USD")
   assert.equal(ld.offers.url, "https://memorialsqr.com/digital-memorial")
   assert.equal("shippingDetails" in ld.offers, false)
+  assert.equal(ld.offers.hasMerchantReturnPolicy.merchantReturnDays, 30)
   assert.equal("aggregateRating" in ld, false)
+  assert.ok(digitalMemorialPolicyFaqs().some((faq) => faq.question === "What is the refund policy?"))
   assert.equal(publicPages.digitalMemorial.path, "/digital-memorial")
   assert.equal(publicPages.digitalMemorial.inSitemap, true)
   assert.equal(publicPages.digitalMemorial.index, true)
@@ -173,15 +176,34 @@ test("digital memorial landing pages are indexable and sell the page", () => {
     assert.equal(data["@graph"][0].offers.price, "24.99")
     assert.equal(data["@graph"][0].offers.priceCurrency, "USD")
     assert.equal("shippingDetails" in data["@graph"][0].offers, false)
+    assert.equal(data["@graph"][0].offers.hasMerchantReturnPolicy.merchantReturnDays, 30)
     assert.equal(data["@graph"][1]["@type"], "FAQPage")
     assert.equal(data["@graph"][1].mainEntity[0].name, page.faqs[0].question)
+    const questions = data["@graph"][1].mainEntity.map((item: { name: string }) => item.name)
+    assert.ok(questions.includes("What is the refund policy?"))
   }
+
+  assert.equal(publicPages.exampleMemorial.path, EXAMPLE_MEMORIAL_PATH)
+  assert.equal(publicPages.exampleMemorial.inSitemap, true)
+  assert.equal(publicPages.exampleMemorial.index, true)
+  const exampleMeta = pageMetadata(publicPages.exampleMemorial)
+  assert.equal(
+    exampleMeta.alternates && "canonical" in exampleMeta.alternates ? exampleMeta.alternates.canonical : "",
+    EXAMPLE_MEMORIAL_PATH,
+  )
+  const example = readFileSync(new URL("../app/example-memorial/page.tsx", import.meta.url), "utf8")
+  assert.match(example, /EXAMPLE_MEMORIAL_NOTICE/)
+  assert.match(example, /DIGITAL_MEMORIAL_CHECKOUT_PATH/)
+  assert.equal(example.toLowerCase().includes("glenda"), false)
+  assert.equal(example.toLowerCase().includes("testimonial"), false)
 
   const view = readFileSync(new URL("../components/digital-landing-view.tsx", import.meta.url), "utf8")
   assert.match(view, /DIGITAL_MEMORIAL_CHECKOUT_PATH/)
   assert.match(view, /Buy the digital memorial/)
   assert.match(view, /How it works/)
   assert.match(view, /TrackViewContent/)
+  assert.match(view, /EXAMPLE_MEMORIAL_PATH/)
+  assert.match(view, /landingPath=\{page\.path\}/)
   const keepsakes = readFileSync(new URL("../app/keepsakes/page.tsx", import.meta.url), "utf8")
   assert.match(keepsakes, /DIGITAL_MEMORIAL_CHECKOUT_PATH/)
   assert.match(keepsakes, /digitalLandingList/)

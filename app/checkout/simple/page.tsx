@@ -17,9 +17,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { readStoredAttribution } from "@/components/attribution-capture"
+import { readDigitalLanding } from "@/components/remember-digital-landing"
 import { trackCommerce } from "@/components/track-commerce"
 import { purchaseAfterPayment } from "@/lib/ad-events"
-import { orderNotesHint } from "@/lib/catalog"
+import { DIGITAL_MEMORIAL_ID, orderNotesHint } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 import { GIFT_MESSAGE_MAX } from "@/lib/gift-order"
@@ -27,6 +28,12 @@ import { GIFT_MESSAGE_MAX } from "@/lib/gift-order"
 type CartLine = { id: string; name: string; price: number; quantity: number; ships: boolean }
 
 type SellableRow = { id: string; name: string; price: number; ships: boolean }
+
+/** Attach the SEO page only when this checkout includes the digital memorial. */
+function digitalLandingForCart(items: CartLine[]): string | undefined {
+  if (!items.some((item) => item.id === DIGITAL_MEMORIAL_ID)) return undefined
+  return readDigitalLanding() ?? undefined
+}
 
 function lineFromSellable(catalog: Map<string, SellableRow>, id: string, quantity: number): CartLine | null {
   const product = catalog.get(id)
@@ -120,6 +127,7 @@ function CheckoutForm() {
       value: orderTotal,
       currency: "USD",
       contentId: cartItems.length === 1 ? cartItems[0].id : undefined,
+      landingPath: digitalLandingForCart(cartItems),
     })
   }, [cartItems, checkoutBlocked, orderTotal])
 
@@ -262,7 +270,7 @@ function CheckoutForm() {
         orderNumber: result.order?.orderNumber,
         contentId: cartItems.length === 1 ? cartItems[0].id : undefined,
       })
-      if (purchase) trackCommerce(purchase)
+      if (purchase) trackCommerce({ ...purchase, landingPath: digitalLandingForCart(cartItems) })
 
       localStorage.removeItem("checkoutItems")
       

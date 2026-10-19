@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import {
+  DIGITAL_MEMORIAL_CHECKOUT_PATH,
   DIGITAL_MEMORIAL_DESCRIPTION,
   DIGITAL_MEMORIAL_PATH,
   digitalMemorialFaqJsonLd,
@@ -15,9 +16,10 @@ import {
   digitalMemorialFeatures,
   digitalMemorialJsonLd,
 } from "@/lib/digital-memorial"
+import { EXAMPLE_MEMORIAL_NAME, EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
-import { formatUsd, SAMPLE_MEMORIAL_NAME, SAMPLE_MEMORIAL_PATH } from "@/lib/site"
+import { formatUsd } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.digitalMemorial)
 
@@ -32,6 +34,7 @@ export default function DigitalMemorialProductPage() {
         contentId={DIGITAL_MEMORIAL_PRODUCT.id}
         contentName={DIGITAL_MEMORIAL_PRODUCT.name}
         value={DIGITAL_MEMORIAL_PRODUCT.price}
+        landingPath={DIGITAL_MEMORIAL_PATH}
       />
       <Header />
       <main className="mx-auto max-w-3xl px-4 py-12">
@@ -53,9 +56,17 @@ export default function DigitalMemorialProductPage() {
                 One-time payment. Nothing is shipped. No recurring fees.
               </p>
             </div>
-            <Button asChild className="w-full" size="lg">
-              <Link href={`/checkout/simple?product=${DIGITAL_MEMORIAL_PRODUCT.id}`}>Buy</Link>
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button asChild className="w-full" size="lg">
+                <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>Buy</Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full" size="lg">
+                <Link href={EXAMPLE_MEMORIAL_PATH}>See an example page</Link>
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              The example page uses a made-up name, {EXAMPLE_MEMORIAL_NAME}, so you can see the page before you pay.
+            </p>
             <div>
               <h2 className="text-sm font-semibold text-foreground">What you receive</h2>
               <ul className="mt-2 space-y-2">
@@ -79,13 +90,6 @@ export default function DigitalMemorialProductPage() {
                 the concierge service
               </Link>{" "}
               is a separate purchase.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              See a sample memorial page for{" "}
-              <Link href={SAMPLE_MEMORIAL_PATH} className="underline">
-                {SAMPLE_MEMORIAL_NAME}
-              </Link>
-              .
             </p>
           </CardContent>
         </Card>

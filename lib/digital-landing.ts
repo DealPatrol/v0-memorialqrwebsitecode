@@ -1,5 +1,5 @@
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
-import { digitalMemorialJsonLd } from "@/lib/digital-memorial"
+import { digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "@/lib/digital-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 
@@ -226,6 +226,12 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
 
 export const digitalLandingList = Object.values(digitalLandingPages)
 
+/** Policy answers that are not already one of this landing page's own questions. */
+function policyFaqsForLanding(page: DigitalLandingPage): DigitalLandingFaq[] {
+  const asked = new Set(page.faqs.map((faq) => faq.question))
+  return digitalMemorialPolicyFaqs().filter((faq) => !asked.has(faq.question))
+}
+
 export function digitalLandingJsonLd(page: DigitalLandingPage) {
   const product = digitalMemorialJsonLd()
   return {
@@ -242,7 +248,7 @@ export function digitalLandingJsonLd(page: DigitalLandingPage) {
       },
       {
         "@type": "FAQPage" as const,
-        mainEntity: page.faqs.map((faq) => ({
+        mainEntity: [...page.faqs, ...policyFaqsForLanding(page)].map((faq) => ({
           "@type": "Question" as const,
           name: faq.question,
           acceptedAnswer: {

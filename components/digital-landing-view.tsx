@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { DigitalMemorialTrust } from "@/components/digital-memorial-trust"
 import { Header } from "@/components/header"
 import { JsonLd } from "@/components/json-ld"
 import { SisterShopNote } from "@/components/sister-shop-note"
@@ -7,11 +8,12 @@ import { TrackViewContent } from "@/components/track-view-content"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { digitalLandingJsonLd, digitalLandingList, type DigitalLandingPage } from "@/lib/digital-landing"
 import {
   DIGITAL_MEMORIAL_CHECKOUT_PATH,
   DIGITAL_MEMORIAL_PATH,
 } from "@/lib/digital-memorial"
-import { digitalLandingJsonLd, digitalLandingList, type DigitalLandingPage } from "@/lib/digital-landing"
+import { EXAMPLE_MEMORIAL_NAME, EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { formatUsd } from "@/lib/site"
@@ -27,6 +29,7 @@ export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
         contentId={DIGITAL_MEMORIAL_PRODUCT.id}
         contentName={DIGITAL_MEMORIAL_PRODUCT.name}
         value={DIGITAL_MEMORIAL_PRODUCT.price}
+        landingPath={page.path}
       />
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-12">
@@ -40,6 +43,12 @@ export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <article className="space-y-6">
             <h1 className="text-4xl font-bold text-foreground">{page.h1}</h1>
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              <Link href={EXAMPLE_MEMORIAL_PATH} className="underline">
+                See an example memorial page
+              </Link>{" "}
+              before you pay. {EXAMPLE_MEMORIAL_NAME} is not a real person.
+            </p>
             {page.paragraphs.map((paragraph) => (
               <p key={paragraph} className="text-lg leading-relaxed text-muted-foreground">
                 {paragraph}
@@ -77,6 +86,11 @@ export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
                   </li>
                 ))}
                 <li>
+                  <Link href={EXAMPLE_MEMORIAL_PATH} className="underline">
+                    Example memorial page
+                  </Link>
+                </li>
+                <li>
                   <Link href={DIGITAL_MEMORIAL_PATH} className="underline">
                     Digital memorial page details
                   </Link>
@@ -100,6 +114,10 @@ export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
               <Button asChild className="w-full" size="lg">
                 <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>Buy the digital memorial</Link>
               </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href={EXAMPLE_MEMORIAL_PATH}>See an example page</Link>
+              </Button>
+              <DigitalMemorialTrust />
               <p className="text-sm text-muted-foreground">
                 <Link href={DIGITAL_MEMORIAL_PATH} className="underline">
                   See what is included
