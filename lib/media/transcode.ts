@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process"
-import { chmod, copyFile, stat } from "node:fs/promises"
+import { chmod, copyFile, readdir, stat } from "node:fs/promises"
+import path from "node:path"
 
 /**
  * Server-side conversion of phone recordings into formats every browser plays,
@@ -16,8 +17,7 @@ let cachedPath: string | null = null
 export async function ffmpegPath(): Promise<string> {
   if (cachedPath) return cachedPath
   // Loaded lazily: the package throws at import time when its binary is missing.
-  const installed =
-    process.env.FFMPEG_PATH || ((await import("@ffmpeg-installer/ffmpeg")) as { default?: { path: string }; path?: string }).default?.path
+  const installed = process.env.FFMPEG_PATH || (await installerPath()) || (await tracedBinaryPath())
   if (!installed) throw new Error("ffmpeg binary not available")
   try {
     await chmod(installed, 0o755)
@@ -32,6 +32,27 @@ export async function ffmpegPath(): Promise<string> {
     cachedPath = tmp
   }
   return cachedPath
+}
+
+async function installerPath(): Promise<string | null> {
+  try {
+    const mod = (await import("@ffmpeg-installer/ffmpeg")) as { default?: { path: string }; path?: string }
+    return mod.default?.path || mod.path || null
+  } catch {
+    return null
+  }
+}
+
+/** The binary shipped via outputFileTracingIncludes (pnpm layout), used when the installer cannot resolve it. */
+async function tracedBinaryPath(): Promise<string | null> {
+  const pnpmDir = path.join(process.cwd(), "node_modules", ".pnpm")
+  const dirs = await readdir(pnpmDir).catch(() => [] as string[])
+  for (const dir of dirs) {
+    if (!dir.startsWith(`@ffmpeg-installer+${process.platform}-${process.arch}`)) continue
+    const bin = path.join(pnpmDir, dir, "node_modules", "@ffmpeg-installer", `${process.platform}-${process.arch}`, "ffmpeg")
+    if (await stat(bin).then((st) => st.isFile()).catch(() => false)) return bin
+  }
+  return null
 }
 
 function run(bin: string, args: string[], timeoutMs: number): Promise<{ code: number | null; stderr: string }> {

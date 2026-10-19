@@ -12,8 +12,7 @@ const nextConfig = {
     // Ship the static ffmpeg binary with the media conversion function only.
     outputFileTracingIncludes: {
       "/api/media/process": [
-        "./node_modules/@ffmpeg-installer/**/*",
-        "./node_modules/.pnpm/@ffmpeg-installer+ffmpeg*/node_modules/@ffmpeg-installer/**/*",
+        // Only the real linux-x64 directory: globbing through pnpm symlinks copies the 65MB binary twice.
         "./node_modules/.pnpm/@ffmpeg-installer+linux-x64*/node_modules/@ffmpeg-installer/linux-x64/**/*",
       ],
     },
