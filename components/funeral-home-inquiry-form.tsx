@@ -104,7 +104,7 @@ export function FuneralHomeInquiryForm() {
           onChange={update}
           rows={5}
           required
-          placeholder="How you would like to offer a QR memorial plaque to families."
+          placeholder="How you would like to offer a memorial QR code to the families you serve."
         />
       </div>
       {error ? <p className="text-sm text-red-700">{error}</p> : null}

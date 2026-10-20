@@ -139,8 +139,11 @@ export function Header() {
                     <ListItem href="/qr-code-for-headstone" title="QR for a Headstone">
                       A plaque visitors can scan at the grave
                     </ListItem>
+                    <ListItem href="/qr-code-for-funeral-program" title="QR for a Funeral Program">
+                      A QR code you can print on the program. Nothing ships.
+                    </ListItem>
                     <ListItem href="/funeral-homes" title="Funeral Homes">
-                      Wholesale inquiry for funeral homes
+                      Partner inquiry for funeral homes
                     </ListItem>
                     <ListItem href="/guides" title="Memorial Guides">
                       Headstone, cemetery, and keepsake guides
@@ -235,6 +238,9 @@ export function Header() {
               </Link>
               <Link href="/qr-code-for-headstone" className="text-muted-foreground hover:text-foreground pl-2">
                 QR for a Headstone
+              </Link>
+              <Link href="/qr-code-for-funeral-program" className="text-muted-foreground hover:text-foreground pl-2">
+                QR for a Funeral Program
               </Link>
               <Link href="/funeral-homes" className="text-muted-foreground hover:text-foreground pl-2">
                 Funeral Homes

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { buildPartnerInquiryEmail, parsePartnerInquiry } from "@/lib/partner-inquiry"
+import { buildPartnerInquiryEmail, parsePartnerInquiry, partnerInquiryMailConfig } from "@/lib/partner-inquiry"
 import { getResend } from "@/lib/resend"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
@@ -15,6 +15,12 @@ export async function POST(request: Request) {
 
   const parsed = parsePartnerInquiry(body)
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
+
+  const mailConfig = partnerInquiryMailConfig(process.env)
+  if (!mailConfig.ok) {
+    console.error(`[partners] ${mailConfig.missing} is not configured`)
+    return NextResponse.json({ error: `We could not send that. Email ${SUPPORT_EMAIL} instead.` }, { status: 503 })
+  }
 
   const notice = buildPartnerInquiryEmail(parsed.value)
   try {

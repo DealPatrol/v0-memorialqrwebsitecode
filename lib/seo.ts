@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { adLandingPages } from "@/lib/ad-landings"
-import { CONCIERGE_PRODUCTS, PLAQUE_PRICE } from "@/lib/catalog"
+import { CONCIERGE_PRODUCTS, DIGITAL_MEMORIAL_PRODUCT, PLAQUE_PRICE } from "@/lib/catalog"
 import { digitalLandingPages } from "@/lib/digital-landing"
 import {
   DIGITAL_MEMORIAL_META_DESCRIPTION,
@@ -57,6 +57,7 @@ export type SeoPage = {
 const years = HOSTING_INCLUDED_YEARS
 const concierge = CONCIERGE_PRICE_LABEL
 const plaque = `$${PLAQUE_PRICE.toFixed(2)}`
+const digitalMemorial = `$${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)}`
 
 export const publicPages = {
   home: {
@@ -381,8 +382,8 @@ export const publicPages = {
   },
   funeralHomes: {
     path: "/funeral-homes",
-    title: "Funeral Home Partners | MemorialsQR",
-    description: "Funeral homes can ask about offering MemorialsQR keepsakes to families. Tell us about your funeral home and we will reply by email.",
+    title: "Funeral Home Partner Inquiry | MemorialsQR",
+    description: `Funeral homes can send a partner inquiry. Families can order a ${digitalMemorial} digital memorial today. No new price is set here.`,
     file: "app/funeral-homes/page.tsx",
     changeFrequency: "monthly",
     priority: 0.6,
@@ -636,6 +637,46 @@ export const publicPages = {
     title: digitalLandingPages.printable.title,
     description: digitalLandingPages.printable.description,
     file: "app/printable-memorial-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  funeralProgramDigital: {
+    path: digitalLandingPages.funeralProgram.path,
+    title: digitalLandingPages.funeralProgram.title,
+    description: digitalLandingPages.funeralProgram.description,
+    file: "app/qr-code-for-funeral-program/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  celebrationOfLifeQr: {
+    path: digitalLandingPages.celebrationQr.path,
+    title: digitalLandingPages.celebrationQr.title,
+    description: digitalLandingPages.celebrationQr.description,
+    file: "app/celebration-of-life-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  obituaryQr: {
+    path: digitalLandingPages.obituaryQr.path,
+    title: digitalLandingPages.obituaryQr.title,
+    description: digitalLandingPages.obituaryQr.description,
+    file: "app/obituary-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  memorialSlideshowQr: {
+    path: digitalLandingPages.slideshowQr.path,
+    title: digitalLandingPages.slideshowQr.title,
+    description: digitalLandingPages.slideshowQr.description,
+    file: "app/memorial-service-slideshow-qr-code/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
     index: true,

@@ -2,7 +2,8 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { DIGITAL_MEMORIAL_ID, getCheckoutProduct, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
-import { digitalLandingJsonLd, digitalLandingList } from "../lib/digital-landing"
+import { digitalLandingJsonLd, digitalLandingList, serviceLandingList } from "../lib/digital-landing"
+import { resolveDigitalLanding } from "../lib/digital-landing-attribution"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "../lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "../lib/example-memorial"
 import { priceCart } from "../lib/checkout-pricing"
@@ -144,7 +145,8 @@ test("order page lists sellable keepsakes and leaves plaques out of the offer li
 })
 
 test("digital memorial landing pages are indexable and sell the page", () => {
-  assert.equal(digitalLandingList.length, 6)
+  assert.equal(digitalLandingList.length, 10)
+  assert.equal(serviceLandingList.length, 4)
   const occupied = new Set([
     ...buyerIntentList.map((page) => page.path),
     ...giftIntentList.map((page) => page.path),
@@ -161,9 +163,13 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   assert.equal(new Set(titles).size, titles.length)
   assert.equal(new Set(descriptions).size, descriptions.length)
 
+  const openings = digitalLandingList.map((page) => page.paragraphs[0])
+  assert.equal(new Set(openings).size, openings.length)
+
   for (const page of digitalLandingList) {
     assert.equal(occupied.has(page.path), false)
     assert.equal(sitemap.has(page.path), true)
+    assert.equal(resolveDigitalLanding(null, page.path), page.path)
     assert.equal(publicPages[pageKey(page.path)]?.index, true)
     assert.ok(page.paragraphs.length >= 3)
     assert.ok(page.steps.length >= 3)
@@ -207,7 +213,31 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   const keepsakes = readFileSync(new URL("../app/keepsakes/page.tsx", import.meta.url), "utf8")
   assert.match(keepsakes, /DIGITAL_MEMORIAL_CHECKOUT_PATH/)
   assert.match(keepsakes, /digitalLandingList/)
+  assert.match(keepsakes, /serviceLandingList/)
+  const homeSource = readFileSync(new URL("../app/page.tsx", import.meta.url), "utf8")
+  assert.match(homeSource, /serviceLandingList/)
+  const productPage = readFileSync(new URL("../app/digital-memorial/page.tsx", import.meta.url), "utf8")
+  assert.match(productPage, /serviceLandingList/)
   assert.equal(DIGITAL_MEMORIAL_CHECKOUT_PATH, "/checkout/simple?product=digital-memorial")
+
+  const servicePaths = [
+    "/qr-code-for-funeral-program",
+    "/celebration-of-life-qr-code",
+    "/obituary-qr-code",
+    "/memorial-service-slideshow-qr-code",
+  ]
+  assert.deepEqual(
+    serviceLandingList.map((page) => page.path),
+    servicePaths,
+  )
+  for (const path of servicePaths) {
+    assert.equal(resolveDigitalLanding(path, "/checkout/simple"), path)
+    const page = serviceLandingList.find((item) => item.path === path)
+    assert.ok(page)
+    assert.match(page.description, /\$24\.99 USD/)
+    assert.equal(page.description.toLowerCase().includes("testimonial"), false)
+    assert.equal(page.paragraphs.join(" ").toLowerCase().includes("partner funeral"), false)
+  }
 })
 
 function pageKey(path: string): keyof typeof publicPages {

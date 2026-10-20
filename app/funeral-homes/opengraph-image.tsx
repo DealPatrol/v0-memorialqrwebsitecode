@@ -8,6 +8,6 @@ export default function Image() {
   return memorialOgImage({
     kicker: "MemorialsQR",
     title: "For funeral homes",
-    subtitle: "Ask about offering a QR memorial plaque to the families you serve.",
+    subtitle: "A partner inquiry. Families can order a digital memorial today.",
   })
 }

@@ -85,6 +85,13 @@ export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
                     </Link>
                   </li>
                 ))}
+                {(page.links ?? []).map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="underline">
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
                 <li>
                   <Link href={EXAMPLE_MEMORIAL_PATH} className="underline">
                     Example memorial page
