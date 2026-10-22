@@ -24,6 +24,7 @@ import { DIGITAL_MEMORIAL_ID, orderNotesHint } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 import { GIFT_MESSAGE_MAX } from "@/lib/gift-order"
+import { validateEmail } from "@/lib/utils"
 
 type CartLine = { id: string; name: string; price: number; quantity: number; ships: boolean }
 
@@ -107,6 +108,7 @@ function CheckoutForm() {
     customization: "",
     isGift: false,
     recipientName: "",
+    recipientEmail: "",
     giftMessage: "",
     shipToRecipient: false,
     recipientAddress: "",
@@ -131,6 +133,17 @@ function CheckoutForm() {
     })
   }, [cartItems, checkoutBlocked, orderTotal])
 
+  // Digital-only carts ship nothing, so the address block is hidden and not required.
+  const needsShipping = cartItems.some((item) => item.ships)
+  const digitalGiftEligible = !needsShipping && cartItems.some((item) => item.id === DIGITAL_MEMORIAL_ID)
+  const giftDefaulted = useRef(false)
+
+  useEffect(() => {
+    if (giftDefaulted.current || !digitalGiftEligible || searchParams.get("gift") !== "1") return
+    giftDefaulted.current = true
+    setFormData((current) => ({ ...current, isGift: true }))
+  }, [digitalGiftEligible, searchParams])
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
@@ -138,10 +151,8 @@ function CheckoutForm() {
     })
   }
 
-  // Digital-only carts ship nothing, so the address block is hidden and not required.
-  const needsShipping = cartItems.some((item) => item.ships)
-
   const validateForm = () => {
+    const giftOrder = (needsShipping || digitalGiftEligible) && formData.isGift
     if (!formData.email) {
       toast({
         title: "Missing Information",
@@ -168,7 +179,7 @@ function CheckoutForm() {
       return false
     }
 
-    if (needsShipping && formData.isGift && !formData.recipientName.trim()) {
+    if (giftOrder && !formData.recipientName.trim()) {
       toast({
         title: "Recipient name",
         description: "Enter the name of the person this gift is for.",
@@ -176,7 +187,23 @@ function CheckoutForm() {
       })
       return false
     }
-    if (needsShipping && formData.isGift && formData.giftMessage.trim().length > GIFT_MESSAGE_MAX) {
+    if (digitalGiftEligible && giftOrder && !formData.fullName.trim()) {
+      toast({
+        title: "Your name",
+        description: "Enter your name so the gift record shows who bought it.",
+        variant: "destructive",
+      })
+      return false
+    }
+    if (digitalGiftEligible && giftOrder && !validateEmail(formData.recipientEmail.trim())) {
+      toast({
+        title: "Recipient email",
+        description: "Enter the recipient's email. We save it on the order and email the page link to you.",
+        variant: "destructive",
+      })
+      return false
+    }
+    if (giftOrder && formData.giftMessage.trim().length > GIFT_MESSAGE_MAX) {
       toast({
         title: "Gift message",
         description: `Keep the gift message to ${GIFT_MESSAGE_MAX} characters or fewer.`,
@@ -222,12 +249,13 @@ function CheckoutForm() {
     setIsSubmitting(true)
 
     try {
-      const shipToRecipient = needsShipping && formData.isGift && formData.shipToRecipient
+      const giftOrder = (needsShipping || digitalGiftEligible) && formData.isGift
+      const shipToRecipient = needsShipping && giftOrder && formData.shipToRecipient
       const orderData = {
         planType: "cart-checkout",
         items: cartItems,
         totalAmount: orderTotal,
-        customerName: needsShipping ? formData.fullName.trim() : "",
+        customerName: needsShipping || giftOrder ? formData.fullName.trim() : "",
         customerEmail: formData.email || "",
         customerPhone: formData.phone || "",
         addressLine1: needsShipping && !shipToRecipient ? formData.address : "",
@@ -237,9 +265,10 @@ function CheckoutForm() {
         zip: needsShipping && !shipToRecipient ? formData.zipCode : "",
         paymentId: paymentId,
         customization: formData.customization || "",
-        isGift: needsShipping && formData.isGift,
-        recipientName: needsShipping && formData.isGift ? formData.recipientName.trim() : "",
-        giftMessage: needsShipping && formData.isGift ? formData.giftMessage.trim() : "",
+        isGift: giftOrder,
+        recipientName: giftOrder ? formData.recipientName.trim() : "",
+        recipientEmail: digitalGiftEligible && giftOrder ? formData.recipientEmail.trim() : "",
+        giftMessage: giftOrder ? formData.giftMessage.trim() : "",
         shipToRecipient,
         recipientAddressLine1: shipToRecipient ? formData.recipientAddress : "",
         recipientAddressLine2: shipToRecipient ? formData.recipientAddress2 : "",
@@ -561,7 +590,7 @@ function CheckoutForm() {
                 </div>
                 )}
 
-                {needsShipping ? (
+                {needsShipping || digitalGiftEligible ? (
                   <div className="space-y-4 rounded-md border p-4">
                     <div className="flex items-start gap-3">
                       <Checkbox
@@ -576,7 +605,9 @@ function CheckoutForm() {
                           This order is a gift
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          Add the recipient&apos;s name and a short message. Use their address if it is different from yours.
+                          {digitalGiftEligible
+                            ? "Add the recipient's name, email, and a short note. Nothing is shipped. We email the page link to you."
+                            : "Add the recipient's name and a short message. Use their address if it is different from yours."}
                         </p>
                       </div>
                     </div>
@@ -595,8 +626,45 @@ function CheckoutForm() {
                             autoComplete="name"
                           />
                         </div>
+                        {digitalGiftEligible ? (
+                          <>
+                            <div className="space-y-2">
+                              <Label htmlFor="buyerName">
+                                Your name <span className="text-red-500">*</span>
+                              </Label>
+                              <Input
+                                id="buyerName"
+                                name="fullName"
+                                value={formData.fullName}
+                                onChange={handleInputChange}
+                                placeholder="Ada Lovelace"
+                                autoComplete="name"
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                The confirmation email, with the page link, goes to you.
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="recipientEmail">
+                                Recipient&apos;s email <span className="text-red-500">*</span>
+                              </Label>
+                              <Input
+                                id="recipientEmail"
+                                name="recipientEmail"
+                                type="email"
+                                value={formData.recipientEmail}
+                                onChange={handleInputChange}
+                                placeholder="grace@example.com"
+                                autoComplete="email"
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Saved on the order so you know who to forward the link to. We do not email the recipient.
+                              </p>
+                            </div>
+                          </>
+                        ) : null}
                         <div className="space-y-2">
-                          <Label htmlFor="giftMessage">Gift message (optional)</Label>
+                          <Label htmlFor="giftMessage">{digitalGiftEligible ? "Short note (optional)" : "Gift message (optional)"}</Label>
                           <Textarea
                             id="giftMessage"
                             name="giftMessage"
@@ -607,9 +675,13 @@ function CheckoutForm() {
                             maxLength={GIFT_MESSAGE_MAX}
                           />
                           <p className="text-xs text-muted-foreground">
-                            Saved with the order for the person who packs the keepsake. It is not engraved. {GIFT_MESSAGE_MAX} characters at most.
+                            {digitalGiftEligible
+                              ? `Saved on the order with the recipient. It is not posted on the memorial page. ${GIFT_MESSAGE_MAX} characters at most.`
+                              : `Saved with the order for the person who packs the keepsake. It is not engraved. ${GIFT_MESSAGE_MAX} characters at most.`}
                           </p>
                         </div>
+                        {needsShipping ? (
+                        <>
                         <div className="flex items-start gap-3">
                           <Checkbox
                             id="shipToRecipient"
@@ -697,6 +769,8 @@ function CheckoutForm() {
                             We will ship the keepsake to your address so you can give it yourself.
                           </p>
                         )}
+                        </>
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
@@ -714,7 +788,12 @@ function CheckoutForm() {
                     placeholder="Names, dates, and anything our team should know about the memorial."
                     rows={4}
                   />
-                  <p className="text-xs text-muted-foreground">{orderNotesHint(cartItems.map((item) => item.id))}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {orderNotesHint(cartItems.map((item) => item.id))}
+                    {digitalGiftEligible && formData.isGift
+                      ? " The first line is the person or pet who died. The recipient's name and email stay in the gift fields."
+                      : ""}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -753,7 +832,7 @@ function CheckoutForm() {
                   onBeforePayment={validateForm}
                   disabled={isSubmitting}
                   customerEmail={formData.email}
-                  customerName={needsShipping ? formData.fullName.trim() : ""}
+                  customerName={needsShipping || (digitalGiftEligible && formData.isGift) ? formData.fullName.trim() : ""}
                 />
               </CardContent>
             </Card>

@@ -215,6 +215,18 @@ export default function PetMemorialsPage() {
 
       <SisterShopNote layout="band" />
 
+      <section className="bg-amber-50 py-16">
+        <div className="mx-auto max-w-3xl px-4 text-center">
+          <h2 className="mb-3 text-2xl font-semibold text-foreground">Giving this to someone who lost a pet</h2>
+          <p className="text-muted-foreground">
+            <Link href="/pet-loss-sympathy-gift" className="underline">
+              A pet loss sympathy gift
+            </Link>{" "}
+            is the digital memorial page, bought for the person who is grieving. Nothing is shipped.
+          </p>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-amber-500 to-orange-600">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">

@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Globe, Lock, User, Music, Camera } from "lucide-react"
+import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.humanMemorials)
@@ -190,6 +191,12 @@ export default function HumanMemorialsPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-50 py-16">
+        <div className="mx-auto max-w-3xl px-4">
+          <SympathyGiftNav intro="If you are buying a memorial for someone else's parent, these pages order the digital memorial as a gift." />
         </div>
       </section>
 

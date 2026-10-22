@@ -16,6 +16,7 @@ import {
 } from "@/lib/keepsake-collection"
 import { longTailPages } from "@/lib/long-tail"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
+import { sympathyGiftPages } from "@/lib/sympathy-gift-pages"
 
 /**
  * Search Console HTML-tag verification. Next.js renders this as
@@ -670,6 +671,56 @@ export const publicPages = {
     priority: 0.1,
     index: false,
     inSitemap: false,
+  },
+  sympathyGiftMother: {
+    path: sympathyGiftPages.mother.path,
+    title: sympathyGiftPages.mother.title,
+    description: sympathyGiftPages.mother.description,
+    file: "app/sympathy-gift-loss-of-mother/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  sympathyGiftFather: {
+    path: sympathyGiftPages.father.path,
+    title: sympathyGiftPages.father.title,
+    description: sympathyGiftPages.father.description,
+    file: "app/sympathy-gift-loss-of-father/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  petLossSympathyGift: {
+    path: sympathyGiftPages.pet.path,
+    title: sympathyGiftPages.pet.title,
+    description: sympathyGiftPages.pet.description,
+    file: "app/pet-loss-sympathy-gift/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  longDistanceSympathyGift: {
+    path: sympathyGiftPages.distance.path,
+    title: sympathyGiftPages.distance.title,
+    description: sympathyGiftPages.distance.description,
+    file: "app/long-distance-sympathy-gift/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  coworkerSympathyGift: {
+    path: sympathyGiftPages.coworker.path,
+    title: sympathyGiftPages.coworker.title,
+    description: sympathyGiftPages.coworker.description,
+    file: "app/coworker-sympathy-gift/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
   },
 } as const satisfies Record<string, SeoPage>
 

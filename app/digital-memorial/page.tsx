@@ -18,6 +18,7 @@ import {
 } from "@/lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_NAME, EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
 
@@ -93,6 +94,11 @@ export default function DigitalMemorialProductPage() {
             </p>
           </CardContent>
         </Card>
+
+        <SympathyGiftNav
+          className="mt-10"
+          intro={`Buying this page for a friend, coworker, or relative is ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}. Checkout can mark it as a gift.`}
+        />
 
         <section className="space-y-4" aria-label="Questions about the digital memorial">
           <h2 className="text-2xl font-semibold text-foreground">Questions before you order</h2>

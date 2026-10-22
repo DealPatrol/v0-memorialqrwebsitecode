@@ -34,6 +34,7 @@ import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
+import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
 
 export const metadata = pageMetadata(publicPages.home)
 
@@ -175,6 +176,12 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+          <SympathyGiftNav
+            className="mt-8"
+            heading="Sympathy gifts you can send today"
+            intro={`For a friend, coworker, or relative buying the ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)} digital memorial as a gift. Nothing is shipped. Checkout can record the recipient's name, email, and a short note.`}
+            listClassName="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
+          />
           <p className="mt-8 text-sm text-muted-foreground">
             <Link href="/pet-memorials" className="underline">
               Pet memorial QR codes

@@ -38,6 +38,13 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
     ],
     showConcierge: false,
     showGuide: true,
+    links: [
+      { href: "/sympathy-gift-loss-of-mother", label: "A sympathy gift after a mother dies, sent as a digital page" },
+      { href: "/sympathy-gift-loss-of-father", label: "A sympathy gift after a father dies, sent as a digital page" },
+      { href: "/pet-loss-sympathy-gift", label: "A pet loss sympathy gift you can send today" },
+      { href: "/long-distance-sympathy-gift", label: "A long-distance sympathy gift" },
+      { href: "/coworker-sympathy-gift", label: "A coworker sympathy gift" },
+    ],
   },
   mother: {
     id: "mother",
@@ -73,6 +80,9 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    links: [
+      { href: "/sympathy-gift-loss-of-mother", label: "Give a digital memorial page today, with nothing to ship" },
+    ],
   },
   father: {
     id: "father",
@@ -108,6 +118,9 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    links: [
+      { href: "/sympathy-gift-loss-of-father", label: "Give a digital memorial page today, with nothing to ship" },
+    ],
   },
   pet: {
     id: "pet",
@@ -150,6 +163,10 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         label: "The pet's own memorial QR page",
       },
       {
+        href: "/pet-loss-sympathy-gift",
+        label: "A pet loss sympathy gift you can send today",
+      },
+      {
         href: "/store/pet-memorial-plaque",
         label: "Pet Memorial QR Plaque",
       },
@@ -189,6 +206,9 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    links: [
+      { href: "/digital-memorial-page-gift", label: "A digital memorial page you can give today" },
+    ],
   },
   friend: {
     id: "friend",
@@ -224,6 +244,10 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: true,
+    links: [
+      { href: "/long-distance-sympathy-gift", label: "A sympathy gift you can send from far away" },
+      { href: "/coworker-sympathy-gift", label: "A sympathy gift from coworkers" },
+    ],
   },
 }
 
