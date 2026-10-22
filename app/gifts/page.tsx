@@ -1,11 +1,13 @@
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Header } from "@/components/header"
-import { PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
+import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
+import { DIGITAL_MEMORIAL_PRODUCT, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
 import { getListedKeepsake } from "@/lib/fulfillment-availability"
 import { giftIntentList } from "@/lib/gift-intent"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { pageMetadata, publicPages } from "@/lib/seo"
+import { formatUsd } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.gifts)
 
@@ -26,11 +28,14 @@ export default function GiftsPage() {
         />
         <h1 className="mb-4 text-4xl font-bold text-foreground">Memorial gift ideas</h1>
         <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
-          These pages are for a person who is grieving. Keepsakes you can order today are the ones checkout accepts.
-          Metal plaques are separate: join the waitlist while they are not for sale. A pet memorial QR code is the
-          pet&apos;s own page, not a gift for the person who lost them. When a keepsake can be ordered, checkout can
-          mark it as a gift and ship it to the recipient.
+          These pages are for a person who is grieving. The digital memorial page is{" "}
+          {formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}. You can buy it as a gift: checkout asks for the recipient&apos;s
+          name, email, and a short note. Nothing is shipped, and we email the page link to you. Metal plaques are
+          separate and on a waitlist. A pet memorial QR code is the pet&apos;s own page, not a gift for the person who
+          lost them.
         </p>
+        <SympathyGiftNav className="mb-10" intro="Friends, coworkers, and relatives can start here." />
+        <h2 className="mb-3 text-2xl font-semibold text-foreground">Plaque gift guides</h2>
         <ul className="space-y-3">
           {giftIntentList.map((item) => (
             <li key={item.path}>

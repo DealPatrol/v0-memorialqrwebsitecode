@@ -9,6 +9,7 @@ import { verifySquarePayment } from "@/lib/square-verify"
 import { fulfillDigitalMemorialOrder, fulfillPaidPhysicalOrder } from "@/lib/order-fulfillment"
 import { sendOrderConfirmationEmail } from "@/lib/order-confirmation-email"
 import {
+  applyGiftDelivery,
   giftOrderColumns,
   initialOrderInsertPlan,
   parseGiftOrder,
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
       attribution: rawAttribution,
       isGift,
       recipientName,
+      recipientEmail,
       giftMessage,
       shipToRecipient,
       recipientAddressLine1,
@@ -79,17 +81,15 @@ export async function POST(req: Request) {
     const manualFulfillment =
       shipsPhysical && resolvedItems.every((item) => !item.ships || item.provider === "manual")
 
-    const giftParsed = parseGiftOrder({ isGift, recipientName, giftMessage, shipToRecipient })
+    const giftParsed = parseGiftOrder({ isGift, recipientName, giftMessage, shipToRecipient, recipientEmail })
     if (!giftParsed.ok) {
       return NextResponse.json({ success: false, error: giftParsed.error }, { status: 400 })
     }
-    const gift = giftParsed.gift
-    if (gift.isGift && !shipsPhysical) {
-      return NextResponse.json(
-        { success: false, error: "A gift order has to include a keepsake we ship" },
-        { status: 400 },
-      )
+    const delivered = applyGiftDelivery(giftParsed.gift, shipsPhysical)
+    if (!delivered.ok) {
+      return NextResponse.json({ success: false, error: delivered.error }, { status: 400 })
     }
+    const gift = delivered.gift
     const buyerName = typeof customerName === "string" ? customerName.trim() : ""
     if (gift.isGift && !buyerName) {
       return NextResponse.json({ success: false, error: "Enter your name" }, { status: 400 })
@@ -390,7 +390,7 @@ function orderPayload(
   const columns = plan.giftColumns ? giftOrderColumns(gift) : null
   const withGift = columns ? { ...orderData, ...columns } : orderData
   if (!plan.pod) return withGift
-  const fulfillment = plan.giftInFulfillment ? withStoredGift(fulfillmentBase, gift) : fulfillmentBase
+  const fulfillment = plan.pod && (plan.giftInFulfillment || gift.isGift) ? withStoredGift(fulfillmentBase, gift) : fulfillmentBase
   return { ...withGift, ...podFields, fulfillment_data: fulfillment }
 }
 

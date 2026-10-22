@@ -22,6 +22,7 @@ import {
 import { EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
+import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
 
 export const metadata = pageMetadata(publicPages.keepsakes)
 
@@ -107,6 +108,11 @@ export default function KeepsakesForSalePage() {
             ))}
           </ul>
         </nav>
+
+        <SympathyGiftNav
+          className="mb-8"
+          intro={`Each of these pages leads to the ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)} digital memorial. At checkout, mark it as a gift and add the recipient's name, email, and a short note. Nothing is shipped.`}
+        />
 
         <nav aria-label="Related memorial pages" className="mb-4">
           <h2 className="mb-3 text-2xl font-semibold text-foreground">More ways to remember</h2>
