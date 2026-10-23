@@ -2,7 +2,8 @@ import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { buyerIntentJsonLd, buyerIntentList, PRIMARY_KEEPSAKE_ID } from "../lib/buyer-intent"
 import { getSellableKeepsake } from "../lib/fulfillment-availability"
-import { buildPartnerInquiryEmail, parsePartnerInquiry } from "../lib/partner-inquiry"
+import { funeralHomePartnerFaqs, funeralHomePartnerJsonLd } from "../lib/funeral-homes"
+import { buildPartnerInquiryEmail, parsePartnerInquiry, partnerInquiryMailConfig } from "../lib/partner-inquiry"
 import { publicPages } from "../lib/seo"
 
 describe("buyer intent pages", () => {
@@ -54,8 +55,25 @@ describe("funeral home inquiry", () => {
     if (!parsed.ok) return
     const email = buildPartnerInquiryEmail(parsed.value, {})
     assert.deepEqual(email.to, ["support@memorialsqr.com"])
+    assert.match(email.text, /^Partner inquiry from a funeral home\./)
     assert.match(email.text, /Chapel House/)
     assert.match(email.text, /Hanceville, AL/)
+    assert.equal(email.subject.toLowerCase().includes("wholesale"), false)
     assert.match(email.confirmationText, /does not charge a card/)
+    assert.match(email.confirmationText, /does not set a price/)
+    assert.deepEqual(partnerInquiryMailConfig({}), { ok: false, missing: "RESEND_API_KEY" })
+    assert.deepEqual(partnerInquiryMailConfig({ RESEND_API_KEY: " " }), { ok: false, missing: "RESEND_API_KEY" })
+    assert.deepEqual(partnerInquiryMailConfig({ RESEND_API_KEY: "re_test" }), { ok: true })
+
+    const faqs = funeralHomePartnerFaqs(null)
+    assert.equal(faqs.length, 3)
+    const data = funeralHomePartnerJsonLd(faqs)
+    assert.equal(data["@type"], "FAQPage")
+    assert.equal(data.mainEntity[0].name, faqs[0].question)
+    assert.match(faqs[1].answer, /\$24\.99 USD/)
+    assert.match(faqs[2].answer, /does not promise a wholesale price/)
+    assert.equal(publicPages.funeralHomes.title.length <= 60, true)
+    assert.equal(publicPages.funeralHomes.description.length <= 155, true)
+    assert.match(publicPages.funeralHomes.description, /partner inquiry/)
   })
 })

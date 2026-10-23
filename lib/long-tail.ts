@@ -116,6 +116,7 @@ export const longTailPages = {
     ],
     showConcierge: false,
     links: [
+      { href: "/celebration-of-life-qr-code", label: "A celebration of life QR code you can order today" },
       { href: "/funeral-program-qr-code", label: "A QR code for a funeral program" },
       { href: "/sympathy-gift-ideas", label: "Sympathy gift ideas" },
     ],

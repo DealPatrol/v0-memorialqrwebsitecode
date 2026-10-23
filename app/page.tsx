@@ -27,7 +27,7 @@ import {
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH, DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
-import { digitalLandingList } from "@/lib/digital-landing"
+import { digitalLandingList, serviceLandingList } from "@/lib/digital-landing"
 import { giftIntentList } from "@/lib/gift-intent"
 import { getListedKeepsakes, getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
@@ -146,13 +146,36 @@ export default function HomePage() {
             shipped.
           </p>
           <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
-            {digitalLandingList.map((item) => (
+            {digitalLandingList
+              .filter((item) => !item.service)
+              .map((item) => (
+                <li key={item.path}>
+                  <Link href={item.path} className="underline">
+                    {item.h1}
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </nav>
+        <nav aria-label="Planning a service" className="mx-auto mb-10 max-w-3xl text-center">
+          <h2 className="mb-3 text-2xl font-semibold text-foreground">Planning a funeral or service</h2>
+          <p className="mb-4 text-muted-foreground">
+            These pages are for a family that needs a QR code before the service. Each one orders the same{" "}
+            {formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)} digital memorial. Nothing is shipped.
+          </p>
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
+            {serviceLandingList.map((item) => (
               <li key={item.path}>
                 <Link href={item.path} className="underline">
                   {item.h1}
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href="/funeral-homes" className="underline">
+                For funeral homes
+              </Link>
+            </li>
           </ul>
         </nav>
         <nav aria-label="Keepsake guides" className="mx-auto max-w-3xl text-center">

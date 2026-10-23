@@ -15,6 +15,10 @@ export type DigitalLandingId =
   | "createOnline"
   | "pet"
   | "printable"
+  | "funeralProgram"
+  | "celebrationQr"
+  | "obituaryQr"
+  | "slideshowQr"
 
 export type DigitalLandingPage = {
   id: DigitalLandingId
@@ -27,6 +31,10 @@ export type DigitalLandingPage = {
   paragraphs: string[]
   steps: string[]
   faqs: DigitalLandingFaq[]
+  /** Links that are not other digital landing pages, such as a plaque guide or the partner page. */
+  links?: { href: string; label: string }[]
+  /** A family planning a funeral or service, distinct from a gift or a pet page. */
+  service?: boolean
 }
 
 const price = formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)
@@ -37,6 +45,15 @@ function steps(): string[] {
     `Pay ${price} once. Put their name on the first line of the order notes. That line becomes the title of the page.`,
     "We email the memorial page link and a PNG of the QR code. Nothing is shipped.",
     `Print the code or share the link. Add photos and stories when you are ready. Hosting for ${years} years is included, with no monthly fee.`,
+  ]
+}
+
+function serviceSteps(placement: string): string[] {
+  return [
+    `Pay ${price} once. Put their name on the first line of the order notes. That line becomes the title of the page.`,
+    "We email the memorial page link and a PNG of the QR code. Nothing is shipped.",
+    placement,
+    `Add photos, stories, songs, and saved voicemails when you can. A guest can leave a written memory. Hosting for ${years} years is included, with no monthly fee.`,
   ]
 }
 
@@ -222,9 +239,159 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
       },
     ],
   },
+  funeralProgram: {
+    id: "funeralProgram",
+    path: "/qr-code-for-funeral-program",
+    title: "QR Code for a Funeral Program | MemorialsQR",
+    description: `A QR code to print on a funeral program. Guests scan for photos, memories, and music. ${price} once. Nothing is shipped.`,
+    h1: "A QR code to print on a funeral program",
+    ogTitle: "A QR code for the funeral program",
+    ogSubtitle: "Guests scan the program for photos and memories.",
+    service: true,
+    paragraphs: [
+      "A funeral program is what people hold while they sit. A QR code on that page gives them a way to open photos and stories without passing a phone around the room.",
+      "This order is a digital memorial: one page and one QR code file. We email a PNG. Give that file to the funeral home or the person printing the program. They place the code on the program they already print. We do not print programs, and nothing is shipped.",
+      `Guests point a phone camera at the code. They do not need an app or an account. They can see the photos you added, play a song or a saved voicemail you uploaded, and leave a written memory. The page does not have to be finished before the program is printed. You pay ${price} once. Hosting for ${years} years is included, and there is no monthly fee.`,
+    ],
+    steps: serviceSteps(
+      "Give the PNG to the person printing the funeral program. They place the QR code on the program. Guests scan it with a phone camera during the service.",
+    ),
+    faqs: [
+      {
+        question: "Do you print the funeral program?",
+        answer:
+          "No. We email a PNG of the QR code and a link to the memorial page. Your funeral home or printer places that code on the program they print.",
+      },
+      {
+        question: "Can guests scan the code during the service?",
+        answer:
+          "Yes. A phone camera opens the page. Guests do not need an app or an account. They can see the photos you added and leave a written memory.",
+      },
+      {
+        question: "Can the page include music or a voicemail?",
+        answer:
+          "Yes. You can add songs and saved voicemails on the page after you order. Guests who scan the code can play what you added.",
+      },
+      {
+        question: "Is a metal plaque included?",
+        answer: "No. This purchase is the page and the QR code only. Nothing is shipped. A metal plaque is a different item.",
+      },
+    ],
+    links: [
+      { href: "/funeral-program-qr-code", label: "A metal plaque for after the service" },
+      { href: "/funeral-homes", label: "For funeral homes" },
+    ],
+  },
+  celebrationQr: {
+    id: "celebrationQr",
+    path: "/celebration-of-life-qr-code",
+    title: "Celebration of Life QR Code | MemorialsQR",
+    description: `Guests scan a celebration of life QR code for photos, memories, and music. ${price} once. Nothing is shipped.`,
+    h1: "A celebration of life QR code",
+    ogTitle: "A celebration of life QR code",
+    ogSubtitle: "Set the code out where guests can scan it.",
+    service: true,
+    paragraphs: [
+      "A celebration of life is one gathering. People want to see more than the photograph on the table, and they want to hear a song again after they sit down.",
+      "Order the digital memorial and we email a QR code. Print it on the program, on a card by the photos, or on a small sign. We do not print the program, and we do not host the gathering. Nothing is shipped.",
+      `Guests scan with a phone camera. They can look through the photos, play music or a saved voicemail you added, and leave a written memory. Someone who could not travel can open the same link. The page can stay nearly empty until you are ready to add to it. The price is ${price}, paid once, with ${years} years of hosting and no monthly fee.`,
+    ],
+    steps: serviceSteps(
+      "Print the code on a program, a card, or a small sign at the celebration of life. Guests scan it with a phone camera.",
+    ),
+    faqs: [
+      {
+        question: "Do you host the celebration of life or print the programs?",
+        answer: "No. We email the memorial page and a QR code. You or the funeral home print the code and set it out.",
+      },
+      {
+        question: "Can people who are not in the room open the page?",
+        answer: "Yes. Anyone with the link or the QR code can open it. They do not need an account.",
+      },
+      {
+        question: "What is the difference between this and a keepsake plaque?",
+        answer: `This order is the page and a QR code file, for ${price}. Nothing is shipped. A metal plaque is a different item.`,
+      },
+    ],
+    links: [
+      { href: "/celebration-of-life-keepsake", label: "A keepsake after a celebration of life" },
+      { href: "/funeral-homes", label: "For funeral homes" },
+    ],
+  },
+  obituaryQr: {
+    id: "obituaryQr",
+    path: "/obituary-qr-code",
+    title: "Obituary QR Code | MemorialsQR",
+    description: `An obituary QR code opens photos and memories for readers who cannot attend. ${price} once. Nothing is shipped.`,
+    h1: "An obituary QR code",
+    ogTitle: "An obituary QR code",
+    ogSubtitle: "Readers can open the page without attending.",
+    service: true,
+    paragraphs: [
+      "An obituary tells people that someone has died, and a little about the life. A QR code in that notice opens the photos and stories that will not fit in the lines of type.",
+      "We email a PNG of the QR code and a link to the memorial page. A newspaper or a funeral home can place the code in a printed obituary. You can paste the link into an online notice. We do not write the obituary, and we do not place it. Nothing is shipped.",
+      `A reader who cannot attend can still open the page, see the photos, play a song or a saved voicemail you added, and leave a written memory. You can add those pieces after the notice is published. The code does not change. You pay ${price} once. Hosting for ${years} years is included, with no monthly fee.`,
+    ],
+    steps: serviceSteps(
+      "Place the QR code in the printed obituary, or put the page link in the online obituary. A reader can open the page without attending the service.",
+    ),
+    faqs: [
+      {
+        question: "Do you write or publish the obituary?",
+        answer:
+          "No. We email the memorial page and a QR code. You or the funeral home place the code or the link in the obituary.",
+      },
+      {
+        question: "Will the QR code work in a newspaper?",
+        answer:
+          "A printed QR code can be scanned with a phone camera when it is large enough to read. Ask the publication what size they can print. The same page also has a link you can paste into an online obituary.",
+      },
+      {
+        question: "Do readers need an account?",
+        answer: "No. The phone camera opens the page. They can see what you shared and leave a written memory.",
+      },
+    ],
+    links: [{ href: "/funeral-homes", label: "For funeral homes" }],
+  },
+  slideshowQr: {
+    id: "slideshowQr",
+    path: "/memorial-service-slideshow-qr-code",
+    title: "Memorial Slideshow QR Code | MemorialsQR",
+    description: `A memorial slideshow QR code opens the photos and music after the slides play. ${price} once. Nothing is shipped.`,
+    h1: "A QR code for a memorial service slideshow",
+    ogTitle: "A memorial slideshow QR code",
+    ogSubtitle: "The slides play once. The page stays open.",
+    service: true,
+    paragraphs: [
+      "A memorial slideshow plays once. People watch, and then the screen goes dark. A QR code lets them open the photos and the music on their own phone, in the room and after they go home.",
+      "We do not make the slideshow, and we do not bring a screen. This order is a memorial page and a QR code. We email a PNG. Put the code on the program, or on a card guests can see near the screen. Nothing is shipped.",
+      `You add the photos, the songs, and any saved voicemails. Guests who scan can see and hear what you added, and they can leave a written memory. Share the link with people who could not be in the room. This is a page they open, not a live stream of the service. The price is ${price}, paid once, with ${years} years of hosting included.`,
+    ],
+    steps: serviceSteps(
+      "Put the QR code on the program or on a card near the screen. People can open the photos and music on a phone after the slides have played. Share the link with anyone who could not be in the room.",
+    ),
+    faqs: [
+      {
+        question: "Do you create the slideshow?",
+        answer: "No. We do not edit a slideshow or provide a screen. We email a memorial page and a QR code that opens it.",
+      },
+      {
+        question: "Can people watch from home?",
+        answer:
+          "They can open the page from the link or the QR code and see the photos, music, and messages you added. It is a memorial page, not a live stream of the service.",
+      },
+      {
+        question: "Where should the QR code go?",
+        answer: "On the program, or on a card guests can see near the screen. Each copy opens the same page.",
+      },
+    ],
+    links: [{ href: "/funeral-homes", label: "For funeral homes" }],
+  },
 }
 
 export const digitalLandingList = Object.values(digitalLandingPages)
+
+export const serviceLandingList = digitalLandingList.filter((page) => page.service)
 
 /** Policy answers that are not already one of this landing page's own questions. */
 function policyFaqsForLanding(page: DigitalLandingPage): DigitalLandingFaq[] {

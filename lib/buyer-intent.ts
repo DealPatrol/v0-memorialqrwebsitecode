@@ -177,6 +177,7 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
       "A funeral is one afternoon. People want to be there, and they also want a way back to the person after they have gone home.",
       "A QR code on the program can open the memorial page during the service and in the weeks after. Guests do not need an account. They point a phone camera at the code.",
       "We do not print funeral programs. Ordering the QR Memorial Plaque creates the memorial page and the QR code. Your funeral home can place that same code on the program they print. The plaque is what we make and ship to you, so the page has a home after the service too.",
+      "If you need the QR code in time for the program, the digital memorial is a separate order. We email a PNG you can give the printer. Nothing is shipped. The metal plaque on this page is not that file.",
     ],
     faqs: [
       {
@@ -195,6 +196,9 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
       },
     ],
     showConcierge: false,
+    links: [
+      { href: "/qr-code-for-funeral-program", label: "A QR code you can print on the program today" },
+    ],
   },
   digital: {
     id: "digital",

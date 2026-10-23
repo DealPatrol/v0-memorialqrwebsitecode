@@ -16,6 +16,7 @@ import {
   digitalMemorialFeatures,
   digitalMemorialJsonLd,
 } from "@/lib/digital-memorial"
+import { serviceLandingList } from "@/lib/digital-landing"
 import { EXAMPLE_MEMORIAL_NAME, EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
@@ -109,6 +110,32 @@ export default function DigitalMemorialProductPage() {
             </div>
           ))}
         </section>
+
+        <nav aria-label="Planning a service" className="mt-10 space-y-3">
+          <h2 className="text-2xl font-semibold text-foreground">Planning a funeral or service</h2>
+          <p className="text-muted-foreground">
+            The same page and QR code, for a program, a celebration of life, an obituary, or a slideshow.
+          </p>
+          <ul className="space-y-2">
+            {serviceLandingList.map((item) => (
+              <li key={item.path}>
+                <Link href={item.path} className="underline">
+                  {item.h1}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link href="/funeral-homes" className="underline">
+                For funeral homes
+              </Link>
+            </li>
+            <li>
+              <Link href={EXAMPLE_MEMORIAL_PATH} className="underline">
+                Example memorial page
+              </Link>
+            </li>
+          </ul>
+        </nav>
       </main>
     </div>
   )

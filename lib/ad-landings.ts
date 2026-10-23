@@ -56,7 +56,7 @@ export const adLandingPages = {
       "Tell us about your funeral home. We reply by email. The form does not place an order and does not charge a card.",
     ],
     ctaHref: "/funeral-homes#inquiry",
-    ctaLabel: "Send a wholesale inquiry",
+    ctaLabel: "Send a partner inquiry",
     trackProduct: false,
   },
 } as const satisfies Record<string, AdLanding>

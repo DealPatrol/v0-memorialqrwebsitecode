@@ -41,11 +41,22 @@ function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!)
 }
 
+/** The inbox key the partner form needs. RESEND_FROM_EMAIL is optional and has a default. */
+export const PARTNER_INQUIRY_MAIL_ENV = "RESEND_API_KEY"
+
+export function partnerInquiryMailConfig(
+  env: Record<string, string | undefined>,
+): { ok: true } | { ok: false; missing: typeof PARTNER_INQUIRY_MAIL_ENV } {
+  const key = env.RESEND_API_KEY
+  if (typeof key !== "string" || key.trim() === "") return { ok: false, missing: PARTNER_INQUIRY_MAIL_ENV }
+  return { ok: true }
+}
+
 export function buildPartnerInquiryEmail(input: PartnerInquiryInput, env: Record<string, string | undefined> = process.env) {
   const to = manualFulfillmentRecipients(env)
   const attribution = formatAttribution(input.attribution)
   const text = [
-    "Wholesale inquiry from a funeral home.",
+    "Partner inquiry from a funeral home.",
     "",
     `Name: ${input.name}`,
     `Email: ${input.email}`,
@@ -57,7 +68,7 @@ export function buildPartnerInquiryEmail(input: PartnerInquiryInput, env: Record
     ...(attribution ? ["", "Attribution:", attribution] : []),
   ].join("\n")
 
-  const html = `<p><strong>Wholesale inquiry from a funeral home.</strong></p>
+  const html = `<p><strong>Partner inquiry from a funeral home.</strong></p>
 <ul>
   <li>Name: ${escapeHtml(input.name)}</li>
   <li>Email: ${escapeHtml(input.email)}</li>
@@ -68,11 +79,11 @@ export function buildPartnerInquiryEmail(input: PartnerInquiryInput, env: Record
 <p style="white-space:pre-wrap">${escapeHtml(input.message)}</p>
 ${attribution ? `<p><strong>Attribution</strong></p><pre>${escapeHtml(attribution)}</pre>` : ""}`
 
-  const confirmationText = `We received your wholesale inquiry for ${input.funeralHome}. We will reply to ${input.email}. This note does not place an order and does not charge a card.`
+  const confirmationText = `We received your partner inquiry for ${input.funeralHome}. We will reply to ${input.email}. This note does not place an order, does not charge a card, and does not set a price.`
 
   return {
     to,
-    subject: `Funeral home inquiry: ${input.funeralHome}`,
+    subject: `Funeral home partner inquiry: ${input.funeralHome}`,
     html,
     text,
     confirmationSubject: "We received your MemorialsQR inquiry",

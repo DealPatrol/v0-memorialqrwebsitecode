@@ -9,7 +9,7 @@ import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { Button } from "@/components/ui/button"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH } from "@/lib/digital-memorial"
-import { digitalLandingList } from "@/lib/digital-landing"
+import { digitalLandingList, serviceLandingList } from "@/lib/digital-landing"
 import { getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import {
@@ -99,13 +99,32 @@ export default function KeepsakesForSalePage() {
         <nav aria-label="Digital memorial guides" className="mb-8">
           <h2 className="mb-3 text-2xl font-semibold text-foreground">About the digital memorial</h2>
           <ul className="space-y-2">
-            {digitalLandingList.map((item) => (
+            {digitalLandingList
+              .filter((item) => !item.service)
+              .map((item) => (
+                <li key={item.path}>
+                  <Link href={item.path} className="underline">
+                    {item.h1}
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </nav>
+        <nav aria-label="Planning a service" className="mb-8">
+          <h2 className="mb-3 text-2xl font-semibold text-foreground">Planning a funeral or service</h2>
+          <ul className="space-y-2">
+            {serviceLandingList.map((item) => (
               <li key={item.path}>
                 <Link href={item.path} className="underline">
                   {item.h1}
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href="/funeral-homes" className="underline">
+                For funeral homes
+              </Link>
+            </li>
           </ul>
         </nav>
 

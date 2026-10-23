@@ -78,7 +78,11 @@ export function Footer() {
               <li><Link href="/qr-code-for-headstone" className="hover:text-white transition-colors">QR Code for a Headstone</Link></li>
               <li><Link href="/qr-code-for-urn" className="hover:text-white transition-colors">QR Code for an Urn</Link></li>
               <li><Link href="/pet-memorial-qr-code" className="hover:text-white transition-colors">Pet Memorial QR Code</Link></li>
-              <li><Link href="/funeral-program-qr-code" className="hover:text-white transition-colors">Funeral Program QR Code</Link></li>
+              <li><Link href="/funeral-program-qr-code" className="hover:text-white transition-colors">Funeral Program Plaque</Link></li>
+              <li><Link href="/qr-code-for-funeral-program" className="hover:text-white transition-colors">QR Code for a Funeral Program</Link></li>
+              <li><Link href="/celebration-of-life-qr-code" className="hover:text-white transition-colors">Celebration of Life QR Code</Link></li>
+              <li><Link href="/obituary-qr-code" className="hover:text-white transition-colors">Obituary QR Code</Link></li>
+              <li><Link href="/memorial-service-slideshow-qr-code" className="hover:text-white transition-colors">Memorial Slideshow QR Code</Link></li>
               <li><Link href="/digital-memorial-page" className="hover:text-white transition-colors">Digital Memorial Page</Link></li>
               <li><Link href="/guides" className="hover:text-white transition-colors">Memorial Guides</Link></li>
               <li><Link href="/gifts" className="hover:text-white transition-colors">Gift Ideas</Link></li>
