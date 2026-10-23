@@ -14,6 +14,7 @@ import {
   KEEPSAKE_COLLECTION_PATH,
   KEEPSAKE_COLLECTION_TITLE,
 } from "@/lib/keepsake-collection"
+import { graveQrPages } from "@/lib/grave-qr-pages"
 import { longTailPages } from "@/lib/long-tail"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { sympathyGiftPages } from "@/lib/sympathy-gift-pages"
@@ -323,7 +324,7 @@ export const publicPages = {
   headstoneQr: {
     path: "/qr-code-for-headstone",
     title: "QR Code for a Headstone | MemorialsQR",
-    description: `Visitors at a headstone can open photos and stories with a QR code. The QR Memorial Plaque is ${plaque} and includes ${years} years of hosting.`,
+    description: `A QR code for a headstone opens photos and stories. Order the page and a printable code today. The metal plaque is coming soon.`,
     file: "app/qr-code-for-headstone/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -333,7 +334,7 @@ export const publicPages = {
   plaqueQr: {
     path: "/memorial-qr-code-plaque",
     title: "Memorial QR Code Plaque | MemorialsQR",
-    description: `A memorial QR code plaque in gold, silver, or black opens a page of photos and stories. ${plaque} once, with ${years} years of hosting included.`,
+    description: `A QR code memorial plaque is coming soon. Order the page it opens, and a QR code you can print, today. Nothing is shipped.`,
     file: "app/memorial-qr-code-plaque/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -717,6 +718,46 @@ export const publicPages = {
     title: sympathyGiftPages.coworker.title,
     description: sympathyGiftPages.coworker.description,
     file: "app/coworker-sympathy-gift/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  headstoneQrPrint: {
+    path: graveQrPages.headstone.path,
+    title: graveQrPages.headstone.title,
+    description: graveQrPages.headstone.description,
+    file: "app/headstone-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  graveMarkerQrOrder: {
+    path: graveQrPages.graveMarker.path,
+    title: graveQrPages.graveMarker.title,
+    description: graveQrPages.graveMarker.description,
+    file: "app/qr-code-for-grave-marker/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  cemeteryQrPrint: {
+    path: graveQrPages.cemetery.path,
+    title: graveQrPages.cemetery.title,
+    description: graveQrPages.cemetery.description,
+    file: "app/cemetery-memorial-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  qrCodeMemorialPlaque: {
+    path: graveQrPages.plaque.path,
+    title: graveQrPages.plaque.title,
+    description: graveQrPages.plaque.description,
+    file: "app/qr-code-memorial-plaque/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
     index: true,

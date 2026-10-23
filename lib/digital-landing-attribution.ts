@@ -1,6 +1,7 @@
 import { digitalLandingList } from "@/lib/digital-landing"
 import { DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
+import { graveQrSellingPaths } from "@/lib/grave-qr-pages"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { sympathyGiftList } from "@/lib/sympathy-gift-pages"
 
@@ -13,6 +14,7 @@ const sellingPaths = new Set<string>([
   KEEPSAKE_COLLECTION_PATH,
   ...digitalLandingList.map((page) => page.path),
   ...sympathyGiftList.map((page) => page.path),
+  ...graveQrSellingPaths(),
 ])
 
 export function isDigitalSellingPath(path: string | null | undefined): path is string {
