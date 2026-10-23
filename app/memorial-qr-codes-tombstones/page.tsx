@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { GraveQrNav } from "@/components/grave-qr-nav"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -100,6 +101,12 @@ export default function MemorialQRCodesTombstonesPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16">
+        <div className="container mx-auto max-w-3xl px-4">
+          <GraveQrNav intro="Order a digital memorial and a QR code you can print. Nothing is shipped. Metal plaques stay on the waitlist." />
         </div>
       </section>
 
