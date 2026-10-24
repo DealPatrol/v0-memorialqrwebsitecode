@@ -2,7 +2,8 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { DIGITAL_MEMORIAL_ID, getCheckoutProduct, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
-import { digitalLandingJsonLd, digitalLandingList } from "../lib/digital-landing"
+import { PET_MEMORIAL_HUB_PATH, resolveDigitalLanding } from "../lib/digital-landing-attribution"
+import { digitalLandingJsonLd, digitalLandingList, digitalLandingPages } from "../lib/digital-landing"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "../lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "../lib/example-memorial"
 import { priceCart } from "../lib/checkout-pricing"
@@ -144,7 +145,7 @@ test("order page lists sellable keepsakes and leaves plaques out of the offer li
 })
 
 test("digital memorial landing pages are indexable and sell the page", () => {
-  assert.equal(digitalLandingList.length, 6)
+  assert.equal(digitalLandingList.length, 9)
   const occupied = new Set([
     ...buyerIntentList.map((page) => page.path),
     ...giftIntentList.map((page) => page.path),
@@ -157,9 +158,13 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   )
   const titles = digitalLandingList.map((page) => page.title)
   const descriptions = digitalLandingList.map((page) => page.description)
+  const headings = digitalLandingList.map((page) => page.h1)
+  const openings = digitalLandingList.map((page) => page.paragraphs[0])
   assert.equal(new Set(digitalLandingList.map((page) => page.path)).size, digitalLandingList.length)
   assert.equal(new Set(titles).size, titles.length)
   assert.equal(new Set(descriptions).size, descriptions.length)
+  assert.equal(new Set(headings).size, headings.length)
+  assert.equal(new Set(openings).size, openings.length)
 
   for (const page of digitalLandingList) {
     assert.equal(occupied.has(page.path), false)
@@ -208,6 +213,37 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   assert.match(keepsakes, /DIGITAL_MEMORIAL_CHECKOUT_PATH/)
   assert.match(keepsakes, /digitalLandingList/)
   assert.equal(DIGITAL_MEMORIAL_CHECKOUT_PATH, "/checkout/simple?product=digital-memorial")
+
+  for (const page of [digitalLandingPages.dog, digitalLandingPages.cat, digitalLandingPages.tag]) {
+    assert.equal(resolveDigitalLanding(null, page.path), page.path)
+    assert.match(page.paragraphs.join(" "), /\$24\.99/)
+    assert.match(`${page.h1} ${page.paragraphs.join(" ")} ${page.faqs.map((faq) => faq.answer).join(" ")}`, /not a collar tag|do not sell a collar tag|not a metal collar tag/i)
+    assert.equal(page.paragraphs.join(" ").toLowerCase().includes("testimonial"), false)
+    const metadata = pageMetadata(publicPages[pageKey(page.path)])
+    assert.equal(metadata.alternates && "canonical" in metadata.alternates ? metadata.alternates.canonical : "", page.path)
+  }
+  assert.match(digitalLandingPages.dog.paragraphs[0], /dog/)
+  assert.match(digitalLandingPages.cat.paragraphs[0], /cat/)
+  assert.match(digitalLandingPages.tag.paragraphs[0], /tag/)
+
+  const petHub = readFileSync(new URL("../app/pet-memorials/page.tsx", import.meta.url), "utf8")
+  assert.match(petHub, /DIGITAL_MEMORIAL_CHECKOUT_PATH/)
+  assert.match(petHub, /TrackViewContent/)
+  assert.match(petHub, /landingPath=\{PET_MEMORIAL_HUB_PATH\}/)
+  assert.match(petHub, /href="\/dog-memorial-qr-code"/)
+  assert.match(petHub, /href="\/cat-memorial-qr-code"/)
+  assert.match(petHub, /href="\/pet-memorial-qr-tag"/)
+  assert.equal(resolveDigitalLanding(null, PET_MEMORIAL_HUB_PATH), PET_MEMORIAL_HUB_PATH)
+  assert.equal(petHub.includes("Shop Keepsakes"), false)
+
+  const testSquare = readFileSync(new URL("../app/test-square/page.tsx", import.meta.url), "utf8")
+  assert.match(testSquare, /index: false/)
+  assert.equal(
+    Object.values(publicPages).some((page) => page.path === "/test-square"),
+    false,
+  )
+  const robots = readFileSync(new URL("../app/robots.txt/route.ts", import.meta.url), "utf8")
+  assert.match(robots, /Disallow: \/test-square/)
 })
 
 function pageKey(path: string): keyof typeof publicPages {
