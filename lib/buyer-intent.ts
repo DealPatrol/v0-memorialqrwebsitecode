@@ -94,6 +94,7 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
   },
   urn: {
     id: "urn",
+    // The live page is CremationQrView (lib/cremation-qr-pages.ts). This record stays so the guide index keeps the path and heading.
     path: "/qr-code-for-urn",
     h1: "A QR code for an urn",
     ogTitle: "A QR code for an urn",
