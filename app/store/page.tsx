@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
 import { DigitalMemorialOfferCard } from "@/components/digital-memorial-offer-card"
+import { PlaqueCostAnswer } from "@/components/plaque-cost-answer"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { getSellableKeepsakes } from "@/lib/fulfillment-availability"
@@ -36,6 +37,8 @@ export default function StorePage() {
           </p>
         </div>
       </section>
+
+      <PlaqueCostAnswer className="bg-transparent px-4 pb-8" />
 
       <section className="px-4 pb-4">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
