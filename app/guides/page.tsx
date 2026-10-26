@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { GraveQrNav } from "@/components/grave-qr-nav"
 import { Header } from "@/components/header"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { giftIntentList } from "@/lib/gift-intent"
@@ -14,8 +15,8 @@ const also = [
   { href: "/memorial-qr-codes-tombstones", label: "QR code memorial pages" },
   { href: "/how-it-works", label: "How a memorial page works" },
   { href: "/faq", label: "Memorial page FAQ" },
-  { href: "/store/qr-memorial-plaque", label: "The QR Memorial Plaque you can buy" },
-  { href: "/store/pet-memorial-plaque", label: "The Pet Memorial QR Plaque you can buy" },
+  { href: "/store/qr-memorial-plaque#waitlist", label: "QR Memorial Plaque waitlist" },
+  { href: "/store/pet-memorial-plaque#waitlist", label: "Pet Memorial QR Plaque waitlist" },
 ]
 
 export default function GuidesPage() {
@@ -31,9 +32,13 @@ export default function GuidesPage() {
         />
         <h1 className="mb-4 text-4xl font-bold text-foreground">Memorial QR guides</h1>
         <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
-          Each guide is about one way families use a QR code. The keepsake for a person is the QR Memorial Plaque. The
-          keepsake for a pet is the Pet Memorial QR Plaque. Each one opens one memorial page.
+          Each guide is about one way families use a QR code. The metal QR plaques are coming soon and are not for
+          sale. What you can order today is a digital memorial page and a QR code we email. Nothing is shipped.
         </p>
+        <GraveQrNav
+          className="mb-10"
+          intro="These pages sell the digital memorial. You can print the QR code and place it later. Each page also has the plaque waitlist."
+        />
         <ul className="space-y-3">
           {buyerIntentList.map((item) => (
             <li key={item.path}>

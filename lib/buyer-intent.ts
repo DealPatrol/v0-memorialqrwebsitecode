@@ -40,14 +40,14 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
     ogSubtitle: "Visitors can open the photos and stories the stone cannot hold.",
     paragraphs: [
       "A name and two dates can hold only so much. When someone stands at the grave, a QR code can open the photos, the voice, and the stories the stone was never meant to carry.",
-      "The keepsake you can order today is the QR Memorial Plaque. It is a metal plaque with one QR code, and that code opens one memorial page. Many families set it with a headstone. Others keep it at home. If the plaque will live outdoors, say so in the order notes and we will confirm the finish before we make it.",
-      "You do not have to finish the page before the plaque ships. We create the page when you order, and the QR already opens it. Add photos and stories when you are ready.",
+      "The metal QR Memorial Plaque is coming soon. We are not taking plaque orders, and this page does not ship one. What you can order today is a digital memorial: the page and a QR code we email as a PNG. You can print it and, later, place it on a sticker or marker you already have. We do not engrave the headstone.",
+      "You do not have to finish the page before you order. We create the page when you pay, and the QR already opens it. Add photos and stories when you are ready. A printed sheet is not a weatherproof marker. Ask the cemetery before you attach anything to a stone.",
     ],
     faqs: [
       {
         question: "Can the plaque go on a headstone?",
         answer:
-          "Many families set the QR Memorial Plaque with a headstone or keep it at home. If it will be outdoors, say so in the order notes so we can confirm the finish before we make it. The QR opens the same memorial page either way.",
+          "Not yet. The QR Memorial Plaque is coming soon. Today you can order a QR code file, print it, and place it on a sticker or marker you already have. Ask the cemetery before you attach anything to a stone.",
       },
       {
         question: "Does a visitor need an app?",
@@ -69,25 +69,25 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
     ogTitle: "A memorial QR code plaque",
     ogSubtitle: "Gold, silver, or black. One QR code. One memorial page.",
     paragraphs: [
-      "The plaque is a small metal piece you can hold. Choose gold, silver, or black. The QR code on it opens one memorial page, so a visitor does not need an app or an account to see the photos and stories you choose to share.",
-      "Put the name on the first line of the order notes, then the dates, then the finish. We make the plaque in Alabama and ship it to a United States address. The memorial page is theirs from the day you order, even if the photos come later.",
-      "This is a one-time purchase. There is no monthly plan behind the plaque. Hosting for the page is included.",
+      "A memorial QR code plaque is a small metal piece with a name, dates, and one QR code. Gold, silver, and black are the finishes we expect to offer. We are not making plaques yet, so you cannot choose a finish today.",
+      "What you can order today is the memorial page that code would open, and a PNG of the QR code. We email both. Nothing is shipped. A visitor uses a phone camera and does not need an account.",
+      "The plaque is coming soon. Join the waitlist on this page. Joining does not charge a card and does not include the digital memorial. When you buy the digital memorial, hosting for the page is included. There is no monthly fee.",
     ],
     faqs: [
       {
         question: "What finishes can I choose?",
         answer:
-          "Gold, silver, or black. Write the finish in the order notes, with the name on the first line and the dates after it.",
+          "Not yet. Gold, silver, and black are the finishes we expect when a plaque can be ordered. They are not for sale today.",
       },
       {
         question: "What is engraved on the plaque?",
         answer:
-          "The name, the dates, and a QR code that opens the memorial page. We take those details from your order notes.",
+          "When a plaque can be ordered, the name, the dates, and a QR code. We are not engraving plaques now. The digital memorial emails you a QR code file instead.",
       },
       {
         question: "When does the memorial page exist?",
         answer:
-          "We create the page when the order is paid. The QR code on the plaque already opens it, and you can add photos and stories when you are ready.",
+          "When you order the digital memorial, we create the page and email the QR code. The metal plaque is not part of that order.",
       },
     ],
     showConcierge: false,
@@ -157,6 +157,18 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
       {
         href: "/memorial-gift-loss-of-pet",
         label: "A gift for someone grieving a pet",
+      },
+      {
+        href: "/dog-memorial-qr-code",
+        label: "A dog memorial you can order today",
+      },
+      {
+        href: "/cat-memorial-qr-code",
+        label: "A cat memorial you can order today",
+      },
+      {
+        href: "/pet-memorial-qr-tag",
+        label: "A pet memorial QR tag you can print today",
       },
       {
         href: "/pet-loss-sympathy-gift",

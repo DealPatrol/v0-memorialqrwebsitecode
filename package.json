@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test:fulfillment": "node --import tsx --import ./scripts/test-env.ts --test scripts/dry-run-fulfillment.ts scripts/buyer-intent.test.ts scripts/growth.test.ts scripts/ads-seo.test.ts scripts/admin-auth.test.ts scripts/checkout-security.test.ts scripts/order-access.test.ts scripts/gift-order.test.ts scripts/sympathy-gift.test.ts scripts/plaques-coming-soon.test.ts scripts/cremation-qr.test.ts scripts/memorial-photos.test.ts scripts/media.test.ts",
+    "test:fulfillment": "node --import tsx --import ./scripts/test-env.ts --test scripts/dry-run-fulfillment.ts scripts/buyer-intent.test.ts scripts/growth.test.ts scripts/ads-seo.test.ts scripts/admin-auth.test.ts scripts/checkout-security.test.ts scripts/order-access.test.ts scripts/gift-order.test.ts scripts/sympathy-gift.test.ts scripts/grave-qr.test.ts scripts/plaques-coming-soon.test.ts scripts/cremation-qr.test.ts scripts/memorial-photos.test.ts scripts/media.test.ts",
     "test:media": "node --import tsx --import ./scripts/test-env.ts --test scripts/media.test.ts"
   },
   "dependencies": {

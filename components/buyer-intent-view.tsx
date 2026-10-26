@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/json-ld"
 import { KeepsakePurchaseDetails } from "@/components/keepsake-purchase-details"
 import { MemorialGuideSection } from "@/components/memorial-guide-section"
 import { SisterShopNote } from "@/components/sister-shop-note"
+import { TrackViewContent } from "@/components/track-view-content"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -13,6 +14,8 @@ import {
   PRIMARY_KEEPSAKE_ID,
   type BuyerIntent,
 } from "@/lib/buyer-intent"
+import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { DIGITAL_MEMORIAL_CHECKOUT_PATH } from "@/lib/digital-memorial"
 import { getListedKeepsake, getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { giftIntentList } from "@/lib/gift-intent"
 import { CONCIERGE_PRICE_LABEL } from "@/lib/seo"
@@ -22,10 +25,13 @@ export function BuyerIntentView({
   page,
   related = buyerIntentList.filter((item) => item.id !== page.id),
   relatedHeading = "Other ways families remember",
+  digitalOffer,
 }: {
   page: BuyerIntent
   related?: BuyerIntent[]
   relatedHeading?: string
+  /** Checkout for the digital memorial, plus a link to the matching selling page. */
+  digitalOffer?: { href: string; note: string; linkLabel: string }
 }) {
   const product = getListedKeepsake(page.keepsakeId ?? PRIMARY_KEEPSAKE_ID)
   const others = getListedKeepsakes().filter((item) => item.id !== product?.id)
@@ -37,6 +43,14 @@ export function BuyerIntentView({
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       {product ? <JsonLd data={buyerIntentJsonLd(page, product)} /> : null}
+      {digitalOffer ? (
+        <TrackViewContent
+          contentId={DIGITAL_MEMORIAL_PRODUCT.id}
+          contentName={DIGITAL_MEMORIAL_PRODUCT.name}
+          value={DIGITAL_MEMORIAL_PRODUCT.price}
+          landingPath={page.path}
+        />
+      ) : null}
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-12">
         <Breadcrumbs
@@ -57,6 +71,20 @@ export function BuyerIntentView({
                 </a>{" "}
                 and we will email you once when it can be ordered.
               </p>
+            ) : null}
+            {digitalOffer ? (
+              <section className="space-y-3 rounded-lg border border-border bg-background p-4">
+                <h2 className="text-xl font-semibold text-foreground">Order the QR code today</h2>
+                <p className="text-muted-foreground">{digitalOffer.note}</p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button asChild>
+                    <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>Buy the digital memorial</Link>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link href={digitalOffer.href}>{digitalOffer.linkLabel}</Link>
+                  </Button>
+                </div>
+              </section>
             ) : null}
             {page.paragraphs.map((paragraph) => (
               <p key={paragraph} className="text-lg leading-relaxed text-muted-foreground">
