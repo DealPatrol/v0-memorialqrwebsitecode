@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, Users, ArrowRight, Globe, Lock, User, Music, Camera } from "lucide-react"
+import { GraveQrNav } from "@/components/grave-qr-nav"
 import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 
@@ -197,6 +198,10 @@ export default function HumanMemorialsPage() {
       <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-3xl px-4">
           <SympathyGiftNav intro="If you are buying a memorial for someone else's parent, these pages order the digital memorial as a gift." />
+          <GraveQrNav
+            className="mt-10"
+            intro="If the QR code is for a headstone, a grave marker, a cemetery visit, or a plaque, order the digital memorial now. Metal plaques are on the waitlist."
+          />
         </div>
       </section>
 
