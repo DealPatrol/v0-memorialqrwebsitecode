@@ -158,6 +158,18 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
         label: "A gift for someone grieving a pet",
       },
       {
+        href: "/dog-memorial-qr-code",
+        label: "A dog memorial you can order today",
+      },
+      {
+        href: "/cat-memorial-qr-code",
+        label: "A cat memorial you can order today",
+      },
+      {
+        href: "/pet-memorial-qr-tag",
+        label: "A pet memorial QR tag you can print today",
+      },
+      {
         href: "/pet-loss-sympathy-gift",
         label: "A pet loss sympathy gift you can send today",
       },

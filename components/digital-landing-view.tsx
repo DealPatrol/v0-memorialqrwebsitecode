@@ -8,7 +8,12 @@ import { TrackViewContent } from "@/components/track-view-content"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
-import { digitalLandingJsonLd, digitalLandingList, type DigitalLandingPage } from "@/lib/digital-landing"
+import {
+  digitalLandingJsonLd,
+  digitalLandingList,
+  type DigitalLandingId,
+  type DigitalLandingPage,
+} from "@/lib/digital-landing"
 import {
   DIGITAL_MEMORIAL_CHECKOUT_PATH,
   DIGITAL_MEMORIAL_PATH,
@@ -17,6 +22,26 @@ import { EXAMPLE_MEMORIAL_NAME, EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memo
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { formatUsd } from "@/lib/site"
+
+function showsSisterShop(id: DigitalLandingId): boolean {
+  switch (id) {
+    case "pet":
+    case "dog":
+    case "cat":
+    case "tag":
+      return true
+    case "onlineQr":
+    case "pageGift":
+    case "sympathy":
+    case "createOnline":
+    case "printable":
+      return false
+    default: {
+      const exhaustive: never = id
+      return exhaustive
+    }
+  }
+}
 
 export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
   const related = digitalLandingList.filter((item) => item.path !== page.path)
@@ -74,7 +99,21 @@ export function DigitalLandingView({ page }: { page: DigitalLandingPage }) {
                 </div>
               ))}
             </section>
-            {page.id === "pet" ? <SisterShopNote layout="inline" /> : null}
+            {showsSisterShop(page.id) ? <SisterShopNote layout="inline" /> : null}
+            {page.links && page.links.length > 0 ? (
+              <nav aria-label="Related pages" className="space-y-3">
+                <h2 className="text-2xl font-semibold text-foreground">Related pages</h2>
+                <ul className="space-y-2">
+                  {page.links.map((item) => (
+                    <li key={item.href}>
+                      <Link href={item.href} className="underline">
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ) : null}
             <nav aria-label="Related digital memorial pages" className="space-y-3">
               <h2 className="text-2xl font-semibold text-foreground">Other ways to order the page</h2>
               <ul className="space-y-2">

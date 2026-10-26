@@ -145,6 +145,9 @@ export const sympathyGiftPages: Record<SympathyGiftId, SympathyGiftPage> = {
     ],
     links: [
       { href: "/pet-digital-memorial-qr", label: "The pet's own digital memorial, if they order it themselves" },
+      { href: "/dog-memorial-qr-code", label: "A dog memorial QR code, if they order it themselves" },
+      { href: "/cat-memorial-qr-code", label: "A cat memorial QR code, if they order it themselves" },
+      { href: "/pet-memorial-qr-tag", label: "A pet memorial QR tag they can print" },
       { href: "/memorial-gift-loss-of-pet", label: "A pet plaque gift, on the waitlist" },
       { href: "/store/pet-memorial-plaque#waitlist", label: "Pet Memorial QR Plaque waitlist" },
     ],
