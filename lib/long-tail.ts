@@ -122,6 +122,7 @@ export const longTailPages = {
   },
   columbarium: {
     id: "columbarium",
+    // The live page is CremationQrView (lib/cremation-qr-pages.ts). This record stays so the guide index keeps the path and heading.
     path: "/qr-code-for-a-columbarium",
     title: "QR Code for a Columbarium | MemorialsQR",
     description:
@@ -368,6 +369,8 @@ export const longTailPages = {
     showConcierge: false,
     links: [
       { href: "/qr-code-for-urn", label: "A QR code for an urn" },
+      { href: "/cremation-memorial-qr-code", label: "A cremation memorial QR code you can order today" },
+      { href: "/ashes-memorial-qr-code", label: "A memorial QR code for ashes" },
       { href: "/memorial-page-for-family-far-away", label: "A memorial page for family far away" },
     ],
   },

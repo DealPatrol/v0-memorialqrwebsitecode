@@ -1,7 +1,7 @@
-import { longTailPages } from "@/lib/long-tail"
+import { cremationQrPages } from "@/lib/cremation-qr-pages"
 import { memorialOgImage, ogContentType, ogSize } from "@/lib/og-card"
 
-const page = longTailPages.columbarium
+const page = cremationQrPages.columbarium
 
 export const alt = page.h1
 export const size = ogSize

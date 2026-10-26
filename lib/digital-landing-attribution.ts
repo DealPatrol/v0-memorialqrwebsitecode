@@ -1,3 +1,4 @@
+import { cremationQrSellingPaths } from "@/lib/cremation-qr-pages"
 import { digitalLandingList } from "@/lib/digital-landing"
 import { DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
@@ -18,6 +19,7 @@ const sellingPaths = new Set<string>([
   PET_MEMORIAL_HUB_PATH,
   ...digitalLandingList.map((page) => page.path),
   ...sympathyGiftList.map((page) => page.path),
+  ...cremationQrSellingPaths(),
   ...graveQrSellingPaths(),
 ])
 

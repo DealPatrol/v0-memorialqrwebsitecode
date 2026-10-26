@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { adLandingPages } from "@/lib/ad-landings"
 import { CONCIERGE_PRODUCTS, PLAQUE_PRICE } from "@/lib/catalog"
+import { cremationQrPages } from "@/lib/cremation-qr-pages"
 import { digitalLandingPages } from "@/lib/digital-landing"
 import {
   DIGITAL_MEMORIAL_META_DESCRIPTION,
@@ -342,9 +343,9 @@ export const publicPages = {
     inSitemap: true,
   },
   urnQr: {
-    path: "/qr-code-for-urn",
-    title: "QR Code for an Urn | MemorialsQR",
-    description: `A QR code beside an urn opens the memorial page when words are hard to find. The plaque is ${plaque} and includes ${years} years of hosting.`,
+    path: cremationQrPages.urn.path,
+    title: cremationQrPages.urn.title,
+    description: cremationQrPages.urn.description,
     file: "app/qr-code-for-urn/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -504,9 +505,9 @@ export const publicPages = {
     inSitemap: true,
   },
   columbarium: {
-    path: longTailPages.columbarium.path,
-    title: longTailPages.columbarium.title,
-    description: longTailPages.columbarium.description,
+    path: cremationQrPages.columbarium.path,
+    title: cremationQrPages.columbarium.title,
+    description: cremationQrPages.columbarium.description,
     file: "app/qr-code-for-a-columbarium/page.tsx",
     changeFrequency: "monthly",
     priority: 0.7,
@@ -788,6 +789,26 @@ export const publicPages = {
     title: graveQrPages.plaque.title,
     description: graveQrPages.plaque.description,
     file: "app/qr-code-memorial-plaque/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  cremationMemorialQr: {
+    path: cremationQrPages.cremation.path,
+    title: cremationQrPages.cremation.title,
+    description: cremationQrPages.cremation.description,
+    file: "app/cremation-memorial-qr-code/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  ashesMemorialQr: {
+    path: cremationQrPages.ashes.path,
+    title: cremationQrPages.ashes.title,
+    description: cremationQrPages.ashes.description,
+    file: "app/ashes-memorial-qr-code/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
     index: true,

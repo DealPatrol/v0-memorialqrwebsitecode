@@ -9,6 +9,7 @@ import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { Button } from "@/components/ui/button"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH } from "@/lib/digital-memorial"
+import { cremationQrList } from "@/lib/cremation-qr-pages"
 import { digitalLandingList } from "@/lib/digital-landing"
 import { getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
@@ -144,6 +145,22 @@ export default function KeepsakesForSalePage() {
                 Example memorial page
               </Link>
             </li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Cremation memorials" className="mb-4">
+          <h2 className="mb-3 text-2xl font-semibold text-foreground">Cremation, an urn, or ashes</h2>
+          <p className="mb-3 text-muted-foreground">
+            We do not sell urns or niches. These pages order the same digital memorial. Nothing is shipped.
+          </p>
+          <ul className="space-y-2">
+            {cremationQrList.map((item) => (
+              <li key={item.path}>
+                <Link href={item.path} className="underline">
+                  {item.h1}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </main>
