@@ -2,6 +2,7 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 import path from "node:path"
 import { describe, it } from "node:test"
+import { fileURLToPath } from "node:url"
 import { readAdConfig, googleAdsSendTo } from "../lib/ad-config"
 import { commerceAnalyticsProperties, googleAdsConversion, purchaseAfterPayment } from "../lib/ad-events"
 import { resolveDigitalLanding } from "../lib/digital-landing-attribution"
@@ -19,7 +20,7 @@ import { buildPartnerInquiryEmail, parsePartnerInquiry } from "../lib/partner-in
 import { pageMetadata, publicPages } from "../lib/seo"
 import { reviewStructuredData } from "../lib/product-reviews"
 
-const root = path.resolve(import.meta.dirname, "..")
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 
 describe("ad pixels", () => {
   it("loads nothing when ids are missing or invalid", () => {
