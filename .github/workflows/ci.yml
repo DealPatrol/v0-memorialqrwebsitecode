@@ -1,0 +1,41 @@
+# Vercel production Deployment Checks are bound to these GitHub Actions job
+# names: "build (18.x)", "build (20.x)", and "build (22.x)".
+#
+# The stock workflow ran `npx webpack`. This repository is a Next.js app and
+# does not have webpack-cli, so that job failed on every run (and, after the
+# workflow was removed, the required check was simply absent). Either way
+# Vercel reports "Checks for Deployment have failed" and will not assign
+# production domains, even when the Vercel build is READY.
+#
+# Keep the workflow and job names so the existing Deployment Check still
+# matches. Run lint and the project test suite instead of webpack.
+
+name: NodeJS with Webpack
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install, lint, and test
+        run: |
+          npm install -g pnpm@10.33.4
+          pnpm install --frozen-lockfile
+          pnpm lint
+          pnpm test:fulfillment
