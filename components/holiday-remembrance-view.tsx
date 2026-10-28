@@ -69,7 +69,7 @@ export function HolidayRemembranceView({ content, gallery }: Props) {
           </div>
 
           <p className="mt-6 text-center font-script text-4xl leading-none text-[#7a2434]">{CHRISTMAS_IN_HEAVEN_LABEL}</p>
-          <h1 className="mt-2 text-center font-serif text-3xl leading-tight" data-testid="holiday-heading">
+          <h1 className="mt-2 text-balance text-center font-serif text-3xl leading-tight" data-testid="holiday-heading">
             {content.heading}
           </h1>
           {content.years ? <p className="mt-2 text-center tracking-wide text-stone-600">{content.years}</p> : null}
@@ -119,11 +119,11 @@ export function HolidayRemembranceView({ content, gallery }: Props) {
               {HOLIDAY_COPY.galleryHeading}
             </h2>
             {content.sample ? (
-              <ul className="mt-3 flex gap-3 overflow-x-auto pb-2" data-testid="holiday-gallery">
+              <ul className="mt-3 grid grid-cols-4 gap-2" data-testid="holiday-gallery">
                 {Array.from({ length: SAMPLE_GALLERY_COUNT }, (_, index) => (
                   <li
                     key={`sample-photo-${index}`}
-                    className="flex h-28 w-24 shrink-0 items-center justify-center rounded-md border border-dashed border-[#ddc9a8] bg-[#f3ecdf] p-2 text-center text-[11px] leading-snug text-stone-500"
+                    className="flex aspect-[3/4] items-center justify-center rounded-md border border-dashed border-[#ddc9a8] bg-[#f3ecdf] p-1.5 text-center text-[10px] leading-snug text-stone-500"
                   >
                     {HOLIDAY_COPY.photoPlaceholder}
                   </li>
