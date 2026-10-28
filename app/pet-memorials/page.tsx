@@ -3,12 +3,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { SisterShopNote } from "@/components/sister-shop-note"
+import { TrackViewContent } from "@/components/track-view-content"
 import { Badge } from "@/components/ui/badge"
 import { Heart, QrCode, Shield, Clock, ArrowRight, Globe, Lock, PawPrint, Music, Camera, Bone } from "lucide-react"
-import { PET_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
-import { getListedKeepsake, getSellableKeepsakes } from "@/lib/fulfillment-availability"
-import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
+import { DIGITAL_MEMORIAL_PRODUCT, PET_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
+import { PET_MEMORIAL_HUB_PATH } from "@/lib/digital-landing-attribution"
+import { DIGITAL_MEMORIAL_CHECKOUT_PATH } from "@/lib/digital-memorial"
+import { getListedKeepsake } from "@/lib/fulfillment-availability"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
+import { formatUsd } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.petMemorials)
 
@@ -16,13 +20,19 @@ export const dynamic = "force-dynamic"
 
 export default function PetMemorialsPage() {
   const petPlaque = getListedKeepsake(PET_MEMORIAL_PLAQUE_ID)
-  const keepsakesForSale = getSellableKeepsakes()
   const petHref = petPlaque?.available
     ? `/checkout/simple?product=${PET_MEMORIAL_PLAQUE_ID}`
     : `/store/${PET_MEMORIAL_PLAQUE_ID}#waitlist`
   const petLabel = petPlaque?.available ? "Buy the Pet Memorial QR Plaque" : "Join the pet plaque list"
+  const digitalPrice = formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)
   return (
     <div className="min-h-screen bg-background">
+      <TrackViewContent
+        contentId={DIGITAL_MEMORIAL_PRODUCT.id}
+        contentName={DIGITAL_MEMORIAL_PRODUCT.name}
+        value={DIGITAL_MEMORIAL_PRODUCT.price}
+        landingPath={PET_MEMORIAL_HUB_PATH}
+      />
       <Header />
 
       {/* Hero Section */}
@@ -46,8 +56,8 @@ export default function PetMemorialsPage() {
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
             >
-              <Link href={keepsakesForSale.length > 0 ? KEEPSAKE_COLLECTION_PATH : petHref}>
-                {keepsakesForSale.length > 0 ? "Shop Keepsakes" : petLabel}
+              <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>
+                Buy the digital memorial · {digitalPrice}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -57,11 +67,12 @@ export default function PetMemorialsPage() {
               size="lg"
               className="border-white/30 text-white hover:bg-white/10 bg-transparent"
             >
-              <Link href={keepsakesForSale.length > 0 ? petHref : "/browse-memorials?type=pet"}>
-                {keepsakesForSale.length > 0 ? petLabel : "View Examples"}
-              </Link>
+              <Link href={petHref}>{petLabel}</Link>
             </Button>
           </div>
+          <p className="mt-4 text-amber-100">
+            {digitalPrice} once. Nothing is shipped. {HOSTING_INCLUDED_YEARS} years of hosting included.
+          </p>
         </div>
       </section>
 
@@ -215,6 +226,38 @@ export default function PetMemorialsPage() {
 
       <SisterShopNote layout="band" />
 
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-3xl px-4">
+          <h2 className="mb-3 text-center text-2xl font-semibold text-foreground">Order a page for this pet</h2>
+          <p className="mb-6 text-center text-muted-foreground">
+            Each page is the {digitalPrice} digital memorial. You get the page and a QR code you can print or share.
+            Nothing is shipped.
+          </p>
+          <ul className="space-y-2 text-center">
+            <li>
+              <Link href="/dog-memorial-qr-code" className="underline">
+                A dog memorial QR code
+              </Link>
+            </li>
+            <li>
+              <Link href="/cat-memorial-qr-code" className="underline">
+                A cat memorial QR code
+              </Link>
+            </li>
+            <li>
+              <Link href="/pet-memorial-qr-tag" className="underline">
+                A pet memorial QR tag you can print
+              </Link>
+            </li>
+            <li>
+              <Link href="/pet-digital-memorial-qr" className="underline">
+                A pet digital memorial QR code
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </section>
+
       <section className="bg-amber-50 py-16">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <h2 className="mb-3 text-2xl font-semibold text-foreground">Giving this to someone who lost a pet</h2>
@@ -237,8 +280,8 @@ export default function PetMemorialsPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-amber-600 hover:bg-gray-100">
-              <Link href={keepsakesForSale.length > 0 ? KEEPSAKE_COLLECTION_PATH : petHref}>
-                {keepsakesForSale.length > 0 ? "Shop Keepsakes" : petLabel}
+              <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>
+                Buy the digital memorial · {digitalPrice}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>

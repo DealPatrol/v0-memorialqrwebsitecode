@@ -45,8 +45,28 @@ export default function GiftsPage() {
             </li>
           ))}
           <li>
+            <Link href="/pet-digital-memorial-qr" className="text-lg underline">
+              Pet memorial QR code, for the pet&apos;s own page
+            </Link>
+          </li>
+          <li>
             <Link href="/pet-memorial-qr-code" className="text-lg underline">
-              A pet memorial QR code, for the pet&apos;s own page
+              Pet QR plaque
+            </Link>
+          </li>
+          <li>
+            <Link href="/dog-memorial-qr-code" className="text-lg underline">
+              A dog memorial QR code the household can order
+            </Link>
+          </li>
+          <li>
+            <Link href="/cat-memorial-qr-code" className="text-lg underline">
+              A cat memorial QR code the household can order
+            </Link>
+          </li>
+          <li>
+            <Link href="/pet-memorial-qr-tag" className="text-lg underline">
+              A pet memorial QR tag they can print
             </Link>
           </li>
           <li>

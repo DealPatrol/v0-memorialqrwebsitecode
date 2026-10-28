@@ -177,6 +177,23 @@ describe("technical seo", () => {
     assert.equal(publicPages.digitalMemorialGift.title, "Pet QR Memorial Gift, $24.99 | MemorialsQR")
     assert.match(publicPages.digitalMemorialGift.description, /pet QR memorial/)
     assert.match(publicPages.digitalMemorialGift.description, /\$24\.99/)
+    assert.equal(publicPages.dogMemorialQr.title, "Dog Memorial QR Code, $24.99 | MemorialsQR")
+    assert.equal(publicPages.catMemorialQr.title, "Cat Memorial QR Code, $24.99 | MemorialsQR")
+    assert.equal(publicPages.petMemorialQrTag.title, "Pet Memorial QR Tag, $24.99 | MemorialsQR")
+    assert.equal(publicPages.petQr.title, "Pet QR Plaque, $29.99 | MemorialsQR")
+    const petTargets = [
+      publicPages.petMemorials,
+      publicPages.petDigitalMemorialQr,
+      publicPages.digitalMemorialGift,
+      publicPages.dogMemorialQr,
+      publicPages.catMemorialQr,
+      publicPages.petMemorialQrTag,
+      publicPages.petQr,
+    ]
+    const petTitleKeys = petTargets.map((page) =>
+      page.title.toLowerCase().replace(/\$[\d.]+/g, "").replace(/[^a-z]+/g, " ").trim(),
+    )
+    assert.equal(new Set(petTitleKeys).size, petTitleKeys.length)
     for (const page of [publicPages.home, publicPages.petMemorials, publicPages.petDigitalMemorialQr, publicPages.digitalMemorialGift]) {
       const metadata = pageMetadata(page)
       const canonical = metadata.alternates && "canonical" in metadata.alternates ? metadata.alternates.canonical : ""

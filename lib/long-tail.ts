@@ -14,30 +14,30 @@ export const longTailPages = {
     path: "/grave-marker-qr-code",
     title: "Grave Marker QR Code | MemorialsQR",
     description:
-      "A flat grave marker can carry a QR code for the photos and stories the marker cannot. The plaque is $29.99, with hosting included.",
+      "A QR code for a grave marker opens photos the stone cannot hold. Order a printable code today. The metal plaque is coming soon.",
     h1: "A QR code for a grave marker",
     ogTitle: "A QR code for a grave marker",
     ogSubtitle: "The marker holds the name. The page holds the rest.",
     paragraphs: [
       "A grave marker is often a flat stone set into the ground. It has room for a name and dates, and not much else. A QR code is a way to add the photos and stories without replacing the marker.",
-      "This is different from a QR code cut for an upright headstone. Here the question is the marker itself: a bronze or granite plaque the cemetery already set, or one the family is choosing. We do not sell grave markers. We sell the QR Memorial Plaque, a small metal piece with one QR code. Families set it with a marker or keep it at home. If it will be outdoors, say so in the order notes and we will confirm the finish before we make it.",
-      `The QR opens one memorial page. You do not need an app. Put the name on the first line of the notes, then the dates, then gold, silver, or black. Hosting for ${years} years is included. Nothing is billed each month.`,
+      "This is different from a QR code for an upright headstone. Here the question is the marker itself: a bronze or granite piece the cemetery already set, or one the family is choosing. We do not sell grave markers. The metal QR Memorial Plaque is coming soon, and we are not taking plaque orders.",
+      `What you can order today is the memorial page and a QR code we email as a PNG. Nothing is shipped. You do not need an app. Put the name on the first line of the notes. Hosting for ${years} years is included with that order. Nothing is billed each month.`,
     ],
     faqs: [
       {
         question: "Do you sell the grave marker?",
         answer:
-          "No. We sell the QR Memorial Plaque and the memorial page it opens. The plaque can sit with a marker you already have, or at home.",
+          "No. We do not sell grave markers. The metal QR Memorial Plaque is coming soon. Today you can order the memorial page and a QR code file. Nothing is shipped.",
       },
       {
         question: "How is this different from a headstone QR code?",
         answer:
-          "A headstone is usually upright. A grave marker is often flat in the ground. The keepsake is the same plaque either way. The page it opens is the same page.",
+          "A headstone is usually upright. A grave marker is often flat in the ground. The digital memorial you can order today is the same either way. We do not sell the stone.",
       },
       {
         question: "Can the plaque stay outside?",
         answer:
-          "If the plaque will be outdoors, write that in the order notes. We will confirm the finish before we make it. We do not promise that every finish is for permanent outdoor use.",
+          "We are not making plaques yet, so we cannot confirm an outdoor finish. A printed QR code is a file, not a weatherproof marker. Ask the cemetery before you attach anything.",
       },
     ],
     showConcierge: false,
@@ -122,6 +122,7 @@ export const longTailPages = {
   },
   columbarium: {
     id: "columbarium",
+    // The live page is CremationQrView (lib/cremation-qr-pages.ts). This record stays so the guide index keeps the path and heading.
     path: "/qr-code-for-a-columbarium",
     title: "QR Code for a Columbarium | MemorialsQR",
     description:
@@ -235,14 +236,14 @@ export const longTailPages = {
     path: "/cemetery-qr-code",
     title: "Cemetery QR Code | MemorialsQR",
     description:
-      "A cemetery visitor can open a memorial page from a QR code, with no app. The plaque is $29.99, with hosting included.",
+      "A cemetery visitor can open a memorial page from a QR code, with no app. Order a printable code today. The metal plaque is coming soon.",
     h1: "A cemetery QR code",
     ogTitle: "A cemetery QR code",
     ogSubtitle: "For the person who finds the grave and wants more than the dates.",
     paragraphs: [
       "A cemetery visit is the walk, the search for the row, and then a stone that says very little. A QR code is for the visitor who is already there and wants the person, not another date.",
-      "This page is about that visit. A grave marker page is about the flat marker. A headstone page is about the upright stone. The keepsake you can buy for any of them is the QR Memorial Plaque. We do not sell cemetery plots or stones. If the plaque will live outside, write that in the order notes and we will confirm the finish before we make it.",
-      `A phone camera opens the memorial page. The visitor does not create an account. The page can hold photos and a few stories, and it can stay unfinished for a while. Hosting for ${years} years is included.`,
+      "This page is about that visit. A grave marker page is about the flat marker. A headstone page is about the upright stone. We do not sell cemetery plots or stones. The metal QR Memorial Plaque is coming soon. We are not taking plaque orders, and we do not place anything in the cemetery.",
+      `What you can order today is the memorial page and a QR code we email as a PNG. A phone camera opens the page. The visitor does not create an account. Hosting for ${years} years is included with that order. Nothing is shipped.`,
     ],
     faqs: [
       {
@@ -252,7 +253,7 @@ export const longTailPages = {
       {
         question: "Do you engrave the cemetery stone?",
         answer:
-          "No. We make a separate metal plaque with a QR code. Ask the cemetery before you attach anything to a stone they care for.",
+          "No. We do not engrave stones, and we are not selling a metal plaque yet. Today you can order a QR code file. Ask the cemetery before you attach anything to a stone they care for.",
       },
       {
         question: "What should visitors see first?",
@@ -368,6 +369,8 @@ export const longTailPages = {
     showConcierge: false,
     links: [
       { href: "/qr-code-for-urn", label: "A QR code for an urn" },
+      { href: "/cremation-memorial-qr-code", label: "A cremation memorial QR code you can order today" },
+      { href: "/ashes-memorial-qr-code", label: "A memorial QR code for ashes" },
       { href: "/memorial-page-for-family-far-away", label: "A memorial page for family far away" },
     ],
   },

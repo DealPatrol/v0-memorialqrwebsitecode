@@ -1,7 +1,7 @@
-import { buyerIntentPages } from "@/lib/buyer-intent"
+import { cremationQrPages } from "@/lib/cremation-qr-pages"
 import { memorialOgImage, ogContentType, ogSize } from "@/lib/og-card"
 
-const page = buyerIntentPages.urn
+const page = cremationQrPages.urn
 
 export const alt = page.h1
 export const size = ogSize

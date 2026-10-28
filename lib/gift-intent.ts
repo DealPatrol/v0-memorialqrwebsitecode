@@ -131,7 +131,7 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
     paragraphs: [
       "People sometimes treat the death of a pet as a small thing. It is not small to the person who came home to them. A gift that takes the loss seriously is worth more than a card that says you are sorry and then stops.",
       "The memorial page can be for a dog, a cat, or any companion. It can hold a few photos and the ordinary days: the walk, the chair they claimed, the name you still say. The person who is grieving can add those when they want. You do not have to collect the photos yourself.",
-      "We are not selling a collar tag online. The gift you can order is the Pet Memorial QR Plaque, and its code opens the pet's page. It can sit with a photograph at home.",
+      "We are not selling a collar tag online. The Pet Memorial QR Plaque is coming soon and is not for sale yet. The gift you can order today is a digital memorial page. Nothing is shipped.",
     ],
     faqs: [
       {
@@ -142,25 +142,29 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       {
         question: "Can the page be for a dog or a cat?",
         answer:
-          "Yes. The page can be for a dog, a cat, or any companion. The Pet Memorial QR Plaque is the keepsake you can order today.",
+          "Yes. The page can be for a dog, a cat, or any companion. The Pet Memorial QR Plaque is coming soon and is not for sale yet. A digital memorial page can be ordered today.",
       },
       {
         question: "Do I need their photos before I order?",
         answer:
-          "No. Order the plaque with the pet's name. The page is created then, and photos can be added later.",
+          "No. The page can start with the pet's name. Photos can be added later. The Pet Memorial QR Plaque is not for sale yet.",
       },
       {
         question: "Can I send this to the person who lost their pet?",
         answer:
-          "Yes. Mark the checkout as a gift, enter their name, and ship it to their address if they are not at yours. The message is saved for the person who packs the Pet Memorial QR Plaque. It is not engraved. The pet's name and dates for the plaque still go in the memorial notes.",
+          "Yes. The digital memorial can be given as a gift. Nothing is shipped, so there is no street address for a package. The message is not engraved. The Pet Memorial QR Plaque is coming soon and is not part of that order.",
       },
     ],
     showConcierge: false,
     keepsakeId: PET_KEEPSAKE_ID,
     links: [
       {
+        href: "/pet-digital-memorial-qr",
+        label: "Pet QR memorial",
+      },
+      {
         href: "/pet-memorial-qr-code",
-        label: "The pet's own memorial QR page",
+        label: "Pet QR plaque",
       },
       {
         href: "/pet-loss-sympathy-gift",

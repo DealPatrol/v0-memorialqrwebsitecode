@@ -7,6 +7,7 @@ import { Header } from "@/components/header"
 import { HelpCircle, Phone, Mail } from "lucide-react"
 import { JsonLd } from "@/components/json-ld"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { cremationQrList } from "@/lib/cremation-qr-pages"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd, SUPPORT_EMAIL } from "@/lib/site"
@@ -241,6 +242,22 @@ export default function FAQPage() {
                 </Accordion>
               </div>
             ))}
+            <nav aria-label="Cremation memorials" className="mt-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Cremation, an urn, or ashes</h2>
+              <p className="text-gray-700 mb-4">
+                We do not sell urns or niches. These pages order the digital memorial and a QR code you can print.
+                Nothing is shipped.
+              </p>
+              <ul className="space-y-2">
+                {cremationQrList.map((item) => (
+                  <li key={item.path}>
+                    <Link href={item.path} className="text-orange-700 underline">
+                      {item.h1}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
         </div>
       </section>
