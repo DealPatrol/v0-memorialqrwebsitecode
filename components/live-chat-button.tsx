@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { MessageCircle, X, Send } from 'lucide-react'
+import { isHolidayRemembrancePath } from "@/lib/memorial-urls"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -9,11 +11,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
 export function LiveChatButton() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
   const [sent, setSent] = useState(false)
+  if (isHolidayRemembrancePath(pathname)) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
