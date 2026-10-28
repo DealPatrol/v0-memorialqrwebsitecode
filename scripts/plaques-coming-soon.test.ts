@@ -2,7 +2,7 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { DIGITAL_MEMORIAL_ID, getCheckoutProduct, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
-import { PET_MEMORIAL_HUB_PATH, resolveDigitalLanding } from "../lib/digital-landing-attribution"
+import { PET_GIFT_PATH, PET_MEMORIAL_HUB_PATH, resolveDigitalLanding } from "../lib/digital-landing-attribution"
 import { digitalLandingJsonLd, digitalLandingList, digitalLandingPages } from "../lib/digital-landing"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "../lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "../lib/example-memorial"
@@ -14,7 +14,7 @@ import {
   resolveConfiguredCheckoutItems,
 } from "../lib/fulfillment-availability"
 import { buyerIntentJsonLd, buyerIntentList, buyerIntentPages } from "../lib/buyer-intent"
-import { giftIntentList } from "../lib/gift-intent"
+import { giftIntentList, giftIntentPages } from "../lib/gift-intent"
 import { longTailList } from "../lib/long-tail"
 import { keepsakeCollectionJsonLd, keepsakesForCollection } from "../lib/keepsake-collection"
 import { parseWaitlistInput, waitlistEmailError } from "../lib/plaque-waitlist"
@@ -246,6 +246,9 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   assert.match(petHub, /href="\/cat-memorial-qr-code"/)
   assert.match(petHub, /href="\/pet-memorial-qr-tag"/)
   assert.equal(resolveDigitalLanding(null, PET_MEMORIAL_HUB_PATH), PET_MEMORIAL_HUB_PATH)
+  assert.equal(PET_GIFT_PATH, giftIntentPages.pet.path)
+  assert.equal(resolveDigitalLanding(null, PET_GIFT_PATH), PET_GIFT_PATH)
+  assert.equal(resolveDigitalLanding(PET_GIFT_PATH, "/checkout/simple"), PET_GIFT_PATH)
   assert.equal(petHub.includes("Shop Keepsakes"), false)
 
   const testSquare = readFileSync(new URL("../app/test-square/page.tsx", import.meta.url), "utf8")
