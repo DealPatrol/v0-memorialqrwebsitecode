@@ -137,7 +137,7 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
       {
         question: "Is this gift for the pet's person, or a tag for the pet?",
         answer:
-          "It is for the person who is grieving. We do not sell a collar tag online. The Pet Memorial QR Plaque can sit with a photo, and the QR code opens the pet's memorial page.",
+          "It is for the person who is grieving. We do not sell a collar tag online. The Pet Memorial QR Plaque is coming soon and is not for sale yet. A digital memorial page can be ordered today, and nothing is shipped.",
       },
       {
         question: "Can the page be for a dog or a cat?",
@@ -171,8 +171,8 @@ export const giftIntentPages: Record<GiftIntentId, BuyerIntent> = {
         label: "A pet loss sympathy gift you can send today",
       },
       {
-        href: "/store/pet-memorial-plaque",
-        label: "Pet Memorial QR Plaque",
+        href: "/store/pet-memorial-plaque#waitlist",
+        label: "Pet Memorial QR Plaque waitlist",
       },
     ],
   },

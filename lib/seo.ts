@@ -196,7 +196,7 @@ export const publicPages = {
   petMemorials: {
     path: "/pet-memorials",
     title: `Pet QR Memorial from ${digital} | MemorialsQR`,
-    description: `A pet memorial QR code is ${digital} today. The pet QR memorial plaque is ${plaque} and is not for sale yet. ${years} years of hosting included. You can order it today.`,
+    description: `A pet memorial QR code is ${digital}. The pet QR memorial plaque is ${plaque} and is not for sale yet. ${years} years of hosting included. Order the digital page today.`,
     file: "app/pet-memorials/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
