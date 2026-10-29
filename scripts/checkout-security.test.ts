@@ -18,6 +18,8 @@ test("Square checkout mounts Apple Pay and Google Pay on the existing payment re
   const source = readFileSync(new URL("../components/square-payment-form.tsx", import.meta.url), "utf8")
   assert.match(source, /<ApplePay/)
   assert.match(source, /<GooglePayWhenReady/)
+  assert.match(source, /GooglePayWhenReady disabled=\{isProcessing \|\| disabled\}/)
+  assert.match(source, /paymentInFlight\.current \|\| disabled/)
   assert.match(source, /createPaymentRequest/)
   assert.match(source, /cardTokenizeResponseReceived=\{handlePayment\}/)
   assert.match(source, /<CreditCard/)
