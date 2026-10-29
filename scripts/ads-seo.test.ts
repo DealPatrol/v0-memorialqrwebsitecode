@@ -16,7 +16,11 @@ import { keepsakeProductJsonLd } from "../lib/keepsake-jsonld"
 import { longTailList } from "../lib/long-tail"
 import { buildGuideLeadNote } from "../lib/memorial-guide"
 import { buildPartnerInquiryEmail, parsePartnerInquiry } from "../lib/partner-inquiry"
+import { classifyMemorialResponse } from "../lib/memorial-lookup"
+import { qrMemorialPlaqueCostFaq } from "../lib/plaque-cost-faq"
+import { isWwwHost, shouldNoindexPath, shouldRewriteNotFound } from "../lib/request-indexing"
 import { pageMetadata, publicPages } from "../lib/seo"
+import { SITE_URL } from "../lib/site"
 import { reviewStructuredData } from "../lib/product-reviews"
 
 const root = path.resolve(import.meta.dirname, "..")
@@ -160,10 +164,42 @@ describe("technical seo", () => {
     assert.match(publicPages.home.description, /memorial QR code/)
     assert.match(publicPages.home.description, /10 years of hosting/)
     assert.match(publicPages.home.description, /no recurring fees/)
-    assert.equal(publicPages.petMemorials.title, "Pet Memorial QR Code & Plaque | MemorialsQR")
+    assert.match(publicPages.home.description, /\$24\.99/)
+    assert.equal(publicPages.petMemorials.title, "Pet QR Memorial from $24.99 | MemorialsQR")
     assert.ok(publicPages.petMemorials.description.length >= 150 && publicPages.petMemorials.description.length <= 155)
     assert.match(publicPages.petMemorials.description, /pet memorial QR code/)
     assert.match(publicPages.petMemorials.description, /pet QR memorial plaque/)
+    assert.match(publicPages.petMemorials.description, /\$24\.99/)
+    assert.match(publicPages.petMemorials.description, /not for sale yet/)
+    assert.equal(publicPages.petDigitalMemorialQr.title, "Pet Memorial QR Code, $24.99 | MemorialsQR")
+    assert.match(publicPages.petDigitalMemorialQr.description, /pet QR memorial/)
+    assert.match(publicPages.petDigitalMemorialQr.description, /pet memorial QR code/)
+    assert.equal(publicPages.digitalMemorialGift.title, "Pet QR Memorial Gift, $24.99 | MemorialsQR")
+    assert.match(publicPages.digitalMemorialGift.description, /pet QR memorial/)
+    assert.match(publicPages.digitalMemorialGift.description, /\$24\.99/)
+    assert.equal(publicPages.dogMemorialQr.title, "Dog Memorial QR Code, $24.99 | MemorialsQR")
+    assert.equal(publicPages.catMemorialQr.title, "Cat Memorial QR Code, $24.99 | MemorialsQR")
+    assert.equal(publicPages.petMemorialQrTag.title, "Pet Memorial QR Tag, $24.99 | MemorialsQR")
+    assert.equal(publicPages.petQr.title, "Pet QR Plaque, $29.99 | MemorialsQR")
+    const petTargets = [
+      publicPages.petMemorials,
+      publicPages.petDigitalMemorialQr,
+      publicPages.digitalMemorialGift,
+      publicPages.dogMemorialQr,
+      publicPages.catMemorialQr,
+      publicPages.petMemorialQrTag,
+      publicPages.petQr,
+    ]
+    const petTitleKeys = petTargets.map((page) =>
+      page.title.toLowerCase().replace(/\$[\d.]+/g, "").replace(/[^a-z]+/g, " ").trim(),
+    )
+    assert.equal(new Set(petTitleKeys).size, petTitleKeys.length)
+    for (const page of [publicPages.home, publicPages.petMemorials, publicPages.petDigitalMemorialQr, publicPages.digitalMemorialGift]) {
+      const metadata = pageMetadata(page)
+      const canonical = metadata.alternates && "canonical" in metadata.alternates ? metadata.alternates.canonical : ""
+      assert.equal(canonical, page.path)
+      assert.equal(new URL(String(canonical), SITE_URL).origin, "https://memorialsqr.com")
+    }
     assert.equal(publicPages.displayAtHome.path, "/memorial-display-at-home")
     assert.notEqual(publicPages.home.title, publicPages.displayAtHome.title)
     for (const page of pages) {
@@ -333,5 +369,59 @@ describe("technical seo", () => {
     assert.match(productPage, /sizes=/)
     assert.match(productPage, /alt=\{product\.imageAlt\}/)
     assert.equal(fs.readFileSync(path.join(root, "components/footer.tsx"), "utf8").includes("/ads/"), true)
+  })
+})
+
+describe("search console indexing", () => {
+  it("answers the plaque cost question with catalog prices and links the near-page-1 URLs", () => {
+    const faq = qrMemorialPlaqueCostFaq()
+    assert.equal(faq.question, "How much does a QR memorial plaque cost?")
+    assert.match(faq.answer, /\$24\.99 USD/)
+    assert.match(faq.answer, /\$29\.99 USD/)
+    assert.match(faq.answer, /coming soon/)
+    assert.match(faq.answer, /not for sale yet/)
+    assert.match(faq.answer, /Nothing is shipped/)
+    const home = fs.readFileSync(path.join(root, "app/page.tsx"), "utf8")
+    const store = fs.readFileSync(path.join(root, "app/store/page.tsx"), "utf8")
+    const pricing = fs.readFileSync(path.join(root, "app/pricing/page.tsx"), "utf8")
+    const petLayout = fs.readFileSync(path.join(root, "app/pet-memorials/layout.tsx"), "utf8")
+    for (const source of [home, store, pricing, petLayout]) {
+      assert.match(source, /PlaqueCostAnswer/)
+    }
+    assert.match(home, /buyerPathLabel/)
+    assert.match(home, /href="\/pet-memorials"/)
+    assert.match(home, /Pet memorial QR codes/)
+    const answer = fs.readFileSync(path.join(root, "components/plaque-cost-answer.tsx"), "utf8")
+    assert.match(answer, /plaqueCostFaqJsonLd/)
+    assert.match(answer, /PRIORITY_BUYER_LINKS/)
+    const links = fs.readFileSync(path.join(root, "lib/buyer-path-links.ts"), "utf8")
+    assert.match(links, /\/pet-digital-memorial-qr/)
+    assert.match(links, /\/digital-memorial-page-gift/)
+    assert.match(links, /\/create-memorial-qr-code-online/)
+    assert.match(fs.readFileSync(path.join(root, "lib/plaque-cost-faq.ts"), "utf8"), /FAQPage/)
+  })
+
+  it("sends www to the apex and returns 404 for empty or missing pages", () => {
+    assert.equal(isWwwHost("www.memorialsqr.com"), true)
+    assert.equal(isWwwHost("www.memorialsqr.com:443"), true)
+    assert.equal(isWwwHost("memorialsqr.com"), false)
+    assert.equal(shouldRewriteNotFound("/test-square", new URLSearchParams()), true)
+    assert.equal(shouldRewriteNotFound("/order-confirmation", new URLSearchParams()), true)
+    assert.equal(shouldRewriteNotFound("/order-confirmation", new URLSearchParams("orderNumber=1001")), false)
+    assert.equal(shouldRewriteNotFound("/order-success", new URLSearchParams()), true)
+    assert.equal(shouldRewriteNotFound("/order-success", new URLSearchParams("order=1001")), false)
+    assert.equal(shouldNoindexPath("/cart"), true)
+    assert.equal(shouldNoindexPath("/sample-memorial-created"), true)
+    assert.equal(shouldNoindexPath("/auth/login"), true)
+    assert.equal(shouldNoindexPath("/pet-memorials"), false)
+    assert.equal(classifyMemorialResponse("SAMPLE-1", 200, false), "missing")
+    assert.equal(classifyMemorialResponse("missing-slug", 404, false), "missing")
+    assert.equal(classifyMemorialResponse("glenda-kelso", 200, true), "found")
+    assert.equal(classifyMemorialResponse("glenda-kelso", 500, false), "unknown")
+    const memorial = fs.readFileSync(path.join(root, "app/memorial/[id]/page.tsx"), "utf8")
+    assert.match(memorial, /notFound\(\)/)
+    assert.match(fs.readFileSync(path.join(root, "app/test-square/page.tsx"), "utf8"), /notFound\(\)/)
+    assert.match(fs.readFileSync(path.join(root, "middleware.ts"), "utf8"), /isWwwHost/)
+    assert.match(fs.readFileSync(path.join(root, "app/layout.tsx"), "utf8"), /metadataBase: new URL\(SITE_URL\)/)
   })
 })

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Header } from "@/components/header"
+import { PlaqueCostAnswer } from "@/components/plaque-cost-answer"
 import { PlaqueWaitlistSection } from "@/components/plaque-waitlist-section"
 import { SellableProductGrid } from "@/components/sellable-product-grid"
 import { ScrollProgressBar } from "@/components/scroll-progress-bar"
@@ -24,6 +25,7 @@ import {
   User,
   CheckCircle,
 } from "lucide-react"
+import { buyerPathLabel } from "@/lib/buyer-path-links"
 import { buyerIntentList } from "@/lib/buyer-intent"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH, DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
@@ -149,7 +151,7 @@ export default function HomePage() {
             {digitalLandingList.map((item) => (
               <li key={item.path}>
                 <Link href={item.path} className="underline">
-                  {item.h1}
+                  {buyerPathLabel(item.path, item.h1)}
                 </Link>
               </li>
             ))}
@@ -193,6 +195,8 @@ export default function HomePage() {
           </p>
         </nav>
       </section>
+
+      <PlaqueCostAnswer />
 
       <SellableProductGrid mode="available" title="Keepsakes you can order" />
       <PlaqueWaitlistSection />

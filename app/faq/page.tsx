@@ -76,7 +76,7 @@ const faqCategories = [
       {
         question: "Is anything shipped?",
         answer:
-          "Yes. QR keepsakes ship to United States addresses. The store lists the keepsakes you can order, including the QR Memorial Plaque.",
+          "The digital memorial page is not shipped. You get the page and a QR code you can print or share. Metal plaques are coming soon and are not for sale yet. The store lists only the printed keepsakes checkout can accept.",
       },
       {
         question: "What if the memorial page will not load?",
@@ -146,7 +146,7 @@ const faqCategories = [
       {
         question: "Do you ship a plaque, tag, or garden stone?",
         answer:
-          "We sell printed QR keepsakes such as stickers, coasters, keyrings, desk plaques, and pet tags, each with 10 years of hosting included. The store shows what can be ordered right now. We do not sell headstones or garden stones.",
+          "The store lists printed QR keepsakes only when checkout can accept them. Metal plaques are coming soon and are not for sale yet. We do not sell headstones or garden stones.",
       },
       {
         question: "What is a QR code memorial?",

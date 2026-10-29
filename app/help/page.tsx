@@ -2,9 +2,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
-import { Search, Phone, Mail, Book, Video, FileText, Users, HelpCircle } from 'lucide-react'
+import { Phone, Mail, Book, Video, FileText, Users, HelpCircle } from 'lucide-react'
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
@@ -15,50 +14,50 @@ const helpCategories = [
     title: "Getting Started",
     icon: Book,
     articles: [
-      "How to create your first memorial",
-      "How a QR code memorial works",
-      "Setting up memorial privacy",
-      "Adding photos and stories",
+      { label: "How to create your first memorial", href: "/how-it-works" },
+      { label: "How a QR code memorial works", href: "/how-it-works" },
+      { label: "Setting up memorial privacy", href: "/faq" },
+      { label: "Adding photos and stories", href: "/faq" },
     ],
   },
   {
     title: "Account Management",
     icon: Users,
     articles: [
-      "Managing your memorial account",
-      "Updating memorial information",
-      "Adding family administrators",
-      "Changing notification settings",
+      { label: "Managing your memorial account", href: "/contact" },
+      { label: "Updating memorial information", href: "/faq" },
+      { label: "Adding family administrators", href: "/faq" },
+      { label: "Changing notification settings", href: "/contact" },
     ],
   },
   {
     title: "Technical Support",
     icon: HelpCircle,
     articles: [
-      "QR code not scanning properly",
-      "Memorial page loading issues",
-      "Photo upload problems",
-      "Mobile device compatibility",
+      { label: "QR code not scanning properly", href: "/faq" },
+      { label: "Memorial page loading issues", href: "/contact" },
+      { label: "Photo upload problems", href: "/faq" },
+      { label: "Mobile device compatibility", href: "/faq" },
     ],
   },
   {
     title: "Billing & Orders",
     icon: FileText,
     articles: [
-      "Understanding your invoice",
-      "Understanding your 10 years of included hosting",
-      "Requesting refunds",
-      "Tracking a keepsake shipment",
+      { label: "Understanding your invoice", href: "/pricing" },
+      { label: "Understanding your 10 years of included hosting", href: "/faq" },
+      { label: "Requesting refunds", href: "/faq" },
+      { label: "How much a QR memorial plaque costs", href: "/pricing#qr-memorial-plaque-cost" },
     ],
   },
 ]
 
 const quickLinks = [
   {
-    title: "Video Tutorials",
-    description: "Step-by-step video guides",
+    title: "How it works",
+    description: "The steps to order a memorial page",
     icon: Video,
-    href: "#",
+    href: "/how-it-works",
   },
   {
     title: "Phone Support",
@@ -92,15 +91,6 @@ export default function HelpPage() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Find answers to your questions, learn how to use our platform, or get in touch with our support team.
           </p>
-
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              placeholder="Search for help articles..."
-              className="pl-12 pr-4 py-4 text-lg border-2 border-orange-200 focus:border-orange-500"
-            />
-          </div>
         </div>
       </section>
 
@@ -142,14 +132,14 @@ export default function HelpPage() {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {category.articles.map((article, articleIndex) => (
-                      <li key={articleIndex}>
+                    {category.articles.map((article) => (
+                      <li key={article.href + article.label}>
                         <Link
-                          href="#"
+                          href={article.href}
                           className="text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-2"
                         >
                           <span className="w-2 h-2 bg-orange-600 rounded-full" />
-                          {article}
+                          {article.label}
                         </Link>
                       </li>
                     ))}
@@ -171,9 +161,10 @@ export default function HelpPage() {
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Is anything shipped?</h3>
                 <p className="text-gray-600">
-                  Yes. QR keepsakes are printed after payment and ship to United States addresses. Every keepsake
-                  includes 10 years of hosting for its memorial page, and the concierge memorial service is{" "}
-                  {CONCIERGE_PRICE_LABEL} if you want us to build the page.
+                  The digital memorial page is not shipped. You get the page and a QR code you can print or share.
+                  Metal plaques are coming soon and are not for sale yet. The store lists printed keepsakes only when
+                  checkout can accept them. The concierge memorial service is {CONCIERGE_PRICE_LABEL} if you want us to
+                  build the page.
                 </p>
               </CardContent>
             </Card>

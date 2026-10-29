@@ -2,7 +2,7 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { DIGITAL_MEMORIAL_ID, getCheckoutProduct, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
-import { PET_MEMORIAL_HUB_PATH, resolveDigitalLanding } from "../lib/digital-landing-attribution"
+import { PET_GIFT_PATH, PET_MEMORIAL_HUB_PATH, resolveDigitalLanding } from "../lib/digital-landing-attribution"
 import { digitalLandingJsonLd, digitalLandingList, digitalLandingPages } from "../lib/digital-landing"
 import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "../lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "../lib/example-memorial"
@@ -14,7 +14,7 @@ import {
   resolveConfiguredCheckoutItems,
 } from "../lib/fulfillment-availability"
 import { buyerIntentJsonLd, buyerIntentList, buyerIntentPages } from "../lib/buyer-intent"
-import { giftIntentList } from "../lib/gift-intent"
+import { giftIntentList, giftIntentPages } from "../lib/gift-intent"
 import { longTailList } from "../lib/long-tail"
 import { keepsakeCollectionJsonLd, keepsakesForCollection } from "../lib/keepsake-collection"
 import { parseWaitlistInput, waitlistEmailError } from "../lib/plaque-waitlist"
@@ -217,11 +217,23 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   for (const page of [digitalLandingPages.dog, digitalLandingPages.cat, digitalLandingPages.tag]) {
     assert.equal(resolveDigitalLanding(null, page.path), page.path)
     assert.match(page.paragraphs.join(" "), /\$24\.99/)
+    assert.match(page.title, /\$24\.99 \| MemorialsQR$/)
+    assert.equal(page.title.includes("Pet QR Memorial"), false)
     assert.match(`${page.h1} ${page.paragraphs.join(" ")} ${page.faqs.map((faq) => faq.answer).join(" ")}`, /not a collar tag|do not sell a collar tag|not a metal collar tag/i)
     assert.equal(page.paragraphs.join(" ").toLowerCase().includes("testimonial"), false)
     const metadata = pageMetadata(publicPages[pageKey(page.path)])
     assert.equal(metadata.alternates && "canonical" in metadata.alternates ? metadata.alternates.canonical : "", page.path)
+    assert.equal(publicPages[pageKey(page.path)]?.inSitemap, true)
+    assert.equal(page.links?.some((link) => link.href === "/pet-digital-memorial-qr" && link.label === "Pet QR memorial"), true)
+    assert.equal(page.links?.some((link) => link.href === "/pet-memorials" && link.label === "Pet memorial QR codes"), true)
   }
+  assert.equal(publicPages.petQr.title, "Pet QR Plaque, $29.99 | MemorialsQR")
+  assert.notEqual(publicPages.petQr.title, publicPages.petDigitalMemorialQr.title)
+  assert.match(publicPages.petQr.description, /not for sale yet/)
+  const petPlaquePage = readFileSync(new URL("../app/pet-memorial-qr-code/page.tsx", import.meta.url), "utf8")
+  assert.match(petPlaquePage, /digitalOffer/)
+  assert.match(petPlaquePage, /href: "\/pet-digital-memorial-qr"/)
+  assert.match(petPlaquePage, /DIGITAL_MEMORIAL_PRODUCT/)
   assert.match(digitalLandingPages.dog.paragraphs[0], /dog/)
   assert.match(digitalLandingPages.cat.paragraphs[0], /cat/)
   assert.match(digitalLandingPages.tag.paragraphs[0], /tag/)
@@ -234,6 +246,9 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   assert.match(petHub, /href="\/cat-memorial-qr-code"/)
   assert.match(petHub, /href="\/pet-memorial-qr-tag"/)
   assert.equal(resolveDigitalLanding(null, PET_MEMORIAL_HUB_PATH), PET_MEMORIAL_HUB_PATH)
+  assert.equal(PET_GIFT_PATH, giftIntentPages.pet.path)
+  assert.equal(resolveDigitalLanding(null, PET_GIFT_PATH), PET_GIFT_PATH)
+  assert.equal(resolveDigitalLanding(PET_GIFT_PATH, "/checkout/simple"), PET_GIFT_PATH)
   assert.equal(petHub.includes("Shop Keepsakes"), false)
 
   const testSquare = readFileSync(new URL("../app/test-square/page.tsx", import.meta.url), "utf8")
