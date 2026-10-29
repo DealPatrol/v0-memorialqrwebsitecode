@@ -4,7 +4,8 @@ import { describe, it } from "node:test"
 import { buyerIntentJsonLd, buyerIntentList, PRIMARY_KEEPSAKE_ID } from "../lib/buyer-intent"
 import { giftIntentList } from "../lib/gift-intent"
 import { getSellableKeepsakes, getSellableKeepsake } from "../lib/fulfillment-availability"
-import { POD_PRODUCTS } from "../lib/catalog"
+import { DIGITAL_MEMORIAL_PRODUCT, POD_PRODUCTS } from "../lib/catalog"
+import { buildLlmsTxt } from "../lib/llms"
 import { priceCart } from "../lib/checkout-pricing"
 import { buildMerchantFeedXml, catalogIdsMissingGoogleCategory } from "../lib/merchant-feed"
 import { formatUsd, SITE_NAME } from "../lib/site"
@@ -55,6 +56,14 @@ describe("merchant feed", () => {
     const ld = keepsakeProductJsonLd(product)
     assert.match(feed, /<g:id>qr-memorial-plaque<\/g:id>/)
     assert.match(feed, /<g:id>pet-memorial-plaque<\/g:id>/)
+    assert.match(feed, /<g:id>digital-memorial<\/g:id>/)
+    assert.match(feed, /<g:link>https:\/\/memorialsqr.com\/digital-memorial<\/g:link>/)
+    assert.match(feed, /<g:price>24\.99 USD<\/g:price>/)
+    assert.match(feed, /<g:service>Digital delivery<\/g:service>/)
+    assert.match(feed, /Software &gt; Digital Goods &amp; Currency/)
+    const firstItem = feed.slice(feed.indexOf("<item>"), feed.indexOf("</item>"))
+    assert.match(firstItem, /<g:id>digital-memorial<\/g:id>/)
+    assert.equal(feed.includes("concierge"), false)
     assert.match(feed, /<g:link>https:\/\/memorialsqr.com\/store\/pet-memorial-plaque<\/g:link>/)
     assert.equal(feed.match(/<g:price>29\.99 USD<\/g:price>/g)?.length, 2)
     assert.match(feed, /<g:price>29\.99 USD<\/g:price>/)
@@ -103,7 +112,9 @@ describe("merchant feed", () => {
     assert.match(faqs[3].answer, /30-day money-back guarantee/)
     assert.match(faqs[3].answer, /support@memorialsqr.com/)
     assert.equal(keepsakeFaqs("pet-memorial-plaque").length, 4)
-    assert.equal(keepsakeFaqJsonLd(faqs)["@type"], "FAQPage")
+    const faqLd = keepsakeFaqJsonLd(faqs, "https://memorialsqr.com/store/qr-memorial-plaque")
+    assert.equal(faqLd["@type"], "FAQPage")
+    assert.equal(faqLd.url, "https://memorialsqr.com/store/qr-memorial-plaque")
     assert.equal(feed.includes("#1"), false)
     assert.equal(formatUsd(product.price), "$29.99 USD")
     assertWellFormedFeed(feed)
@@ -141,7 +152,18 @@ describe("merchant feed", () => {
     assert.equal(feed.includes("<g:gtin>"), false)
     assertWellFormedFeed(feed)
     const parsed = parseFeedItems(feed)
-    assert.equal(parsed.length, products.length)
+    assert.equal(parsed.length, products.length + 1)
+    const digital = parsed.find((row) => row.id === "digital-memorial")
+    assert.ok(digital)
+    const digitalPriced = priceCart([{ id: "digital-memorial", quantity: 1 }], hidden)
+    assert.ok(digitalPriced)
+    assert.equal(digital.price, `${(digitalPriced.amountCents / 100).toFixed(2)} USD`)
+    assert.equal(digital.price, `${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)} USD`)
+    assert.equal(digital.link, "https://memorialsqr.com/digital-memorial")
+    assert.equal(digital.availability, "in_stock")
+    assert.equal(digital.shippingCountry, "US")
+    assert.equal(digital.shippingPrice, "0.00 USD")
+    assert.equal(digital.handlingMin, "")
 
     for (const product of products) {
       const item = parsed.find((row) => row.id === product.id)
@@ -168,9 +190,50 @@ describe("merchant feed", () => {
     }
 
     const none = buildMerchantFeedXml({ KEEPSAKE_PLAQUES_ON_SALE: "false" })
-    assert.equal(none.includes("<item>"), false)
     assert.equal(none.includes("qr-memorial-plaque"), false)
+    assert.equal(none.includes("pet-memorial-plaque"), false)
+    assert.equal(none.includes("concierge"), false)
+    const noneItems = parseFeedItems(none)
+    assert.equal(noneItems.length, 1)
+    assert.equal(noneItems[0].id, "digital-memorial")
+    assert.equal(noneItems[0].price, "24.99 USD")
     assertWellFormedFeed(none)
+  })
+})
+
+describe("llms.txt", () => {
+  it("lists catalog products for sale and keeps waitlist plaques out of that list", () => {
+    const hidden = { KEEPSAKE_PLAQUES_ON_SALE: "false" }
+    const text = buildLlmsTxt(hidden)
+    const forSale = text.split("## Services")[0]
+    assert.match(forSale, /## Products checkout can charge/)
+    assert.match(forSale, /\$24\.99 USD/)
+    assert.match(forSale, /https:\/\/memorialsqr.com\/digital-memorial/)
+    assert.match(forSale, /https:\/\/memorialsqr.com\/checkout\/simple\?product=digital-memorial/)
+    assert.match(text, /https:\/\/memorialsqr.com\/dog-memorial-qr-code/)
+    assert.match(text, /https:\/\/memorialsqr.com\/cat-memorial-qr-code/)
+    assert.match(text, /https:\/\/memorialsqr.com\/pet-memorial-qr-tag/)
+    assert.equal(forSale.includes("qr-memorial-plaque"), false)
+    assert.equal(forSale.includes("pet-memorial-plaque"), false)
+    assert.equal(forSale.includes("concierge"), false)
+    assert.match(text, /## On the waitlist/)
+    assert.match(text, /qr-memorial-plaque/)
+    assert.match(text, /not for sale/)
+    assert.match(text, /not in the product feed/)
+    assert.match(text, /https:\/\/memorialsqr.com\/merchant-feed.xml/)
+    assert.equal(text.includes("aggregateRating"), false)
+    assert.equal(text.includes("#1"), false)
+    const services = text.split("## Services")[1]?.split("## On the waitlist")[0] ?? ""
+    assert.match(services, /\$299\.99 USD/)
+    assert.match(services, /concierge-digital/)
+    assert.match(services, /not in the Google product feed/)
+
+    const onSale = buildLlmsTxt({ KEEPSAKE_PLAQUES_ON_SALE: "true" })
+    assert.equal(onSale.includes("## On the waitlist"), false)
+    const onSaleProducts = onSale.split("## Services")[0]
+    assert.match(onSaleProducts, /qr-memorial-plaque/)
+    assert.match(onSaleProducts, /\$29\.99 USD/)
+    assert.equal(formatUsd(DIGITAL_MEMORIAL_PRODUCT.price), "$24.99 USD")
   })
 })
 
@@ -243,6 +306,10 @@ function assertProductOffer(data: ReturnType<typeof keepsakeProductJsonLd>, pric
   assert.equal(data.offers.availability, "https://schema.org/InStock")
   assert.equal(data.offers.itemCondition, "https://schema.org/NewCondition")
   assert.equal(data.offers.url.startsWith("https://memorialsqr.com/store/"), true)
+  assert.equal(data.url, data.offers.url)
+  assert.ok(data.category.length > 0)
+  assert.equal(data.offers.potentialAction["@type"], "BuyAction")
+  assert.equal(data.offers.potentialAction.target, `https://memorialsqr.com/checkout/simple?product=${data.sku}`)
   assert.equal(data.offers.seller["@type"], "Organization")
   assert.equal(data.offers.seller.name, "MemorialsQR")
   assert.equal(data.offers.shippingDetails["@type"], "OfferShippingDetails")

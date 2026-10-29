@@ -1,4 +1,5 @@
 import type { SellableKeepsake } from "@/lib/fulfillment-availability"
+import { googleProductCategory } from "@/lib/google-product-category"
 import { statedMerchantReturnPolicy } from "@/lib/return-policy"
 import {
   absoluteAssetUrl,
@@ -73,6 +74,8 @@ export function keepsakeProductJsonLd(product: SellableKeepsake) {
     name: product.name,
     description: product.description,
     sku: product.id,
+    url: `${SITE_URL}/store/${product.id}`,
+    category: googleProductCategory(product.id),
     image: absoluteAssetUrl(product.image),
     brand: {
       "@type": "Brand" as const,
@@ -87,6 +90,10 @@ export function keepsakeProductJsonLd(product: SellableKeepsake) {
       itemCondition: "https://schema.org/NewCondition",
       shippingDetails: shippingDetails(product),
       hasMerchantReturnPolicy: statedMerchantReturnPolicy(),
+      potentialAction: {
+        "@type": "BuyAction" as const,
+        target: `${SITE_URL}/checkout/simple?product=${product.id}`,
+      },
       eligibleRegion: {
         "@type": "Country" as const,
         name: "US",

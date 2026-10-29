@@ -1,6 +1,6 @@
 import { DIGITAL_MEMORIAL_PRODUCT, PLAQUE_PRICE } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
-import { formatUsd } from "@/lib/site"
+import { formatUsd, SITE_URL } from "@/lib/site"
 
 export type PlaqueCostFaq = {
   question: string
@@ -20,10 +20,11 @@ export function qrMemorialPlaqueCostFaq(): PlaqueCostFaq {
   }
 }
 
-export function plaqueCostFaqJsonLd(faq: PlaqueCostFaq = qrMemorialPlaqueCostFaq()) {
+export function plaqueCostFaqJsonLd(faq: PlaqueCostFaq = qrMemorialPlaqueCostFaq(), pageUrl = `${SITE_URL}/`) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage" as const,
+    url: pageUrl,
     mainEntity: [
       {
         "@type": "Question" as const,

@@ -10,6 +10,7 @@ Disallow: /admin/
 Disallow: /test-square
 
 # Google Merchant Center product feed: ${SITE_URL}${MERCHANT_FEED_PATH}
+# Site summary for answer engines: ${SITE_URL}/llms.txt
 
 Sitemap: ${SITE_URL}/sitemap.xml
 `

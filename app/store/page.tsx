@@ -38,7 +38,7 @@ export default function StorePage() {
         </div>
       </section>
 
-      <PlaqueCostAnswer className="bg-transparent px-4 pb-8" />
+      <PlaqueCostAnswer className="bg-transparent px-4 pb-8" pagePath="/store" />
 
       <section className="px-4 pb-4">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

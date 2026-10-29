@@ -5,7 +5,7 @@ export default function PetMemorialsLayout({ children }: { children: React.React
   return (
     <>
       {children}
-      <PlaqueCostAnswer />
+      <PlaqueCostAnswer pagePath="/pet-memorials" />
     </>
   )
 }

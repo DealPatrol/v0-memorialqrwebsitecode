@@ -2,7 +2,8 @@ import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "@/lib/digital-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { qrMemorialPlaqueCostFaq } from "@/lib/plaque-cost-faq"
-import { formatUsd } from "@/lib/site"
+import { omitSchemaContext } from "@/lib/schema-node"
+import { formatUsd, SITE_URL } from "@/lib/site"
 
 export type DigitalLandingFaq = {
   question: string
@@ -370,21 +371,13 @@ function policyFaqsForLanding(page: DigitalLandingPage): DigitalLandingFaq[] {
 }
 
 export function digitalLandingJsonLd(page: DigitalLandingPage) {
-  const product = digitalMemorialJsonLd()
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": product["@type"],
-        name: product.name,
-        description: product.description,
-        sku: product.sku,
-        image: product.image,
-        brand: product.brand,
-        offers: product.offers,
-      },
+      omitSchemaContext(digitalMemorialJsonLd()),
       {
         "@type": "FAQPage" as const,
+        url: `${SITE_URL}${page.path}`,
         mainEntity: [...page.faqs, ...policyFaqsForLanding(page)].map((faq) => ({
           "@type": "Question" as const,
           name: faq.question,

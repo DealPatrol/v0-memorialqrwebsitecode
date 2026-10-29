@@ -1,7 +1,8 @@
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { digitalMemorialJsonLd, digitalMemorialPolicyFaqs, DIGITAL_MEMORIAL_CHECKOUT_PATH } from "@/lib/digital-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
-import { formatUsd } from "@/lib/site"
+import { omitSchemaContext } from "@/lib/schema-node"
+import { formatUsd, SITE_URL } from "@/lib/site"
 
 export type SympathyGiftFaq = {
   question: string
@@ -231,21 +232,13 @@ function policyFaqs(page: SympathyGiftPage): SympathyGiftFaq[] {
 }
 
 export function sympathyGiftJsonLd(page: SympathyGiftPage) {
-  const product = digitalMemorialJsonLd()
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": product["@type"],
-        name: product.name,
-        description: product.description,
-        sku: product.sku,
-        image: product.image,
-        brand: product.brand,
-        offers: product.offers,
-      },
+      omitSchemaContext(digitalMemorialJsonLd()),
       {
         "@type": "FAQPage" as const,
+        url: `${SITE_URL}${page.path}`,
         mainEntity: [...page.faqs, ...policyFaqs(page)].map((faq) => ({
           "@type": "Question" as const,
           name: faq.question,

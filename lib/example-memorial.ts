@@ -1,5 +1,6 @@
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { digitalMemorialFaqs } from "@/lib/digital-memorial"
+import { SITE_URL } from "@/lib/site"
 
 export const EXAMPLE_MEMORIAL_PATH = "/example-memorial"
 
@@ -45,6 +46,7 @@ export function exampleMemorialFaqJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage" as const,
+    url: `${SITE_URL}${EXAMPLE_MEMORIAL_PATH}`,
     mainEntity: exampleMemorialFaqs().map((faq) => ({
       "@type": "Question" as const,
       name: faq.question,

@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs"
 import { DIGITAL_MEMORIAL_ID, getCheckoutProduct, PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "../lib/catalog"
 import { PET_GIFT_PATH, PET_MEMORIAL_HUB_PATH, resolveDigitalLanding } from "../lib/digital-landing-attribution"
 import { digitalLandingJsonLd, digitalLandingList, digitalLandingPages } from "../lib/digital-landing"
-import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "../lib/digital-memorial"
+import { DIGITAL_MEMORIAL_CHECKOUT_PATH, digitalMemorialFaqJsonLd, digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "../lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "../lib/example-memorial"
 import { priceCart } from "../lib/checkout-pricing"
 import {
@@ -66,6 +66,11 @@ test("digital memorial checks out without print partners and publishes one offer
   assert.equal(ld.offers.priceCurrency, "USD")
   assert.equal(ld.offers.url, "https://memorialsqr.com/digital-memorial")
   assert.equal("shippingDetails" in ld.offers, false)
+  assert.equal(ld.url, "https://memorialsqr.com/digital-memorial")
+  assert.equal(ld.category, "Software > Digital Goods & Currency")
+  assert.equal(ld.offers.potentialAction["@type"], "BuyAction")
+  assert.equal(ld.offers.potentialAction.target, "https://memorialsqr.com/checkout/simple?product=digital-memorial")
+  assert.equal(digitalMemorialFaqJsonLd().url, "https://memorialsqr.com/digital-memorial")
   assert.equal(ld.offers.hasMerchantReturnPolicy.merchantReturnDays, 30)
   assert.equal("aggregateRating" in ld, false)
   assert.ok(digitalMemorialPolicyFaqs().some((faq) => faq.question === "What is the refund policy?"))
@@ -181,6 +186,9 @@ test("digital memorial landing pages are indexable and sell the page", () => {
     assert.equal(data["@graph"][0].offers.price, "24.99")
     assert.equal(data["@graph"][0].offers.priceCurrency, "USD")
     assert.equal("shippingDetails" in data["@graph"][0].offers, false)
+    assert.equal(data["@graph"][0].category, "Software > Digital Goods & Currency")
+    assert.equal(data["@graph"][0].offers.potentialAction.target, "https://memorialsqr.com/checkout/simple?product=digital-memorial")
+    assert.equal(data["@graph"][1].url, `https://memorialsqr.com${page.path}`)
     assert.equal(data["@graph"][0].offers.hasMerchantReturnPolicy.merchantReturnDays, 30)
     assert.equal(data["@graph"][1]["@type"], "FAQPage")
     assert.equal(data["@graph"][1].mainEntity[0].name, page.faqs[0].question)
@@ -215,6 +223,11 @@ test("digital memorial landing pages are indexable and sell the page", () => {
   assert.equal(DIGITAL_MEMORIAL_CHECKOUT_PATH, "/checkout/simple?product=digital-memorial")
 
   for (const page of [digitalLandingPages.dog, digitalLandingPages.cat, digitalLandingPages.tag]) {
+    const data = digitalLandingJsonLd(page)
+    assert.equal(data["@graph"][0].offers.price, "24.99")
+    assert.equal(data["@graph"][0].offers.potentialAction.target, "https://memorialsqr.com/checkout/simple?product=digital-memorial")
+    assert.equal(data["@graph"][1].url, `https://memorialsqr.com${page.path}`)
+    assert.equal(data["@graph"][1]["@type"], "FAQPage")
     assert.equal(resolveDigitalLanding(null, page.path), page.path)
     assert.match(page.paragraphs.join(" "), /\$24\.99/)
     assert.match(page.title, /\$24\.99 \| MemorialsQR$/)

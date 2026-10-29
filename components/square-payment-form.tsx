@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2 } from "lucide-react"
@@ -36,6 +36,58 @@ const CreditCard = dynamic(
   { ssr: false },
 )
 
+const ApplePay = dynamic(
+  () =>
+    import("react-square-web-payments-sdk")
+      .then((mod) => mod.ApplePay)
+      .catch((err) => {
+        console.error("[v0] Failed to load Square Apple Pay:", err)
+        return () => null
+      }),
+  { ssr: false },
+)
+
+const GooglePay = dynamic(
+  () =>
+    import("react-square-web-payments-sdk")
+      .then((mod) => mod.GooglePay)
+      .catch((err) => {
+        console.error("[v0] Failed to load Square Google Pay:", err)
+        return () => null
+      }),
+  { ssr: false },
+)
+
+/** Hide Google Pay's placeholder until the button actually attaches. */
+function GooglePayWhenReady({ disabled = false }: { disabled?: boolean }) {
+  const slotRef = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const node = slotRef.current
+    if (!node) return
+    const showIfButton = () => {
+      setVisible(Boolean(node.querySelector("button, iframe")))
+    }
+    showIfButton()
+    const observer = new MutationObserver(showIfButton)
+    observer.observe(node, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={slotRef}
+      hidden={!visible}
+      aria-disabled={disabled || undefined}
+      className={visible ? "mb-3" : undefined}
+      style={disabled ? { pointerEvents: "none" } : undefined}
+    >
+      <GooglePay buttonSizeMode="fill" style={disabled ? { pointerEvents: "none" } : undefined} />
+    </div>
+  )
+}
+
 interface SquarePaymentFormProps {
   amount: number
   orderId: string
@@ -63,6 +115,7 @@ export function SquarePaymentForm({
   const [isProcessing, setIsProcessing] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isSDKReady, setIsSDKReady] = useState(false)
+  const paymentInFlight = useRef(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -74,8 +127,12 @@ export function SquarePaymentForm({
   }, [])
 
   const handlePayment = async (token: any) => {
+    if (paymentInFlight.current || disabled) return
+
+    paymentInFlight.current = true
     try {
       if (onBeforePayment && !onBeforePayment()) {
+        paymentInFlight.current = false
         return
       }
 
@@ -131,6 +188,7 @@ export function SquarePaymentForm({
         variant: "destructive",
       })
       onError?.(error.message)
+      paymentInFlight.current = false
       setIsProcessing(false)
     }
   }
@@ -203,6 +261,7 @@ export function SquarePaymentForm({
     return (
       <div>
         <PaymentForm
+          key={amount.toFixed(2)}
           applicationId={appId}
           locationId={locId}
           cardTokenizeResponseReceived={handlePayment}
@@ -215,6 +274,12 @@ export function SquarePaymentForm({
             },
           })}
         >
+          <ApplePay
+            className="mb-3"
+            aria-disabled={isProcessing || disabled || undefined}
+            style={isProcessing || disabled ? { pointerEvents: "none" } : undefined}
+          />
+          <GooglePayWhenReady disabled={isProcessing || disabled} />
           <CreditCard
             buttonProps={{
               isLoading: isProcessing || disabled,

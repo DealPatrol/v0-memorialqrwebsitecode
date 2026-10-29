@@ -22,11 +22,13 @@ Continue building your app on:
 
 **[https://v0.app/chat/projects/y6f7ywF0kMl](https://v0.app/chat/projects/y6f7ywF0kMl)**
 
-## Google Shopping
+## Google Shopping and answer engines
 
 `/feed.xml` is the blog RSS feed and should keep working.
 
-`/merchant-feed.xml` is the Google Merchant Center product feed. It lists only keepsakes Square checkout will charge right now, at the catalog price. Coming-soon plaques stay out. The concierge service stays out because Shopping does not allow services. The same URL is noted in `robots.txt`.
+`/merchant-feed.xml` is the Google Merchant Center product feed. It lists products checkout can charge right now, at the catalog price, including the digital memorial page. Waitlist plaques stay out. The concierge service stays out because Shopping does not allow services. The same URL is noted in `robots.txt`.
+
+`/llms.txt` describes the site, those products, the waitlist, and the key pages. Product and FAQ structured data stays on the pages.
 
 ## How It Works
 

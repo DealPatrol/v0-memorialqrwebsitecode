@@ -2,6 +2,8 @@ import { PET_MEMORIAL_PLAQUE_ID, QR_MEMORIAL_PLAQUE_ID } from "@/lib/catalog"
 import type { SellableKeepsake } from "@/lib/fulfillment-availability"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { keepsakeProductJsonLd } from "@/lib/keepsake-jsonld"
+import { omitSchemaContext } from "@/lib/schema-node"
+import { SITE_URL } from "@/lib/site"
 
 export type BuyerIntentFaq = {
   question: string
@@ -257,26 +259,14 @@ export const buyerIntentPages: Record<BuyerIntentId, BuyerIntent> = {
 export const buyerIntentList = Object.values(buyerIntentPages)
 
 export function buyerIntentJsonLd(page: BuyerIntent, product: SellableKeepsake) {
-  const productLd = keepsakeProductJsonLd(product)
   return {
     "@context": "https://schema.org",
     "@graph": [
       // A coming-soon keepsake has no Offer. Only the FAQ is published.
-      ...(product.available
-        ? [
-            {
-              "@type": productLd["@type"],
-              name: productLd.name,
-              description: productLd.description,
-              sku: productLd.sku,
-              image: productLd.image,
-              brand: productLd.brand,
-              offers: productLd.offers,
-            },
-          ]
-        : []),
+      ...(product.available ? [omitSchemaContext(keepsakeProductJsonLd(product))] : []),
       {
         "@type": "FAQPage",
+        url: `${SITE_URL}${page.path}`,
         mainEntity: page.faqs.map((faq) => ({
           "@type": "Question",
           name: faq.question,

@@ -59,7 +59,7 @@ export default function PricingPage() {
           </CardContent>
         </Card>
 
-        <PlaqueCostAnswer className="mb-8 rounded-xl border bg-white px-6 py-8" />
+        <PlaqueCostAnswer className="mb-8 rounded-xl border bg-white px-6 py-8" pagePath="/pricing" />
 
         <Card>
           <CardHeader>

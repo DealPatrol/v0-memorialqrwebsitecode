@@ -1,6 +1,12 @@
-import { MANUAL_KEEPSAKES, POD_PRODUCTS } from "@/lib/catalog"
+import { DIGITAL_MEMORIAL_PRODUCT, MANUAL_KEEPSAKES, POD_PRODUCTS } from "@/lib/catalog"
+import {
+  DIGITAL_MEMORIAL_DESCRIPTION,
+  DIGITAL_MEMORIAL_IMAGE,
+  DIGITAL_MEMORIAL_PATH,
+} from "@/lib/digital-memorial"
 import { getSellableKeepsakes, type SellableKeepsake } from "@/lib/fulfillment-availability"
 import type { EnvSource } from "@/lib/fulfillment-readiness"
+import { googleProductCategory, hasGoogleProductCategory } from "@/lib/google-product-category"
 import {
   absoluteAssetUrl,
   KEEPSAKE_HANDLING_MAX_DAYS,
@@ -10,46 +16,24 @@ import {
   SITE_URL,
 } from "@/lib/site"
 
-/** Public Google Merchant Center feed. Same ids and prices as Square checkout. */
+/** Public Google Merchant Center feed. Same ids and prices as checkout. */
 export const MERCHANT_FEED_PATH = "/merchant-feed.xml"
 
-/**
- * Official Google product taxonomy paths. Numeric ids are accepted too;
- * the path is what a person reviewing the feed can check.
- * Photo blocks have no exact taxonomy entry; picture frames is the closest real one.
- */
-const GOOGLE_PRODUCT_CATEGORY: Record<string, string> = {
-  "keep-card":
-    "Arts & Entertainment > Hobbies & Creative Arts > Arts & Crafts > Art & Crafting Materials > Embellishments & Trims > Decorative Stickers",
-  "memorial-coaster": "Home & Garden > Kitchen & Dining > Barware > Coasters",
-  "acrylic-keyring": "Apparel & Accessories > Handbag & Wallet Accessories > Keychains",
-  "voice-keychain": "Apparel & Accessories > Handbag & Wallet Accessories > Keychains",
-  "slate-plaque": "Home & Garden > Decor > Decorative Plaques",
-  "pet-tag": "Animals & Pet Supplies > Pet Supplies > Pet ID Tags",
-  "photo-block": "Home & Garden > Decor > Picture Frames",
-  "qr-memorial-plaque": "Home & Garden > Decor > Decorative Plaques",
-  "pet-memorial-plaque": "Home & Garden > Decor > Decorative Plaques",
-}
-
-export function googleProductCategory(id: string): string {
-  const category = GOOGLE_PRODUCT_CATEGORY[id]
-  if (!category) {
-    throw new Error(`Missing Google product category for ${id}`)
-  }
-  return category
-}
-
-/** Every catalog keepsake id must have a taxonomy path before it can be sold into the feed. */
+/** Every catalog product that can enter the feed needs a taxonomy path. */
 export function catalogIdsMissingGoogleCategory(): string[] {
-  const ids = [...POD_PRODUCTS.map((product) => product.id), ...MANUAL_KEEPSAKES.map((product) => product.id)]
-  return ids.filter((id) => !GOOGLE_PRODUCT_CATEGORY[id])
+  const ids = [
+    DIGITAL_MEMORIAL_PRODUCT.id,
+    ...POD_PRODUCTS.map((product) => product.id),
+    ...MANUAL_KEEPSAKES.map((product) => product.id),
+  ]
+  return ids.filter((id) => !hasGoogleProductCategory(id))
 }
 
 function escapeXml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[char]!)
 }
 
-/** Keepsakes Square will charge right now. Coming-soon plaques and unconfigured supplier products stay out. */
+/** Physical keepsakes checkout will charge right now. Coming-soon plaques and unconfigured supplier products stay out. */
 export function keepsakesForMerchantFeed(env: EnvSource = process.env): SellableKeepsake[] {
   return getSellableKeepsakes(env)
 }
@@ -95,22 +79,54 @@ function feedItem(product: SellableKeepsake): string {
 }
 
 /**
+ * The digital memorial is always for sale. Nothing is shipped, so delivery is immediate
+ * and the shipping price is zero. Concierge stays out: it is a service, not a Shopping product.
+ */
+function digitalFeedItem(): string {
+  return `<item>
+      <g:id>${escapeXml(DIGITAL_MEMORIAL_PRODUCT.id)}</g:id>
+      <g:title>${escapeXml(DIGITAL_MEMORIAL_PRODUCT.name)}</g:title>
+      <g:description>${escapeXml(DIGITAL_MEMORIAL_DESCRIPTION)}</g:description>
+      <g:link>${escapeXml(`${SITE_URL}${DIGITAL_MEMORIAL_PATH}`)}</g:link>
+      <g:image_link>${escapeXml(absoluteAssetUrl(DIGITAL_MEMORIAL_IMAGE))}</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)} USD</g:price>
+      <g:brand>${escapeXml(SITE_NAME)}</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>${escapeXml(googleProductCategory(DIGITAL_MEMORIAL_PRODUCT.id))}</g:google_product_category>
+      <g:product_type>Digital memorial page</g:product_type>
+      <g:shipping>
+        <g:country>US</g:country>
+        <g:service>Digital delivery</g:service>
+        <g:price>0.00 USD</g:price>
+        <g:min_handling_time>0</g:min_handling_time>
+        <g:max_handling_time>0</g:max_handling_time>
+        <g:min_transit_time>0</g:min_transit_time>
+        <g:max_transit_time>0</g:max_transit_time>
+      </g:shipping>
+    </item>`
+}
+
+/**
  * RSS 2.0 feed with Google's product namespace.
- * Prices come from getSellableKeepsakes, the same catalog checkout uses.
+ * Prices come from the catalog checkout charges.
+ * The digital memorial is always included. Waitlist plaques and unconfigured supplier products stay out.
+ * The concierge service stays out.
  * No GTIN exists, so identifier_exists is no and g:gtin is omitted.
- * Shipping is included in the price for United States addresses.
+ * Shipping is included in the price for United States addresses on physical keepsakes.
  * Handling time is included only for handmade plaques, where the site states 7 to 10 business days.
  * The 30-day refund is a Merchant Center account setting and Product JSON-LD, not a feed label.
  */
 export function buildMerchantFeedXml(env: EnvSource = process.env): string {
-  const items = keepsakesForMerchantFeed(env).map(feedItem).join("\n")
+  const items = [digitalFeedItem(), ...keepsakesForMerchantFeed(env).map(feedItem)].join("\n")
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
     <title>${escapeXml(SITE_NAME)}</title>
     <link>${escapeXml(SITE_URL)}</link>
-    <description>Keepsakes ${escapeXml(SITE_NAME)} can sell right now.</description>
+    <description>Products ${escapeXml(SITE_NAME)} can sell right now.</description>
     ${items}
   </channel>
 </rss>
