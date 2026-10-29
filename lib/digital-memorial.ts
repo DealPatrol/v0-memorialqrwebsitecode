@@ -1,4 +1,5 @@
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { googleProductCategory } from "@/lib/google-product-category"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { statedMerchantReturnPolicy } from "@/lib/return-policy"
 import { absoluteAssetUrl, MONEY_BACK_GUARANTEE_DAYS, SITE_NAME, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
@@ -75,6 +76,8 @@ export function digitalMemorialJsonLd() {
     name: DIGITAL_MEMORIAL_PRODUCT.name,
     description: DIGITAL_MEMORIAL_DESCRIPTION,
     sku: DIGITAL_MEMORIAL_PRODUCT.id,
+    url: `${SITE_URL}${DIGITAL_MEMORIAL_PATH}`,
+    category: googleProductCategory(DIGITAL_MEMORIAL_PRODUCT.id),
     image: absoluteAssetUrl(DIGITAL_MEMORIAL_IMAGE),
     brand: {
       "@type": "Brand" as const,
@@ -88,6 +91,10 @@ export function digitalMemorialJsonLd() {
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
       hasMerchantReturnPolicy: statedMerchantReturnPolicy(),
+      potentialAction: {
+        "@type": "BuyAction" as const,
+        target: `${SITE_URL}${DIGITAL_MEMORIAL_CHECKOUT_PATH}`,
+      },
       seller: {
         "@type": "Organization" as const,
         "@id": `${SITE_URL}/#organization`,
@@ -103,6 +110,7 @@ export function digitalMemorialFaqJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage" as const,
+    url: `${SITE_URL}${DIGITAL_MEMORIAL_PATH}`,
     mainEntity: faqs.map((faq) => ({
       "@type": "Question" as const,
       name: faq.question,

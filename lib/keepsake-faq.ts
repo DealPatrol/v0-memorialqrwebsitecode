@@ -52,10 +52,11 @@ export function keepsakeFaqs(productId: string): KeepsakeFaq[] {
   ]
 }
 
-export function keepsakeFaqJsonLd(faqs: KeepsakeFaq[]) {
+export function keepsakeFaqJsonLd(faqs: KeepsakeFaq[], pageUrl?: string) {
   return {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
+    "@type": "FAQPage" as const,
+    ...(pageUrl ? { url: pageUrl } : {}),
     mainEntity: faqs.map((faq) => ({
       "@type": "Question",
       name: faq.question,

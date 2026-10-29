@@ -4,6 +4,7 @@ import { getSellableKeepsakes, type SellableKeepsake } from "@/lib/fulfillment-a
 import type { EnvSource } from "@/lib/fulfillment-readiness"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { keepsakeProductJsonLd } from "@/lib/keepsake-jsonld"
+import { omitSchemaContext } from "@/lib/schema-node"
 import { formatUsd, SITE_URL } from "@/lib/site"
 
 export const KEEPSAKE_COLLECTION_PATH = "/keepsakes"
@@ -52,29 +53,11 @@ export function collectionFaqs(): CollectionFaq[] {
 }
 
 function productNode(product: SellableKeepsake) {
-  const full = keepsakeProductJsonLd(product)
-  return {
-    "@type": full["@type"],
-    name: full.name,
-    description: full.description,
-    sku: full.sku,
-    image: full.image,
-    brand: full.brand,
-    offers: full.offers,
-  }
+  return omitSchemaContext(keepsakeProductJsonLd(product))
 }
 
 function digitalListItem() {
-  const full = digitalMemorialJsonLd()
-  return {
-    "@type": full["@type"],
-    name: full.name,
-    description: full.description,
-    sku: full.sku,
-    image: full.image,
-    brand: full.brand,
-    offers: full.offers,
-  }
+  return omitSchemaContext(digitalMemorialJsonLd())
 }
 
 /** ItemList of keepsakes checkout will charge, plus FAQ. Coming-soon plaques are omitted. */
@@ -116,6 +99,7 @@ export function keepsakeCollectionJsonLd(products: SellableKeepsake[]) {
       },
       {
         "@type": "FAQPage",
+        url: `${SITE_URL}${KEEPSAKE_COLLECTION_PATH}`,
         mainEntity: faqs.map((faq) => ({
           "@type": "Question",
           name: faq.question,

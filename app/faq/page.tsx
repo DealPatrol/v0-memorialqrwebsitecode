@@ -10,7 +10,7 @@ import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { cremationQrList } from "@/lib/cremation-qr-pages"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { CONCIERGE_PRICE_LABEL, pageMetadata, publicPages } from "@/lib/seo"
-import { formatUsd, SUPPORT_EMAIL } from "@/lib/site"
+import { formatUsd, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
 export const metadata = pageMetadata(publicPages.faq)
 
@@ -178,6 +178,7 @@ export default function FAQPage() {
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    url: `${SITE_URL}${publicPages.faq.path}`,
     mainEntity: allFaqs.map((faq) => ({
       "@type": "Question",
       name: faq.question,

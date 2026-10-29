@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { readFileSync } from "node:fs"
 import { test } from "node:test"
 import { priceCart } from "../lib/checkout-pricing"
 import { verifySquarePayment } from "../lib/square-verify"
@@ -12,6 +13,15 @@ function fakeFetch(status: number, payment: Record<string, unknown> | null) {
   return async () => ({ ok: status >= 200 && status < 300, status, json: async () => (payment ? { payment } : {}) })
 }
 const good = { id: "pay_12345678", status: "COMPLETED", location_id: "LOC1", amount_money: { amount: 5998, currency: "USD" } }
+
+test("Square checkout mounts Apple Pay and Google Pay on the existing payment request", () => {
+  const source = readFileSync(new URL("../components/square-payment-form.tsx", import.meta.url), "utf8")
+  assert.match(source, /<ApplePay/)
+  assert.match(source, /<GooglePayWhenReady/)
+  assert.match(source, /createPaymentRequest/)
+  assert.match(source, /cardTokenizeResponseReceived=\{handlePayment\}/)
+  assert.match(source, /<CreditCard/)
+})
 
 test("cart is priced from the catalog, not the browser", () => {
   const cart = priceCart([{ id: PET_MEMORIAL_PLAQUE_ID, quantity: 2, price: 0.01 }], {})

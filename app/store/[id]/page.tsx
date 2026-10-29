@@ -17,6 +17,7 @@ import { keepsakeFaqJsonLd, keepsakeFaqs } from "@/lib/keepsake-faq"
 import { keepsakeProductJsonLd } from "@/lib/keepsake-jsonld"
 import { keepsakePageCopy } from "@/lib/keepsake-page"
 import { assertMetadataLength, pageMetadata } from "@/lib/seo"
+import { SITE_URL } from "@/lib/site"
 
 export function generateStaticParams() {
   return getListedKeepsakes().map((product) => ({ id: product.id }))
@@ -49,7 +50,7 @@ export default function KeepsakePage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       {product.available ? <JsonLd data={keepsakeProductJsonLd(product)} /> : null}
-      {faqs.length > 0 ? <JsonLd data={keepsakeFaqJsonLd(faqs)} /> : null}
+      {faqs.length > 0 ? <JsonLd data={keepsakeFaqJsonLd(faqs, `${SITE_URL}/store/${product.id}`)} /> : null}
       {product.available ? (
         <TrackViewContent contentId={product.id} contentName={product.name} value={product.price} />
       ) : null}
