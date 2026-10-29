@@ -59,7 +59,7 @@ const GooglePay = dynamic(
 )
 
 /** Hide Google Pay's placeholder until the button actually attaches. */
-function GooglePayWhenReady() {
+function GooglePayWhenReady({ disabled = false }: { disabled?: boolean }) {
   const slotRef = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
 
@@ -76,8 +76,14 @@ function GooglePayWhenReady() {
   }, [])
 
   return (
-    <div ref={slotRef} hidden={!visible} className={visible ? "mb-3" : undefined}>
-      <GooglePay buttonSizeMode="fill" />
+    <div
+      ref={slotRef}
+      hidden={!visible}
+      aria-disabled={disabled || undefined}
+      className={visible ? "mb-3" : undefined}
+      style={disabled ? { pointerEvents: "none" } : undefined}
+    >
+      <GooglePay buttonSizeMode="fill" style={disabled ? { pointerEvents: "none" } : undefined} />
     </div>
   )
 }
@@ -109,6 +115,7 @@ export function SquarePaymentForm({
   const [isProcessing, setIsProcessing] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isSDKReady, setIsSDKReady] = useState(false)
+  const paymentInFlight = useRef(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -120,8 +127,12 @@ export function SquarePaymentForm({
   }, [])
 
   const handlePayment = async (token: any) => {
+    if (paymentInFlight.current || disabled) return
+
+    paymentInFlight.current = true
     try {
       if (onBeforePayment && !onBeforePayment()) {
+        paymentInFlight.current = false
         return
       }
 
@@ -177,6 +188,7 @@ export function SquarePaymentForm({
         variant: "destructive",
       })
       onError?.(error.message)
+      paymentInFlight.current = false
       setIsProcessing(false)
     }
   }
@@ -262,8 +274,12 @@ export function SquarePaymentForm({
             },
           })}
         >
-          <ApplePay className="mb-3" />
-          <GooglePayWhenReady />
+          <ApplePay
+            className="mb-3"
+            aria-disabled={isProcessing || disabled || undefined}
+            style={isProcessing || disabled ? { pointerEvents: "none" } : undefined}
+          />
+          <GooglePayWhenReady disabled={isProcessing || disabled} />
           <CreditCard
             buttonProps={{
               isLoading: isProcessing || disabled,
