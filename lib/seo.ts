@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { adLandingPages } from "@/lib/ad-landings"
-import { CONCIERGE_PRODUCTS, PLAQUE_PRICE } from "@/lib/catalog"
+import { CONCIERGE_PRODUCTS, DIGITAL_MEMORIAL_PRODUCT, PLAQUE_PRICE } from "@/lib/catalog"
 import { cremationQrPages } from "@/lib/cremation-qr-pages"
 import { digitalLandingPages } from "@/lib/digital-landing"
 import {
@@ -60,12 +60,13 @@ export type SeoPage = {
 const years = HOSTING_INCLUDED_YEARS
 const concierge = CONCIERGE_PRICE_LABEL
 const plaque = `$${PLAQUE_PRICE.toFixed(2)}`
+const digital = `$${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)}`
 
 export const publicPages = {
   home: {
     path: "/",
     title: "Memorial QR Codes for Loved Ones & Pets | MemorialsQR",
-    description: `A memorial QR code opens a page of photos and stories for a loved one or pet. ${years} years of hosting is included, with no recurring fees. See how it works.`,
+    description: `A memorial QR code opens a page of photos and stories for a loved one or pet. ${years} years of hosting is included, with no recurring fees. From ${digital} today.`,
     file: "app/page.tsx",
     changeFrequency: "weekly",
     priority: 1,
@@ -194,8 +195,8 @@ export const publicPages = {
   },
   petMemorials: {
     path: "/pet-memorials",
-    title: "Pet Memorial QR Code & Plaque | MemorialsQR",
-    description: `A pet memorial QR code opens photos and stories of your companion. The pet QR memorial plaque includes ${years} years of hosting. No recurring fees. See it.`,
+    title: `Pet QR Memorial from ${digital} | MemorialsQR`,
+    description: `A pet memorial QR code is ${digital}. The pet QR memorial plaque is ${plaque} and is not for sale yet. ${years} years of hosting included. Order the digital page today.`,
     file: "app/pet-memorials/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -354,8 +355,8 @@ export const publicPages = {
   },
   petQr: {
     path: "/pet-memorial-qr-code",
-    title: "Pet Memorial QR Code | MemorialsQR",
-    description: `A pet memorial QR code opens photos and stories of a companion you miss. The plaque is ${plaque} and includes ${years} years of hosting.`,
+    title: `Pet QR Plaque, ${plaque} | MemorialsQR`,
+    description: `The pet memorial QR plaque is ${plaque} and is not for sale yet. The waitlist does not charge a card. A separate page includes ${years} years of hosting.`,
     file: "app/pet-memorial-qr-code/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,

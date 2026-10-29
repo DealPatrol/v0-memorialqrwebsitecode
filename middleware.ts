@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { isWwwHost, shouldNoindexPath, shouldRewriteNotFound } from "@/lib/request-indexing"
 import { updateSession } from "@/lib/supabase/middleware"
 
 const APEX_ORIGIN = "https://memorialsqr.com"
 
+function withNoindex(response: NextResponse, pathname: string): NextResponse {
+  if (shouldNoindexPath(pathname)) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow")
+  }
+  return response
+}
+
 export async function middleware(request: NextRequest) {
-  const host = request.headers.get("host")?.split(":")[0]
-  if (host === "www.memorialsqr.com") {
+  const host = request.headers.get("host")
+  if (isWwwHost(host)) {
     const destination = new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, APEX_ORIGIN)
     return NextResponse.redirect(destination, 301)
   }
@@ -36,11 +44,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/privacy-policy${request.nextUrl.search}`, request.url), 301)
   }
 
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
-    return await updateSession(request)
+  if (shouldRewriteNotFound(request.nextUrl.pathname, request.nextUrl.searchParams)) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/seo-not-found"
+    url.search = ""
+    return NextResponse.rewrite(url)
   }
 
-  return NextResponse.next()
+  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+    return withNoindex(await updateSession(request), request.nextUrl.pathname)
+  }
+
+  return withNoindex(NextResponse.next(), request.nextUrl.pathname)
 }
 
 export const config = {

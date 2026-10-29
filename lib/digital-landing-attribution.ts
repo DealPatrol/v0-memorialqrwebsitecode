@@ -12,11 +12,15 @@ export const DIGITAL_LANDING_STORAGE_KEY = "mqr_digital_landing"
 /** Pet hub. The primary button buys the digital memorial, so the visit is a selling page. */
 export const PET_MEMORIAL_HUB_PATH = "/pet-memorials"
 
+/** Pet loss gift page. The primary button buys the digital memorial, so the visit is a selling page. */
+export const PET_GIFT_PATH = "/memorial-gift-loss-of-pet"
+
 const sellingPaths = new Set<string>([
   DIGITAL_MEMORIAL_PATH,
   EXAMPLE_MEMORIAL_PATH,
   KEEPSAKE_COLLECTION_PATH,
   PET_MEMORIAL_HUB_PATH,
+  PET_GIFT_PATH,
   ...digitalLandingList.map((page) => page.path),
   ...sympathyGiftList.map((page) => page.path),
   ...cremationQrSellingPaths(),

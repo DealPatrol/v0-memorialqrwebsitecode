@@ -77,7 +77,8 @@ export function Footer() {
               <li><Link href="/memorial-qr-code-plaque" className="hover:text-white transition-colors">QR Memorial Plaque</Link></li>
               <li><Link href="/qr-code-for-headstone" className="hover:text-white transition-colors">QR Code for a Headstone</Link></li>
               <li><Link href="/qr-code-for-urn" className="hover:text-white transition-colors">QR Code for an Urn</Link></li>
-              <li><Link href="/pet-memorial-qr-code" className="hover:text-white transition-colors">Pet Memorial QR Code</Link></li>
+              <li><Link href="/pet-digital-memorial-qr" className="hover:text-white transition-colors">Pet Memorial QR Code</Link></li>
+              <li><Link href="/pet-memorial-qr-code" className="hover:text-white transition-colors">Pet QR Plaque</Link></li>
               <li><Link href="/dog-memorial-qr-code" className="hover:text-white transition-colors">Dog Memorial QR Code</Link></li>
               <li><Link href="/cat-memorial-qr-code" className="hover:text-white transition-colors">Cat Memorial QR Code</Link></li>
               <li><Link href="/pet-memorial-qr-tag" className="hover:text-white transition-colors">Pet Memorial QR Tag</Link></li>

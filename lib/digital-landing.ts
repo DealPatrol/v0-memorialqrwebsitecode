@@ -1,6 +1,7 @@
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { digitalMemorialJsonLd, digitalMemorialPolicyFaqs } from "@/lib/digital-memorial"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import { qrMemorialPlaqueCostFaq } from "@/lib/plaque-cost-faq"
 import { omitSchemaContext } from "@/lib/schema-node"
 import { formatUsd, SITE_URL } from "@/lib/site"
 
@@ -41,7 +42,14 @@ export type DigitalLandingPage = {
 }
 
 const price = formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)
+const shortPrice = `$${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)}`
 const years = HOSTING_INCLUDED_YEARS
+
+/** Query anchors that already have one target. Species and tag pages point here instead of repeating the title. */
+const petQueryLinks: DigitalLandingLink[] = [
+  { href: "/pet-digital-memorial-qr", label: "Pet QR memorial" },
+  { href: "/pet-memorials", label: "Pet memorial QR codes" },
+]
 
 function steps(): string[] {
   return [
@@ -85,18 +93,22 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
   pageGift: {
     id: "pageGift",
     path: "/digital-memorial-page-gift",
-    title: "Digital Memorial Page Gift | MemorialsQR",
-    description: `Give a digital memorial page and a QR code the family can print or share. ${price} once. Nothing is shipped.`,
-    h1: "A digital memorial page as a gift",
-    ogTitle: "A digital memorial page gift",
-    ogSubtitle: "You buy the page. They open it when they are ready.",
+    title: `Pet QR Memorial Gift, ${shortPrice} | MemorialsQR`,
+    description: `Give a pet QR memorial, or a page for a person. ${price} once. Nothing is shipped. ${years} years of hosting are included.`,
+    h1: "A pet QR memorial gift",
+    ogTitle: "A pet QR memorial gift",
+    ogSubtitle: `${shortPrice} once. Nothing is shipped.`,
     paragraphs: [
-      "A digital memorial page can be a gift when you do not know what else to offer. It is not flowers, and it does not have to arrive on a certain day. It is a page for photos and stories, and a QR code the family can print or send on.",
+      "A digital memorial page can be a gift when you do not know what else to offer. It is not flowers, and it does not have to arrive on a certain day. It is a page for photos and stories, and a QR code the family can print or send on. It can be a pet QR memorial: put the pet's name on the first line of the order notes.",
       "You pay once. We email you the page link and the QR code. You can forward that email, or print the code and give it in person. The family adds what they want, when they are able. You do not have to write a whole life for them.",
       `The price is ${price}. Nothing is shipped, so there is no address to confirm and no package to wait on. Hosting for ${years} years is included. If you would rather have us write the page, the concierge service is a separate purchase.`,
     ],
     steps: steps(),
     faqs: [
+      {
+        question: "Can this gift be a pet QR memorial?",
+        answer: `Yes. Put the pet's name on the first line of the order notes. You pay ${price} once and receive a pet memorial QR code to forward or print. Nothing is shipped. A metal plaque is not included.`,
+      },
       {
         question: "Can you mail this gift to the family?",
         answer:
@@ -177,11 +189,11 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
   pet: {
     id: "pet",
     path: "/pet-digital-memorial-qr",
-    title: "Pet Digital Memorial QR Code | MemorialsQR",
-    description: `A pet digital memorial QR code for a dog, cat, or other companion. ${price} once. Nothing is shipped. Hosting is included.`,
-    h1: "A pet digital memorial QR code",
-    ogTitle: "A pet digital memorial QR code",
-    ogSubtitle: "Their name, their photos, and a code you can print.",
+    title: `Pet Memorial QR Code, ${shortPrice} | MemorialsQR`,
+    description: `Order a pet QR memorial. The pet memorial QR code is ${price} once. Nothing is shipped, and ${years} years of hosting are included.`,
+    h1: "A pet QR memorial",
+    ogTitle: "A pet QR memorial",
+    ogSubtitle: `A pet memorial QR code. ${shortPrice} once.`,
     paragraphs: [
       "A pet is part of the house. A collar in a drawer cannot show the ordinary days, and a tag was never meant to hold a life. A memorial page can, for a dog, a cat, or any companion.",
       "This order is the page and a QR code you can print or share. It is not a collar tag, and it is not a metal plaque. Nothing is shipped. You can set a printed copy with their photo at home.",
@@ -189,6 +201,7 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
     ],
     steps: steps(),
     faqs: [
+      qrMemorialPlaqueCostFaq(),
       {
         question: "Can the memorial page be for a pet?",
         answer: "Yes. The page can be for a dog, a cat, or any companion. The QR code opens that page.",
@@ -211,8 +224,8 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
   dog: {
     id: "dog",
     path: "/dog-memorial-qr-code",
-    title: "Dog Memorial QR Code | MemorialsQR",
-    description: `A dog memorial QR code for photos from the walks and the couch. ${price} once. Nothing is shipped.`,
+    title: `Dog Memorial QR Code, ${shortPrice} | MemorialsQR`,
+    description: `A dog memorial QR code for photos from the walks and the couch. ${price} once. Nothing is shipped. ${years} years of hosting included.`,
     h1: "A dog memorial QR code",
     ogTitle: "A dog memorial QR code",
     ogSubtitle: "The walk, the door, and the photos a tag cannot hold.",
@@ -240,6 +253,7 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
       },
     ],
     links: [
+      ...petQueryLinks,
       { href: "/pet-loss-sympathy-gift", label: "A gift for someone who lost a dog" },
       { href: "/store/pet-memorial-plaque#waitlist", label: "Pet Memorial QR Plaque waitlist" },
     ],
@@ -247,8 +261,8 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
   cat: {
     id: "cat",
     path: "/cat-memorial-qr-code",
-    title: "Cat Memorial QR Code | MemorialsQR",
-    description: `A cat memorial QR code for the windowsill, the lap, and the name. ${price} once. Nothing is shipped.`,
+    title: `Cat Memorial QR Code, ${shortPrice} | MemorialsQR`,
+    description: `A cat memorial QR code for the windowsill, the lap, and the name. ${price} once. Nothing is shipped. ${years} years of hosting included.`,
     h1: "A cat memorial QR code",
     ogTitle: "A cat memorial QR code",
     ogSubtitle: "A page for the habits only that household knew.",
@@ -275,6 +289,7 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
       },
     ],
     links: [
+      ...petQueryLinks,
       { href: "/pet-loss-sympathy-gift", label: "A gift for someone who lost a cat" },
       { href: "/store/pet-memorial-plaque#waitlist", label: "Pet Memorial QR Plaque waitlist" },
     ],
@@ -282,8 +297,8 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
   tag: {
     id: "tag",
     path: "/pet-memorial-qr-tag",
-    title: "Pet Memorial QR Tag | MemorialsQR",
-    description: `A pet memorial QR tag you can print, plus the page it opens. ${price} once. It is not a collar tag.`,
+    title: `Pet Memorial QR Tag, ${shortPrice} | MemorialsQR`,
+    description: `A pet memorial QR tag you can print, plus the page it opens. ${price} once. It is not a collar tag. ${years} years of hosting included.`,
     h1: "A pet memorial QR tag",
     ogTitle: "A pet memorial QR tag",
     ogSubtitle: "A code you can print. Not a collar tag in the mail.",
@@ -311,6 +326,7 @@ export const digitalLandingPages: Record<DigitalLandingId, DigitalLandingPage> =
       },
     ],
     links: [
+      ...petQueryLinks,
       { href: "/pet-loss-sympathy-gift", label: "A pet loss sympathy gift for the person who is grieving" },
       { href: "/store/pet-memorial-plaque#waitlist", label: "Pet Memorial QR Plaque waitlist" },
     ],

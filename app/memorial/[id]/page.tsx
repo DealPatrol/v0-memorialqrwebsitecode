@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { MemorialClientPage } from "./MemorialClientPage"
 import { isIndexableMemorial } from "@/lib/memorial-indexing"
+import { lookupMemorial } from "@/lib/memorial-lookup"
 import { assertMetadataLength, pageMetadata } from "@/lib/seo"
-import { SITE_URL } from "@/lib/site"
 
 function clip(value: string, max: number): string {
   if (value.length <= max) return value
@@ -11,6 +12,19 @@ function clip(value: string, max: number): string {
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const memorialPath = `/memorial/${params.id}`
+  const lookup = await lookupMemorial(params.id)
+  if (lookup.status === "missing") {
+    return {
+      title: "Memorial not found | MemorialsQR",
+      description: "This memorial page does not exist.",
+      robots: {
+        index: false,
+        follow: false,
+        googleBot: { index: false, follow: false },
+      },
+    }
+  }
+
   const hidden = pageMetadata({
     title: "Private Memorial | MemorialsQR",
     description: "This memorial page is not published for search.",
@@ -18,21 +32,17 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     index: false,
   })
 
-  try {
-    const response = await fetch(`${SITE_URL}/api/memorials/${params.id}`, { cache: "no-store" })
-    if (!response.ok) return hidden
-    const payload = (await response.json()) as { memorial?: Record<string, unknown> }
-    const memorial = payload.memorial
-    if (!memorial || !isIndexableMemorial(memorial)) return hidden
+  const memorial = lookup.memorial
+  if (lookup.status === "unknown" || !memorial || !isIndexableMemorial(memorial)) return hidden
 
-    const name = typeof memorial.full_name === "string" && memorial.full_name.trim() ? memorial.full_name.trim() : "a loved one"
-    const title = clip(`Memorial for ${name} | MemorialsQR`, 60)
-    const biography = typeof memorial.biography === "string" ? memorial.biography.trim() : ""
-    const description = clip(
-      biography || `Online memorial page for ${name}, with photos, stories, and messages.`,
-      155,
-    )
-    assertMetadataLength(title, description, memorialPath)
+  const name = typeof memorial.full_name === "string" && memorial.full_name.trim() ? memorial.full_name.trim() : "a loved one"
+  const title = clip(`Memorial for ${name} | MemorialsQR`, 60)
+  const biography = typeof memorial.biography === "string" ? memorial.biography.trim() : ""
+  const description = clip(
+    biography || `Online memorial page for ${name}, with photos, stories, and messages.`,
+    155,
+  )
+  assertMetadataLength(title, description, memorialPath)
     const metadata = pageMetadata({ title, description, path: memorialPath, index: true })
     const image = typeof memorial.profile_image_url === "string" ? memorial.profile_image_url : undefined
 
@@ -43,11 +53,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         images: image ? [{ url: image, alt: title }] : undefined,
       },
     }
-  } catch {
-    return hidden
-  }
 }
 
-export default function MemorialPage() {
+export default async function MemorialPage({ params }: { params: { id: string } }) {
+  const lookup = await lookupMemorial(params.id)
+  if (lookup.status === "missing") notFound()
   return <MemorialClientPage />
 }

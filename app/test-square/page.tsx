@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Not available",
@@ -13,9 +14,5 @@ export const metadata: Metadata = {
 }
 
 export default function TestSquarePage() {
-  return (
-    <main className="mx-auto max-w-xl px-4 py-24 text-center">
-      <h1 className="text-2xl font-bold">This page is not available.</h1>
-    </main>
-  )
+  notFound()
 }

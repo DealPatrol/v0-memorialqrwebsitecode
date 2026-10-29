@@ -7,6 +7,7 @@ import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
 import { CheckCircle } from "lucide-react"
 import { Header } from "@/components/header"
+import { PlaqueCostAnswer } from "@/components/plaque-cost-answer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -57,6 +58,8 @@ export default function PricingPage() {
             </Button>
           </CardContent>
         </Card>
+
+        <PlaqueCostAnswer className="mb-8 rounded-xl border bg-white px-6 py-8" pagePath="/pricing" />
 
         <Card>
           <CardHeader>
