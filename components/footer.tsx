@@ -4,11 +4,13 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Shield, Lock, Award, Clock, Mail, MapPin } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { isHolidayRemembrancePath } from "@/lib/memorial-urls"
 import { SISTER_SHOP_MEMORIAL_GIFTS_URL } from "@/lib/sister-shop"
 import { SUPPORT_EMAIL } from "@/lib/site"
 
 export function Footer() {
   const pathname = usePathname()
+  if (isHolidayRemembrancePath(pathname)) return null
   const adLanding = pathname.startsWith("/ads/")
   if (adLanding) {
     return (
