@@ -835,6 +835,66 @@ export function assertMetadataLength(title: string, description: string, path: s
 
 const DEFAULT_SOCIAL_IMAGE_ALT = "MemorialsQR — Online memorial pages for photos, videos, and stories"
 
+/**
+ * Paths whose folder has its own opengraph-image.tsx / twitter-image.tsx. A page-level
+ * openGraph.images would replace those, so these pages point at their own image routes.
+ * Keep in sync when adding an image file (scripts/social-images.test.ts checks it).
+ */
+export const PAGES_WITH_OWN_SOCIAL_IMAGE = new Set<string>([
+  "/ashes-memorial-qr-code",
+  "/cat-memorial-qr-code",
+  "/celebration-of-life-keepsake",
+  "/cemetery-memorial-qr-code",
+  "/cemetery-qr-code",
+  "/coworker-sympathy-gift",
+  "/create-memorial-qr-code-online",
+  "/cremation-memorial-qr-code",
+  "/digital-memorial-page-gift",
+  "/digital-memorial-page",
+  "/dog-memorial-qr-code",
+  "/funeral-homes",
+  "/funeral-program-qr-code",
+  "/grave-marker-qr-code",
+  "/headstone-qr-code",
+  "/long-distance-sympathy-gift",
+  "/memorial-gift-loss-of-father",
+  "/memorial-gift-loss-of-mother",
+  "/memorial-gift-loss-of-pet",
+  "/memorial-page-for-family-far-away",
+  "/memorial-plaque-with-photo-and-video",
+  "/memorial-qr-code-plaque",
+  "/memorial-qr-for-a-spouse",
+  "/memorial-qr-for-grandparents",
+  "/online-memorial-with-qr-code",
+  "/personalized-memorial-gift",
+  "/pet-digital-memorial-qr",
+  "/pet-loss-sympathy-gift",
+  "/pet-memorial-qr-code",
+  "/pet-memorial-qr-tag",
+  "/printable-memorial-qr-code",
+  "/qr-code-for-a-columbarium",
+  "/qr-code-for-grave-marker",
+  "/qr-code-for-headstone",
+  "/qr-code-for-urn",
+  "/qr-code-memorial-plaque",
+  "/remembrance-gift-for-a-friend",
+  "/sympathy-gift-ideas",
+  "/sympathy-gift-loss-of-father",
+  "/sympathy-gift-loss-of-mother",
+  "/sympathy-memorial-qr-code",
+])
+
+/** Dynamic folders with their own image files, e.g. app/store/[id]/opengraph-image.tsx. */
+const DYNAMIC_PREFIXES_WITH_OWN_SOCIAL_IMAGE = ["/store/"]
+
+function socialImagePaths(path: string) {
+  const ownDynamic = DYNAMIC_PREFIXES_WITH_OWN_SOCIAL_IMAGE.some(
+    (prefix) => path.startsWith(prefix) && !path.slice(prefix.length).includes("/") && path.length > prefix.length,
+  )
+  const base = PAGES_WITH_OWN_SOCIAL_IMAGE.has(path) || ownDynamic ? path : ""
+  return { og: `${base}/opengraph-image`, twitter: `${base}/twitter-image` }
+}
+
 type PageMetadataInput = {
   title: string
   description: string
@@ -887,13 +947,13 @@ export function pageMetadata({
       type: ogType,
       // A page-level openGraph object replaces the root one, so pages without their own
       // opengraph-image file would otherwise share no image at all.
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: DEFAULT_SOCIAL_IMAGE_ALT }],
+      images: [{ url: socialImagePaths(path).og, width: 1200, height: 630, alt: DEFAULT_SOCIAL_IMAGE_ALT }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/twitter-image"],
+      images: [socialImagePaths(path).twitter],
     },
     robots,
   }
