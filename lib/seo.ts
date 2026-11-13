@@ -466,7 +466,7 @@ export const publicPages = {
   },
   gifts: {
     path: "/gifts",
-    title: "Memorial Gift Ideas | MemorialsQR",
+    title: "Sympathy & Memorial Gifts That Open a Page | MemorialsQR",
     description:
       "Sympathy and remembrance gifts that open a memorial page. The QR plaque is a one-time purchase with hosting included.",
     file: "app/gifts/page.tsx",
@@ -833,6 +833,8 @@ export function assertMetadataLength(title: string, description: string, path: s
   }
 }
 
+const DEFAULT_SOCIAL_IMAGE_ALT = "MemorialsQR — Online memorial pages for photos, videos, and stories"
+
 type PageMetadataInput = {
   title: string
   description: string
@@ -883,11 +885,15 @@ export function pageMetadata({
       siteName: SITE_NAME,
       locale: "en_US",
       type: ogType,
+      // A page-level openGraph object replaces the root one, so pages without their own
+      // opengraph-image file would otherwise share no image at all.
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: DEFAULT_SOCIAL_IMAGE_ALT }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: ["/twitter-image"],
     },
     robots,
   }
