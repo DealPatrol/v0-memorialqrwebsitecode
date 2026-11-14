@@ -30,7 +30,6 @@ type MagicLinkAdmin = {
 }
 
 export type PartnerDb = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   from: (table: string) => any
   /** Supabase `auth`; only `admin.createUser` and `admin.generateLink` are used. */
   auth?: unknown
