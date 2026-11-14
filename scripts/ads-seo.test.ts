@@ -315,9 +315,10 @@ describe("technical seo", () => {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const full = path.join(dir, entry.name)
         if (entry.isDirectory()) addRoutes(full)
-        else if (entry.name === "page.tsx") {
+        else if (entry.name === "page.tsx" || entry.name === "route.ts") {
+          // Route handlers (e.g. /q/[code] short-link redirects) are linkable too.
           const rel = path.relative(path.join(root, "app"), full).replace(/\\/g, "/")
-          const trimmed = rel === "page.tsx" ? "" : rel.replace(/\/page\.tsx$/, "")
+          const trimmed = rel === "page.tsx" || rel === "route.ts" ? "" : rel.replace(/\/(page\.tsx|route\.ts)$/, "")
           const segments = trimmed
             .split("/")
             .filter((segment) => segment && !segment.startsWith("("))

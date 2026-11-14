@@ -59,7 +59,11 @@ function BrowseMemorialsContent() {
         if (error) {
           console.error("Error fetching memorials:", error)
         } else {
-          const fetchedMemorials = data || []
+          // Unclaimed placeholder pages for printed keepsakes stay out of the public list.
+          const fetchedMemorials = (data || []).filter(
+            (memorial: { partner_managed?: boolean | null; user_id?: string | null }) =>
+              !(memorial.partner_managed && !memorial.user_id),
+          )
           setMemorials(
             fetchedMemorials.some((memorial) => memorial.slug === glendaMemorial.slug)
               ? fetchedMemorials

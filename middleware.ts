@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { isWwwHost, shouldNoindexPath, shouldRewriteNotFound } from "@/lib/request-indexing"
 import { updateSession } from "@/lib/supabase/middleware"
+import { legacyTailkeptOrder } from "@/lib/partner-memorials"
 
 const APEX_ORIGIN = "https://memorialsqr.com"
 
@@ -42,6 +43,16 @@ export async function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname === "/privacy") {
     return NextResponse.redirect(new URL(`/privacy-policy${request.nextUrl.search}`, request.url), 301)
+  }
+
+  // Keepsakes printed before short links: /?ref=tailkept&order={id} → the order's memorial.
+  const legacyOrder = legacyTailkeptOrder(request.nextUrl)
+  if (legacyOrder) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/q/legacy"
+    url.search = ""
+    url.searchParams.set("order", legacyOrder)
+    return NextResponse.redirect(url, 302)
   }
 
   if (shouldRewriteNotFound(request.nextUrl.pathname, request.nextUrl.searchParams)) {
