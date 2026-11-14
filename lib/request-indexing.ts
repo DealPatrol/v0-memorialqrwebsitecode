@@ -22,6 +22,7 @@ export function shouldNoindexPath(pathname: string): boolean {
   if (pathname === "/auth" || pathname.startsWith("/auth/")) return true
   if (pathname.startsWith("/dashboard")) return true
   if (pathname.startsWith("/admin")) return true
+  if (pathname.startsWith("/q/") || pathname.startsWith("/claim/")) return true
   return false
 }
 
