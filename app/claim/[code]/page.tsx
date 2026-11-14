@@ -44,20 +44,40 @@ function formatDate(value: string): string {
  */
 export default async function ClaimMemorialPage({ params }: { params: { code: string } }) {
   const code = params.code
-  const service = createServiceRoleClient()
-  const { data: row } = await service
-    .from("partner_memorial_codes")
-    .select("id, memorial_id, buyer_email, claimed_at, owner_user_id")
-    .eq("code", code)
-    .maybeSingle<CodeRow>()
-  if (!row) notFound()
-
-  const { data: memorial } = await service
-    .from("memorials")
-    .select("id, slug, full_name, birth_date, death_date, profile_image_url")
-    .eq("id", row.memorial_id)
-    .maybeSingle<MemorialRow>()
-  if (!memorial) notFound()
+  let service: ReturnType<typeof createServiceRoleClient>
+  let row: CodeRow | null = null
+  let memorial: MemorialRow | null = null
+  try {
+    service = createServiceRoleClient()
+    row = (
+      await service
+        .from("partner_memorial_codes")
+        .select("id, memorial_id, buyer_email, claimed_at, owner_user_id")
+        .eq("code", code)
+        .maybeSingle<CodeRow>()
+    ).data
+    if (row) {
+      memorial = (
+        await service
+          .from("memorials")
+          .select("id, slug, full_name, birth_date, death_date, profile_image_url")
+          .eq("id", row.memorial_id)
+          .maybeSingle<MemorialRow>()
+      ).data
+    }
+  } catch (error) {
+    console.error("[claim] lookup failed:", error instanceof Error ? error.message : error)
+    return (
+      <div className="min-h-screen bg-stone-50">
+        <Header />
+        <main className="mx-auto max-w-xl px-4 py-16 text-center">
+          <h1 className="text-2xl font-semibold text-stone-900">This page is temporarily unavailable</h1>
+          <p className="mt-4 text-stone-700">Please try again in a minute.</p>
+        </main>
+      </div>
+    )
+  }
+  if (!row || !memorial) notFound()
 
   const supabase = await createClient()
   const {
