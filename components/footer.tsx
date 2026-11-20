@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { isHolidayRemembrancePath } from "@/lib/memorial-urls"
 import { SISTER_SHOP_MEMORIAL_GIFTS_URL } from "@/lib/sister-shop"
 import { SUPPORT_EMAIL } from "@/lib/site"
+import { SisterSites } from '@/components/sister-sites';
 
 export function Footer() {
   const pathname = usePathname()
@@ -157,6 +158,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-    </footer>
+          <SisterSites selfUrl="https://memorialsqr.com" clusters={['memorial', 'gifts']} />
+</footer>
   )
 }

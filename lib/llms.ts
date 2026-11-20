@@ -95,5 +95,10 @@ ${section("Product feed", [
   `- [Google Merchant Center feed](${SITE_URL}${MERCHANT_FEED_PATH}): XML for products checkout can charge right now, at the catalog price. Waitlist plaques are excluded. Concierge services are excluded.`,
   `- [Sitemap](${SITE_URL}/sitemap.xml)`,
 ])}
+${section("Other sites from the same maker", [
+  `- [Custom Gifts Online](https://customgiftsonline.com): Personalized gifts, including memorial ornaments that can link to a MemorialsQR page.`,
+  `- [Tailkept](https://tailkept.com): A pet portrait turned into a keepsake.`,
+  `- Cole Collins also makes [Executive Receptionist](https://executivereceptionist.com), [Front Porch Growth](https://frontporchgrowth.com), [AllInOneBio](https://allinonebio.com), [Wick & Whisker](https://wickwhisker.com), and [The Hand Drawn Press](https://thehanddrawnpress.com).`,
+])}
 `
 }
