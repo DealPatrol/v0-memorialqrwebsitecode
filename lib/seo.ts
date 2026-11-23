@@ -115,8 +115,8 @@ export const publicPages = {
   },
   tombstones: {
     path: "/memorial-qr-codes-tombstones",
-    title: "QR Code Memorial Pages | MemorialsQR",
-    description: `A QR code memorial keepsake opens an online memorial page of photos and stories. ${years} years of hosting included.`,
+    title: "Memorial QR Code for a Headstone Visit | MemorialsQR",
+    description: `A memorial QR code opens a page of photos and stories, handy at a grave visit. We do not sell headstone markers. ${years} years of hosting included.`,
     file: "app/memorial-qr-codes-tombstones/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
