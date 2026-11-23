@@ -9,6 +9,38 @@ import { pageMetadata, publicPages, CONCIERGE_PRICE_LABEL } from "@/lib/seo"
 
 export const metadata = pageMetadata(publicPages.tombstones)
 
+const faqs = [
+  {
+    question: "Can I put a QR code on a headstone?",
+    answer:
+      "Some families do, but cemeteries and monument companies set their own rules about what can be attached to or engraved on a marker. Ask the cemetery or your monument company before adding anything. MemorialsQR does not engrave, sell, or mount headstone markers.",
+  },
+  {
+    question: "What does MemorialsQR sell instead?",
+    answer:
+      "A QR memorial keepsake whose code opens an online memorial page of photos, stories, and messages, or a QR code you download and print yourself. Nothing is engraved on stone. Every keepsake includes 10 years of hosting.",
+  },
+  {
+    question: "What happens when someone scans the code?",
+    answer:
+      "The phone opens the loved one's memorial page, where visitors can see photos and read stories and messages. A visitor does not need an app to open it.",
+  },
+  {
+    question: "Are metal memorial plaques available?",
+    answer: "Not yet. Metal plaques are on a waitlist. The keepsakes and the downloadable QR code are available now.",
+  },
+]
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: { "@type": "Answer", text: faq.answer },
+  })),
+}
+
 export default function MemorialQRCodesTombstonesPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -101,6 +133,21 @@ export default function MemorialQRCodesTombstonesPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16">
+        <div className="container mx-auto max-w-3xl px-4">
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+          <h2 className="mb-6 text-3xl font-bold">QR codes and headstones: common questions</h2>
+          <dl className="space-y-5">
+            {faqs.map((faq) => (
+              <div key={faq.question}>
+                <dt className="font-semibold text-gray-900">{faq.question}</dt>
+                <dd className="mt-1 text-gray-700">{faq.answer}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
