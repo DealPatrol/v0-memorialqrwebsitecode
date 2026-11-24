@@ -15,10 +15,11 @@ import {
   type BuyerIntent,
 } from "@/lib/buyer-intent"
 import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
-import { DIGITAL_MEMORIAL_CHECKOUT_PATH } from "@/lib/digital-memorial"
+import { DIGITAL_MEMORIAL_CHECKOUT_PATH, DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
 import { getListedKeepsake, getListedKeepsakes } from "@/lib/fulfillment-availability"
 import { giftIntentList } from "@/lib/gift-intent"
 import { CONCIERGE_PRICE_LABEL } from "@/lib/seo"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { formatUsd } from "@/lib/site"
 
 export function BuyerIntentView({
@@ -35,6 +36,15 @@ export function BuyerIntentView({
 }) {
   const product = getListedKeepsake(page.keepsakeId ?? PRIMARY_KEEPSAKE_ID)
   const others = getListedKeepsakes().filter((item) => item.id !== product?.id)
+  const resolvedOffer =
+    digitalOffer ??
+    (product && !product.available
+      ? {
+          href: DIGITAL_MEMORIAL_PATH,
+          note: `What you can order today is a digital memorial page for ${formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}. We email a PNG and the page. Nothing is shipped. Hosting for ${HOSTING_INCLUDED_YEARS} years is included. The metal plaque is coming soon and is not part of that order.`,
+          linkLabel: "Digital memorial page",
+        }
+      : undefined)
   const linksSympathy = related.every((item) => item.path !== "/sympathy-gift-ideas") && page.path !== "/sympathy-gift-ideas"
   const section = giftIntentList.some((item) => item.path === page.path)
     ? { href: "/gifts", label: "Gifts" }
@@ -43,7 +53,7 @@ export function BuyerIntentView({
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted to-accent/10">
       {product ? <JsonLd data={buyerIntentJsonLd(page, product)} /> : null}
-      {digitalOffer ? (
+      {resolvedOffer ? (
         <TrackViewContent
           contentId={DIGITAL_MEMORIAL_PRODUCT.id}
           contentName={DIGITAL_MEMORIAL_PRODUCT.name}
@@ -72,16 +82,16 @@ export function BuyerIntentView({
                 and we will email you once when it can be ordered.
               </p>
             ) : null}
-            {digitalOffer ? (
+            {resolvedOffer ? (
               <section className="space-y-3 rounded-lg border border-border bg-background p-4">
                 <h2 className="text-xl font-semibold text-foreground">Order the QR code today</h2>
-                <p className="text-muted-foreground">{digitalOffer.note}</p>
+                <p className="text-muted-foreground">{resolvedOffer.note}</p>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <Button asChild>
                     <Link href={DIGITAL_MEMORIAL_CHECKOUT_PATH}>Buy the digital memorial</Link>
                   </Button>
                   <Button asChild variant="outline">
-                    <Link href={digitalOffer.href}>{digitalOffer.linkLabel}</Link>
+                    <Link href={resolvedOffer.href}>{resolvedOffer.linkLabel}</Link>
                   </Button>
                 </div>
               </section>
