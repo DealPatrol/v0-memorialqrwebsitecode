@@ -261,7 +261,8 @@ describe("technical seo", () => {
     assert.match(joined, /recipes/)
     assert.match(joined, /driveway/)
     assert.match(joined, /collar/)
-    assert.match(joined, /engraved/)
+    // Plaques are on the waitlist, so the personalized page no longer says "engraved".
+    assert.match(joined, /name and dates/)
     assert.match(joined, /friend/)
 
     const sitemap = new Set(Object.values(publicPages).filter((page) => page.inSitemap).map((page) => page.path))

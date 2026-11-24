@@ -118,12 +118,14 @@ test("the make-and-ship email shows the gift message and the recipient on the la
   assert.equal(notice.text.startsWith("Make and ship"), true)
 })
 
-test("each gift page tells the buyer they can ship it as a gift", () => {
+test("each gift page says the digital page can be a gift and nothing ships", () => {
+  // Plaques are on the waitlist (KEEPSAKE_PLAQUES_ON_SALE is off), so no gift page may promise a
+  // shipped or engraved plaque. The gift you can order is the digital memorial page.
   assert.ok(giftIntentList.length >= 2 && giftIntentList.length <= 8)
   for (const page of giftIntentList) {
-    const faq = page.faqs.map((item) => `${item.question} ${item.answer}`).join("\n")
-    assert.match(faq, /address/)
-    assert.match(faq, /gift/)
-    assert.match(faq, /not engraved|not printed on the plaque|not the engraving/)
+    const text = [...page.paragraphs, ...page.faqs.map((item) => `${item.question} ${item.answer}`)].join("\n")
+    assert.match(text, /gift/)
+    assert.match(text, /Nothing is shipped|nothing is shipped/)
+    assert.doesNotMatch(text, /ship(s|ped)? (it|the plaque) (in|to|within)|we pack the plaque|gold, silver, or black/i)
   }
 })
