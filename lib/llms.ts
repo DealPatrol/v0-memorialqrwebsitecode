@@ -25,6 +25,7 @@ const KEY_PAGE_IDS = [
   "blog",
   "guides",
   "sympathyGifts",
+  "christmasMemorialIdeas",
   "funeralHomes",
   "petMemorials",
   "petDigitalMemorialQr",
