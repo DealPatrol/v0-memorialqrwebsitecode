@@ -17,6 +17,7 @@ import {
 } from "@/lib/keepsake-collection"
 import { graveQrPages } from "@/lib/grave-qr-pages"
 import { longTailPages } from "@/lib/long-tail"
+import { christmasMemorial } from "@/lib/christmas-memorial"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { sympathyGiftPages } from "@/lib/sympathy-gift-pages"
 
@@ -106,7 +107,7 @@ export const publicPages = {
   store: {
     path: "/store",
     title: "QR Memorial Keepsakes | MemorialsQR",
-    description: `Printed QR memorial keepsakes that open a memorial page of photos and stories. ${years} years of hosting included. No recurring fees.`,
+    description: `Order a digital memorial page and QR code today for ${digital}. Metal QR plaques are on the waitlist. ${years} years of hosting included. No recurring fees.`,
     file: "app/store/page.tsx",
     changeFrequency: "weekly",
     priority: 0.9,
@@ -126,7 +127,7 @@ export const publicPages = {
   pricing: {
     path: "/pricing",
     title: "Memorial Keepsake Pricing | MemorialsQR",
-    description: `Each QR memorial keepsake is a one-time purchase with ${years} years of memorial page hosting included. No recurring fees.`,
+    description: `The digital memorial page is ${digital} once with ${years} years of hosting. Metal QR plaques are ${plaque} and on the waitlist. No recurring fees.`,
     file: "app/pricing/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -366,7 +367,7 @@ export const publicPages = {
   programQr: {
     path: "/funeral-program-qr-code",
     title: "Funeral Program QR Code | MemorialsQR",
-    description: `A funeral program QR code lets guests open the memorial page during the service. The plaque is ${plaque}, with ${years} years of hosting.`,
+    description: `A funeral program QR code lets guests open the memorial page during the service. The page and code are ${digital} once, with ${years} years of hosting.`,
     file: "app/funeral-program-qr-code/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -376,7 +377,7 @@ export const publicPages = {
   digitalPage: {
     path: "/digital-memorial-page",
     title: "Digital Memorial Page | MemorialsQR",
-    description: `A digital memorial page holds photos, stories, and messages. It comes with the ${plaque} QR plaque and ${years} years of hosting.`,
+    description: `A digital memorial page holds photos, stories, and messages, with a QR code you can print. ${digital} once, ${years} years of hosting included.`,
     file: "app/digital-memorial-page/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -396,7 +397,7 @@ export const publicPages = {
   sympathyGifts: {
     path: "/sympathy-gift-ideas",
     title: "Sympathy Gift Ideas | MemorialsQR",
-    description: `Sympathy gift ideas besides flowers: a QR plaque the family can keep and open later. The plaque is ${plaque} once, with hosting included.`,
+    description: `Sympathy gift ideas besides flowers: a digital memorial page and a QR code you can print or share. ${digital} once, hosting included. Nothing is shipped.`,
     file: "app/sympathy-gift-ideas/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -406,7 +407,7 @@ export const publicPages = {
   motherGift: {
     path: "/memorial-gift-loss-of-mother",
     title: "Memorial Gift for a Mother | MemorialsQR",
-    description: `A gift after losing a mother, for her recipes and the way she said your name. The QR plaque is ${plaque}, with hosting included.`,
+    description: `A gift after losing a mother: a digital memorial page for her stories and recipes. ${digital} once, hosting included. Nothing is shipped.`,
     file: "app/memorial-gift-loss-of-mother/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -416,7 +417,7 @@ export const publicPages = {
   fatherGift: {
     path: "/memorial-gift-loss-of-father",
     title: "Memorial Gift for a Father | MemorialsQR",
-    description: `A gift after losing a father, for the shop, the driveway, and his stories. The QR plaque is ${plaque}, with hosting included.`,
+    description: `A gift after losing a father: a memorial page for the shop, the driveway, and his stories. ${digital} once, hosting included. Nothing ships.`,
     file: "app/memorial-gift-loss-of-father/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -426,7 +427,7 @@ export const publicPages = {
   petGift: {
     path: "/memorial-gift-loss-of-pet",
     title: "Memorial Gift for a Pet | MemorialsQR",
-    description: `A gift for the person grieving a pet, not a collar tag and not the pet's own page. The plaque is ${plaque}, hosting included.`,
+    description: `A gift for the person grieving a pet: a digital memorial page, not a collar tag. ${digital} once, hosting included. Nothing is shipped.`,
     file: "app/memorial-gift-loss-of-pet/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -436,7 +437,7 @@ export const publicPages = {
   personalizedGift: {
     path: "/personalized-memorial-gift",
     title: "Personalized Memorial Gift | MemorialsQR",
-    description: `A personalized memorial gift engraved with their name, dates, and a QR code. The plaque is ${plaque} once, hosting included.`,
+    description: `A personalized memorial gift: a page with their name and dates, plus a QR code you can print. ${digital} once. Nothing is shipped.`,
     file: "app/personalized-memorial-gift/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
@@ -446,8 +447,18 @@ export const publicPages = {
   friendGift: {
     path: "/remembrance-gift-for-a-friend",
     title: "Remembrance Gift for a Friend | MemorialsQR",
-    description: `A remembrance gift you hand a grieving friend, with the page left for them to fill. The plaque is ${plaque}, hosting included.`,
+    description: `A remembrance gift for a grieving friend: a digital memorial page they can fill later. ${digital} once. Nothing is shipped.`,
     file: "app/remembrance-gift-for-a-friend/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
+  christmasMemorialIdeas: {
+    path: christmasMemorial.path,
+    title: christmasMemorial.title,
+    description: christmasMemorial.description,
+    file: "app/christmas-memorial-ideas/page.tsx",
     changeFrequency: "monthly",
     priority: 0.8,
     index: true,
@@ -846,6 +857,7 @@ export const PAGES_WITH_OWN_SOCIAL_IMAGE = new Set<string>([
   "/celebration-of-life-keepsake",
   "/cemetery-memorial-qr-code",
   "/cemetery-qr-code",
+  "/christmas-memorial-ideas",
   "/coworker-sympathy-gift",
   "/create-memorial-qr-code-online",
   "/cremation-memorial-qr-code",

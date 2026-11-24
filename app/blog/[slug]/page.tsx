@@ -237,9 +237,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     image: post.image,
     datePublished: post.date,
     dateModified: post.date,
+    // Posts are written by the MemorialsQR team, not a named person, so the author is the business.
     author: {
-      "@type": "Person",
-      name: post.author,
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
