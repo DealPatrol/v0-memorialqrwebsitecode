@@ -1,8 +1,23 @@
+import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 
 const years = HOSTING_INCLUDED_YEARS
+const digitalPrice = `$${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)}`
 
 export const blogPosts = [
+  {
+    slug: "kudoboard-vs-tribute-memorial",
+    title: "Kudoboard vs Tribute for a Memorial (and Where a QR Memorial Page Fits)",
+    excerpt:
+      "Kudoboard collects messages on a shared online board. Tribute turns video messages into one memorial video. Here is what each costs and when a memorial QR page is the better fit.",
+    seoTitle: "Kudoboard vs Tribute for a Memorial | MemorialsQR",
+    seoDescription: `Kudoboard ($99 memorial board) vs Tribute (memorial video from $35), and where a ${digitalPrice} memorial QR page fits. Prices checked Nov 25, 2026.`,
+    category: "Guides",
+    author: "MemorialsQR",
+    date: "2026-11-25",
+    readTime: "5 min read",
+    image: "/images/7dc9e3be-9214-4273-b976.jpeg",
+  },
   {
     slug: "complete-guide-to-memorial-qr-codes",
     title: "The Complete Guide to Memorial QR Codes: Honoring Loved Ones in the Digital Age",
