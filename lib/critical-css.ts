@@ -4,4 +4,4 @@
  * heading an explicit size, weight, and color as soon as this style is parsed.
  */
 export const HERO_LCP_CSS =
-  ".hero-lcp{font-family:ui-sans-serif,system-ui,sans-serif;font-weight:700;line-height:1.15;color:#1f1f1f;font-size:2.25rem;margin:0 0 1.5rem}"
+  ".hero-lcp{font-family:ui-sans-serif,system-ui,sans-serif;font-weight:700;line-height:1.15;color:#382418;font-size:2.25rem;margin:0 0 1.5rem}"

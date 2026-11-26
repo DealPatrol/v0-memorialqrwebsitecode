@@ -71,23 +71,23 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 mb-12">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
-                <Shield className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card/80 border border-border backdrop-blur-sm">
+                <Shield className="w-4 h-4 text-foreground" />
                 <span className="text-sm font-medium text-foreground">30-Day Guarantee</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
-                <Clock className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card/80 border border-border backdrop-blur-sm">
+                <Clock className="w-4 h-4 text-foreground" />
                 <span className="text-sm font-medium text-foreground">{HOSTING_INCLUDED_YEARS} Years of Hosting Included</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 border border-border backdrop-blur-sm">
-                <Lock className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card/80 border border-border backdrop-blur-sm">
+                <Lock className="w-4 h-4 text-foreground" />
                 <span className="text-sm font-medium text-foreground">Secure Checkout by Square</span>
               </div>
             </div>
           </div>
 
           <div id="digital-memorial" className="max-w-xl mx-auto">
-            <Card className="bg-white border-border shadow-lg">
+            <Card className="bg-card border-border shadow-lg">
               <CardContent className="p-8 text-center">
                 <h2 className="text-2xl font-bold text-foreground mb-2">Digital Memorial Page</h2>
                 <p className="text-3xl font-bold text-foreground mb-3">{formatUsd(DIGITAL_MEMORIAL_PRODUCT.price)}</p>
@@ -140,7 +140,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white px-4 py-12">
+      <section className="bg-background px-4 py-12">
         <nav aria-label="Digital memorial pages" className="mx-auto mb-10 max-w-3xl text-center">
           <h2 className="mb-3 text-2xl font-semibold text-foreground">Order a digital memorial</h2>
           <p className="mb-4 text-muted-foreground">
@@ -206,7 +206,7 @@ export default function HomePage() {
       <FeaturedMemorialPreview />
 
       {/* SEO Content Section */}
-      <section className="py-20 md:py-32 bg-white">
+      <section className="py-20 md:py-32 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
@@ -236,7 +236,7 @@ export default function HomePage() {
                 <Card className="bg-secondary/30 border-border">
                   <CardContent className="p-6">
                     <h4 className="font-semibold text-lg mb-3 flex items-center gap-2 text-foreground">
-                      <CheckCircle className="w-5 h-5 text-primary" />
+                      <CheckCircle className="w-5 h-5 text-foreground" />
                       For Human Memorials
                     </h4>
                     <ul className="space-y-2 text-muted-foreground text-sm">
@@ -252,7 +252,7 @@ export default function HomePage() {
                 <Card className="bg-secondary/30 border-border">
                   <CardContent className="p-6">
                     <h4 className="font-semibold text-lg mb-3 flex items-center gap-2 text-foreground">
-                      <CheckCircle className="w-5 h-5 text-primary" />
+                      <CheckCircle className="w-5 h-5 text-foreground" />
                       For Pet Memorials
                     </h4>
                     <ul className="space-y-2 text-muted-foreground text-sm">
@@ -310,8 +310,8 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
-                <QrCode className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 bg-foreground/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-foreground/20">
+                <QrCode className="w-8 h-8 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-3">
                 {physicalProducts.length === 0 ? "1. Join the list" : "1. Choose a Keepsake"}
@@ -324,8 +324,8 @@ export default function HomePage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
-                <Heart className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 bg-foreground/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-foreground/20">
+                <Heart className="w-8 h-8 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-3">2. Hosting Included</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -334,8 +334,8 @@ export default function HomePage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-primary/20">
-                <Users className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 bg-foreground/10 rounded-lg flex items-center justify-center mx-auto mb-6 border border-foreground/20">
+                <Users className="w-8 h-8 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-3">3. Share Their Legacy</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -347,7 +347,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 md:py-32 bg-white">
+      <section className="py-20 md:py-32 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 text-balance">Everything You Need</h2>
@@ -357,33 +357,33 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+            <Card className="bg-card border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <Globe className="w-10 h-10 text-primary mb-4" />
+                <Globe className="w-10 h-10 text-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Unlimited Photos & Videos</h3>
                 <p className="text-muted-foreground text-sm">Upload unlimited photos and videos to create a comprehensive memorial.</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+            <Card className="bg-card border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <Lock className="w-10 h-10 text-primary mb-4" />
+                <Lock className="w-10 h-10 text-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Privacy Controls</h3>
                 <p className="text-muted-foreground text-sm">Control who can view and contribute to your memorial page.</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+            <Card className="bg-card border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <Users className="w-10 h-10 text-primary mb-4" />
+                <Users className="w-10 h-10 text-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Family Collaboration</h3>
                 <p className="text-muted-foreground text-sm">Invite family members to contribute photos, videos, and memories.</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+            <Card className="bg-card border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <User className="w-10 h-10 text-primary mb-4" />
+                <User className="w-10 h-10 text-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Human Memorials</h3>
                 <p className="text-muted-foreground text-sm">
                   Honor veterans, parents, grandparents, and all those who touched our lives.
@@ -391,9 +391,9 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+            <Card className="bg-card border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <PawPrint className="w-10 h-10 text-primary mb-4" />
+                <PawPrint className="w-10 h-10 text-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Pet Memorials</h3>
                 <p className="text-muted-foreground text-sm">
                   Celebrate dogs, cats, horses, and all the furry friends who gave us unconditional love.
@@ -401,9 +401,9 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-border hover:shadow-md transition-shadow">
+            <Card className="bg-card border-border hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <Shield className="w-10 h-10 text-primary mb-4" />
+                <Shield className="w-10 h-10 text-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">{HOSTING_INCLUDED_YEARS} Years of Hosting</h3>
                 <p className="text-muted-foreground text-sm">
                   Every keepsake includes {HOSTING_INCLUDED_YEARS} years of memorial page hosting. No recurring fees.
@@ -416,7 +416,7 @@ export default function HomePage() {
 
       <FAQPreview />
 
-      <section className="bg-white px-4 py-12">
+      <section className="bg-background px-4 py-12">
         <div className="mx-auto max-w-3xl">
           <MemorialGuideSection />
         </div>
@@ -427,7 +427,7 @@ export default function HomePage() {
       <SisterShopNote layout="band" />
 
       {/* CTA Section */}
-      <section className="py-20 md:py-32 bg-primary text-white">
+      <section className="py-20 md:py-32 bg-foreground text-background">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Create a Lasting Memorial?</h2>
             <p className="text-lg opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
@@ -437,13 +437,13 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-50 text-lg px-8">
+            <Button asChild size="lg" className="text-lg px-8">
               <Link href={DIGITAL_MEMORIAL_PATH}>
                 Order a Digital Memorial
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button asChild size="lg" className="bg-white/20 text-white hover:bg-white/30 border border-white/30 text-lg px-8">
+            <Button asChild size="lg" variant="outline" className="border-background/40 text-background hover:bg-background/10 text-lg px-8 bg-transparent">
               <Link href={KEEPSAKE_COLLECTION_PATH}>
                 Shop Keepsakes
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -452,8 +452,9 @@ export default function HomePage() {
             {plaquesWaiting ? (
               <Button
                 asChild
+                variant="outline"
                 size="lg"
-                className="bg-white/20 text-white hover:bg-white/30 border border-white/30 text-lg px-8"
+                className="border-background/40 text-background hover:bg-background/10 text-lg px-8 bg-transparent"
               >
                 <Link href="#plaque-waitlist">
                   Join the list
@@ -464,8 +465,9 @@ export default function HomePage() {
 
             <Button
               asChild
+              variant="outline"
               size="lg"
-              className="bg-white/20 text-white hover:bg-white/30 border border-white/30 text-lg px-8"
+              className="border-background/40 text-background hover:bg-background/10 text-lg px-8 bg-transparent"
             >
               <Link href="/concierge">
                 Concierge Service
@@ -477,7 +479,7 @@ export default function HomePage() {
               asChild
               variant="outline"
               size="lg"
-              className="border-white/30 text-white hover:bg-white/10 text-lg px-8 bg-transparent"
+              className="border-background/40 text-background hover:bg-background/10 text-lg px-8 bg-transparent"
             >
               <Link href="/contact">Contact Us</Link>
             </Button>

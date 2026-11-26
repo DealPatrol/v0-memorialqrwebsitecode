@@ -4,74 +4,81 @@
 
 @layer base {
   :root {
-    --background: 0 0% 99%;
-    --foreground: 0 0% 12%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 12%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 12%;
-    --primary: 215 32% 43%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 88%;
-    --secondary-foreground: 0 0% 12%;
-    --muted: 0 0% 65%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 215 32% 43%;
-    --accent-foreground: 0 0% 100%;
+    /* Warm/Cozy palette: espresso + cream neutrals. Baby blue lives only on --cta. */
+    --background: 44 34.1% 82.7%; /* #E2DAC4 */
+    --foreground: 22.5 40% 15.7%; /* #382418 */
+    --card: 42.9 39.6% 89.6%; /* #EFE9DA */
+    --card-foreground: 22.5 40% 15.7%;
+    --popover: 42.9 39.6% 89.6%;
+    --popover-foreground: 22.5 40% 15.7%;
+    --primary: 22.5 40% 15.7%;
+    --primary-foreground: 44 34.1% 82.7%;
+    --secondary: 42.9 39.6% 89.6%;
+    --secondary-foreground: 22.5 40% 15.7%;
+    --muted: 43.3 30.5% 76.9%; /* #D6CCB2 */
+    --muted-foreground: 23.4 28.7% 28%; /* #5C4333 */
+    --accent: 42.9 39.6% 89.6%;
+    --accent-foreground: 22.5 40% 15.7%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 92%;
-    --input: 0 0% 97%;
-    --ring: 215 32% 43%;
-    --chart-1: 215 32% 43%;
-    --chart-2: 0 0% 60%;
-    --chart-3: 0 0% 75%;
-    --chart-4: 215 32% 55%;
-    --chart-5: 215 32% 35%;
+    --border: 43.3 30.5% 76.9%;
+    --input: 42.9 39.6% 89.6%;
+    --ring: 22.5 40% 15.7%;
+    --cta: 199.1 100% 61.8%; /* #3CC1FF */
+    --cta-foreground: 22.5 40% 7.8%; /* #1C120C */
+    --cta-hover: 199.2 91.3% 55.1%; /* #24B2F5 */
+    --chart-1: 22.5 40% 15.7%;
+    --chart-2: 23.4 28.7% 28%;
+    --chart-3: 43.3 30.5% 76.9%;
+    --chart-4: 44 34.1% 82.7%;
+    --chart-5: 42.9 39.6% 89.6%;
     --radius: 0.5rem;
-    --sidebar: 0 0% 100%;
-    --sidebar-foreground: 0 0% 12%;
-    --sidebar-primary: 215 32% 43%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 88%;
-    --sidebar-accent-foreground: 0 0% 12%;
-    --sidebar-border: 0 0% 92%;
-    --sidebar-ring: 215 32% 43%;
+    --sidebar: 42.9 39.6% 89.6%;
+    --sidebar-foreground: 22.5 40% 15.7%;
+    --sidebar-primary: 22.5 40% 15.7%;
+    --sidebar-primary-foreground: 44 34.1% 82.7%;
+    --sidebar-accent: 43.3 30.5% 76.9%;
+    --sidebar-accent-foreground: 22.5 40% 15.7%;
+    --sidebar-border: 43.3 30.5% 76.9%;
+    --sidebar-ring: 22.5 40% 15.7%;
   }
 
   .dark {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 215 60% 60%;
-    --primary-foreground: 0 0% 8%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 35%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 215 60% 60%;
-    --accent-foreground: 0 0% 8%;
+    --background: 22.5 40% 10%;
+    --foreground: 44 34.1% 82.7%;
+    --card: 22.5 40% 13%;
+    --card-foreground: 44 34.1% 82.7%;
+    --popover: 22.5 40% 13%;
+    --popover-foreground: 44 34.1% 82.7%;
+    --primary: 44 34.1% 82.7%;
+    --primary-foreground: 22.5 40% 10%;
+    --secondary: 22.5 28% 16%;
+    --secondary-foreground: 44 34.1% 82.7%;
+    --muted: 22.5 20% 18%;
+    --muted-foreground: 43.3 20% 70%;
+    --accent: 22.5 20% 18%;
+    --accent-foreground: 44 34.1% 82.7%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 12%;
-    --input: 0 0% 15%;
-    --ring: 215 60% 60%;
-    --chart-1: 215 60% 60%;
-    --chart-2: 0 0% 40%;
-    --chart-3: 0 0% 55%;
-    --chart-4: 215 60% 70%;
-    --chart-5: 215 60% 50%;
-    --sidebar: 0 0% 8%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 215 60% 60%;
-    --sidebar-primary-foreground: 0 0% 8%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 215 60% 60%;
+    --border: 22.5 20% 20%;
+    --input: 22.5 20% 18%;
+    --ring: 44 34.1% 82.7%;
+    --cta: 199.1 100% 61.8%;
+    --cta-foreground: 22.5 40% 7.8%;
+    --cta-hover: 199.2 91.3% 55.1%;
+    --chart-1: 44 34.1% 82.7%;
+    --chart-2: 43.3 30.5% 76.9%;
+    --chart-3: 23.4 28.7% 40%;
+    --chart-4: 199.1 100% 61.8%;
+    --chart-5: 22.5 40% 15.7%;
+    --sidebar: 22.5 40% 13%;
+    --sidebar-foreground: 44 34.1% 82.7%;
+    --sidebar-primary: 44 34.1% 82.7%;
+    --sidebar-primary-foreground: 22.5 40% 10%;
+    --sidebar-accent: 22.5 20% 18%;
+    --sidebar-accent-foreground: 44 34.1% 82.7%;
+    --sidebar-border: 22.5 20% 20%;
+    --sidebar-ring: 44 34.1% 82.7%;
   }
 }
 
@@ -87,14 +94,14 @@
 /* Memorial QR Custom Styles - Professional Edition */
 .memorial-logo {
   font-family: var(--font-great-vibes), cursive;
-  color: hsl(var(--primary));
+  color: hsl(var(--foreground));
   font-size: 24px;
   font-weight: 500;
   letter-spacing: -0.5px;
 }
 
 .memorial-bg {
-  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(0 0% 97%) 100%);
+  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(42.9 39.6% 89.6%) 100%);
   position: relative;
 }
 
@@ -105,8 +112,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle at 20% 50%, rgba(215, 88, 134, 0.05) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(71, 158, 235, 0.05) 0%, transparent 50%);
+  background-image: radial-gradient(circle at 20% 50%, rgba(56, 36, 24, 0.06) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(56, 36, 24, 0.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -178,6 +185,6 @@
 }
 
 .gradient-text {
-  color: hsl(var(--primary));
+  color: hsl(var(--foreground));
   font-weight: 600;
 }

@@ -120,13 +120,13 @@ export function Header() {
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
                     <ListItem href="/human-memorials" title="Human Memorials">
                       <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-blue-600" />
+                        <User className="h-4 w-4 text-foreground" />
                         <span>Honor loved ones with dignified tributes</span>
                       </div>
                     </ListItem>
                     <ListItem href="/pet-memorials" title="Pet Memorials">
                       <div className="flex items-center gap-2">
-                        <PawPrint className="h-4 w-4 text-amber-600" />
+                        <PawPrint className="h-4 w-4 text-foreground" />
                         <span>Celebrate beloved furry friends</span>
                       </div>
                     </ListItem>
@@ -298,7 +298,7 @@ export function Header() {
                   <Link href="/dashboard">Account Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
                 </DropdownMenuItem>
@@ -309,7 +309,7 @@ export function Header() {
               <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
                 <Link href="/auth/login">Sign In</Link>
               </Button>
-              <Button size="sm" asChild className="shrink-0 bg-blue-600 hover:bg-blue-700">
+              <Button size="sm" asChild className="shrink-0">
                 <Link href="/keepsakes">
                   <ShoppingBag className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Shop</span>
