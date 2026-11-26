@@ -5,27 +5,27 @@ export function TrustBadges() {
     <div className="bg-zinc-900 py-8 px-4 border-y border-zinc-800">
       <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
         <div className="flex flex-col items-center text-center gap-2">
-          <Shield className="h-8 w-8 text-green-500" />
+          <Shield className="h-8 w-8 text-foreground" />
           <p className="text-sm font-semibold text-white">30-Day Guarantee</p>
           <p className="text-xs text-zinc-500">100% money back</p>
         </div>
         <div className="flex flex-col items-center text-center gap-2">
-          <Lock className="h-8 w-8 text-blue-500" />
+          <Lock className="h-8 w-8 text-foreground" />
           <p className="text-sm font-semibold text-white">Secure HTTPS</p>
           <p className="text-xs text-zinc-500">Pages and checkout use HTTPS</p>
         </div>
         <div className="flex flex-col items-center text-center gap-2">
-          <CreditCard className="h-8 w-8 text-purple-500" />
+          <CreditCard className="h-8 w-8 text-foreground" />
           <p className="text-sm font-semibold text-white">Payments by Square</p>
           <p className="text-xs text-zinc-500">Payments processed by Square</p>
         </div>
         <div className="flex flex-col items-center text-center gap-2 hidden md:flex">
-          <Clock className="h-8 w-8 text-yellow-500" />
+          <Clock className="h-8 w-8 text-foreground" />
           <p className="text-sm font-semibold text-white">Hosting Included</p>
           <p className="text-xs text-zinc-500">10 years with every keepsake</p>
         </div>
         <div className="flex flex-col items-center text-center gap-2 hidden lg:flex">
-          <Award className="h-8 w-8 text-orange-500" />
+          <Award className="h-8 w-8 text-foreground" />
           <p className="text-sm font-semibold text-white">Family Contributions</p>
           <p className="text-xs text-zinc-500">Add memories anytime</p>
         </div>

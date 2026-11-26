@@ -31,22 +31,22 @@ export function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <Shield className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <Shield className="w-8 h-8 text-foreground mx-auto mb-3" />
               <h3 className="font-bold mb-1">Secure HTTPS</h3>
               <p className="text-sm text-zinc-400">Pages and uploads use HTTPS</p>
             </div>
             <div className="text-center">
-              <Lock className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <Lock className="w-8 h-8 text-foreground mx-auto mb-3" />
               <h3 className="font-bold mb-1">Payments by Square</h3>
               <p className="text-sm text-zinc-400">Payments processed by Square</p>
             </div>
             <div className="text-center">
-              <Award className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <Award className="w-8 h-8 text-foreground mx-auto mb-3" />
               <h3 className="font-bold mb-1">30-Day Guarantee</h3>
               <p className="text-sm text-zinc-400">Full refund if not satisfied</p>
             </div>
             <div className="text-center">
-              <Clock className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <Clock className="w-8 h-8 text-foreground mx-auto mb-3" />
               <h3 className="font-bold mb-1">Hosting Included</h3>
               <p className="text-sm text-zinc-400">10 years with every keepsake</p>
             </div>
@@ -137,11 +137,11 @@ export function Footer() {
               <h4 className="font-semibold mb-3">Get in Touch</h4>
               <div className="space-y-2 text-sm text-zinc-400">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-amber-500" />
+                  <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
                   <span>Based in the United States</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-amber-500" />
+                  <Mail className="w-4 h-4 text-muted-foreground" />
                   <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-white transition-colors">{SUPPORT_EMAIL}</a>
                 </div>
               </div>

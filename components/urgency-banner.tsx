@@ -34,7 +34,7 @@ export function UrgencyBanner() {
   }, [])
 
   return (
-    <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 text-white py-3 px-4">
+    <div className="bg-foreground text-background py-3 px-4">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-6 text-sm">
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4" />

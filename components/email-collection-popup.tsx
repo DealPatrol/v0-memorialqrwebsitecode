@@ -112,7 +112,7 @@ export function EmailCollectionPopup() {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                  className="w-full bg-cta hover:bg-cta-hover text-cta-foreground font-semibold py-3 rounded-lg transition-colors"
                 >
                   Get Free Guide
                 </Button>
