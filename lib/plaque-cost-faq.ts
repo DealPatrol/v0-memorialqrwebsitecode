@@ -20,20 +20,26 @@ export function qrMemorialPlaqueCostFaq(): PlaqueCostFaq {
   }
 }
 
-export function plaqueCostFaqJsonLd(faq: PlaqueCostFaq = qrMemorialPlaqueCostFaq(), pageUrl = `${SITE_URL}/`) {
+/**
+ * One FAQPage per page: extra visible Q&A on the same page (e.g. the home "Common Questions")
+ * are appended here instead of emitting a second FAQPage block.
+ */
+export function plaqueCostFaqJsonLd(
+  faq: PlaqueCostFaq = qrMemorialPlaqueCostFaq(),
+  pageUrl = `${SITE_URL}/`,
+  extra: PlaqueCostFaq[] = [],
+) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage" as const,
     url: pageUrl,
-    mainEntity: [
-      {
-        "@type": "Question" as const,
-        name: faq.question,
-        acceptedAnswer: {
-          "@type": "Answer" as const,
-          text: faq.answer,
-        },
+    mainEntity: [faq, ...extra].map((item) => ({
+      "@type": "Question" as const,
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer" as const,
+        text: item.answer,
       },
-    ],
+    })),
   }
 }

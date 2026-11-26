@@ -17,7 +17,9 @@ import { longTailList } from "../lib/long-tail"
 import { buildGuideLeadNote } from "../lib/memorial-guide"
 import { buildPartnerInquiryEmail, parsePartnerInquiry } from "../lib/partner-inquiry"
 import { classifyMemorialResponse } from "../lib/memorial-lookup"
-import { qrMemorialPlaqueCostFaq } from "../lib/plaque-cost-faq"
+import { plaqueCostFaqJsonLd, qrMemorialPlaqueCostFaq } from "../lib/plaque-cost-faq"
+import { HOME_FAQS } from "../lib/home-faq"
+import { DIGITAL_MEMORIAL_PRODUCT } from "../lib/catalog"
 import { isWwwHost, shouldNoindexPath, shouldRewriteNotFound } from "../lib/request-indexing"
 import { pageMetadata, publicPages } from "../lib/seo"
 import { SITE_URL } from "../lib/site"
@@ -425,5 +427,20 @@ describe("search console indexing", () => {
     assert.match(fs.readFileSync(path.join(root, "app/test-square/page.tsx"), "utf8"), /notFound\(\)/)
     assert.match(fs.readFileSync(path.join(root, "middleware.ts"), "utf8"), /isWwwHost/)
     assert.match(fs.readFileSync(path.join(root, "app/layout.tsx"), "utf8"), /metadataBase: new URL\(SITE_URL\)/)
+  })
+})
+
+describe("home memorial QR FAQ", () => {
+  it("answers 'what is a memorial QR code' with the catalog price and merges into one FAQPage", () => {
+    assert.equal(HOME_FAQS[0].question, "What is a memorial QR code?")
+    assert.ok(HOME_FAQS[0].answer.includes(`$${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)}`))
+    const data = plaqueCostFaqJsonLd(qrMemorialPlaqueCostFaq(), `${SITE_URL}/`, HOME_FAQS)
+    assert.equal(data.mainEntity.length, 1 + HOME_FAQS.length)
+    assert.equal(data.mainEntity[1].name, HOME_FAQS[0].question)
+    const home = fs.readFileSync(path.join(root, "app/page.tsx"), "utf8")
+    assert.match(home, /<PlaqueCostAnswer extraFaqs=\{HOME_FAQS\} \/>/)
+    assert.match(home, /<FAQPreview items=\{HOME_FAQS\} \/>/)
+    assert.match(home, /Memorial QR codes for loved ones and pets/)
+    assert.equal((home.match(/FAQPage/g) ?? []).length, 0)
   })
 })
