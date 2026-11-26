@@ -23,7 +23,7 @@ const faqs = [
   },
 ]
 
-export function FAQPreview() {
+export function FAQPreview({ items = faqs }: { items?: { question: string; answer: string }[] } = {}) {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
@@ -35,7 +35,7 @@ export function FAQPreview() {
         </div>
 
         <div className="space-y-3">
-          {faqs.map((faq, index) => (
+          {items.map((faq, index) => (
             <div key={index} className="bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
