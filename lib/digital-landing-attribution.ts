@@ -4,6 +4,7 @@ import { DIGITAL_MEMORIAL_PATH } from "@/lib/digital-memorial"
 import { EXAMPLE_MEMORIAL_PATH } from "@/lib/example-memorial"
 import { graveQrSellingPaths } from "@/lib/grave-qr-pages"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
+import { OBITUARY_PATH } from "@/lib/obituary"
 import { sympathyGiftList } from "@/lib/sympathy-gift-pages"
 
 /** Session key for the first digital-memorial selling page in this browser tab. */
@@ -21,6 +22,7 @@ const sellingPaths = new Set<string>([
   KEEPSAKE_COLLECTION_PATH,
   PET_MEMORIAL_HUB_PATH,
   PET_GIFT_PATH,
+  OBITUARY_PATH,
   ...digitalLandingList.map((page) => page.path),
   ...sympathyGiftList.map((page) => page.path),
   ...cremationQrSellingPaths(),

@@ -10,6 +10,7 @@ import { pageMetadata, publicPages } from "@/lib/seo"
 export const metadata = pageMetadata(publicPages.guides)
 
 const also = [
+  { href: "/obituary-template", label: "Obituary template and free obituary writer" },
   { href: "/christmas-memorial-ideas", label: "Christmas memorial ideas for the first Christmas" },
   { href: "/human-memorials", label: "A digital memorial for a loved one" },
   { href: "/pet-memorials", label: "A pet memorial page" },

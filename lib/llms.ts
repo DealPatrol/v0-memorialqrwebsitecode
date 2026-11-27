@@ -26,6 +26,7 @@ const KEY_PAGE_IDS = [
   "guides",
   "sympathyGifts",
   "christmasMemorialIdeas",
+  "obituaryTemplate",
   "funeralHomes",
   "petMemorials",
   "petDigitalMemorialQr",
@@ -76,6 +77,11 @@ export function buildLlmsTxt(env: EnvSource = process.env): string {
       `- [${product.name}](${SITE_URL}/store/${product.id}): Catalog price ${formatUsd(product.price)}. On the waitlist and not for sale. Checkout will not charge it, and it is not in the product feed.`,
   )
 
+  const keyIds = new Set<string>(KEY_PAGE_IDS)
+  const guidePages = (Object.entries(publicPages) as Array<[string, (typeof publicPages)[keyof typeof publicPages]]>)
+    .filter(([id, page]) => !keyIds.has(id) && page.index && page.inSitemap)
+    .map(([, page]) => `- [${page.title}](${page.path === "/" ? SITE_URL : `${SITE_URL}${page.path}`}): ${page.description}`)
+
   const pages = KEY_PAGE_IDS.map((id) => {
     const page = publicPages[id]
     const url = page.path === "/" ? SITE_URL : `${SITE_URL}${page.path}`
@@ -92,6 +98,7 @@ ${section("Products checkout can charge", products)}
 ${section("Services", services)}
 ${section("On the waitlist", waitlist)}
 ${section("Key pages", pages)}
+${section("Guides and landing pages", guidePages)}
 ${section("Product feed", [
   `- [Google Merchant Center feed](${SITE_URL}${MERCHANT_FEED_PATH}): XML for products checkout can charge right now, at the catalog price. Waitlist plaques are excluded. Concierge services are excluded.`,
   `- [Sitemap](${SITE_URL}/sitemap.xml)`,
