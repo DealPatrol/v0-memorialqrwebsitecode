@@ -1,20 +1,23 @@
 import Link from "next/link"
 import { JsonLd } from "@/components/json-ld"
 import { PRIORITY_BUYER_LINKS } from "@/lib/buyer-path-links"
-import { plaqueCostFaqJsonLd, qrMemorialPlaqueCostFaq } from "@/lib/plaque-cost-faq"
+import { plaqueCostFaqJsonLd, qrMemorialPlaqueCostFaq, type PlaqueCostFaq } from "@/lib/plaque-cost-faq"
 import { SITE_URL } from "@/lib/site"
 
 export function PlaqueCostAnswer({
   className = "bg-white px-4 py-12",
   pagePath = "/",
+  extraFaqs = [],
 }: {
   className?: string
   pagePath?: string
+  /** Other Q&A visible on the same page, merged into this page's single FAQPage block. */
+  extraFaqs?: PlaqueCostFaq[]
 }) {
   const faq = qrMemorialPlaqueCostFaq()
   return (
     <section id="qr-memorial-plaque-cost" className={className}>
-      <JsonLd data={plaqueCostFaqJsonLd(faq, `${SITE_URL}${pagePath}`)} />
+      <JsonLd data={plaqueCostFaqJsonLd(faq, `${SITE_URL}${pagePath}`, extraFaqs)} />
       <div className="mx-auto max-w-3xl">
         <h2 className="text-2xl font-semibold text-foreground">{faq.question}</h2>
         <p className="mt-4 leading-relaxed text-muted-foreground">{faq.answer}</p>

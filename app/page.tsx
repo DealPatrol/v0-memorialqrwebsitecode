@@ -34,6 +34,7 @@ import { giftIntentList } from "@/lib/gift-intent"
 import { getListedKeepsakes, getSellableKeepsakes } from "@/lib/fulfillment-availability"
 import { KEEPSAKE_COLLECTION_PATH } from "@/lib/keepsake-collection"
 import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
+import { HOME_FAQS } from "@/lib/home-faq"
 import { pageMetadata, publicPages } from "@/lib/seo"
 import { formatUsd } from "@/lib/site"
 import { SympathyGiftNav } from "@/components/sympathy-gift-nav"
@@ -59,7 +60,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="hero-lcp text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
-              Keep their story close: QR memorial keepsakes with {HOSTING_INCLUDED_YEARS} years of hosting included
+              Memorial QR codes for loved ones and pets, with {HOSTING_INCLUDED_YEARS} years of hosting included
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
@@ -196,7 +197,7 @@ export default function HomePage() {
         </nav>
       </section>
 
-      <PlaqueCostAnswer />
+      <PlaqueCostAnswer extraFaqs={HOME_FAQS} />
 
       <SellableProductGrid mode="available" title="Keepsakes you can order" />
       <PlaqueWaitlistSection />
@@ -414,7 +415,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <FAQPreview />
+      <FAQPreview items={HOME_FAQS} />
 
       <section className="bg-background px-4 py-12">
         <div className="mx-auto max-w-3xl">
