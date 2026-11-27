@@ -8,6 +8,8 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { blogPosts } from "@/lib/blog-posts"
+import { DIGITAL_MEMORIAL_PRODUCT } from "@/lib/catalog"
+import { HOSTING_INCLUDED_YEARS } from "@/lib/hosting"
 import { assertMetadataLength, CONCIERGE_PRICE_LABEL, pageMetadata } from "@/lib/seo"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 
@@ -168,6 +170,59 @@ MemorialsQR sells printed QR keepsakes that open an online memorial page. Headst
 Every keepsake includes 10 years of hosting for its memorial website. The concierge memorial service is ${CONCIERGE_PRICE_LABEL} when you want the page built for you.
 
 You can download a QR code that opens the page and share that link with family.
+    `,
+  },
+  "kudoboard-vs-tribute-memorial": {
+    content: `
+*Prices below are from each company's own pricing page, checked November 25, 2026. Prices change, so confirm before you buy.*
+
+## The short answer
+
+Kudoboard is a shared online board where family and friends post messages, photos, and videos. Its Full Memorial Board is a $99 one-time charge, and a free Mini Memorial Board holds up to 10 posts.
+
+Tribute collects recorded video messages and turns them into one memorial video you can play at the funeral or celebration of life. The do-it-yourself plan is $35 for a video up to 30 minutes ($49 for 31 to 60 minutes, $99 for 61 minutes or more). Tribute's Concierge plan, where an editor makes the video, is listed at $99.
+
+A MemorialsQR digital memorial page is $${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)} once. You get an online memorial page and a QR code you can print or share, with ${HOSTING_INCLUDED_YEARS} years of hosting and no monthly fee.
+
+## When Kudoboard is the better fit
+
+Pick Kudoboard when many people want to leave written condolences, photos, and short videos in one place, especially coworkers or friends spread across the country. The board is the keepsake. Kudoboard lists exportable content and a slideshow you can embed or play.
+
+## When Tribute is the better fit
+
+Pick Tribute when you want one finished video to play at the service. Family and friends record short video messages, and you (or Tribute's editors) arrange them with music. Tribute says a memorial video can be up to 4 hours long and that Concierge editing takes 2 to 3 business days per round, so set the message deadline a few days before the service.
+
+## Where a memorial QR code page fits
+
+A board and a video are made for the weeks around the funeral. A memorial QR page is made for years after it. The QR code can go on a funeral program, a framed photo at home, a sympathy card, or a keepsake, and anyone who scans it opens the same page of photos, videos, stories, and audio. You add and update the content yourself, and the code keeps opening the same page.
+
+## Side by side
+
+### Kudoboard memorial board
+Format: shared online board. Cost: free up to 10 posts, $99 one time for unlimited posts with video. Best for: many people leaving written messages.
+
+### Tribute memorial video
+Format: one edited group video. Cost: $35 and up for DIY by length, Concierge listed at $99. Best for: playing at the service.
+
+### MemorialsQR digital memorial page
+Format: online memorial page plus a QR code. Cost: $${DIGITAL_MEMORIAL_PRODUCT.price.toFixed(2)} once with ${HOSTING_INCLUDED_YEARS} years of hosting. Best for: a page people can scan and return to for years.
+
+## Can you use more than one?
+
+Yes. Many families make a video for the service and keep a memorial page for later. You can download the finished Tribute video and add it to a memorial page, or link the Kudoboard board from it.
+
+## Questions people ask
+
+### Is Kudoboard free for a memorial?
+Only for a small board. The Mini Memorial Board is free up to 10 posts. The Full Memorial Board, with unlimited posts and video posts, is $99 one time.
+
+### How much does a Tribute memorial video cost?
+DIY is $35 for up to 30 minutes, $49 for 31 to 60 minutes, and $99 for 61 minutes or more. Tribute lets you start a free draft and pay before you publish and collect videos.
+
+### Does MemorialsQR make a group video or a message board?
+No. MemorialsQR sells an online memorial page with a QR code. You add the photos, videos, stories, and audio yourself, or pay for the concierge service (${CONCIERGE_PRICE_LABEL}) to have the page built for you.
+
+*MemorialsQR is not affiliated with Kudoboard or Tribute.*
     `,
   },
 }
