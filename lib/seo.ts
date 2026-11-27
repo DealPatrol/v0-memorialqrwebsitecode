@@ -18,6 +18,7 @@ import {
 import { graveQrPages } from "@/lib/grave-qr-pages"
 import { longTailPages } from "@/lib/long-tail"
 import { christmasMemorial } from "@/lib/christmas-memorial"
+import { obituaryPage } from "@/lib/obituary"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { sympathyGiftPages } from "@/lib/sympathy-gift-pages"
 
@@ -464,6 +465,16 @@ export const publicPages = {
     index: true,
     inSitemap: true,
   },
+  obituaryTemplate: {
+    path: obituaryPage.path,
+    title: obituaryPage.title,
+    description: obituaryPage.description,
+    file: "app/obituary-template/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    index: true,
+    inSitemap: true,
+  },
   guides: {
     path: "/guides",
     title: "Memorial QR Guides | MemorialsQR",
@@ -877,6 +888,7 @@ export const PAGES_WITH_OWN_SOCIAL_IMAGE = new Set<string>([
   "/memorial-qr-code-plaque",
   "/memorial-qr-for-a-spouse",
   "/memorial-qr-for-grandparents",
+  "/obituary-template",
   "/online-memorial-with-qr-code",
   "/personalized-memorial-gift",
   "/pet-digital-memorial-qr",

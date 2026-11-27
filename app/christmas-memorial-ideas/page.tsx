@@ -153,6 +153,11 @@ export default function ChristmasMemorialIdeasPage() {
                 </Link>
               </li>
               <li>
+                <Link className="underline" href="/obituary-template">
+                  Obituary template and free obituary writer
+                </Link>
+              </li>
+              <li>
                 <Link className="underline" href="/sympathy-gift-ideas">
                   Sympathy gift ideas
                 </Link>
